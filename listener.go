@@ -1,20 +1,19 @@
 // Copyright 2020 ChainSafe Systems
 // SPDX-License-Identifier: LGPL-3.0-only
 
-package celo
+package main
 
 import (
 	"context"
 	"fmt"
 	"time"
 
-	connection "github.com/ChainSafe/ChainBridge/connections/ethereum"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethclient"
 )
 
-var _ Connection = &connection.Connection{}
+var _ Connection = &Connection{}
 
 type Connection interface {
 	Connect() error
