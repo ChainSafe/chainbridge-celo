@@ -11,9 +11,11 @@ import (
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethclient"
-)
 
-var _ Connection = &Connection{}
+
+	"github.com/ChainSafe/chainbridge-celo/connection"
+)
+var _ Connection = &connection.Connection{}
 
 type Connection interface {
 	Connect() error
