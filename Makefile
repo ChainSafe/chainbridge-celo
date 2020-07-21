@@ -21,3 +21,5 @@ lint: $(GOLANGCI)
 test:
 	go test ./...
 
+docker:
+	docker-compose -f ./docker-compose-chains.yml up -V
