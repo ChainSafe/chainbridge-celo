@@ -7,17 +7,17 @@ import (
 	"math/big"
 	"testing"
 
-	"github.com/ChainSafe/ChainBridge/keystore"
-	ethutils "github.com/ChainSafe/ChainBridge/shared/ethereum"
-	ethtest "github.com/ChainSafe/ChainBridge/shared/ethereum/testing"
+	"github.com/ChainSafe/chainbridge-utils/keystore"
+	ethutils "github.com/ChainSafe/chainbridge-celo/shared/ethereum"
+	ethtest "github.com/ChainSafe/chainbridge-celo/shared/ethereum/testing"
 	"github.com/ChainSafe/log15"
 	ethcmn "github.com/ethereum/go-ethereum/common"
 )
 
 var TestEndpoint = "ws://localhost:8545"
 var AliceKp = keystore.TestKeyRing.EthereumKeys[keystore.AliceKey]
-var GasLimit = big.NewInt(ethutils.DefaultGasLimit)
-var GasPrice = big.NewInt(ethutils.DefaultGasPrice)
+var GasLimit = big.NewInt(DefaultGasLimit)
+var GasPrice = big.NewInt(DefaultGasPrice)
 
 func TestConnect(t *testing.T) {
 	conn := NewConnection(TestEndpoint, false, AliceKp, log15.Root(), GasLimit, GasPrice)

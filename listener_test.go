@@ -10,7 +10,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/ChainSafe/ChainBridge/keystore"
+	"github.com/ChainSafe/chainbridge-utils/keystore"
 	"github.com/ChainSafe/chainbridge-celo/connection"
 	"github.com/ChainSafe/log15"
 	"github.com/ethereum/go-ethereum/common"
