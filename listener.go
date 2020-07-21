@@ -8,13 +8,12 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/ChainSafe/chainbridge-celo/connection"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethclient"
-
-
-	"github.com/ChainSafe/chainbridge-celo/connection"
 )
+
 var _ Connection = &connection.Connection{}
 
 type Connection interface {

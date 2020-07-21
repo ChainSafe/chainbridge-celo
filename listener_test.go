@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"github.com/ChainSafe/ChainBridge/keystore"
+	"github.com/ChainSafe/chainbridge-celo/connection"
 	"github.com/ChainSafe/log15"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
@@ -19,12 +20,13 @@ import (
 
 var TestEndpoint = "ws://localhost:8545"
 var AliceKp = keystore.TestKeyRing.EthereumKeys[keystore.AliceKey]
-var GasLimit = big.NewInt(DefaultGasLimit)
-var GasPrice = big.NewInt(DefaultGasPrice)
+var GasLimit = big.NewInt(connection.DefaultGasLimit)
+var GasLimitUint64 = uint64(connection.DefaultGasLimit)
+var GasPrice = big.NewInt(connection.DefaultGasPrice)
 var ZeroAddress = common.HexToAddress("0x0000000000000000000000000000000000000000")
 
 func createTestListener(t *testing.T) *listener {
-	conn := NewConnection(TestEndpoint, false, AliceKp, log15.Root(), GasLimit, GasPrice)
+	conn := connection.NewConnection(TestEndpoint, false, AliceKp, log15.Root(), GasLimit, GasPrice)
 	l := NewListener(conn)
 
 	return l
@@ -35,7 +37,7 @@ func newTransaction(t *testing.T, l *listener) common.Hash {
 
 	// Creating a new transaction
 	nonce := l.conn.Opts().Nonce
-	tx := types.NewTransaction(nonce.Uint64(), ZeroAddress, big.NewInt(0), DefaultGasLimit, GasPrice, nil)
+	tx := types.NewTransaction(nonce.Uint64(), ZeroAddress, big.NewInt(0), GasLimitUint64, GasPrice, nil, nil, nil, nil)
 
 	chainId, err := l.conn.Client().NetworkID(context.Background())
 	signer := types.NewEIP155Signer(chainId)

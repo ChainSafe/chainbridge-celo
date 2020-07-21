@@ -20,6 +20,9 @@ import (
 	"github.com/ethereum/go-ethereum/rpc"
 )
 
+const DefaultGasLimit = 6721975
+const DefaultGasPrice = 20000000000
+
 var BlockRetryInterval = time.Second * 5
 
 type Connection struct {
