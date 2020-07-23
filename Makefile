@@ -21,6 +21,9 @@ lint: $(GOLANGCI)
 test:
 	go test ./...
 
+docker:
+	docker-compose -f ./docker-compose-chains.yml up -V
+
 ## license: Adds license header to missing files.
 license:
 	@echo "  >  \033[32mAdding license headers...\033[0m "

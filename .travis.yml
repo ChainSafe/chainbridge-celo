@@ -23,4 +23,7 @@ jobs:
       go: 1.13.x
       name: "Test"
       script:
+        - set -e
+        - docker-compose -f ./docker-compose-chains.yml up -d
+        - docker ps
         - make test
