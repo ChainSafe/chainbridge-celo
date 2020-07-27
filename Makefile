@@ -21,3 +21,24 @@ lint: $(GOLANGCI)
 test:
 	go test ./...
 
+docker:
+	docker-compose -f ./docker-compose-chains.yml up -V
+
+## license: Adds license header to missing files.
+license:
+	@echo "  >  \033[32mAdding license headers...\033[0m "
+	GO111MODULE=off go get -u github.com/google/addlicense
+	addlicense -c "ChainSafe Systems" -f ./copyright.txt -y 2020 .
+
+## license-check: Checks for missing license headers
+license-check:
+	@echo "  >  \033[Checking for license headers...\033[0m "
+	GO111MODULE=off go get -u github.com/google/addlicense
+	addlicense -check -c "ChainSafe Systems" -f ./copyright.txt -y 2020 .
+
+rebuild-contracts:
+	rm -rf bindings/ solidity/
+	TARGET=build ./scripts/setup_contracts.sh
+
+clean:
+	rm -rf build/ solidity/
