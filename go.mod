@@ -3,14 +3,15 @@ module github.com/ChainSafe/chainbridge-celo
 go 1.13
 
 require (
+	github.com/ChainSafe/chainbridge-utils v1.0.1
+	github.com/ChainSafe/log15 v1.0.0
 	github.com/aristanetworks/goarista v0.0.0-20200609010056-95bcf8053598 // indirect
 	github.com/btcsuite/btcd v0.20.1-beta // indirect
 	github.com/deckarep/golang-set v1.7.1 // indirect
 	github.com/ethereum/go-ethereum v1.9.18
 	github.com/gorilla/websocket v1.4.2 // indirect
-	github.com/mattn/go-colorable v0.1.2 // indirect
+	github.com/pierrec/xxHash v0.1.5 // indirect
 	github.com/rs/cors v1.7.0 // indirect
-	golang.org/x/crypto v0.0.0-20200709230013-948cd5f35899 // indirect
 	golang.org/x/net v0.0.0-20200707034311-ab3426394381 // indirect
 	golang.org/x/sys v0.0.0-20200625212154-ddb9806d33ae // indirect
 )
