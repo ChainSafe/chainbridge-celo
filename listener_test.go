@@ -39,8 +39,8 @@ func newTransaction(t *testing.T, l *listener) common.Hash {
 	nonce := l.conn.Opts().Nonce
 	tx := types.NewTransaction(nonce.Uint64(), ZeroAddress, big.NewInt(0), GasLimitUint64, GasPrice, nil, nil, nil, nil)
 
-	chainId, err := l.conn.Client().NetworkID(context.Background())
-	signer := types.NewEIP155Signer(chainId)
+	chainID, err := l.conn.Client().ChainID(context.Background())
+	signer := types.NewEIP155Signer(chainID)
 	if err != nil {
 		t.Fatal(err)
 	}
