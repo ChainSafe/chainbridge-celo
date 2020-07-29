@@ -1,7 +1,7 @@
 // Copyright 2020 ChainSafe Systems
 // SPDX-License-Identifier: LGPL-3.0-only
 
-package celo
+package main
 
 import (
 	"context"
@@ -12,17 +12,19 @@ import (
 
 	connection "github.com/ChainSafe/ChainBridge/connections/ethereum"
 	"github.com/ChainSafe/ChainBridge/keystore"
-	ethutils "github.com/ChainSafe/ChainBridge/shared/ethereum"
 	"github.com/ChainSafe/log15"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/ethclient"
 )
 
+const DefaultGasLimit = 6721975
+const DefaultGasPrice = 20000000000
+
 var TestEndpoint = "ws://localhost:8545"
 var AliceKp = keystore.TestKeyRing.EthereumKeys[keystore.AliceKey]
-var GasLimit = big.NewInt(ethutils.DefaultGasLimit)
-var GasPrice = big.NewInt(ethutils.DefaultGasPrice)
+var GasLimit = big.NewInt(DefaultGasLimit)
+var GasPrice = big.NewInt(DefaultGasPrice)
 var ZeroAddress = common.HexToAddress("0x0000000000000000000000000000000000000000")
 
 func createTestListener(t *testing.T) *listener {
@@ -37,7 +39,7 @@ func newTransaction(t *testing.T, l *listener) common.Hash {
 
 	// Creating a new transaction
 	nonce := l.conn.Opts().Nonce
-	tx := types.NewTransaction(nonce.Uint64(), ZeroAddress, big.NewInt(0), ethutils.DefaultGasLimit, GasPrice, nil)
+	tx := types.NewTransaction(nonce.Uint64(), ZeroAddress, big.NewInt(0), DefaultGasLimit, GasPrice, nil, nil, nil, nil)
 
 	chainId, err := l.conn.Client().NetworkID(context.Background())
 	signer := types.NewEIP155Signer(chainId)
