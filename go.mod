@@ -9,3 +9,5 @@ require (
 )
 
 replace github.com/ethereum/go-ethereum => github.com/celo-org/celo-blockchain v0.0.0-20200612100840-bf2ba25426f9
+
+replace github.com/celo-org/celo-bls-go => github.com/celo-org/celo-bls-go v0.1.7
