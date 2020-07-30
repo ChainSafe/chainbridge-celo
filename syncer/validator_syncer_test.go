@@ -12,7 +12,6 @@ import (
 var TestEndpoint = "ws://localhost:8545"
 var AliceKp = keystore.TestKeyRing.EthereumKeys[keystore.AliceKey]
 var GasLimit = big.NewInt(connection.DefaultGasLimit)
-var GasLimitUint64 = uint64(connection.DefaultGasLimit)
 var GasPrice = big.NewInt(connection.DefaultGasPrice)
 
 func createTestConnection(t *testing.T) *connection.Connection {
@@ -23,9 +22,12 @@ func createTestConnection(t *testing.T) *connection.Connection {
 func TestValidatorSyncer_Sync(t *testing.T) {
 	conn := createTestConnection(t)
 	vsyncer := ValidatorSyncer{conn: conn}
-	vsyncer.start()
+	err := vsyncer.start()
+	if err != nil {
+		t.Fatal(err)
+	}
 	// TODO: validators which is the first skipped arg needs to be tested
-	_, err := vsyncer.Sync(0)
+	_, err = vsyncer.Sync(0)
 	if err != nil {
 		t.Fatal(err)
 	}
