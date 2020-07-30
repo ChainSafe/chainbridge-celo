@@ -5,19 +5,24 @@ import (
 	"math/big"
 
 	"github.com/ChainSafe/chainbridge-celo/connection"
+	"github.com/ethereum/go-ethereum/consensus/istanbul"
+	"github.com/ethereum/go-ethereum/consensus/istanbul/validator"
+	"github.com/pkg/errors"
 )
 
 type ValidatorSyncer struct {
 	conn *connection.Connection
 }
 
-func (v *ValidatorSyncer) Sync(num uint64) error {
-	_, err := v.conn.Client().BlockByNumber(context.Background(), new(big.Int).SetUint64(num))
+// Sync pulls the extra data from the block header and extract
+// validators and returns an array of validator data
+func (v *ValidatorSyncer) Sync(num uint64) ([]istanbul.ValidatorData, error) {
+	header, err := v.conn.Client().HeaderByNumber(context.Background(), new(big.Int).SetUint64(num))
 	if err != nil {
-		return err
+		return []istanbul.ValidatorData{}, errors.Wrap(err, "getting the block header by number failed")
 	}
 
-	return nil
+	return validator.ExtractValidators(header.Extra), nil
 }
 
 func (v *ValidatorSyncer) start() error {
