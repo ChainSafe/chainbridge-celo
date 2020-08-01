@@ -10,12 +10,19 @@ import (
 	"github.com/ChainSafe/chainbridge-celo/connection"
 	"github.com/ChainSafe/chainbridge-utils/keystore"
 	"github.com/ChainSafe/log15"
+	"github.com/ethereum/go-ethereum/common"
 )
 
 var TestEndpoint = "ws://localhost:8545"
 var AliceKp = keystore.TestKeyRing.EthereumKeys[keystore.AliceKey]
 var GasLimit = big.NewInt(connection.DefaultGasLimit)
 var GasPrice = big.NewInt(connection.DefaultGasPrice)
+
+var testAddresses = []common.Address{
+	common.HexToAddress("0xecc833a7747eaa8327335e8e0c6b6d8aa3a38d00"),
+	common.HexToAddress("0x82c07B76ee5D6a5Ec4bA710418ae299d3bdCE703"),
+	common.HexToAddress("0x0000000000000000000000000000000000000000"),
+}
 
 func createTestConnection(t *testing.T) *connection.Connection {
 	conn := connection.NewConnection(TestEndpoint, false, AliceKp, log15.Root(), GasLimit, GasPrice)
@@ -29,10 +36,17 @@ func TestValidatorSyncer_Sync(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	// TODO: validators which is the first skipped arg needs to be tested
-	_, err = vsyncer.Sync(0)
+
+	validators, err := vsyncer.Sync(0)
+	defer vsyncer.close()
 	if err != nil {
 		t.Fatal(err)
 	}
-	vsyncer.close()
+
+	for i, v := range validators {
+		if testAddresses[i] != v.Address {
+			t.Fatalf("expected %s, got %s", testAddresses[i].Hex(), v.Address.Hex())
+		}
+	}
+
 }
