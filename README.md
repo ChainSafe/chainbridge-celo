@@ -1,5 +1,5 @@
-# Go Repo Template
+# chainbridge-celo
 
 ## TODO
-- [ ] Add license
-- [ ] Update `go.mod` with package path
+- [x] Add license
+- [x] Update `go.mod` with package path
