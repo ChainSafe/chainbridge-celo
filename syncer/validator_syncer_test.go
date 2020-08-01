@@ -19,6 +19,8 @@ var GasLimit = big.NewInt(connection.DefaultGasLimit)
 var GasPrice = big.NewInt(connection.DefaultGasPrice)
 
 var testAddresses = []common.Address{
+	// testAddresses are packed into our extra data
+	// this references `extraData` from our genesis.json
 	common.HexToAddress("0xecc833a7747eaa8327335e8e0c6b6d8aa3a38d00"),
 	common.HexToAddress("0x82c07B76ee5D6a5Ec4bA710418ae299d3bdCE703"),
 	common.HexToAddress("0x0000000000000000000000000000000000000000"),
