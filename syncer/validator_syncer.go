@@ -17,9 +17,9 @@ type ValidatorSyncer struct {
 	conn *connection.Connection
 }
 
-// Sync pulls the extra data from the block header and extract
+// ExtractValidators pulls the extra data from the block header and extract
 // validators and returns an array of validator data
-func (v *ValidatorSyncer) Sync(num uint64) ([]istanbul.ValidatorData, error) {
+func (v *ValidatorSyncer) ExtractValidators(num uint64) ([]istanbul.ValidatorData, error) {
 	header, err := v.conn.Client().HeaderByNumber(context.Background(), new(big.Int).SetUint64(num))
 	if err != nil {
 		return []istanbul.ValidatorData{}, errors.Wrap(err, "getting the block header by number failed")

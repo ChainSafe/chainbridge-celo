@@ -29,7 +29,7 @@ func createTestConnection(t *testing.T) *connection.Connection {
 	return conn
 }
 
-func TestValidatorSyncer_Sync(t *testing.T) {
+func TestValidatorSyncer_ExtractValidators(t *testing.T) {
 	conn := createTestConnection(t)
 	vsyncer := ValidatorSyncer{conn: conn}
 	err := vsyncer.start()
@@ -37,7 +37,7 @@ func TestValidatorSyncer_Sync(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	validators, err := vsyncer.Sync(0)
+	validators, err := vsyncer.ExtractValidators(0)
 	defer vsyncer.close()
 	if err != nil {
 		t.Fatal(err)
@@ -47,6 +47,7 @@ func TestValidatorSyncer_Sync(t *testing.T) {
 		if testAddresses[i] != v.Address {
 			t.Fatalf("expected %s, got %s", testAddresses[i].Hex(), v.Address.Hex())
 		}
+
 	}
 
 }
