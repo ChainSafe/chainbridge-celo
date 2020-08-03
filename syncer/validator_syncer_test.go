@@ -74,3 +74,24 @@ func TestValidatorSyncer_AggregatePublicKeys(t *testing.T) {
 		t.Fatalf("failed to aggergate the keys %s", err.Error())
 	}
 }
+
+func TestValidatorSyncer_ExtractValidatorsDiff(t *testing.T) {
+	conn := createTestConnection(t)
+	vsyncer := ValidatorSyncer{conn: conn}
+	err := vsyncer.start()
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	validators, err := vsyncer.ExtractValidators(0)
+	defer vsyncer.close()
+	if err != nil {
+		t.Fatal(err)
+	}
+	vsyncer.validators = validators
+
+	_, err = vsyncer.ExtractValidatorsDiff(0)
+	if err != nil {
+		t.Fatalf("failed to extract validators diff %s", err.Error())
+	}
+}

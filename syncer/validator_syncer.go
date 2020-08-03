@@ -11,6 +11,7 @@ import (
 	"github.com/celo-org/celo-bls-go/bls"
 	"github.com/ethereum/go-ethereum/consensus/istanbul"
 	"github.com/ethereum/go-ethereum/consensus/istanbul/validator"
+	"github.com/ethereum/go-ethereum/core/types"
 	blscrypto "github.com/ethereum/go-ethereum/crypto/bls"
 	"github.com/pkg/errors"
 )
@@ -48,13 +49,23 @@ func (v *ValidatorSyncer) AggregatePublicKeys() (*bls.PublicKey, error) {
 		defer publicKeyObj.Destroy()
 		publicKeyObjs = append(publicKeyObjs, publicKeyObj)
 	}
-	apk, err := bls.AggregatePublicKeys(publicKeyObjs)
-	if err != nil {
-		return nil, err
-	}
-	defer apk.Destroy()
 
-	return apk, nil
+	return nil, nil
+}
+
+// ExtractValidatorsDiff
+func (v *ValidatorSyncer) ExtractValidatorsDiff(num uint64) (*types.IstanbulExtra, error) {
+	header, err := v.conn.Client().HeaderByNumber(context.Background(), new(big.Int).SetUint64(num))
+	if err != nil {
+		return nil, errors.Wrap(err, "getting the block header by number failed")
+	}
+
+	diff, err := types.ExtractIstanbulExtra(header)
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to extract validators diff")
+	}
+
+	return diff, err
 }
 
 func (v *ValidatorSyncer) start() error {
