@@ -50,10 +50,12 @@ func (v *ValidatorSyncer) AggregatePublicKeys() (*bls.PublicKey, error) {
 		publicKeyObjs = append(publicKeyObjs, publicKeyObj)
 	}
 
-	return nil, nil
+	apk, err := bls.AggregatePublicKeys(publicKeyObjs)
+
+	return apk, nil
 }
 
-// ExtractValidatorsDiff
+// ExtractValidatorsDiff extracts all values of the IstanbulExtra (aka diff) from the header
 func (v *ValidatorSyncer) ExtractValidatorsDiff(num uint64) (*types.IstanbulExtra, error) {
 	header, err := v.conn.Client().HeaderByNumber(context.Background(), new(big.Int).SetUint64(num))
 	if err != nil {
