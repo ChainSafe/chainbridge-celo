@@ -51,6 +51,10 @@ func (v *ValidatorSyncer) AggregatePublicKeys() (*bls.PublicKey, error) {
 	}
 
 	apk, err := bls.AggregatePublicKeys(publicKeyObjs)
+	if err != nil {
+		return nil, err
+	}
+	defer apk.Destroy()
 
 	return apk, nil
 }
