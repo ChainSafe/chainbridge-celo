@@ -136,10 +136,6 @@ func TestListener_TransactionsFromBlockHash(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	if len(txs) != 1 {
-		t.Fatalf("transaction hashes should have a length of one, %x", txs)
-	}
-
 	if txs[0] != txHash {
 		t.Fatalf("hash and transactions should be the same: hash, %x txs, %x", txHash, txs)
 	}
