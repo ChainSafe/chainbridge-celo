@@ -53,3 +53,17 @@ func TestValidatorSyncer_ExtractValidators(t *testing.T) {
 	}
 
 }
+
+func TestValidatorSyncer_ExtractValidatorsDiff(t *testing.T) {
+	conn := createTestConnection(t)
+	vsyncer := ValidatorSyncer{conn: conn}
+	err := vsyncer.start()
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	_, _, err = vsyncer.ExtractValidatorsDiff(0)
+	if err != nil {
+		t.Fatalf("failed to extract validators diff %s", err.Error())
+	}
+}
