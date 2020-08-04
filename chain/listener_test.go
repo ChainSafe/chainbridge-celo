@@ -136,7 +136,14 @@ func TestListener_TransactionsFromBlockHash(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	if txs[0] != txHash {
-		t.Fatalf("hash and transactions should be the same: hash, %x txs, %x", txHash, txs)
+	ok := false
+	for _, tx := range txs {
+		if tx == txHash {
+			ok = true
+		}
+	}
+
+	if !ok {
+		t.Fatalf("expected %x to be in %x", txHash, txs)
 	}
 }
