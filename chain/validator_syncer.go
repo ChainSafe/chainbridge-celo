@@ -8,7 +8,6 @@ import (
 	"math/big"
 
 	"github.com/ChainSafe/chainbridge-celo/connection"
-	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/consensus/istanbul"
 	"github.com/ethereum/go-ethereum/consensus/istanbul/validator"
 	"github.com/ethereum/go-ethereum/core/types"
@@ -16,7 +15,8 @@ import (
 )
 
 type ValidatorSyncer struct {
-	conn *connection.Connection
+	conn       *connection.Connection
+	validators []istanbul.ValidatorData
 }
 
 // ExtractValidators pulls the extra data from the block header and extract
@@ -31,18 +31,30 @@ func (v *ValidatorSyncer) ExtractValidators(num uint64) ([]istanbul.ValidatorDat
 }
 
 // ExtractValidatorsDiff extracts all values of the IstanbulExtra (aka diff) from the header
-func (v *ValidatorSyncer) ExtractValidatorsDiff(num uint64) ([]common.Address, *big.Int, error) {
+func (v *ValidatorSyncer) ExtractValidatorsDiff(num uint64) ([]istanbul.ValidatorData, []istanbul.ValidatorData, error) {
 	header, err := v.conn.Client().HeaderByNumber(context.Background(), new(big.Int).SetUint64(num))
 	if err != nil {
-		return nil, nil, errors.Wrap(err, "getting the block header by number failed")
+		return []istanbul.ValidatorData{}, []istanbul.ValidatorData{}, errors.Wrap(err, "getting the block header by number failed")
 	}
 
 	diff, err := types.ExtractIstanbulExtra(header)
 	if err != nil {
-		return nil, nil, errors.Wrap(err, "failed to extract validators diff")
+		return []istanbul.ValidatorData{}, []istanbul.ValidatorData{}, errors.Wrap(err, "failed to extract istanbul extra from header")
 	}
 
-	return diff.AddedValidators, diff.RemovedValidators, err
+	var addedValidators []istanbul.ValidatorData
+	for i, addr := range diff.AddedValidators {
+		addedValidators = append(addedValidators, istanbul.ValidatorData{Address: addr, BLSPublicKey: diff.AddedValidatorsPublicKeys[i]})
+	}
+
+	bitmap := diff.RemovedValidators.Bytes()
+	var removedValidators []istanbul.ValidatorData
+
+	for _, i := range bitmap {
+		removedValidators = append(removedValidators, v.validators[i])
+	}
+
+	return addedValidators, removedValidators, nil
 }
 
 func (v *ValidatorSyncer) start() error {

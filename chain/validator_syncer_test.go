@@ -62,6 +62,13 @@ func TestValidatorSyncer_ExtractValidatorsDiff(t *testing.T) {
 		t.Fatal(err)
 	}
 
+	validators, err := vsyncer.ExtractValidators(0)
+	defer vsyncer.close()
+	if err != nil {
+		t.Fatal(err)
+	}
+	vsyncer.validators = validators
+
 	_, _, err = vsyncer.ExtractValidatorsDiff(0)
 	if err != nil {
 		t.Fatalf("failed to extract validators diff %s", err.Error())
