@@ -11,6 +11,9 @@ import (
 	"github.com/ChainSafe/chainbridge-utils/keystore"
 	"github.com/ChainSafe/log15"
 	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/consensus/istanbul/validator"
+	"github.com/ethereum/go-ethereum/crypto"
+	blscrypto "github.com/ethereum/go-ethereum/crypto/bls"
 )
 
 var TestEndpoint = "ws://localhost:8545"
@@ -52,6 +55,36 @@ func TestValidatorSyncer_ExtractValidators(t *testing.T) {
 
 	}
 
+}
+
+func TestValidatorSyncer_AggregatePublicKeys(t *testing.T) {
+	conn := createTestConnection(t)
+	vsyncer := ValidatorSyncer{conn: conn}
+	err := vsyncer.start()
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	const ValCnt = 100
+
+	// Create 100 validators with random addresses
+	b := []byte{}
+	for i := 0; i < ValCnt; i++ {
+		key, _ := crypto.GenerateKey()
+		blsPrivateKey, _ := blscrypto.ECDSAToBLS(key)
+		blsPublicKey, _ := blscrypto.PrivateToPublic(blsPrivateKey)
+		addr := crypto.PubkeyToAddress(key.PublicKey)
+		val := validator.New(addr, blsPublicKey)
+		b = append(b, val.Address().Bytes()...)
+		b = append(b, blsPublicKey[:]...)
+	}
+
+	vsyncer.validators = validator.ExtractValidators(b)
+
+	_, err = vsyncer.AggregatePublicKeys()
+	if err != nil {
+		t.Fatalf("failed to aggergate the keys %s", err.Error())
+	}
 }
 
 func TestValidatorSyncer_ExtractValidatorsDiff(t *testing.T) {

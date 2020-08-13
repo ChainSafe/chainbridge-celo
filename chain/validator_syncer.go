@@ -8,9 +8,11 @@ import (
 	"math/big"
 
 	"github.com/ChainSafe/chainbridge-celo/connection"
+	"github.com/celo-org/celo-bls-go/bls"
 	"github.com/ethereum/go-ethereum/consensus/istanbul"
 	"github.com/ethereum/go-ethereum/consensus/istanbul/validator"
 	"github.com/ethereum/go-ethereum/core/types"
+	blscrypto "github.com/ethereum/go-ethereum/crypto/bls"
 	"github.com/pkg/errors"
 )
 
@@ -28,6 +30,32 @@ func (v *ValidatorSyncer) ExtractValidators(num uint64) ([]istanbul.ValidatorDat
 	}
 
 	return validator.ExtractValidators(header.Extra), nil
+}
+
+// AggregatePublicKeys merges all the validators public keys into one
+// and returns it as an aggeragated public key
+func (v *ValidatorSyncer) AggregatePublicKeys() (*bls.PublicKey, error) {
+	var publicKeys []blscrypto.SerializedPublicKey
+	for _, validator := range v.validators {
+		publicKeys = append(publicKeys, validator.BLSPublicKey)
+	}
+
+	publicKeyObjs := []*bls.PublicKey{}
+	for _, publicKey := range publicKeys {
+		publicKeyObj, err := bls.DeserializePublicKeyCached(publicKey[:])
+		if err != nil {
+			return nil, err
+		}
+		defer publicKeyObj.Destroy()
+		publicKeyObjs = append(publicKeyObjs, publicKeyObj)
+	}
+	apk, err := bls.AggregatePublicKeys(publicKeyObjs)
+	if err != nil {
+		return nil, err
+	}
+	defer apk.Destroy()
+
+	return apk, nil
 }
 
 // ExtractValidatorsDiff extracts all values of the IstanbulExtra (aka diff) from the header
