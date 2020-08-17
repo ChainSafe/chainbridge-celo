@@ -9,8 +9,6 @@ services:
     container_name: celo-geth1
     ports:
       - "8545:8545"
-    build:
-      context: ./scripts/celo
 
 
   geth2:
@@ -18,5 +16,3 @@ services:
     container_name: celo-geth2
     ports:
       - "8546:8545"
-    build:
-      context: ./scripts/celo
