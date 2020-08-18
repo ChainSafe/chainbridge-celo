@@ -22,7 +22,7 @@ test:
 	go test -race ./...
 
 docker:
-	docker-compose -f ./docker-compose-chains.yml up -V
+	docker-compose -f ./docker-compose-chains.yml up -V --build
 
 ## license: Adds license header to missing files.
 license:
