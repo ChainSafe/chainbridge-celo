@@ -10,7 +10,6 @@ import (
 	"github.com/ChainSafe/chainbridge-celo/connection"
 	"github.com/celo-org/celo-bls-go/bls"
 	"github.com/ethereum/go-ethereum/consensus/istanbul"
-	"github.com/ethereum/go-ethereum/consensus/istanbul/validator"
 	"github.com/ethereum/go-ethereum/core/types"
 	blscrypto "github.com/ethereum/go-ethereum/crypto/bls"
 	"github.com/pkg/errors"
@@ -29,7 +28,23 @@ func (v *ValidatorSyncer) ExtractValidators(num uint64) ([]istanbul.ValidatorDat
 		return []istanbul.ValidatorData{}, errors.Wrap(err, "getting the block header by number failed")
 	}
 
-	return validator.ExtractValidators(header.Extra), nil
+	extra, err := types.ExtractIstanbulExtra(header)
+	if err != nil {
+		return []istanbul.ValidatorData{}, errors.Wrap(err, "failed to extract istanbul extra from header")
+	}
+	var validators []istanbul.ValidatorData
+
+	for i := range extra.AddedValidators {
+		validator := &istanbul.ValidatorData{
+			Address:      extra.AddedValidators[i],
+			BLSPublicKey: extra.AddedValidatorsPublicKeys[i],
+		}
+
+		validators = append(v.validators, *validator)
+	}
+
+	return validators, nil
+
 }
 
 // AggregatePublicKeys merges all the validators public keys into one

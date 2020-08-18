@@ -4,6 +4,7 @@
 package chain
 
 import (
+	"encoding/hex"
 	"math/big"
 	"testing"
 
@@ -11,22 +12,24 @@ import (
 	"github.com/ChainSafe/chainbridge-utils/keystore"
 	"github.com/ChainSafe/log15"
 	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/consensus/istanbul/validator"
-	"github.com/ethereum/go-ethereum/crypto"
-	blscrypto "github.com/ethereum/go-ethereum/crypto/bls"
 )
 
 var TestEndpoint = "ws://localhost:8545"
-var AliceKp = keystore.TestKeyRing.EthereumKeys[keystore.AliceKey]
 var GasLimit = big.NewInt(connection.DefaultGasLimit)
 var GasPrice = big.NewInt(connection.DefaultGasPrice)
 
-var testAddresses = []common.Address{
-	// testAddresses are packed into our extra data
+var AliceKp = keystore.TestKeyRing.EthereumKeys[keystore.AliceKey]
+
+var expectedAddresses = []common.Address{
+	// expectedAddresses are packed into our extra data
 	// this references `extraData` from our genesis.json
-	common.HexToAddress("0xecc833a7747eaa8327335e8e0c6b6d8aa3a38d00"),
-	common.HexToAddress("0x82c07B76ee5D6a5Ec4bA710418ae299d3bdCE703"),
-	common.HexToAddress("0x0000000000000000000000000000000000000000"),
+	common.HexToAddress("0xf4314cb9046bece6aa54bb9533155434d0c76909"),
+}
+
+var expectedBlsPublicKeys = []string{
+	// expectedBlsPublicKeys are packed into our extra data
+	// this references `extraData` from our genesis.json
+	"ec0d01b5adf993cdfee480b43be638b346ca58bc7d63d2d0e8b288de24bb320c02fa254a79fecc14511dc176f4e15c012e7d1b8ea9717c82c07b76ee5d6a5ec4ba710418ae299d3bdce703351f7c465fbaeb7ba814b43d7206546051d90f1b80",
 }
 
 func createTestConnection(t *testing.T) *connection.Connection {
@@ -49,12 +52,17 @@ func TestValidatorSyncer_ExtractValidators(t *testing.T) {
 	}
 
 	for i, v := range validators {
-		if testAddresses[i] != v.Address {
-			t.Fatalf("expected %s, got %s", testAddresses[i].Hex(), v.Address.Hex())
+		if expectedAddresses[i] != v.Address {
+			t.Fatalf("expected %s, got %s", expectedAddresses[i].Hex(), v.Address.Hex())
+		}
+
+		blsKeyHex := hex.EncodeToString(v.BLSPublicKey[:])
+
+		if expectedBlsPublicKeys[i] != blsKeyHex {
+			t.Fatalf("expected %s, got %s", expectedBlsPublicKeys[i], blsKeyHex)
 		}
 
 	}
-
 }
 
 func TestValidatorSyncer_AggregatePublicKeys(t *testing.T) {
@@ -65,21 +73,11 @@ func TestValidatorSyncer_AggregatePublicKeys(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	const ValCnt = 100
-
-	// Create 100 validators with random addresses
-	b := []byte{}
-	for i := 0; i < ValCnt; i++ {
-		key, _ := crypto.GenerateKey()
-		blsPrivateKey, _ := blscrypto.ECDSAToBLS(key)
-		blsPublicKey, _ := blscrypto.PrivateToPublic(blsPrivateKey)
-		addr := crypto.PubkeyToAddress(key.PublicKey)
-		val := validator.New(addr, blsPublicKey)
-		b = append(b, val.Address().Bytes()...)
-		b = append(b, blsPublicKey[:]...)
+	vsyncer.validators, err = vsyncer.ExtractValidators(0)
+	if err != nil {
+		t.Fatal(err)
 	}
-
-	vsyncer.validators = validator.ExtractValidators(b)
+	defer vsyncer.close()
 
 	_, err = vsyncer.AggregatePublicKeys()
 	if err != nil {
