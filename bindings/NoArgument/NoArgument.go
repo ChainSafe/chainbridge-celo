@@ -20,6 +20,7 @@ var (
 	_ = big.NewInt
 	_ = strings.NewReader
 	_ = ethereum.NotFound
+	_ = abi.U256
 	_ = bind.Bind
 	_ = common.Big1
 	_ = types.BloomLookup
@@ -30,7 +31,7 @@ var (
 const NoArgumentABI = "[{\"anonymous\":false,\"inputs\":[],\"name\":\"NoArgumentCalled\",\"type\":\"event\"},{\"inputs\":[],\"name\":\"noArgument\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}]"
 
 // NoArgumentBin is the compiled bytecode used for deploying new contracts.
-var NoArgumentBin = "0x6080604052348015600f57600080fd5b5060998061001e6000396000f3fe6080604052348015600f57600080fd5b506004361060285760003560e01c8063568959ca14602d575b600080fd5b60336035565b005b7fc582abe1670c5a7f7cad8f171e4af03c793dd9f59fee6714179f56b6e9aea26f60405160405180910390a156fea2646970667358221220bc6f61956509bdf929bcdab4379c5ed7d1deacbe16477f76be71343b7c29bd7664736f6c63430006040033"
+var NoArgumentBin = "0x6080604052348015600f57600080fd5b5060998061001e6000396000f3fe6080604052348015600f57600080fd5b506004361060285760003560e01c8063568959ca14602d575b600080fd5b60336035565b005b7fc582abe1670c5a7f7cad8f171e4af03c793dd9f59fee6714179f56b6e9aea26f60405160405180910390a156fea2646970667358221220e38b6a04e9593e58f848854bf195098bc8166e9fd9926261db7294e47d25518364736f6c63430006040033"
 
 // DeployNoArgument deploys a new Ethereum contract, binding an instance of NoArgument to it.
 func DeployNoArgument(auth *bind.TransactOpts, backend bind.ContractBackend) (common.Address, *types.Transaction, *NoArgument, error) {

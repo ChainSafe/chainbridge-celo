@@ -7,6 +7,7 @@ CONTRACTS_BRANCH="v0.0.1-alpha"
 CONTRACTS_COMMIT="5382f0c889b4c4e61a1700568ef005af6a5b24e7"
 CONTRACTS_DIR="./solidity"
 DEST_DIR="./bindings"
+TARGET="build"
 
 set -eux
 
