@@ -12,9 +12,6 @@ import (
 	"github.com/ChainSafe/chainbridge-utils/keystore"
 	"github.com/ChainSafe/log15"
 	"github.com/ethereum/go-ethereum/common"
-	// "github.com/ethereum/go-ethereum/consensus/istanbul/validator"
-	// "github.com/ethereum/go-ethereum/crypto"
-	// blscrypto "github.com/ethereum/go-ethereum/crypto/bls"
 )
 
 var TestEndpoint = "ws://localhost:8545"
