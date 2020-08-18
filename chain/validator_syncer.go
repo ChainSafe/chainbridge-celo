@@ -5,7 +5,6 @@ package chain
 
 import (
 	"context"
-	// "encoding/hex"
 	"math/big"
 
 	"github.com/ChainSafe/chainbridge-celo/connection"
@@ -33,17 +32,18 @@ func (v *ValidatorSyncer) ExtractValidators(num uint64) ([]istanbul.ValidatorDat
 	if err != nil {
 		return []istanbul.ValidatorData{}, errors.Wrap(err, "failed to extract istanbul extra from header")
 	}
+	var validators []istanbul.ValidatorData
 
 	for i := range extra.AddedValidators {
 		validator := &istanbul.ValidatorData{
-				Address: extra.AddedValidators[i],
-				BLSPublicKey: extra.AddedValidatorsPublicKeys[i],
+			Address:      extra.AddedValidators[i],
+			BLSPublicKey: extra.AddedValidatorsPublicKeys[i],
 		}
-		
-		v.validators = append(v.validators, *validator)
+
+		validators = append(v.validators, *validator)
 	}
 
-	return v.validators, nil
+	return validators, nil
 
 }
 

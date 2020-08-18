@@ -7,7 +7,6 @@ import (
 	"encoding/hex"
 	"math/big"
 	"testing"
-	"fmt"
 
 	"github.com/ChainSafe/chainbridge-celo/connection"
 	"github.com/ChainSafe/chainbridge-utils/keystore"
@@ -32,6 +31,8 @@ var expectedBlsPublicKeys = []string{
 	// this references `extraData` from our genesis.json
 	"ec0d01b5adf993cdfee480b43be638b346ca58bc7d63d2d0e8b288de24bb320c02fa254a79fecc14511dc176f4e15c012e7d1b8ea9717c82c07b76ee5d6a5ec4ba710418ae299d3bdce703351f7c465fbaeb7ba814b43d7206546051d90f1b80",
 }
+
+var expectedAggregatedPublicKey
 
 func createTestConnection(t *testing.T) *connection.Connection {
 	conn := connection.NewConnection(TestEndpoint, false, AliceKp, log15.Root(), GasLimit, GasPrice)
