@@ -4,8 +4,8 @@
 package chain
 
 import (
-	"encoding/hex"
 	"context"
+	"encoding/hex"
 	"math/big"
 
 	"github.com/ChainSafe/chainbridge-celo/connection"
