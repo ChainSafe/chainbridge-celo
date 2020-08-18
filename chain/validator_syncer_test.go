@@ -74,6 +74,9 @@ func TestValidatorSyncer_AggregatePublicKeys(t *testing.T) {
 	}
 
 	vsyncer.validators, err = vsyncer.ExtractValidators(0)
+	if err != nil {
+		t.Fatal(err)
+	}
 	defer vsyncer.close()
 
 	_, err = vsyncer.AggregatePublicKeys()
