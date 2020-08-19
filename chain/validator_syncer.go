@@ -5,9 +5,8 @@ package chain
 
 import (
 	"context"
-	"math/big"
-
 	"encoding/hex"
+	"math/big"
 
 	"github.com/ChainSafe/chainbridge-celo/connection"
 	"github.com/celo-org/celo-bls-go/bls"
@@ -22,7 +21,7 @@ const DefaultHeaderNumber = 0
 type ValidatorSyncer struct {
 	conn       *connection.Connection
 	validators []istanbul.ValidatorData
-	apk *bls.PublicKey
+	apk        *bls.PublicKey
 }
 
 // ExtractValidators pulls the extra data from the block header and extract
@@ -122,7 +121,7 @@ func (v *ValidatorSyncer) Sync() error {
 		return errors.Wrap(err, "failed to extract validators diff")
 	}
 
-	if len(removedValidators) < 1 || len(addedValidators) < 1{
+	if len(removedValidators) < 1 || len(addedValidators) < 1 {
 		return nil
 	}
 
@@ -141,7 +140,7 @@ func (v *ValidatorSyncer) Sync() error {
 	if err != nil {
 		return errors.Wrap(err, "failed to aggregate public keys")
 	}
-	
+
 	return nil
 }
 
