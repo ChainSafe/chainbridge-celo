@@ -122,7 +122,7 @@ func (v *ValidatorSyncer) Sync() error {
 		return errors.Wrap(err, "failed to extract validators diff")
 	}
 
-	if len(removedValidators) > 1 || len(addedValidators) > 1{
+	if len(removedValidators) < 1 || len(addedValidators) < 1{
 		return nil
 	}
 
