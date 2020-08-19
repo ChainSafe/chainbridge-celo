@@ -22,6 +22,7 @@ const DefaultHeaderNumber = 0
 type ValidatorSyncer struct {
 	conn       *connection.Connection
 	validators []istanbul.ValidatorData
+	apk *bls.PublicKey
 }
 
 // ExtractValidators pulls the extra data from the block header and extract
@@ -105,9 +106,24 @@ func (v *ValidatorSyncer) ExtractValidatorsDiff(num uint64) ([]istanbul.Validato
 }
 
 func (v *ValidatorSyncer) Sync() error {
+	err := v.start()
+	if err != nil {
+		return err
+	}
+
+	v.validators, err = v.ExtractValidators(0)
+	defer v.close()
+	if err != nil {
+		return errors.Wrap(err, "failed to extract validators")
+	}
+
 	removedValidators, addedValidators, err := v.ExtractValidatorsDiff(DefaultHeaderNumber)
 	if err != nil {
 		return errors.Wrap(err, "failed to extract validators diff")
+	}
+
+	if len(removedValidators) > 1 || len(addedValidators) > 1{
+		return nil
 	}
 
 	for i, vv := range v.validators {
@@ -121,6 +137,10 @@ func (v *ValidatorSyncer) Sync() error {
 	}
 
 	v.validators = append(v.validators, addedValidators...)
+	v.apk, err = v.AggregatePublicKeys()
+	if err != nil {
+		return errors.Wrap(err, "failed to aggregate public keys")
+	}
 	
 	return nil
 }
