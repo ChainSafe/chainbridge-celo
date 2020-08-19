@@ -7,6 +7,8 @@ import (
 	"context"
 	"math/big"
 
+	"encoding/hex"
+
 	"github.com/ChainSafe/chainbridge-celo/connection"
 	"github.com/celo-org/celo-bls-go/bls"
 	"github.com/ethereum/go-ethereum/consensus/istanbul"
@@ -14,6 +16,8 @@ import (
 	blscrypto "github.com/ethereum/go-ethereum/crypto/bls"
 	"github.com/pkg/errors"
 )
+
+const DefaultHeaderNumber = 0
 
 type ValidatorSyncer struct {
 	conn       *connection.Connection
@@ -98,6 +102,27 @@ func (v *ValidatorSyncer) ExtractValidatorsDiff(num uint64) ([]istanbul.Validato
 	}
 
 	return addedValidators, removedValidators, nil
+}
+
+func (v *ValidatorSyncer) Sync() error {
+	removedValidators, addedValidators, err := v.ExtractValidatorsDiff(DefaultHeaderNumber)
+	if err != nil {
+		return errors.Wrap(err, "failed to extract validators diff")
+	}
+
+	for i, vv := range v.validators {
+		for _, rv := range removedValidators {
+			if hex.EncodeToString(rv.BLSPublicKey[:]) == hex.EncodeToString(vv.BLSPublicKey[:]) {
+				copy(v.validators[i:], v.validators[i+1:])                   // Shift v.validators[i+1:] left one index.
+				v.validators[len(v.validators)-1] = istanbul.ValidatorData{} // Erase last element (write zero value).
+				v.validators = v.validators[:len(v.validators)-1]            // Truncate slice.
+			}
+		}
+	}
+
+	v.validators = append(v.validators, addedValidators...)
+	
+	return nil
 }
 
 func (v *ValidatorSyncer) start() error {

@@ -105,3 +105,18 @@ func TestValidatorSyncer_ExtractValidatorsDiff(t *testing.T) {
 		t.Fatalf("failed to extract validators diff %s", err.Error())
 	}
 }
+
+
+func TestValidatorSyncer_Sync(t *testing.T) {
+	conn := createTestConnection(t)
+	vsyncer := ValidatorSyncer{conn: conn}
+	err := vsyncer.start()
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	err = vsyncer.Sync()
+	if err != nil {
+		t.Fatalf("failed to sync validators set %s", err.Error())
+	}
+}
