@@ -5,9 +5,12 @@ package chain
 
 import (
 	"context"
+	"encoding/hex"
+	"fmt"
 	"math/big"
 
 	"github.com/ChainSafe/chainbridge-celo/connection"
+	"github.com/ChainSafe/log15"
 	"github.com/celo-org/celo-bls-go/bls"
 	"github.com/ethereum/go-ethereum/consensus/istanbul"
 	"github.com/ethereum/go-ethereum/core/types"
@@ -21,6 +24,14 @@ type ValidatorSyncer struct {
 	conn       *connection.Connection
 	validators []istanbul.ValidatorData
 	apk        *bls.PublicKey
+	log        log15.Logger
+}
+
+func NewValidatorSyncer(conn *connection.Connection, log log15.Logger) *ValidatorSyncer {
+	return &ValidatorSyncer{
+		conn: conn,
+		log:  log,
+	}
 }
 
 // ExtractValidators pulls the extra data from the block header and extract
@@ -37,14 +48,18 @@ func (v *ValidatorSyncer) ExtractValidators(num uint64) ([]istanbul.ValidatorDat
 	}
 	var validators []istanbul.ValidatorData
 
+	v.log.Info("====== extracting validators =======")
 	for i := range extra.AddedValidators {
 		validator := &istanbul.ValidatorData{
 			Address:      extra.AddedValidators[i],
 			BLSPublicKey: extra.AddedValidatorsPublicKeys[i],
 		}
 
+		v.log.Info(fmt.Sprintf("address: %s, bls public key: %s", validator.Address.Hex(), hex.EncodeToString(validator.BLSPublicKey[:])))
+
 		validators = append(v.validators, *validator)
 	}
+	v.log.Info("============================")
 
 	return validators, nil
 
@@ -91,16 +106,22 @@ func (v *ValidatorSyncer) ExtractValidatorsDiff(num uint64) ([]istanbul.Validato
 	bitmap := diff.RemovedValidators.Bytes()
 	var removedValidators []istanbul.ValidatorData
 
+	v.log.Info("====== removed validators =======")
 	for _, i := range bitmap {
+		v.log.Info(fmt.Sprintf("address: %s, bls public key: %s", v.validators[i].Address.Hex(), hex.EncodeToString(v.validators[i].BLSPublicKey[:])))
 		removedValidators = append(removedValidators, v.validators[i])
 		v.validators = append(v.validators[:i], v.validators[i+1:]...)
 	}
+	v.log.Info("============================")
 
+	v.log.Info("====== added validators =======")
 	var addedValidators []istanbul.ValidatorData
 	for i, addr := range diff.AddedValidators {
+		v.log.Info(fmt.Sprintf("address: %s, bls public key: %s", addr.Hex(), hex.EncodeToString(diff.AddedValidatorsPublicKeys[i][:])))
 		addedValidators = append(addedValidators, istanbul.ValidatorData{Address: addr, BLSPublicKey: diff.AddedValidatorsPublicKeys[i]})
 		v.validators = append(v.validators, istanbul.ValidatorData{Address: addr, BLSPublicKey: diff.AddedValidatorsPublicKeys[i]})
 	}
+	v.log.Info("============================")
 
 	return addedValidators, removedValidators, nil
 }

@@ -39,7 +39,7 @@ func createTestConnection(t *testing.T) *connection.Connection {
 
 func TestValidatorSyncer_ExtractValidators(t *testing.T) {
 	conn := createTestConnection(t)
-	vsyncer := ValidatorSyncer{conn: conn}
+	vsyncer := NewValidatorSyncer(conn, log15.Root())
 	err := vsyncer.start()
 	if err != nil {
 		t.Fatal(err)
@@ -67,7 +67,7 @@ func TestValidatorSyncer_ExtractValidators(t *testing.T) {
 
 func TestValidatorSyncer_AggregatePublicKeys(t *testing.T) {
 	conn := createTestConnection(t)
-	vsyncer := ValidatorSyncer{conn: conn}
+	vsyncer := NewValidatorSyncer(conn, log15.Root())
 	err := vsyncer.start()
 	if err != nil {
 		t.Fatal(err)
@@ -87,7 +87,7 @@ func TestValidatorSyncer_AggregatePublicKeys(t *testing.T) {
 
 func TestValidatorSyncer_ExtractValidatorsDiff(t *testing.T) {
 	conn := createTestConnection(t)
-	vsyncer := ValidatorSyncer{conn: conn}
+	vsyncer := NewValidatorSyncer(conn, log15.Root())
 	err := vsyncer.start()
 	if err != nil {
 		t.Fatal(err)
@@ -106,11 +106,10 @@ func TestValidatorSyncer_ExtractValidatorsDiff(t *testing.T) {
 	}
 }
 
-
 func TestValidatorSyncer_Sync(t *testing.T) {
 	conn := createTestConnection(t)
-	vsyncer := ValidatorSyncer{conn: conn}
-	
+	vsyncer := NewValidatorSyncer(conn, log15.Root())
+
 	err := vsyncer.Sync()
 	if err != nil {
 		t.Fatalf("failed to sync validators set %s", err.Error())
