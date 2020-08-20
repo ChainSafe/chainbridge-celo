@@ -132,12 +132,14 @@ func (v *ValidatorSyncer) Sync() error {
 		return err
 	}
 
+	v.log.Info("Syncing the validators...")
 	v.validators, err = v.ExtractValidators(0)
 	defer v.close()
 	if err != nil {
 		return errors.Wrap(err, "failed to extract validators")
 	}
 
+	v.log.Info("Extracting validators diff...")
 	removedValidators, addedValidators, err := v.ExtractValidatorsDiff(DefaultHeaderNumber)
 	if err != nil {
 		return errors.Wrap(err, "failed to extract validators diff")
@@ -145,6 +147,7 @@ func (v *ValidatorSyncer) Sync() error {
 
 	// if there's a change aggregate a new public key
 	if len(removedValidators) > 1 || len(addedValidators) > 1 {
+		v.log.Info("Aggregating the public keys...")
 		v.apk, err = v.AggregatePublicKeys()
 		if err != nil {
 			return errors.Wrap(err, "failed to aggregate public keys")
