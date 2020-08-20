@@ -5,7 +5,6 @@ package chain
 
 import (
 	"context"
-	"encoding/hex"
 	"math/big"
 
 	"github.com/ChainSafe/chainbridge-celo/connection"
@@ -89,16 +88,18 @@ func (v *ValidatorSyncer) ExtractValidatorsDiff(num uint64) ([]istanbul.Validato
 		return []istanbul.ValidatorData{}, []istanbul.ValidatorData{}, errors.Wrap(err, "failed to extract istanbul extra from header")
 	}
 
-	var addedValidators []istanbul.ValidatorData
-	for i, addr := range diff.AddedValidators {
-		addedValidators = append(addedValidators, istanbul.ValidatorData{Address: addr, BLSPublicKey: diff.AddedValidatorsPublicKeys[i]})
-	}
-
 	bitmap := diff.RemovedValidators.Bytes()
 	var removedValidators []istanbul.ValidatorData
 
 	for _, i := range bitmap {
 		removedValidators = append(removedValidators, v.validators[i])
+		v.validators = append(v.validators[:i], v.validators[i+1:]...)
+	}
+
+	var addedValidators []istanbul.ValidatorData
+	for i, addr := range diff.AddedValidators {
+		addedValidators = append(addedValidators, istanbul.ValidatorData{Address: addr, BLSPublicKey: diff.AddedValidatorsPublicKeys[i]})
+		v.validators = append(v.validators, istanbul.ValidatorData{Address: addr, BLSPublicKey: diff.AddedValidatorsPublicKeys[i]})
 	}
 
 	return addedValidators, removedValidators, nil
@@ -121,24 +122,12 @@ func (v *ValidatorSyncer) Sync() error {
 		return errors.Wrap(err, "failed to extract validators diff")
 	}
 
-	if len(removedValidators) < 1 || len(addedValidators) < 1 {
-		return nil
-	}
-
-	for i, vv := range v.validators {
-		for _, rv := range removedValidators {
-			if hex.EncodeToString(rv.BLSPublicKey[:]) == hex.EncodeToString(vv.BLSPublicKey[:]) {
-				copy(v.validators[i:], v.validators[i+1:])                   // Shift v.validators[i+1:] left one index.
-				v.validators[len(v.validators)-1] = istanbul.ValidatorData{} // Erase last element (write zero value).
-				v.validators = v.validators[:len(v.validators)-1]            // Truncate slice.
-			}
+	// if there's a change aggregate a new public key
+	if len(removedValidators) > 1 || len(addedValidators) > 1 {
+		v.apk, err = v.AggregatePublicKeys()
+		if err != nil {
+			return errors.Wrap(err, "failed to aggregate public keys")
 		}
-	}
-
-	v.validators = append(v.validators, addedValidators...)
-	v.apk, err = v.AggregatePublicKeys()
-	if err != nil {
-		return errors.Wrap(err, "failed to aggregate public keys")
 	}
 
 	return nil
