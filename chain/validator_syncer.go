@@ -48,18 +48,13 @@ func (v *ValidatorSyncer) ExtractValidators(num uint64) ([]istanbul.ValidatorDat
 	}
 	var validators []istanbul.ValidatorData
 
-	v.log.Info("====== extracting validators =======")
 	for i := range extra.AddedValidators {
 		validator := &istanbul.ValidatorData{
 			Address:      extra.AddedValidators[i],
 			BLSPublicKey: extra.AddedValidatorsPublicKeys[i],
 		}
-
-		v.log.Info(fmt.Sprintf("address: %s, bls public key: %s", validator.Address.Hex(), hex.EncodeToString(validator.BLSPublicKey[:])))
-
 		validators = append(v.validators, *validator)
 	}
-	v.log.Info("============================")
 
 	return validators, nil
 
