@@ -107,7 +107,7 @@ func (v *ValidatorSyncer) ExtractValidatorsDiff(num uint64) ([]istanbul.Validato
 		removedValidators = append(removedValidators, v.validators[i])
 		v.validators = append(v.validators[:i], v.validators[i+1:]...)
 	}
-	v.log.Info("============================")
+	v.log.Info("=================================")
 
 	v.log.Info("====== added validators =======")
 	var addedValidators []istanbul.ValidatorData
@@ -116,7 +116,7 @@ func (v *ValidatorSyncer) ExtractValidatorsDiff(num uint64) ([]istanbul.Validato
 		addedValidators = append(addedValidators, istanbul.ValidatorData{Address: addr, BLSPublicKey: diff.AddedValidatorsPublicKeys[i]})
 		v.validators = append(v.validators, istanbul.ValidatorData{Address: addr, BLSPublicKey: diff.AddedValidatorsPublicKeys[i]})
 	}
-	v.log.Info("============================")
+	v.log.Info("===============================")
 
 	return addedValidators, removedValidators, nil
 }
