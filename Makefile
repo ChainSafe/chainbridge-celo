@@ -42,3 +42,6 @@ rebuild-contracts:
 
 clean:
 	rm -rf build/ solidity/
+
+start-elections:
+	SCRIPT_DIR=./scripts ./scripts/start_elections.sh
