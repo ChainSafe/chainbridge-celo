@@ -10,9 +10,15 @@ const Accounts = require('./contracts/Accounts.json');
 const Election = require('./contracts/Election.json');
 const LockedGold = require('./contracts/LockedGold.json');
 const Validators = require('./contracts/Validators.json');
+const Random = require('./contracts/Random.json');
+const BlockchainParameters = require('./contracts/BlockchainParameters.json');
+const GoldToken = require('./contracts/GoldToken.json');
+const EpochRewards = require('./contracts/EpochRewards.json');
 const Proxy = require('./contracts/Proxy.json');
 const Promise = require('bluebird');
-const web3 = new Web3('ws://localhost:8545');
+const newKit = require('@celo/contractkit').newKit;
+const kit = newKit('http://localhost:8546')
+const web3 = kit.web3;
 const nonceTracker = {};
 const NULL_ADDRESS = '0x0000000000000000000000000000000000000000';
 const keys = [
@@ -30,11 +36,10 @@ async function sendTransaction(tx, privateKey, waitFor = 'transactionHash') {
   nonceTracker[privateKey] = nonceTracker[privateKey] || 0;
   tx.nonce = nonceTracker[privateKey]++;
   tx.gas = 20000000;
-  tx.chainId = 1;
-  const signedTx = await web3.eth.accounts.signTransaction(tx, privateKey);
-  const sentTx = web3.eth.sendSignedTransaction(signedTx.rawTransaction);
+  //tx.gasPrice = 20000000000;
+  tx.from = privateKeyToAddress(privateKey);
   const result = new Promise((resolve, reject) => {
-    sentTx
+    web3.eth.sendTransaction(tx)
     .once(waitFor, resolve)
     .on('error', reject);
   });
@@ -176,6 +181,26 @@ async function wait(condition, sleepMs = 1000) {
   console.log(`Epoch Size: ${epochSize}`);
 
   const freezer = await deploy(Freezer, ownerPrivateKey);
+
+  const celoRandom = await deploy(Random, ownerPrivateKey);
+  const randomInit = celoRandom.methods.initialize(120).encodeABI();
+  await sendTransaction({
+    data: randomInit,
+    to: celoRandom._address,
+  }, ownerPrivateKey);
+  const blockchainParams = await deploy(BlockchainParameters, ownerPrivateKey);
+  const blockchainParamsInit = blockchainParams.methods.initialize(
+    0,
+    0,
+    0,
+    1000000,
+    30000000,
+  ).encodeABI();
+  await sendTransaction({
+    data: blockchainParamsInit,
+    to: blockchainParams._address,
+  }, ownerPrivateKey);
+
   const addressLinkedList = await deploy(AddressLinkedList, ownerPrivateKey);
   const addressSortedLinkedList = await deploy(AddressSortedLinkedList, ownerPrivateKey);
   const signatures = await deploy(Signatures, ownerPrivateKey);
@@ -199,16 +224,22 @@ async function wait(condition, sleepMs = 1000) {
   );
 
   // Deploy Freezer
+  // Deploy Random, initialize(...)
   // Deploy Registry, initialize()
   // Deploy Accounts, initialize(registry)
   // Deploy Validators, initialize(registry, ...)
+  // Deploy EpochRewards, initialize(registry, ...)
   // Deploy LockedGold, initialize(registry, ...)
   // Deploy Election, initialize(registry, ...)
+  // Deploy GoldToken, initialize(registry)
   // Registry.setAddressFor('Freezer', Freezer._address)
+  // Registry.setAddressFor('Random', Election._address)
   // Registry.setAddressFor('Accounts', Accounts._address)
   // Registry.setAddressFor('Validators', Validators._address)
   // Registry.setAddressFor('LockedGold', LockedGold._address)
   // Registry.setAddressFor('Election', Election._address)
+  // Registry.setAddressFor('EpochRewards', EpochRewards._address)
+  // Registry.setAddressFor('GoldToken', GoldToken._address)
 
   const registryPrototype = await deploy(Registry, ownerPrivateKey);
   let tempRegistry;
@@ -234,6 +265,13 @@ async function wait(condition, sleepMs = 1000) {
   }
   const registry = tempRegistry;
 
+  const goldToken = await deploy(GoldToken, ownerPrivateKey);
+  const goldTokenInit = goldToken.methods.initialize(registry._address).encodeABI();
+  await sendTransaction({
+    data: goldTokenInit,
+    to: goldToken._address,
+  }, ownerPrivateKey);
+
   const accounts = await deploy(Accounts, ownerPrivateKey);
   const accountsInit = accounts.methods.initialize(registry._address).encodeABI();
   await sendTransaction({
@@ -258,6 +296,26 @@ async function wait(condition, sleepMs = 1000) {
   await sendTransaction({
     data: validatorsInit,
     to: validators._address,
+  }, ownerPrivateKey);
+
+  const epochRewards = await deploy(EpochRewards, ownerPrivateKey);
+  const epochRewardsInit = epochRewards.methods.initialize(
+    registry._address,
+    1, // targetVotingYieldInitial
+    2, // targetVotingYieldMax
+    1, // targetVotingYieldAdjustmentFactor
+    1, // rewardsMultiplierMax
+    1, // rewardsMultiplierUnderspendAdjustmentFactor
+    1, // rewardsMultiplierOverspendAdjustmentFactor
+    1, // _targetVotingGoldFraction
+    1, // _targetValidatorEpochPayment
+    1, // _communityRewardFraction
+    privateKeyToAddress(ownerPrivateKey), // _carbonOffsettingPartner
+    1, // _carbonOffsettingFraction
+  ).encodeABI();
+  await sendTransaction({
+    data: epochRewardsInit,
+    to: epochRewards._address,
   }, ownerPrivateKey);
 
   const lockedGold = await deploy(LockedGold, ownerPrivateKey);
@@ -288,6 +346,14 @@ async function wait(condition, sleepMs = 1000) {
     to: registry._address,
   }, ownerPrivateKey);
   await sendTransaction({
+    data: registry.methods.setAddressFor('Random', celoRandom._address).encodeABI(),
+    to: registry._address,
+  }, ownerPrivateKey);
+  await sendTransaction({
+    data: registry.methods.setAddressFor('BlockchainParameters', blockchainParams._address).encodeABI(),
+    to: registry._address,
+  }, ownerPrivateKey);
+  await sendTransaction({
     data: registry.methods.setAddressFor('Accounts', accounts._address).encodeABI(),
     to: registry._address,
   }, ownerPrivateKey);
@@ -297,6 +363,14 @@ async function wait(condition, sleepMs = 1000) {
   }, ownerPrivateKey);
   await sendTransaction({
     data: registry.methods.setAddressFor('LockedGold', lockedGold._address).encodeABI(),
+    to: registry._address,
+  }, ownerPrivateKey);
+  await sendTransaction({
+    data: registry.methods.setAddressFor('GoldToken', goldToken._address).encodeABI(),
+    to: registry._address,
+  }, ownerPrivateKey);
+  await sendTransaction({
+    data: registry.methods.setAddressFor('EpochRewards', epochRewards._address).encodeABI(),
     to: registry._address,
   }, ownerPrivateKey);
   await sendTransaction({
