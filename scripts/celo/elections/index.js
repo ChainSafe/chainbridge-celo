@@ -36,7 +36,6 @@ async function sendTransaction(tx, privateKey, waitFor = 'transactionHash') {
   nonceTracker[privateKey] = nonceTracker[privateKey] || 0;
   tx.nonce = nonceTracker[privateKey]++;
   tx.gas = 20000000;
-  //tx.gasPrice = 20000000000;
   tx.from = privateKeyToAddress(privateKey);
   const result = new Promise((resolve, reject) => {
     web3.eth.sendTransaction(tx)
@@ -167,7 +166,7 @@ function not(bool) {
   return !bool;
 }
 
-async function wait(condition, sleepMs = 1000) {
+async function wait(condition, sleepMs = 500) {
   while (not(await condition())) {
     await Promise.delay(sleepMs);
   }
@@ -190,11 +189,11 @@ async function wait(condition, sleepMs = 1000) {
   }, ownerPrivateKey);
   const blockchainParams = await deploy(BlockchainParameters, ownerPrivateKey);
   const blockchainParamsInit = blockchainParams.methods.initialize(
-    0,
-    0,
-    0,
-    1000000,
-    30000000,
+    0, // major
+    0, // minor
+    0, // patch
+    1000000, // _gasForNonGoldCurrencies
+    30000000, // gasLimit
   ).encodeABI();
   await sendTransaction({
     data: blockchainParamsInit,
@@ -522,7 +521,6 @@ async function wait(condition, sleepMs = 1000) {
     console.info('Waiting for new epoch.');
     await wait(async () => {
       const block = await web3.eth.getBlockNumber();
-      // console.log('Current block:', block);
       // Waiting till the first block of next epoch.
       return (block % epochSize) === 1;
     });
