@@ -1,3 +1,6 @@
+// Copyright 2020 ChainSafe Systems
+// SPDX-License-Identifier: LGPL-3.0-only
+
 const { privateKeyToAddress, privateKeyToPublicKey, trimLeading0x } = require('@celo/utils/lib/address');
 const { getBlsPoP, getBlsPublicKey } = require('@celo/utils/lib/bls');
 const Web3 = require('web3');
