@@ -1,5 +1,7 @@
 # chainbridge-celo-elections
 
+Set env var RPC_HOST before doing `npm start`
+
 To test against ganache, run:
 
 ```

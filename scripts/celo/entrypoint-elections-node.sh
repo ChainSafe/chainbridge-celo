@@ -36,4 +36,3 @@ exec geth \
   --syncmode full \
   --bootnodes ${BOOTNODE} \
   --nodekeyhex ${NODEKEY}
-
