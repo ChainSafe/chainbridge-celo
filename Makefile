@@ -44,4 +44,4 @@ clean:
 	rm -rf build/ solidity/
 
 start-elections:
-	SCRIPT_DIR=./scripts ./scripts/start_elections.sh
+	docker-compose -f ./docker-compose-elections.yml up -V

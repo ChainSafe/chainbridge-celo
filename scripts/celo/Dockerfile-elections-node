@@ -6,10 +6,9 @@ WORKDIR /root
 
 COPY ./genesis.json .
 COPY ./keystore /root/keystore
-COPY entrypoint.sh .
+COPY entrypoint-elections-node.sh ./entrypoint.sh
 COPY ./password.txt .
 
 RUN chmod +x entrypoint.sh
 
 ENTRYPOINT ["/root/entrypoint.sh"]
-

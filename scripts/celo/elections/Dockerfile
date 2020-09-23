@@ -1,13 +1,15 @@
 # Copyright 2020 ChainSafe Systems
 # SPDX-License-Identifier: LGPL-3.0-only
-FROM us.gcr.io/celo-testnet/celo-node:1.0.0
+FROM node:12.18.4
 
 WORKDIR /root
 
-COPY ./genesis.json .
-COPY ./keystore /root/keystore
+COPY contracts ./contracts/
+COPY index.js .
+COPY package.json .
+COPY package-lock.json .
 COPY entrypoint.sh .
-COPY ./password.txt .
+RUN npm install
 
 RUN chmod +x entrypoint.sh
 
