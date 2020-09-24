@@ -12,4 +12,3 @@ COPY ./password.txt .
 RUN chmod +x entrypoint.sh
 
 ENTRYPOINT ["/root/entrypoint.sh"]
-

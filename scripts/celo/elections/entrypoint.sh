@@ -7,4 +7,3 @@ set -eux
 cd /root
 
 npm start
-

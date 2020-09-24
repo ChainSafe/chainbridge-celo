@@ -25,4 +25,3 @@ exec geth \
   --rpcaddr 0.0.0.0 \
   --allow-insecure-unlock \
   --mine
-
