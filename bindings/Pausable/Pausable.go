@@ -20,6 +20,7 @@ var (
 	_ = big.NewInt
 	_ = strings.NewReader
 	_ = ethereum.NotFound
+	_ = abi.U256
 	_ = bind.Bind
 	_ = common.Big1
 	_ = types.BloomLookup
@@ -133,6 +134,15 @@ func bindPausable(address common.Address, caller bind.ContractCaller, transactor
 	return bind.NewBoundContract(address, parsed, caller, transactor, filterer), nil
 }
 
+// ParsePausableABI parses the ABI
+func ParsePausableABI() (*abi.ABI, error) {
+	parsed, err := abi.JSON(strings.NewReader(PausableABI))
+	if err != nil {
+		return nil, err
+	}
+	return &parsed, nil
+}
+
 // Call invokes the (constant) contract method with params as input values and
 // sets the output to result. The result type might be a single field for simple
 // returns, a slice of interfaces for anonymous returns and a struct for named
@@ -171,30 +181,45 @@ func (_Pausable *PausableTransactorRaw) Transact(opts *bind.TransactOpts, method
 	return _Pausable.Contract.contract.Transact(opts, method, params...)
 }
 
-// Paused is a free data retrieval call binding the contract method 0x5c975abb.
+// Paused is a paid mutator transaction binding the contract method 0x5c975abb.
 //
-// Solidity: function paused() view returns(bool)
-func (_Pausable *PausableCaller) Paused(opts *bind.CallOpts) (bool, error) {
-	var (
-		ret0 = new(bool)
-	)
-	out := ret0
-	err := _Pausable.contract.Call(opts, out, "paused")
-	return *ret0, err
+// Solidity: function paused() returns(bool)
+func (_Pausable *PausableTransactor) Paused(opts *bind.TransactOpts) (*types.Transaction, error) {
+	return _Pausable.contract.Transact(opts, "paused")
 }
 
-// Paused is a free data retrieval call binding the contract method 0x5c975abb.
+// Paused is a paid mutator transaction binding the contract method 0x5c975abb.
 //
-// Solidity: function paused() view returns(bool)
-func (_Pausable *PausableSession) Paused() (bool, error) {
-	return _Pausable.Contract.Paused(&_Pausable.CallOpts)
+// Solidity: function paused() returns(bool)
+func (_Pausable *PausableSession) Paused() (*types.Transaction, error) {
+	return _Pausable.Contract.Paused(&_Pausable.TransactOpts)
 }
 
-// Paused is a free data retrieval call binding the contract method 0x5c975abb.
+// Paused is a paid mutator transaction binding the contract method 0x5c975abb.
 //
-// Solidity: function paused() view returns(bool)
-func (_Pausable *PausableCallerSession) Paused() (bool, error) {
-	return _Pausable.Contract.Paused(&_Pausable.CallOpts)
+// Solidity: function paused() returns(bool)
+func (_Pausable *PausableTransactorSession) Paused() (*types.Transaction, error) {
+	return _Pausable.Contract.Paused(&_Pausable.TransactOpts)
+}
+
+// TryParseLog attempts to parse a log. Returns the parsed log, evenName and whether it was succesfull
+func (_Pausable *PausableFilterer) TryParseLog(log types.Log) (eventName string, event interface{}, ok bool, err error) {
+	eventName, ok, err = _Pausable.contract.LogEventName(log)
+	if err != nil || !ok {
+		return "", nil, false, err
+	}
+
+	switch eventName {
+	case "Paused":
+		event, err = _Pausable.ParsePaused(log)
+	case "Unpaused":
+		event, err = _Pausable.ParseUnpaused(log)
+	}
+	if err != nil {
+		return "", nil, false, err
+	}
+
+	return eventName, event, ok, nil
 }
 
 // PausablePausedIterator is returned from FilterPaused and is used to iterate over the raw logs and unpacked data for Paused events raised by the Pausable contract.

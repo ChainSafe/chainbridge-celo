@@ -20,6 +20,7 @@ var (
 	_ = big.NewInt
 	_ = strings.NewReader
 	_ = ethereum.NotFound
+	_ = abi.U256
 	_ = bind.Bind
 	_ = common.Big1
 	_ = types.BloomLookup
@@ -27,7 +28,7 @@ var (
 )
 
 // IDepositExecuteABI is the input ABI used to generate the binding from.
-const IDepositExecuteABI = "[{\"inputs\":[{\"internalType\":\"uint8\",\"name\":\"destinationChainID\",\"type\":\"uint8\"},{\"internalType\":\"uint64\",\"name\":\"depositNonce\",\"type\":\"uint64\"},{\"internalType\":\"address\",\"name\":\"depositer\",\"type\":\"address\"},{\"internalType\":\"bytes\",\"name\":\"data\",\"type\":\"bytes\"}],\"name\":\"deposit\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes\",\"name\":\"data\",\"type\":\"bytes\"}],\"name\":\"executeProposal\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}]"
+const IDepositExecuteABI = "[{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"resourceID\",\"type\":\"bytes32\"},{\"internalType\":\"uint8\",\"name\":\"destinationChainID\",\"type\":\"uint8\"},{\"internalType\":\"uint64\",\"name\":\"depositNonce\",\"type\":\"uint64\"},{\"internalType\":\"address\",\"name\":\"depositer\",\"type\":\"address\"},{\"internalType\":\"bytes\",\"name\":\"data\",\"type\":\"bytes\"}],\"name\":\"deposit\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"resourceID\",\"type\":\"bytes32\"},{\"internalType\":\"bytes\",\"name\":\"data\",\"type\":\"bytes\"}],\"name\":\"executeProposal\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}]"
 
 // IDepositExecute is an auto generated Go binding around an Ethereum contract.
 type IDepositExecute struct {
@@ -133,6 +134,15 @@ func bindIDepositExecute(address common.Address, caller bind.ContractCaller, tra
 	return bind.NewBoundContract(address, parsed, caller, transactor, filterer), nil
 }
 
+// ParseIDepositExecuteABI parses the ABI
+func ParseIDepositExecuteABI() (*abi.ABI, error) {
+	parsed, err := abi.JSON(strings.NewReader(IDepositExecuteABI))
+	if err != nil {
+		return nil, err
+	}
+	return &parsed, nil
+}
+
 // Call invokes the (constant) contract method with params as input values and
 // sets the output to result. The result type might be a single field for simple
 // returns, a slice of interfaces for anonymous returns and a struct for named
@@ -171,44 +181,60 @@ func (_IDepositExecute *IDepositExecuteTransactorRaw) Transact(opts *bind.Transa
 	return _IDepositExecute.Contract.contract.Transact(opts, method, params...)
 }
 
-// Deposit is a paid mutator transaction binding the contract method 0x67c61a18.
+// Deposit is a paid mutator transaction binding the contract method 0x38995da9.
 //
-// Solidity: function deposit(uint8 destinationChainID, uint64 depositNonce, address depositer, bytes data) returns()
-func (_IDepositExecute *IDepositExecuteTransactor) Deposit(opts *bind.TransactOpts, destinationChainID uint8, depositNonce uint64, depositer common.Address, data []byte) (*types.Transaction, error) {
-	return _IDepositExecute.contract.Transact(opts, "deposit", destinationChainID, depositNonce, depositer, data)
+// Solidity: function deposit(bytes32 resourceID, uint8 destinationChainID, uint64 depositNonce, address depositer, bytes data) returns()
+func (_IDepositExecute *IDepositExecuteTransactor) Deposit(opts *bind.TransactOpts, resourceID [32]byte, destinationChainID uint8, depositNonce uint64, depositer common.Address, data []byte) (*types.Transaction, error) {
+	return _IDepositExecute.contract.Transact(opts, "deposit", resourceID, destinationChainID, depositNonce, depositer, data)
 }
 
-// Deposit is a paid mutator transaction binding the contract method 0x67c61a18.
+// Deposit is a paid mutator transaction binding the contract method 0x38995da9.
 //
-// Solidity: function deposit(uint8 destinationChainID, uint64 depositNonce, address depositer, bytes data) returns()
-func (_IDepositExecute *IDepositExecuteSession) Deposit(destinationChainID uint8, depositNonce uint64, depositer common.Address, data []byte) (*types.Transaction, error) {
-	return _IDepositExecute.Contract.Deposit(&_IDepositExecute.TransactOpts, destinationChainID, depositNonce, depositer, data)
+// Solidity: function deposit(bytes32 resourceID, uint8 destinationChainID, uint64 depositNonce, address depositer, bytes data) returns()
+func (_IDepositExecute *IDepositExecuteSession) Deposit(resourceID [32]byte, destinationChainID uint8, depositNonce uint64, depositer common.Address, data []byte) (*types.Transaction, error) {
+	return _IDepositExecute.Contract.Deposit(&_IDepositExecute.TransactOpts, resourceID, destinationChainID, depositNonce, depositer, data)
 }
 
-// Deposit is a paid mutator transaction binding the contract method 0x67c61a18.
+// Deposit is a paid mutator transaction binding the contract method 0x38995da9.
 //
-// Solidity: function deposit(uint8 destinationChainID, uint64 depositNonce, address depositer, bytes data) returns()
-func (_IDepositExecute *IDepositExecuteTransactorSession) Deposit(destinationChainID uint8, depositNonce uint64, depositer common.Address, data []byte) (*types.Transaction, error) {
-	return _IDepositExecute.Contract.Deposit(&_IDepositExecute.TransactOpts, destinationChainID, depositNonce, depositer, data)
+// Solidity: function deposit(bytes32 resourceID, uint8 destinationChainID, uint64 depositNonce, address depositer, bytes data) returns()
+func (_IDepositExecute *IDepositExecuteTransactorSession) Deposit(resourceID [32]byte, destinationChainID uint8, depositNonce uint64, depositer common.Address, data []byte) (*types.Transaction, error) {
+	return _IDepositExecute.Contract.Deposit(&_IDepositExecute.TransactOpts, resourceID, destinationChainID, depositNonce, depositer, data)
 }
 
-// ExecuteProposal is a paid mutator transaction binding the contract method 0x30faa259.
+// ExecuteProposal is a paid mutator transaction binding the contract method 0xe248cff2.
 //
-// Solidity: function executeProposal(bytes data) returns()
-func (_IDepositExecute *IDepositExecuteTransactor) ExecuteProposal(opts *bind.TransactOpts, data []byte) (*types.Transaction, error) {
-	return _IDepositExecute.contract.Transact(opts, "executeProposal", data)
+// Solidity: function executeProposal(bytes32 resourceID, bytes data) returns()
+func (_IDepositExecute *IDepositExecuteTransactor) ExecuteProposal(opts *bind.TransactOpts, resourceID [32]byte, data []byte) (*types.Transaction, error) {
+	return _IDepositExecute.contract.Transact(opts, "executeProposal", resourceID, data)
 }
 
-// ExecuteProposal is a paid mutator transaction binding the contract method 0x30faa259.
+// ExecuteProposal is a paid mutator transaction binding the contract method 0xe248cff2.
 //
-// Solidity: function executeProposal(bytes data) returns()
-func (_IDepositExecute *IDepositExecuteSession) ExecuteProposal(data []byte) (*types.Transaction, error) {
-	return _IDepositExecute.Contract.ExecuteProposal(&_IDepositExecute.TransactOpts, data)
+// Solidity: function executeProposal(bytes32 resourceID, bytes data) returns()
+func (_IDepositExecute *IDepositExecuteSession) ExecuteProposal(resourceID [32]byte, data []byte) (*types.Transaction, error) {
+	return _IDepositExecute.Contract.ExecuteProposal(&_IDepositExecute.TransactOpts, resourceID, data)
 }
 
-// ExecuteProposal is a paid mutator transaction binding the contract method 0x30faa259.
+// ExecuteProposal is a paid mutator transaction binding the contract method 0xe248cff2.
 //
-// Solidity: function executeProposal(bytes data) returns()
-func (_IDepositExecute *IDepositExecuteTransactorSession) ExecuteProposal(data []byte) (*types.Transaction, error) {
-	return _IDepositExecute.Contract.ExecuteProposal(&_IDepositExecute.TransactOpts, data)
+// Solidity: function executeProposal(bytes32 resourceID, bytes data) returns()
+func (_IDepositExecute *IDepositExecuteTransactorSession) ExecuteProposal(resourceID [32]byte, data []byte) (*types.Transaction, error) {
+	return _IDepositExecute.Contract.ExecuteProposal(&_IDepositExecute.TransactOpts, resourceID, data)
+}
+
+// TryParseLog attempts to parse a log. Returns the parsed log, evenName and whether it was succesfull
+func (_IDepositExecute *IDepositExecuteFilterer) TryParseLog(log types.Log) (eventName string, event interface{}, ok bool, err error) {
+	eventName, ok, err = _IDepositExecute.contract.LogEventName(log)
+	if err != nil || !ok {
+		return "", nil, false, err
+	}
+
+	switch eventName {
+	}
+	if err != nil {
+		return "", nil, false, err
+	}
+
+	return eventName, event, ok, nil
 }

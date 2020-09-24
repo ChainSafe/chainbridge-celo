@@ -20,6 +20,7 @@ var (
 	_ = big.NewInt
 	_ = strings.NewReader
 	_ = ethereum.NotFound
+	_ = abi.U256
 	_ = bind.Bind
 	_ = common.Big1
 	_ = types.BloomLookup
@@ -133,6 +134,15 @@ func bindIERC721Metadata(address common.Address, caller bind.ContractCaller, tra
 	return bind.NewBoundContract(address, parsed, caller, transactor, filterer), nil
 }
 
+// ParseIERC721MetadataABI parses the ABI
+func ParseIERC721MetadataABI() (*abi.ABI, error) {
+	parsed, err := abi.JSON(strings.NewReader(IERC721MetadataABI))
+	if err != nil {
+		return nil, err
+	}
+	return &parsed, nil
+}
+
 // Call invokes the (constant) contract method with params as input values and
 // sets the output to result. The result type might be a single field for simple
 // returns, a slice of interfaces for anonymous returns and a struct for named
@@ -171,214 +181,6 @@ func (_IERC721Metadata *IERC721MetadataTransactorRaw) Transact(opts *bind.Transa
 	return _IERC721Metadata.Contract.contract.Transact(opts, method, params...)
 }
 
-// BalanceOf is a free data retrieval call binding the contract method 0x70a08231.
-//
-// Solidity: function balanceOf(address owner) view returns(uint256 balance)
-func (_IERC721Metadata *IERC721MetadataCaller) BalanceOf(opts *bind.CallOpts, owner common.Address) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _IERC721Metadata.contract.Call(opts, out, "balanceOf", owner)
-	return *ret0, err
-}
-
-// BalanceOf is a free data retrieval call binding the contract method 0x70a08231.
-//
-// Solidity: function balanceOf(address owner) view returns(uint256 balance)
-func (_IERC721Metadata *IERC721MetadataSession) BalanceOf(owner common.Address) (*big.Int, error) {
-	return _IERC721Metadata.Contract.BalanceOf(&_IERC721Metadata.CallOpts, owner)
-}
-
-// BalanceOf is a free data retrieval call binding the contract method 0x70a08231.
-//
-// Solidity: function balanceOf(address owner) view returns(uint256 balance)
-func (_IERC721Metadata *IERC721MetadataCallerSession) BalanceOf(owner common.Address) (*big.Int, error) {
-	return _IERC721Metadata.Contract.BalanceOf(&_IERC721Metadata.CallOpts, owner)
-}
-
-// GetApproved is a free data retrieval call binding the contract method 0x081812fc.
-//
-// Solidity: function getApproved(uint256 tokenId) view returns(address operator)
-func (_IERC721Metadata *IERC721MetadataCaller) GetApproved(opts *bind.CallOpts, tokenId *big.Int) (common.Address, error) {
-	var (
-		ret0 = new(common.Address)
-	)
-	out := ret0
-	err := _IERC721Metadata.contract.Call(opts, out, "getApproved", tokenId)
-	return *ret0, err
-}
-
-// GetApproved is a free data retrieval call binding the contract method 0x081812fc.
-//
-// Solidity: function getApproved(uint256 tokenId) view returns(address operator)
-func (_IERC721Metadata *IERC721MetadataSession) GetApproved(tokenId *big.Int) (common.Address, error) {
-	return _IERC721Metadata.Contract.GetApproved(&_IERC721Metadata.CallOpts, tokenId)
-}
-
-// GetApproved is a free data retrieval call binding the contract method 0x081812fc.
-//
-// Solidity: function getApproved(uint256 tokenId) view returns(address operator)
-func (_IERC721Metadata *IERC721MetadataCallerSession) GetApproved(tokenId *big.Int) (common.Address, error) {
-	return _IERC721Metadata.Contract.GetApproved(&_IERC721Metadata.CallOpts, tokenId)
-}
-
-// IsApprovedForAll is a free data retrieval call binding the contract method 0xe985e9c5.
-//
-// Solidity: function isApprovedForAll(address owner, address operator) view returns(bool)
-func (_IERC721Metadata *IERC721MetadataCaller) IsApprovedForAll(opts *bind.CallOpts, owner common.Address, operator common.Address) (bool, error) {
-	var (
-		ret0 = new(bool)
-	)
-	out := ret0
-	err := _IERC721Metadata.contract.Call(opts, out, "isApprovedForAll", owner, operator)
-	return *ret0, err
-}
-
-// IsApprovedForAll is a free data retrieval call binding the contract method 0xe985e9c5.
-//
-// Solidity: function isApprovedForAll(address owner, address operator) view returns(bool)
-func (_IERC721Metadata *IERC721MetadataSession) IsApprovedForAll(owner common.Address, operator common.Address) (bool, error) {
-	return _IERC721Metadata.Contract.IsApprovedForAll(&_IERC721Metadata.CallOpts, owner, operator)
-}
-
-// IsApprovedForAll is a free data retrieval call binding the contract method 0xe985e9c5.
-//
-// Solidity: function isApprovedForAll(address owner, address operator) view returns(bool)
-func (_IERC721Metadata *IERC721MetadataCallerSession) IsApprovedForAll(owner common.Address, operator common.Address) (bool, error) {
-	return _IERC721Metadata.Contract.IsApprovedForAll(&_IERC721Metadata.CallOpts, owner, operator)
-}
-
-// Name is a free data retrieval call binding the contract method 0x06fdde03.
-//
-// Solidity: function name() view returns(string)
-func (_IERC721Metadata *IERC721MetadataCaller) Name(opts *bind.CallOpts) (string, error) {
-	var (
-		ret0 = new(string)
-	)
-	out := ret0
-	err := _IERC721Metadata.contract.Call(opts, out, "name")
-	return *ret0, err
-}
-
-// Name is a free data retrieval call binding the contract method 0x06fdde03.
-//
-// Solidity: function name() view returns(string)
-func (_IERC721Metadata *IERC721MetadataSession) Name() (string, error) {
-	return _IERC721Metadata.Contract.Name(&_IERC721Metadata.CallOpts)
-}
-
-// Name is a free data retrieval call binding the contract method 0x06fdde03.
-//
-// Solidity: function name() view returns(string)
-func (_IERC721Metadata *IERC721MetadataCallerSession) Name() (string, error) {
-	return _IERC721Metadata.Contract.Name(&_IERC721Metadata.CallOpts)
-}
-
-// OwnerOf is a free data retrieval call binding the contract method 0x6352211e.
-//
-// Solidity: function ownerOf(uint256 tokenId) view returns(address owner)
-func (_IERC721Metadata *IERC721MetadataCaller) OwnerOf(opts *bind.CallOpts, tokenId *big.Int) (common.Address, error) {
-	var (
-		ret0 = new(common.Address)
-	)
-	out := ret0
-	err := _IERC721Metadata.contract.Call(opts, out, "ownerOf", tokenId)
-	return *ret0, err
-}
-
-// OwnerOf is a free data retrieval call binding the contract method 0x6352211e.
-//
-// Solidity: function ownerOf(uint256 tokenId) view returns(address owner)
-func (_IERC721Metadata *IERC721MetadataSession) OwnerOf(tokenId *big.Int) (common.Address, error) {
-	return _IERC721Metadata.Contract.OwnerOf(&_IERC721Metadata.CallOpts, tokenId)
-}
-
-// OwnerOf is a free data retrieval call binding the contract method 0x6352211e.
-//
-// Solidity: function ownerOf(uint256 tokenId) view returns(address owner)
-func (_IERC721Metadata *IERC721MetadataCallerSession) OwnerOf(tokenId *big.Int) (common.Address, error) {
-	return _IERC721Metadata.Contract.OwnerOf(&_IERC721Metadata.CallOpts, tokenId)
-}
-
-// SupportsInterface is a free data retrieval call binding the contract method 0x01ffc9a7.
-//
-// Solidity: function supportsInterface(bytes4 interfaceId) view returns(bool)
-func (_IERC721Metadata *IERC721MetadataCaller) SupportsInterface(opts *bind.CallOpts, interfaceId [4]byte) (bool, error) {
-	var (
-		ret0 = new(bool)
-	)
-	out := ret0
-	err := _IERC721Metadata.contract.Call(opts, out, "supportsInterface", interfaceId)
-	return *ret0, err
-}
-
-// SupportsInterface is a free data retrieval call binding the contract method 0x01ffc9a7.
-//
-// Solidity: function supportsInterface(bytes4 interfaceId) view returns(bool)
-func (_IERC721Metadata *IERC721MetadataSession) SupportsInterface(interfaceId [4]byte) (bool, error) {
-	return _IERC721Metadata.Contract.SupportsInterface(&_IERC721Metadata.CallOpts, interfaceId)
-}
-
-// SupportsInterface is a free data retrieval call binding the contract method 0x01ffc9a7.
-//
-// Solidity: function supportsInterface(bytes4 interfaceId) view returns(bool)
-func (_IERC721Metadata *IERC721MetadataCallerSession) SupportsInterface(interfaceId [4]byte) (bool, error) {
-	return _IERC721Metadata.Contract.SupportsInterface(&_IERC721Metadata.CallOpts, interfaceId)
-}
-
-// Symbol is a free data retrieval call binding the contract method 0x95d89b41.
-//
-// Solidity: function symbol() view returns(string)
-func (_IERC721Metadata *IERC721MetadataCaller) Symbol(opts *bind.CallOpts) (string, error) {
-	var (
-		ret0 = new(string)
-	)
-	out := ret0
-	err := _IERC721Metadata.contract.Call(opts, out, "symbol")
-	return *ret0, err
-}
-
-// Symbol is a free data retrieval call binding the contract method 0x95d89b41.
-//
-// Solidity: function symbol() view returns(string)
-func (_IERC721Metadata *IERC721MetadataSession) Symbol() (string, error) {
-	return _IERC721Metadata.Contract.Symbol(&_IERC721Metadata.CallOpts)
-}
-
-// Symbol is a free data retrieval call binding the contract method 0x95d89b41.
-//
-// Solidity: function symbol() view returns(string)
-func (_IERC721Metadata *IERC721MetadataCallerSession) Symbol() (string, error) {
-	return _IERC721Metadata.Contract.Symbol(&_IERC721Metadata.CallOpts)
-}
-
-// TokenURI is a free data retrieval call binding the contract method 0xc87b56dd.
-//
-// Solidity: function tokenURI(uint256 tokenId) view returns(string)
-func (_IERC721Metadata *IERC721MetadataCaller) TokenURI(opts *bind.CallOpts, tokenId *big.Int) (string, error) {
-	var (
-		ret0 = new(string)
-	)
-	out := ret0
-	err := _IERC721Metadata.contract.Call(opts, out, "tokenURI", tokenId)
-	return *ret0, err
-}
-
-// TokenURI is a free data retrieval call binding the contract method 0xc87b56dd.
-//
-// Solidity: function tokenURI(uint256 tokenId) view returns(string)
-func (_IERC721Metadata *IERC721MetadataSession) TokenURI(tokenId *big.Int) (string, error) {
-	return _IERC721Metadata.Contract.TokenURI(&_IERC721Metadata.CallOpts, tokenId)
-}
-
-// TokenURI is a free data retrieval call binding the contract method 0xc87b56dd.
-//
-// Solidity: function tokenURI(uint256 tokenId) view returns(string)
-func (_IERC721Metadata *IERC721MetadataCallerSession) TokenURI(tokenId *big.Int) (string, error) {
-	return _IERC721Metadata.Contract.TokenURI(&_IERC721Metadata.CallOpts, tokenId)
-}
-
 // Approve is a paid mutator transaction binding the contract method 0x095ea7b3.
 //
 // Solidity: function approve(address to, uint256 tokenId) returns()
@@ -398,6 +200,111 @@ func (_IERC721Metadata *IERC721MetadataSession) Approve(to common.Address, token
 // Solidity: function approve(address to, uint256 tokenId) returns()
 func (_IERC721Metadata *IERC721MetadataTransactorSession) Approve(to common.Address, tokenId *big.Int) (*types.Transaction, error) {
 	return _IERC721Metadata.Contract.Approve(&_IERC721Metadata.TransactOpts, to, tokenId)
+}
+
+// BalanceOf is a paid mutator transaction binding the contract method 0x70a08231.
+//
+// Solidity: function balanceOf(address owner) returns(uint256 balance)
+func (_IERC721Metadata *IERC721MetadataTransactor) BalanceOf(opts *bind.TransactOpts, owner common.Address) (*types.Transaction, error) {
+	return _IERC721Metadata.contract.Transact(opts, "balanceOf", owner)
+}
+
+// BalanceOf is a paid mutator transaction binding the contract method 0x70a08231.
+//
+// Solidity: function balanceOf(address owner) returns(uint256 balance)
+func (_IERC721Metadata *IERC721MetadataSession) BalanceOf(owner common.Address) (*types.Transaction, error) {
+	return _IERC721Metadata.Contract.BalanceOf(&_IERC721Metadata.TransactOpts, owner)
+}
+
+// BalanceOf is a paid mutator transaction binding the contract method 0x70a08231.
+//
+// Solidity: function balanceOf(address owner) returns(uint256 balance)
+func (_IERC721Metadata *IERC721MetadataTransactorSession) BalanceOf(owner common.Address) (*types.Transaction, error) {
+	return _IERC721Metadata.Contract.BalanceOf(&_IERC721Metadata.TransactOpts, owner)
+}
+
+// GetApproved is a paid mutator transaction binding the contract method 0x081812fc.
+//
+// Solidity: function getApproved(uint256 tokenId) returns(address operator)
+func (_IERC721Metadata *IERC721MetadataTransactor) GetApproved(opts *bind.TransactOpts, tokenId *big.Int) (*types.Transaction, error) {
+	return _IERC721Metadata.contract.Transact(opts, "getApproved", tokenId)
+}
+
+// GetApproved is a paid mutator transaction binding the contract method 0x081812fc.
+//
+// Solidity: function getApproved(uint256 tokenId) returns(address operator)
+func (_IERC721Metadata *IERC721MetadataSession) GetApproved(tokenId *big.Int) (*types.Transaction, error) {
+	return _IERC721Metadata.Contract.GetApproved(&_IERC721Metadata.TransactOpts, tokenId)
+}
+
+// GetApproved is a paid mutator transaction binding the contract method 0x081812fc.
+//
+// Solidity: function getApproved(uint256 tokenId) returns(address operator)
+func (_IERC721Metadata *IERC721MetadataTransactorSession) GetApproved(tokenId *big.Int) (*types.Transaction, error) {
+	return _IERC721Metadata.Contract.GetApproved(&_IERC721Metadata.TransactOpts, tokenId)
+}
+
+// IsApprovedForAll is a paid mutator transaction binding the contract method 0xe985e9c5.
+//
+// Solidity: function isApprovedForAll(address owner, address operator) returns(bool)
+func (_IERC721Metadata *IERC721MetadataTransactor) IsApprovedForAll(opts *bind.TransactOpts, owner common.Address, operator common.Address) (*types.Transaction, error) {
+	return _IERC721Metadata.contract.Transact(opts, "isApprovedForAll", owner, operator)
+}
+
+// IsApprovedForAll is a paid mutator transaction binding the contract method 0xe985e9c5.
+//
+// Solidity: function isApprovedForAll(address owner, address operator) returns(bool)
+func (_IERC721Metadata *IERC721MetadataSession) IsApprovedForAll(owner common.Address, operator common.Address) (*types.Transaction, error) {
+	return _IERC721Metadata.Contract.IsApprovedForAll(&_IERC721Metadata.TransactOpts, owner, operator)
+}
+
+// IsApprovedForAll is a paid mutator transaction binding the contract method 0xe985e9c5.
+//
+// Solidity: function isApprovedForAll(address owner, address operator) returns(bool)
+func (_IERC721Metadata *IERC721MetadataTransactorSession) IsApprovedForAll(owner common.Address, operator common.Address) (*types.Transaction, error) {
+	return _IERC721Metadata.Contract.IsApprovedForAll(&_IERC721Metadata.TransactOpts, owner, operator)
+}
+
+// Name is a paid mutator transaction binding the contract method 0x06fdde03.
+//
+// Solidity: function name() returns(string)
+func (_IERC721Metadata *IERC721MetadataTransactor) Name(opts *bind.TransactOpts) (*types.Transaction, error) {
+	return _IERC721Metadata.contract.Transact(opts, "name")
+}
+
+// Name is a paid mutator transaction binding the contract method 0x06fdde03.
+//
+// Solidity: function name() returns(string)
+func (_IERC721Metadata *IERC721MetadataSession) Name() (*types.Transaction, error) {
+	return _IERC721Metadata.Contract.Name(&_IERC721Metadata.TransactOpts)
+}
+
+// Name is a paid mutator transaction binding the contract method 0x06fdde03.
+//
+// Solidity: function name() returns(string)
+func (_IERC721Metadata *IERC721MetadataTransactorSession) Name() (*types.Transaction, error) {
+	return _IERC721Metadata.Contract.Name(&_IERC721Metadata.TransactOpts)
+}
+
+// OwnerOf is a paid mutator transaction binding the contract method 0x6352211e.
+//
+// Solidity: function ownerOf(uint256 tokenId) returns(address owner)
+func (_IERC721Metadata *IERC721MetadataTransactor) OwnerOf(opts *bind.TransactOpts, tokenId *big.Int) (*types.Transaction, error) {
+	return _IERC721Metadata.contract.Transact(opts, "ownerOf", tokenId)
+}
+
+// OwnerOf is a paid mutator transaction binding the contract method 0x6352211e.
+//
+// Solidity: function ownerOf(uint256 tokenId) returns(address owner)
+func (_IERC721Metadata *IERC721MetadataSession) OwnerOf(tokenId *big.Int) (*types.Transaction, error) {
+	return _IERC721Metadata.Contract.OwnerOf(&_IERC721Metadata.TransactOpts, tokenId)
+}
+
+// OwnerOf is a paid mutator transaction binding the contract method 0x6352211e.
+//
+// Solidity: function ownerOf(uint256 tokenId) returns(address owner)
+func (_IERC721Metadata *IERC721MetadataTransactorSession) OwnerOf(tokenId *big.Int) (*types.Transaction, error) {
+	return _IERC721Metadata.Contract.OwnerOf(&_IERC721Metadata.TransactOpts, tokenId)
 }
 
 // SafeTransferFrom is a paid mutator transaction binding the contract method 0x42842e0e.
@@ -463,6 +370,69 @@ func (_IERC721Metadata *IERC721MetadataTransactorSession) SetApprovalForAll(oper
 	return _IERC721Metadata.Contract.SetApprovalForAll(&_IERC721Metadata.TransactOpts, operator, _approved)
 }
 
+// SupportsInterface is a paid mutator transaction binding the contract method 0x01ffc9a7.
+//
+// Solidity: function supportsInterface(bytes4 interfaceId) returns(bool)
+func (_IERC721Metadata *IERC721MetadataTransactor) SupportsInterface(opts *bind.TransactOpts, interfaceId [4]byte) (*types.Transaction, error) {
+	return _IERC721Metadata.contract.Transact(opts, "supportsInterface", interfaceId)
+}
+
+// SupportsInterface is a paid mutator transaction binding the contract method 0x01ffc9a7.
+//
+// Solidity: function supportsInterface(bytes4 interfaceId) returns(bool)
+func (_IERC721Metadata *IERC721MetadataSession) SupportsInterface(interfaceId [4]byte) (*types.Transaction, error) {
+	return _IERC721Metadata.Contract.SupportsInterface(&_IERC721Metadata.TransactOpts, interfaceId)
+}
+
+// SupportsInterface is a paid mutator transaction binding the contract method 0x01ffc9a7.
+//
+// Solidity: function supportsInterface(bytes4 interfaceId) returns(bool)
+func (_IERC721Metadata *IERC721MetadataTransactorSession) SupportsInterface(interfaceId [4]byte) (*types.Transaction, error) {
+	return _IERC721Metadata.Contract.SupportsInterface(&_IERC721Metadata.TransactOpts, interfaceId)
+}
+
+// Symbol is a paid mutator transaction binding the contract method 0x95d89b41.
+//
+// Solidity: function symbol() returns(string)
+func (_IERC721Metadata *IERC721MetadataTransactor) Symbol(opts *bind.TransactOpts) (*types.Transaction, error) {
+	return _IERC721Metadata.contract.Transact(opts, "symbol")
+}
+
+// Symbol is a paid mutator transaction binding the contract method 0x95d89b41.
+//
+// Solidity: function symbol() returns(string)
+func (_IERC721Metadata *IERC721MetadataSession) Symbol() (*types.Transaction, error) {
+	return _IERC721Metadata.Contract.Symbol(&_IERC721Metadata.TransactOpts)
+}
+
+// Symbol is a paid mutator transaction binding the contract method 0x95d89b41.
+//
+// Solidity: function symbol() returns(string)
+func (_IERC721Metadata *IERC721MetadataTransactorSession) Symbol() (*types.Transaction, error) {
+	return _IERC721Metadata.Contract.Symbol(&_IERC721Metadata.TransactOpts)
+}
+
+// TokenURI is a paid mutator transaction binding the contract method 0xc87b56dd.
+//
+// Solidity: function tokenURI(uint256 tokenId) returns(string)
+func (_IERC721Metadata *IERC721MetadataTransactor) TokenURI(opts *bind.TransactOpts, tokenId *big.Int) (*types.Transaction, error) {
+	return _IERC721Metadata.contract.Transact(opts, "tokenURI", tokenId)
+}
+
+// TokenURI is a paid mutator transaction binding the contract method 0xc87b56dd.
+//
+// Solidity: function tokenURI(uint256 tokenId) returns(string)
+func (_IERC721Metadata *IERC721MetadataSession) TokenURI(tokenId *big.Int) (*types.Transaction, error) {
+	return _IERC721Metadata.Contract.TokenURI(&_IERC721Metadata.TransactOpts, tokenId)
+}
+
+// TokenURI is a paid mutator transaction binding the contract method 0xc87b56dd.
+//
+// Solidity: function tokenURI(uint256 tokenId) returns(string)
+func (_IERC721Metadata *IERC721MetadataTransactorSession) TokenURI(tokenId *big.Int) (*types.Transaction, error) {
+	return _IERC721Metadata.Contract.TokenURI(&_IERC721Metadata.TransactOpts, tokenId)
+}
+
 // TransferFrom is a paid mutator transaction binding the contract method 0x23b872dd.
 //
 // Solidity: function transferFrom(address from, address to, uint256 tokenId) returns()
@@ -482,6 +452,28 @@ func (_IERC721Metadata *IERC721MetadataSession) TransferFrom(from common.Address
 // Solidity: function transferFrom(address from, address to, uint256 tokenId) returns()
 func (_IERC721Metadata *IERC721MetadataTransactorSession) TransferFrom(from common.Address, to common.Address, tokenId *big.Int) (*types.Transaction, error) {
 	return _IERC721Metadata.Contract.TransferFrom(&_IERC721Metadata.TransactOpts, from, to, tokenId)
+}
+
+// TryParseLog attempts to parse a log. Returns the parsed log, evenName and whether it was succesfull
+func (_IERC721Metadata *IERC721MetadataFilterer) TryParseLog(log types.Log) (eventName string, event interface{}, ok bool, err error) {
+	eventName, ok, err = _IERC721Metadata.contract.LogEventName(log)
+	if err != nil || !ok {
+		return "", nil, false, err
+	}
+
+	switch eventName {
+	case "Approval":
+		event, err = _IERC721Metadata.ParseApproval(log)
+	case "ApprovalForAll":
+		event, err = _IERC721Metadata.ParseApprovalForAll(log)
+	case "Transfer":
+		event, err = _IERC721Metadata.ParseTransfer(log)
+	}
+	if err != nil {
+		return "", nil, false, err
+	}
+
+	return eventName, event, ok, nil
 }
 
 // IERC721MetadataApprovalIterator is returned from FilterApproval and is used to iterate over the raw logs and unpacked data for Approval events raised by the IERC721Metadata contract.

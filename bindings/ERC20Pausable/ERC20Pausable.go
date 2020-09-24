@@ -20,6 +20,7 @@ var (
 	_ = big.NewInt
 	_ = strings.NewReader
 	_ = ethereum.NotFound
+	_ = abi.U256
 	_ = bind.Bind
 	_ = common.Big1
 	_ = types.BloomLookup
@@ -133,6 +134,15 @@ func bindERC20Pausable(address common.Address, caller bind.ContractCaller, trans
 	return bind.NewBoundContract(address, parsed, caller, transactor, filterer), nil
 }
 
+// ParseERC20PausableABI parses the ABI
+func ParseERC20PausableABI() (*abi.ABI, error) {
+	parsed, err := abi.JSON(strings.NewReader(ERC20PausableABI))
+	if err != nil {
+		return nil, err
+	}
+	return &parsed, nil
+}
+
 // Call invokes the (constant) contract method with params as input values and
 // sets the output to result. The result type might be a single field for simple
 // returns, a slice of interfaces for anonymous returns and a struct for named
@@ -171,186 +181,25 @@ func (_ERC20Pausable *ERC20PausableTransactorRaw) Transact(opts *bind.TransactOp
 	return _ERC20Pausable.Contract.contract.Transact(opts, method, params...)
 }
 
-// Allowance is a free data retrieval call binding the contract method 0xdd62ed3e.
+// Allowance is a paid mutator transaction binding the contract method 0xdd62ed3e.
 //
-// Solidity: function allowance(address owner, address spender) view returns(uint256)
-func (_ERC20Pausable *ERC20PausableCaller) Allowance(opts *bind.CallOpts, owner common.Address, spender common.Address) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _ERC20Pausable.contract.Call(opts, out, "allowance", owner, spender)
-	return *ret0, err
+// Solidity: function allowance(address owner, address spender) returns(uint256)
+func (_ERC20Pausable *ERC20PausableTransactor) Allowance(opts *bind.TransactOpts, owner common.Address, spender common.Address) (*types.Transaction, error) {
+	return _ERC20Pausable.contract.Transact(opts, "allowance", owner, spender)
 }
 
-// Allowance is a free data retrieval call binding the contract method 0xdd62ed3e.
+// Allowance is a paid mutator transaction binding the contract method 0xdd62ed3e.
 //
-// Solidity: function allowance(address owner, address spender) view returns(uint256)
-func (_ERC20Pausable *ERC20PausableSession) Allowance(owner common.Address, spender common.Address) (*big.Int, error) {
-	return _ERC20Pausable.Contract.Allowance(&_ERC20Pausable.CallOpts, owner, spender)
+// Solidity: function allowance(address owner, address spender) returns(uint256)
+func (_ERC20Pausable *ERC20PausableSession) Allowance(owner common.Address, spender common.Address) (*types.Transaction, error) {
+	return _ERC20Pausable.Contract.Allowance(&_ERC20Pausable.TransactOpts, owner, spender)
 }
 
-// Allowance is a free data retrieval call binding the contract method 0xdd62ed3e.
+// Allowance is a paid mutator transaction binding the contract method 0xdd62ed3e.
 //
-// Solidity: function allowance(address owner, address spender) view returns(uint256)
-func (_ERC20Pausable *ERC20PausableCallerSession) Allowance(owner common.Address, spender common.Address) (*big.Int, error) {
-	return _ERC20Pausable.Contract.Allowance(&_ERC20Pausable.CallOpts, owner, spender)
-}
-
-// BalanceOf is a free data retrieval call binding the contract method 0x70a08231.
-//
-// Solidity: function balanceOf(address account) view returns(uint256)
-func (_ERC20Pausable *ERC20PausableCaller) BalanceOf(opts *bind.CallOpts, account common.Address) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _ERC20Pausable.contract.Call(opts, out, "balanceOf", account)
-	return *ret0, err
-}
-
-// BalanceOf is a free data retrieval call binding the contract method 0x70a08231.
-//
-// Solidity: function balanceOf(address account) view returns(uint256)
-func (_ERC20Pausable *ERC20PausableSession) BalanceOf(account common.Address) (*big.Int, error) {
-	return _ERC20Pausable.Contract.BalanceOf(&_ERC20Pausable.CallOpts, account)
-}
-
-// BalanceOf is a free data retrieval call binding the contract method 0x70a08231.
-//
-// Solidity: function balanceOf(address account) view returns(uint256)
-func (_ERC20Pausable *ERC20PausableCallerSession) BalanceOf(account common.Address) (*big.Int, error) {
-	return _ERC20Pausable.Contract.BalanceOf(&_ERC20Pausable.CallOpts, account)
-}
-
-// Decimals is a free data retrieval call binding the contract method 0x313ce567.
-//
-// Solidity: function decimals() view returns(uint8)
-func (_ERC20Pausable *ERC20PausableCaller) Decimals(opts *bind.CallOpts) (uint8, error) {
-	var (
-		ret0 = new(uint8)
-	)
-	out := ret0
-	err := _ERC20Pausable.contract.Call(opts, out, "decimals")
-	return *ret0, err
-}
-
-// Decimals is a free data retrieval call binding the contract method 0x313ce567.
-//
-// Solidity: function decimals() view returns(uint8)
-func (_ERC20Pausable *ERC20PausableSession) Decimals() (uint8, error) {
-	return _ERC20Pausable.Contract.Decimals(&_ERC20Pausable.CallOpts)
-}
-
-// Decimals is a free data retrieval call binding the contract method 0x313ce567.
-//
-// Solidity: function decimals() view returns(uint8)
-func (_ERC20Pausable *ERC20PausableCallerSession) Decimals() (uint8, error) {
-	return _ERC20Pausable.Contract.Decimals(&_ERC20Pausable.CallOpts)
-}
-
-// Name is a free data retrieval call binding the contract method 0x06fdde03.
-//
-// Solidity: function name() view returns(string)
-func (_ERC20Pausable *ERC20PausableCaller) Name(opts *bind.CallOpts) (string, error) {
-	var (
-		ret0 = new(string)
-	)
-	out := ret0
-	err := _ERC20Pausable.contract.Call(opts, out, "name")
-	return *ret0, err
-}
-
-// Name is a free data retrieval call binding the contract method 0x06fdde03.
-//
-// Solidity: function name() view returns(string)
-func (_ERC20Pausable *ERC20PausableSession) Name() (string, error) {
-	return _ERC20Pausable.Contract.Name(&_ERC20Pausable.CallOpts)
-}
-
-// Name is a free data retrieval call binding the contract method 0x06fdde03.
-//
-// Solidity: function name() view returns(string)
-func (_ERC20Pausable *ERC20PausableCallerSession) Name() (string, error) {
-	return _ERC20Pausable.Contract.Name(&_ERC20Pausable.CallOpts)
-}
-
-// Paused is a free data retrieval call binding the contract method 0x5c975abb.
-//
-// Solidity: function paused() view returns(bool)
-func (_ERC20Pausable *ERC20PausableCaller) Paused(opts *bind.CallOpts) (bool, error) {
-	var (
-		ret0 = new(bool)
-	)
-	out := ret0
-	err := _ERC20Pausable.contract.Call(opts, out, "paused")
-	return *ret0, err
-}
-
-// Paused is a free data retrieval call binding the contract method 0x5c975abb.
-//
-// Solidity: function paused() view returns(bool)
-func (_ERC20Pausable *ERC20PausableSession) Paused() (bool, error) {
-	return _ERC20Pausable.Contract.Paused(&_ERC20Pausable.CallOpts)
-}
-
-// Paused is a free data retrieval call binding the contract method 0x5c975abb.
-//
-// Solidity: function paused() view returns(bool)
-func (_ERC20Pausable *ERC20PausableCallerSession) Paused() (bool, error) {
-	return _ERC20Pausable.Contract.Paused(&_ERC20Pausable.CallOpts)
-}
-
-// Symbol is a free data retrieval call binding the contract method 0x95d89b41.
-//
-// Solidity: function symbol() view returns(string)
-func (_ERC20Pausable *ERC20PausableCaller) Symbol(opts *bind.CallOpts) (string, error) {
-	var (
-		ret0 = new(string)
-	)
-	out := ret0
-	err := _ERC20Pausable.contract.Call(opts, out, "symbol")
-	return *ret0, err
-}
-
-// Symbol is a free data retrieval call binding the contract method 0x95d89b41.
-//
-// Solidity: function symbol() view returns(string)
-func (_ERC20Pausable *ERC20PausableSession) Symbol() (string, error) {
-	return _ERC20Pausable.Contract.Symbol(&_ERC20Pausable.CallOpts)
-}
-
-// Symbol is a free data retrieval call binding the contract method 0x95d89b41.
-//
-// Solidity: function symbol() view returns(string)
-func (_ERC20Pausable *ERC20PausableCallerSession) Symbol() (string, error) {
-	return _ERC20Pausable.Contract.Symbol(&_ERC20Pausable.CallOpts)
-}
-
-// TotalSupply is a free data retrieval call binding the contract method 0x18160ddd.
-//
-// Solidity: function totalSupply() view returns(uint256)
-func (_ERC20Pausable *ERC20PausableCaller) TotalSupply(opts *bind.CallOpts) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _ERC20Pausable.contract.Call(opts, out, "totalSupply")
-	return *ret0, err
-}
-
-// TotalSupply is a free data retrieval call binding the contract method 0x18160ddd.
-//
-// Solidity: function totalSupply() view returns(uint256)
-func (_ERC20Pausable *ERC20PausableSession) TotalSupply() (*big.Int, error) {
-	return _ERC20Pausable.Contract.TotalSupply(&_ERC20Pausable.CallOpts)
-}
-
-// TotalSupply is a free data retrieval call binding the contract method 0x18160ddd.
-//
-// Solidity: function totalSupply() view returns(uint256)
-func (_ERC20Pausable *ERC20PausableCallerSession) TotalSupply() (*big.Int, error) {
-	return _ERC20Pausable.Contract.TotalSupply(&_ERC20Pausable.CallOpts)
+// Solidity: function allowance(address owner, address spender) returns(uint256)
+func (_ERC20Pausable *ERC20PausableTransactorSession) Allowance(owner common.Address, spender common.Address) (*types.Transaction, error) {
+	return _ERC20Pausable.Contract.Allowance(&_ERC20Pausable.TransactOpts, owner, spender)
 }
 
 // Approve is a paid mutator transaction binding the contract method 0x095ea7b3.
@@ -372,6 +221,48 @@ func (_ERC20Pausable *ERC20PausableSession) Approve(spender common.Address, amou
 // Solidity: function approve(address spender, uint256 amount) returns(bool)
 func (_ERC20Pausable *ERC20PausableTransactorSession) Approve(spender common.Address, amount *big.Int) (*types.Transaction, error) {
 	return _ERC20Pausable.Contract.Approve(&_ERC20Pausable.TransactOpts, spender, amount)
+}
+
+// BalanceOf is a paid mutator transaction binding the contract method 0x70a08231.
+//
+// Solidity: function balanceOf(address account) returns(uint256)
+func (_ERC20Pausable *ERC20PausableTransactor) BalanceOf(opts *bind.TransactOpts, account common.Address) (*types.Transaction, error) {
+	return _ERC20Pausable.contract.Transact(opts, "balanceOf", account)
+}
+
+// BalanceOf is a paid mutator transaction binding the contract method 0x70a08231.
+//
+// Solidity: function balanceOf(address account) returns(uint256)
+func (_ERC20Pausable *ERC20PausableSession) BalanceOf(account common.Address) (*types.Transaction, error) {
+	return _ERC20Pausable.Contract.BalanceOf(&_ERC20Pausable.TransactOpts, account)
+}
+
+// BalanceOf is a paid mutator transaction binding the contract method 0x70a08231.
+//
+// Solidity: function balanceOf(address account) returns(uint256)
+func (_ERC20Pausable *ERC20PausableTransactorSession) BalanceOf(account common.Address) (*types.Transaction, error) {
+	return _ERC20Pausable.Contract.BalanceOf(&_ERC20Pausable.TransactOpts, account)
+}
+
+// Decimals is a paid mutator transaction binding the contract method 0x313ce567.
+//
+// Solidity: function decimals() returns(uint8)
+func (_ERC20Pausable *ERC20PausableTransactor) Decimals(opts *bind.TransactOpts) (*types.Transaction, error) {
+	return _ERC20Pausable.contract.Transact(opts, "decimals")
+}
+
+// Decimals is a paid mutator transaction binding the contract method 0x313ce567.
+//
+// Solidity: function decimals() returns(uint8)
+func (_ERC20Pausable *ERC20PausableSession) Decimals() (*types.Transaction, error) {
+	return _ERC20Pausable.Contract.Decimals(&_ERC20Pausable.TransactOpts)
+}
+
+// Decimals is a paid mutator transaction binding the contract method 0x313ce567.
+//
+// Solidity: function decimals() returns(uint8)
+func (_ERC20Pausable *ERC20PausableTransactorSession) Decimals() (*types.Transaction, error) {
+	return _ERC20Pausable.Contract.Decimals(&_ERC20Pausable.TransactOpts)
 }
 
 // DecreaseAllowance is a paid mutator transaction binding the contract method 0xa457c2d7.
@@ -416,6 +307,90 @@ func (_ERC20Pausable *ERC20PausableTransactorSession) IncreaseAllowance(spender 
 	return _ERC20Pausable.Contract.IncreaseAllowance(&_ERC20Pausable.TransactOpts, spender, addedValue)
 }
 
+// Name is a paid mutator transaction binding the contract method 0x06fdde03.
+//
+// Solidity: function name() returns(string)
+func (_ERC20Pausable *ERC20PausableTransactor) Name(opts *bind.TransactOpts) (*types.Transaction, error) {
+	return _ERC20Pausable.contract.Transact(opts, "name")
+}
+
+// Name is a paid mutator transaction binding the contract method 0x06fdde03.
+//
+// Solidity: function name() returns(string)
+func (_ERC20Pausable *ERC20PausableSession) Name() (*types.Transaction, error) {
+	return _ERC20Pausable.Contract.Name(&_ERC20Pausable.TransactOpts)
+}
+
+// Name is a paid mutator transaction binding the contract method 0x06fdde03.
+//
+// Solidity: function name() returns(string)
+func (_ERC20Pausable *ERC20PausableTransactorSession) Name() (*types.Transaction, error) {
+	return _ERC20Pausable.Contract.Name(&_ERC20Pausable.TransactOpts)
+}
+
+// Paused is a paid mutator transaction binding the contract method 0x5c975abb.
+//
+// Solidity: function paused() returns(bool)
+func (_ERC20Pausable *ERC20PausableTransactor) Paused(opts *bind.TransactOpts) (*types.Transaction, error) {
+	return _ERC20Pausable.contract.Transact(opts, "paused")
+}
+
+// Paused is a paid mutator transaction binding the contract method 0x5c975abb.
+//
+// Solidity: function paused() returns(bool)
+func (_ERC20Pausable *ERC20PausableSession) Paused() (*types.Transaction, error) {
+	return _ERC20Pausable.Contract.Paused(&_ERC20Pausable.TransactOpts)
+}
+
+// Paused is a paid mutator transaction binding the contract method 0x5c975abb.
+//
+// Solidity: function paused() returns(bool)
+func (_ERC20Pausable *ERC20PausableTransactorSession) Paused() (*types.Transaction, error) {
+	return _ERC20Pausable.Contract.Paused(&_ERC20Pausable.TransactOpts)
+}
+
+// Symbol is a paid mutator transaction binding the contract method 0x95d89b41.
+//
+// Solidity: function symbol() returns(string)
+func (_ERC20Pausable *ERC20PausableTransactor) Symbol(opts *bind.TransactOpts) (*types.Transaction, error) {
+	return _ERC20Pausable.contract.Transact(opts, "symbol")
+}
+
+// Symbol is a paid mutator transaction binding the contract method 0x95d89b41.
+//
+// Solidity: function symbol() returns(string)
+func (_ERC20Pausable *ERC20PausableSession) Symbol() (*types.Transaction, error) {
+	return _ERC20Pausable.Contract.Symbol(&_ERC20Pausable.TransactOpts)
+}
+
+// Symbol is a paid mutator transaction binding the contract method 0x95d89b41.
+//
+// Solidity: function symbol() returns(string)
+func (_ERC20Pausable *ERC20PausableTransactorSession) Symbol() (*types.Transaction, error) {
+	return _ERC20Pausable.Contract.Symbol(&_ERC20Pausable.TransactOpts)
+}
+
+// TotalSupply is a paid mutator transaction binding the contract method 0x18160ddd.
+//
+// Solidity: function totalSupply() returns(uint256)
+func (_ERC20Pausable *ERC20PausableTransactor) TotalSupply(opts *bind.TransactOpts) (*types.Transaction, error) {
+	return _ERC20Pausable.contract.Transact(opts, "totalSupply")
+}
+
+// TotalSupply is a paid mutator transaction binding the contract method 0x18160ddd.
+//
+// Solidity: function totalSupply() returns(uint256)
+func (_ERC20Pausable *ERC20PausableSession) TotalSupply() (*types.Transaction, error) {
+	return _ERC20Pausable.Contract.TotalSupply(&_ERC20Pausable.TransactOpts)
+}
+
+// TotalSupply is a paid mutator transaction binding the contract method 0x18160ddd.
+//
+// Solidity: function totalSupply() returns(uint256)
+func (_ERC20Pausable *ERC20PausableTransactorSession) TotalSupply() (*types.Transaction, error) {
+	return _ERC20Pausable.Contract.TotalSupply(&_ERC20Pausable.TransactOpts)
+}
+
 // Transfer is a paid mutator transaction binding the contract method 0xa9059cbb.
 //
 // Solidity: function transfer(address recipient, uint256 amount) returns(bool)
@@ -456,6 +431,30 @@ func (_ERC20Pausable *ERC20PausableSession) TransferFrom(sender common.Address, 
 // Solidity: function transferFrom(address sender, address recipient, uint256 amount) returns(bool)
 func (_ERC20Pausable *ERC20PausableTransactorSession) TransferFrom(sender common.Address, recipient common.Address, amount *big.Int) (*types.Transaction, error) {
 	return _ERC20Pausable.Contract.TransferFrom(&_ERC20Pausable.TransactOpts, sender, recipient, amount)
+}
+
+// TryParseLog attempts to parse a log. Returns the parsed log, evenName and whether it was succesfull
+func (_ERC20Pausable *ERC20PausableFilterer) TryParseLog(log types.Log) (eventName string, event interface{}, ok bool, err error) {
+	eventName, ok, err = _ERC20Pausable.contract.LogEventName(log)
+	if err != nil || !ok {
+		return "", nil, false, err
+	}
+
+	switch eventName {
+	case "Approval":
+		event, err = _ERC20Pausable.ParseApproval(log)
+	case "Paused":
+		event, err = _ERC20Pausable.ParsePaused(log)
+	case "Transfer":
+		event, err = _ERC20Pausable.ParseTransfer(log)
+	case "Unpaused":
+		event, err = _ERC20Pausable.ParseUnpaused(log)
+	}
+	if err != nil {
+		return "", nil, false, err
+	}
+
+	return eventName, event, ok, nil
 }
 
 // ERC20PausableApprovalIterator is returned from FilterApproval and is used to iterate over the raw logs and unpacked data for Approval events raised by the ERC20Pausable contract.

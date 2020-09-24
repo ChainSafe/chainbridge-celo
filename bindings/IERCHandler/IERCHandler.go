@@ -20,6 +20,7 @@ var (
 	_ = big.NewInt
 	_ = strings.NewReader
 	_ = ethereum.NotFound
+	_ = abi.U256
 	_ = bind.Bind
 	_ = common.Big1
 	_ = types.BloomLookup
@@ -133,6 +134,15 @@ func bindIERCHandler(address common.Address, caller bind.ContractCaller, transac
 	return bind.NewBoundContract(address, parsed, caller, transactor, filterer), nil
 }
 
+// ParseIERCHandlerABI parses the ABI
+func ParseIERCHandlerABI() (*abi.ABI, error) {
+	parsed, err := abi.JSON(strings.NewReader(IERCHandlerABI))
+	if err != nil {
+		return nil, err
+	}
+	return &parsed, nil
+}
+
 // Call invokes the (constant) contract method with params as input values and
 // sets the output to result. The result type might be a single field for simple
 // returns, a slice of interfaces for anonymous returns and a struct for named
@@ -232,4 +242,20 @@ func (_IERCHandler *IERCHandlerSession) Withdraw(tokenAddress common.Address, re
 // Solidity: function withdraw(address tokenAddress, address recipient, uint256 amountOrTokenID) returns()
 func (_IERCHandler *IERCHandlerTransactorSession) Withdraw(tokenAddress common.Address, recipient common.Address, amountOrTokenID *big.Int) (*types.Transaction, error) {
 	return _IERCHandler.Contract.Withdraw(&_IERCHandler.TransactOpts, tokenAddress, recipient, amountOrTokenID)
+}
+
+// TryParseLog attempts to parse a log. Returns the parsed log, evenName and whether it was succesfull
+func (_IERCHandler *IERCHandlerFilterer) TryParseLog(log types.Log) (eventName string, event interface{}, ok bool, err error) {
+	eventName, ok, err = _IERCHandler.contract.LogEventName(log)
+	if err != nil || !ok {
+		return "", nil, false, err
+	}
+
+	switch eventName {
+	}
+	if err != nil {
+		return "", nil, false, err
+	}
+
+	return eventName, event, ok, nil
 }

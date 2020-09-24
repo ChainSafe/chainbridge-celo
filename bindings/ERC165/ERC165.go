@@ -20,6 +20,7 @@ var (
 	_ = big.NewInt
 	_ = strings.NewReader
 	_ = ethereum.NotFound
+	_ = abi.U256
 	_ = bind.Bind
 	_ = common.Big1
 	_ = types.BloomLookup
@@ -133,6 +134,15 @@ func bindERC165(address common.Address, caller bind.ContractCaller, transactor b
 	return bind.NewBoundContract(address, parsed, caller, transactor, filterer), nil
 }
 
+// ParseERC165ABI parses the ABI
+func ParseERC165ABI() (*abi.ABI, error) {
+	parsed, err := abi.JSON(strings.NewReader(ERC165ABI))
+	if err != nil {
+		return nil, err
+	}
+	return &parsed, nil
+}
+
 // Call invokes the (constant) contract method with params as input values and
 // sets the output to result. The result type might be a single field for simple
 // returns, a slice of interfaces for anonymous returns and a struct for named
@@ -171,28 +181,39 @@ func (_ERC165 *ERC165TransactorRaw) Transact(opts *bind.TransactOpts, method str
 	return _ERC165.Contract.contract.Transact(opts, method, params...)
 }
 
-// SupportsInterface is a free data retrieval call binding the contract method 0x01ffc9a7.
+// SupportsInterface is a paid mutator transaction binding the contract method 0x01ffc9a7.
 //
-// Solidity: function supportsInterface(bytes4 interfaceId) view returns(bool)
-func (_ERC165 *ERC165Caller) SupportsInterface(opts *bind.CallOpts, interfaceId [4]byte) (bool, error) {
-	var (
-		ret0 = new(bool)
-	)
-	out := ret0
-	err := _ERC165.contract.Call(opts, out, "supportsInterface", interfaceId)
-	return *ret0, err
+// Solidity: function supportsInterface(bytes4 interfaceId) returns(bool)
+func (_ERC165 *ERC165Transactor) SupportsInterface(opts *bind.TransactOpts, interfaceId [4]byte) (*types.Transaction, error) {
+	return _ERC165.contract.Transact(opts, "supportsInterface", interfaceId)
 }
 
-// SupportsInterface is a free data retrieval call binding the contract method 0x01ffc9a7.
+// SupportsInterface is a paid mutator transaction binding the contract method 0x01ffc9a7.
 //
-// Solidity: function supportsInterface(bytes4 interfaceId) view returns(bool)
-func (_ERC165 *ERC165Session) SupportsInterface(interfaceId [4]byte) (bool, error) {
-	return _ERC165.Contract.SupportsInterface(&_ERC165.CallOpts, interfaceId)
+// Solidity: function supportsInterface(bytes4 interfaceId) returns(bool)
+func (_ERC165 *ERC165Session) SupportsInterface(interfaceId [4]byte) (*types.Transaction, error) {
+	return _ERC165.Contract.SupportsInterface(&_ERC165.TransactOpts, interfaceId)
 }
 
-// SupportsInterface is a free data retrieval call binding the contract method 0x01ffc9a7.
+// SupportsInterface is a paid mutator transaction binding the contract method 0x01ffc9a7.
 //
-// Solidity: function supportsInterface(bytes4 interfaceId) view returns(bool)
-func (_ERC165 *ERC165CallerSession) SupportsInterface(interfaceId [4]byte) (bool, error) {
-	return _ERC165.Contract.SupportsInterface(&_ERC165.CallOpts, interfaceId)
+// Solidity: function supportsInterface(bytes4 interfaceId) returns(bool)
+func (_ERC165 *ERC165TransactorSession) SupportsInterface(interfaceId [4]byte) (*types.Transaction, error) {
+	return _ERC165.Contract.SupportsInterface(&_ERC165.TransactOpts, interfaceId)
+}
+
+// TryParseLog attempts to parse a log. Returns the parsed log, evenName and whether it was succesfull
+func (_ERC165 *ERC165Filterer) TryParseLog(log types.Log) (eventName string, event interface{}, ok bool, err error) {
+	eventName, ok, err = _ERC165.contract.LogEventName(log)
+	if err != nil || !ok {
+		return "", nil, false, err
+	}
+
+	switch eventName {
+	}
+	if err != nil {
+		return "", nil, false, err
+	}
+
+	return eventName, event, ok, nil
 }

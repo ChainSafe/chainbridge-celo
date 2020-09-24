@@ -20,6 +20,7 @@ var (
 	_ = big.NewInt
 	_ = strings.NewReader
 	_ = ethereum.NotFound
+	_ = abi.U256
 	_ = bind.Bind
 	_ = common.Big1
 	_ = types.BloomLookup
@@ -27,7 +28,7 @@ var (
 )
 
 // AccessControlABI is the input ABI used to generate the binding from.
-const AccessControlABI = "[{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"sender\",\"type\":\"address\"}],\"name\":\"RoleGranted\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"sender\",\"type\":\"address\"}],\"name\":\"RoleRevoked\",\"type\":\"event\"},{\"inputs\":[],\"name\":\"DEFAULT_ADMIN_ROLE\",\"outputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"}],\"name\":\"hasRole\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"}],\"name\":\"getRoleMemberCount\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"},{\"internalType\":\"uint256\",\"name\":\"index\",\"type\":\"uint256\"}],\"name\":\"getRoleMember\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"}],\"name\":\"getRoleAdmin\",\"outputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"}],\"name\":\"grantRole\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"}],\"name\":\"revokeRole\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"}],\"name\":\"renounceRole\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}]"
+const AccessControlABI = "[{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"},{\"indexed\":true,\"internalType\":\"bytes32\",\"name\":\"previousAdminRole\",\"type\":\"bytes32\"},{\"indexed\":true,\"internalType\":\"bytes32\",\"name\":\"newAdminRole\",\"type\":\"bytes32\"}],\"name\":\"RoleAdminChanged\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"sender\",\"type\":\"address\"}],\"name\":\"RoleGranted\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"sender\",\"type\":\"address\"}],\"name\":\"RoleRevoked\",\"type\":\"event\"},{\"inputs\":[],\"name\":\"DEFAULT_ADMIN_ROLE\",\"outputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"}],\"name\":\"hasRole\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"}],\"name\":\"getRoleMemberCount\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"},{\"internalType\":\"uint256\",\"name\":\"index\",\"type\":\"uint256\"}],\"name\":\"getRoleMember\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"}],\"name\":\"getRoleAdmin\",\"outputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"}],\"name\":\"grantRole\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"}],\"name\":\"revokeRole\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"}],\"name\":\"renounceRole\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}]"
 
 // AccessControl is an auto generated Go binding around an Ethereum contract.
 type AccessControl struct {
@@ -133,6 +134,15 @@ func bindAccessControl(address common.Address, caller bind.ContractCaller, trans
 	return bind.NewBoundContract(address, parsed, caller, transactor, filterer), nil
 }
 
+// ParseAccessControlABI parses the ABI
+func ParseAccessControlABI() (*abi.ABI, error) {
+	parsed, err := abi.JSON(strings.NewReader(AccessControlABI))
+	if err != nil {
+		return nil, err
+	}
+	return &parsed, nil
+}
+
 // Call invokes the (constant) contract method with params as input values and
 // sets the output to result. The result type might be a single field for simple
 // returns, a slice of interfaces for anonymous returns and a struct for named
@@ -171,134 +181,88 @@ func (_AccessControl *AccessControlTransactorRaw) Transact(opts *bind.TransactOp
 	return _AccessControl.Contract.contract.Transact(opts, method, params...)
 }
 
-// DEFAULTADMINROLE is a free data retrieval call binding the contract method 0xa217fddf.
+// DEFAULTADMINROLE is a paid mutator transaction binding the contract method 0xa217fddf.
 //
-// Solidity: function DEFAULT_ADMIN_ROLE() view returns(bytes32)
-func (_AccessControl *AccessControlCaller) DEFAULTADMINROLE(opts *bind.CallOpts) ([32]byte, error) {
-	var (
-		ret0 = new([32]byte)
-	)
-	out := ret0
-	err := _AccessControl.contract.Call(opts, out, "DEFAULT_ADMIN_ROLE")
-	return *ret0, err
+// Solidity: function DEFAULT_ADMIN_ROLE() returns(bytes32)
+func (_AccessControl *AccessControlTransactor) DEFAULTADMINROLE(opts *bind.TransactOpts) (*types.Transaction, error) {
+	return _AccessControl.contract.Transact(opts, "DEFAULT_ADMIN_ROLE")
 }
 
-// DEFAULTADMINROLE is a free data retrieval call binding the contract method 0xa217fddf.
+// DEFAULTADMINROLE is a paid mutator transaction binding the contract method 0xa217fddf.
 //
-// Solidity: function DEFAULT_ADMIN_ROLE() view returns(bytes32)
-func (_AccessControl *AccessControlSession) DEFAULTADMINROLE() ([32]byte, error) {
-	return _AccessControl.Contract.DEFAULTADMINROLE(&_AccessControl.CallOpts)
+// Solidity: function DEFAULT_ADMIN_ROLE() returns(bytes32)
+func (_AccessControl *AccessControlSession) DEFAULTADMINROLE() (*types.Transaction, error) {
+	return _AccessControl.Contract.DEFAULTADMINROLE(&_AccessControl.TransactOpts)
 }
 
-// DEFAULTADMINROLE is a free data retrieval call binding the contract method 0xa217fddf.
+// DEFAULTADMINROLE is a paid mutator transaction binding the contract method 0xa217fddf.
 //
-// Solidity: function DEFAULT_ADMIN_ROLE() view returns(bytes32)
-func (_AccessControl *AccessControlCallerSession) DEFAULTADMINROLE() ([32]byte, error) {
-	return _AccessControl.Contract.DEFAULTADMINROLE(&_AccessControl.CallOpts)
+// Solidity: function DEFAULT_ADMIN_ROLE() returns(bytes32)
+func (_AccessControl *AccessControlTransactorSession) DEFAULTADMINROLE() (*types.Transaction, error) {
+	return _AccessControl.Contract.DEFAULTADMINROLE(&_AccessControl.TransactOpts)
 }
 
-// GetRoleAdmin is a free data retrieval call binding the contract method 0x248a9ca3.
+// GetRoleAdmin is a paid mutator transaction binding the contract method 0x248a9ca3.
 //
-// Solidity: function getRoleAdmin(bytes32 role) view returns(bytes32)
-func (_AccessControl *AccessControlCaller) GetRoleAdmin(opts *bind.CallOpts, role [32]byte) ([32]byte, error) {
-	var (
-		ret0 = new([32]byte)
-	)
-	out := ret0
-	err := _AccessControl.contract.Call(opts, out, "getRoleAdmin", role)
-	return *ret0, err
+// Solidity: function getRoleAdmin(bytes32 role) returns(bytes32)
+func (_AccessControl *AccessControlTransactor) GetRoleAdmin(opts *bind.TransactOpts, role [32]byte) (*types.Transaction, error) {
+	return _AccessControl.contract.Transact(opts, "getRoleAdmin", role)
 }
 
-// GetRoleAdmin is a free data retrieval call binding the contract method 0x248a9ca3.
+// GetRoleAdmin is a paid mutator transaction binding the contract method 0x248a9ca3.
 //
-// Solidity: function getRoleAdmin(bytes32 role) view returns(bytes32)
-func (_AccessControl *AccessControlSession) GetRoleAdmin(role [32]byte) ([32]byte, error) {
-	return _AccessControl.Contract.GetRoleAdmin(&_AccessControl.CallOpts, role)
+// Solidity: function getRoleAdmin(bytes32 role) returns(bytes32)
+func (_AccessControl *AccessControlSession) GetRoleAdmin(role [32]byte) (*types.Transaction, error) {
+	return _AccessControl.Contract.GetRoleAdmin(&_AccessControl.TransactOpts, role)
 }
 
-// GetRoleAdmin is a free data retrieval call binding the contract method 0x248a9ca3.
+// GetRoleAdmin is a paid mutator transaction binding the contract method 0x248a9ca3.
 //
-// Solidity: function getRoleAdmin(bytes32 role) view returns(bytes32)
-func (_AccessControl *AccessControlCallerSession) GetRoleAdmin(role [32]byte) ([32]byte, error) {
-	return _AccessControl.Contract.GetRoleAdmin(&_AccessControl.CallOpts, role)
+// Solidity: function getRoleAdmin(bytes32 role) returns(bytes32)
+func (_AccessControl *AccessControlTransactorSession) GetRoleAdmin(role [32]byte) (*types.Transaction, error) {
+	return _AccessControl.Contract.GetRoleAdmin(&_AccessControl.TransactOpts, role)
 }
 
-// GetRoleMember is a free data retrieval call binding the contract method 0x9010d07c.
+// GetRoleMember is a paid mutator transaction binding the contract method 0x9010d07c.
 //
-// Solidity: function getRoleMember(bytes32 role, uint256 index) view returns(address)
-func (_AccessControl *AccessControlCaller) GetRoleMember(opts *bind.CallOpts, role [32]byte, index *big.Int) (common.Address, error) {
-	var (
-		ret0 = new(common.Address)
-	)
-	out := ret0
-	err := _AccessControl.contract.Call(opts, out, "getRoleMember", role, index)
-	return *ret0, err
+// Solidity: function getRoleMember(bytes32 role, uint256 index) returns(address)
+func (_AccessControl *AccessControlTransactor) GetRoleMember(opts *bind.TransactOpts, role [32]byte, index *big.Int) (*types.Transaction, error) {
+	return _AccessControl.contract.Transact(opts, "getRoleMember", role, index)
 }
 
-// GetRoleMember is a free data retrieval call binding the contract method 0x9010d07c.
+// GetRoleMember is a paid mutator transaction binding the contract method 0x9010d07c.
 //
-// Solidity: function getRoleMember(bytes32 role, uint256 index) view returns(address)
-func (_AccessControl *AccessControlSession) GetRoleMember(role [32]byte, index *big.Int) (common.Address, error) {
-	return _AccessControl.Contract.GetRoleMember(&_AccessControl.CallOpts, role, index)
+// Solidity: function getRoleMember(bytes32 role, uint256 index) returns(address)
+func (_AccessControl *AccessControlSession) GetRoleMember(role [32]byte, index *big.Int) (*types.Transaction, error) {
+	return _AccessControl.Contract.GetRoleMember(&_AccessControl.TransactOpts, role, index)
 }
 
-// GetRoleMember is a free data retrieval call binding the contract method 0x9010d07c.
+// GetRoleMember is a paid mutator transaction binding the contract method 0x9010d07c.
 //
-// Solidity: function getRoleMember(bytes32 role, uint256 index) view returns(address)
-func (_AccessControl *AccessControlCallerSession) GetRoleMember(role [32]byte, index *big.Int) (common.Address, error) {
-	return _AccessControl.Contract.GetRoleMember(&_AccessControl.CallOpts, role, index)
+// Solidity: function getRoleMember(bytes32 role, uint256 index) returns(address)
+func (_AccessControl *AccessControlTransactorSession) GetRoleMember(role [32]byte, index *big.Int) (*types.Transaction, error) {
+	return _AccessControl.Contract.GetRoleMember(&_AccessControl.TransactOpts, role, index)
 }
 
-// GetRoleMemberCount is a free data retrieval call binding the contract method 0xca15c873.
+// GetRoleMemberCount is a paid mutator transaction binding the contract method 0xca15c873.
 //
-// Solidity: function getRoleMemberCount(bytes32 role) view returns(uint256)
-func (_AccessControl *AccessControlCaller) GetRoleMemberCount(opts *bind.CallOpts, role [32]byte) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _AccessControl.contract.Call(opts, out, "getRoleMemberCount", role)
-	return *ret0, err
+// Solidity: function getRoleMemberCount(bytes32 role) returns(uint256)
+func (_AccessControl *AccessControlTransactor) GetRoleMemberCount(opts *bind.TransactOpts, role [32]byte) (*types.Transaction, error) {
+	return _AccessControl.contract.Transact(opts, "getRoleMemberCount", role)
 }
 
-// GetRoleMemberCount is a free data retrieval call binding the contract method 0xca15c873.
+// GetRoleMemberCount is a paid mutator transaction binding the contract method 0xca15c873.
 //
-// Solidity: function getRoleMemberCount(bytes32 role) view returns(uint256)
-func (_AccessControl *AccessControlSession) GetRoleMemberCount(role [32]byte) (*big.Int, error) {
-	return _AccessControl.Contract.GetRoleMemberCount(&_AccessControl.CallOpts, role)
+// Solidity: function getRoleMemberCount(bytes32 role) returns(uint256)
+func (_AccessControl *AccessControlSession) GetRoleMemberCount(role [32]byte) (*types.Transaction, error) {
+	return _AccessControl.Contract.GetRoleMemberCount(&_AccessControl.TransactOpts, role)
 }
 
-// GetRoleMemberCount is a free data retrieval call binding the contract method 0xca15c873.
+// GetRoleMemberCount is a paid mutator transaction binding the contract method 0xca15c873.
 //
-// Solidity: function getRoleMemberCount(bytes32 role) view returns(uint256)
-func (_AccessControl *AccessControlCallerSession) GetRoleMemberCount(role [32]byte) (*big.Int, error) {
-	return _AccessControl.Contract.GetRoleMemberCount(&_AccessControl.CallOpts, role)
-}
-
-// HasRole is a free data retrieval call binding the contract method 0x91d14854.
-//
-// Solidity: function hasRole(bytes32 role, address account) view returns(bool)
-func (_AccessControl *AccessControlCaller) HasRole(opts *bind.CallOpts, role [32]byte, account common.Address) (bool, error) {
-	var (
-		ret0 = new(bool)
-	)
-	out := ret0
-	err := _AccessControl.contract.Call(opts, out, "hasRole", role, account)
-	return *ret0, err
-}
-
-// HasRole is a free data retrieval call binding the contract method 0x91d14854.
-//
-// Solidity: function hasRole(bytes32 role, address account) view returns(bool)
-func (_AccessControl *AccessControlSession) HasRole(role [32]byte, account common.Address) (bool, error) {
-	return _AccessControl.Contract.HasRole(&_AccessControl.CallOpts, role, account)
-}
-
-// HasRole is a free data retrieval call binding the contract method 0x91d14854.
-//
-// Solidity: function hasRole(bytes32 role, address account) view returns(bool)
-func (_AccessControl *AccessControlCallerSession) HasRole(role [32]byte, account common.Address) (bool, error) {
-	return _AccessControl.Contract.HasRole(&_AccessControl.CallOpts, role, account)
+// Solidity: function getRoleMemberCount(bytes32 role) returns(uint256)
+func (_AccessControl *AccessControlTransactorSession) GetRoleMemberCount(role [32]byte) (*types.Transaction, error) {
+	return _AccessControl.Contract.GetRoleMemberCount(&_AccessControl.TransactOpts, role)
 }
 
 // GrantRole is a paid mutator transaction binding the contract method 0x2f2ff15d.
@@ -320,6 +284,27 @@ func (_AccessControl *AccessControlSession) GrantRole(role [32]byte, account com
 // Solidity: function grantRole(bytes32 role, address account) returns()
 func (_AccessControl *AccessControlTransactorSession) GrantRole(role [32]byte, account common.Address) (*types.Transaction, error) {
 	return _AccessControl.Contract.GrantRole(&_AccessControl.TransactOpts, role, account)
+}
+
+// HasRole is a paid mutator transaction binding the contract method 0x91d14854.
+//
+// Solidity: function hasRole(bytes32 role, address account) returns(bool)
+func (_AccessControl *AccessControlTransactor) HasRole(opts *bind.TransactOpts, role [32]byte, account common.Address) (*types.Transaction, error) {
+	return _AccessControl.contract.Transact(opts, "hasRole", role, account)
+}
+
+// HasRole is a paid mutator transaction binding the contract method 0x91d14854.
+//
+// Solidity: function hasRole(bytes32 role, address account) returns(bool)
+func (_AccessControl *AccessControlSession) HasRole(role [32]byte, account common.Address) (*types.Transaction, error) {
+	return _AccessControl.Contract.HasRole(&_AccessControl.TransactOpts, role, account)
+}
+
+// HasRole is a paid mutator transaction binding the contract method 0x91d14854.
+//
+// Solidity: function hasRole(bytes32 role, address account) returns(bool)
+func (_AccessControl *AccessControlTransactorSession) HasRole(role [32]byte, account common.Address) (*types.Transaction, error) {
+	return _AccessControl.Contract.HasRole(&_AccessControl.TransactOpts, role, account)
 }
 
 // RenounceRole is a paid mutator transaction binding the contract method 0x36568abe.
@@ -362,6 +347,189 @@ func (_AccessControl *AccessControlSession) RevokeRole(role [32]byte, account co
 // Solidity: function revokeRole(bytes32 role, address account) returns()
 func (_AccessControl *AccessControlTransactorSession) RevokeRole(role [32]byte, account common.Address) (*types.Transaction, error) {
 	return _AccessControl.Contract.RevokeRole(&_AccessControl.TransactOpts, role, account)
+}
+
+// TryParseLog attempts to parse a log. Returns the parsed log, evenName and whether it was succesfull
+func (_AccessControl *AccessControlFilterer) TryParseLog(log types.Log) (eventName string, event interface{}, ok bool, err error) {
+	eventName, ok, err = _AccessControl.contract.LogEventName(log)
+	if err != nil || !ok {
+		return "", nil, false, err
+	}
+
+	switch eventName {
+	case "RoleAdminChanged":
+		event, err = _AccessControl.ParseRoleAdminChanged(log)
+	case "RoleGranted":
+		event, err = _AccessControl.ParseRoleGranted(log)
+	case "RoleRevoked":
+		event, err = _AccessControl.ParseRoleRevoked(log)
+	}
+	if err != nil {
+		return "", nil, false, err
+	}
+
+	return eventName, event, ok, nil
+}
+
+// AccessControlRoleAdminChangedIterator is returned from FilterRoleAdminChanged and is used to iterate over the raw logs and unpacked data for RoleAdminChanged events raised by the AccessControl contract.
+type AccessControlRoleAdminChangedIterator struct {
+	Event *AccessControlRoleAdminChanged // Event containing the contract specifics and raw log
+
+	contract *bind.BoundContract // Generic contract to use for unpacking event data
+	event    string              // Event name to use for unpacking event data
+
+	logs chan types.Log        // Log channel receiving the found contract events
+	sub  ethereum.Subscription // Subscription for errors, completion and termination
+	done bool                  // Whether the subscription completed delivering logs
+	fail error                 // Occurred error to stop iteration
+}
+
+// Next advances the iterator to the subsequent event, returning whether there
+// are any more events found. In case of a retrieval or parsing error, false is
+// returned and Error() can be queried for the exact failure.
+func (it *AccessControlRoleAdminChangedIterator) Next() bool {
+	// If the iterator failed, stop iterating
+	if it.fail != nil {
+		return false
+	}
+	// If the iterator completed, deliver directly whatever's available
+	if it.done {
+		select {
+		case log := <-it.logs:
+			it.Event = new(AccessControlRoleAdminChanged)
+			if err := it.contract.UnpackLog(it.Event, it.event, log); err != nil {
+				it.fail = err
+				return false
+			}
+			it.Event.Raw = log
+			return true
+
+		default:
+			return false
+		}
+	}
+	// Iterator still in progress, wait for either a data or an error event
+	select {
+	case log := <-it.logs:
+		it.Event = new(AccessControlRoleAdminChanged)
+		if err := it.contract.UnpackLog(it.Event, it.event, log); err != nil {
+			it.fail = err
+			return false
+		}
+		it.Event.Raw = log
+		return true
+
+	case err := <-it.sub.Err():
+		it.done = true
+		it.fail = err
+		return it.Next()
+	}
+}
+
+// Error returns any retrieval or parsing error occurred during filtering.
+func (it *AccessControlRoleAdminChangedIterator) Error() error {
+	return it.fail
+}
+
+// Close terminates the iteration process, releasing any pending underlying
+// resources.
+func (it *AccessControlRoleAdminChangedIterator) Close() error {
+	it.sub.Unsubscribe()
+	return nil
+}
+
+// AccessControlRoleAdminChanged represents a RoleAdminChanged event raised by the AccessControl contract.
+type AccessControlRoleAdminChanged struct {
+	Role              [32]byte
+	PreviousAdminRole [32]byte
+	NewAdminRole      [32]byte
+	Raw               types.Log // Blockchain specific contextual infos
+}
+
+// FilterRoleAdminChanged is a free log retrieval operation binding the contract event 0xbd79b86ffe0ab8e8776151514217cd7cacd52c909f66475c3af44e129f0b00ff.
+//
+// Solidity: event RoleAdminChanged(bytes32 indexed role, bytes32 indexed previousAdminRole, bytes32 indexed newAdminRole)
+func (_AccessControl *AccessControlFilterer) FilterRoleAdminChanged(opts *bind.FilterOpts, role [][32]byte, previousAdminRole [][32]byte, newAdminRole [][32]byte) (*AccessControlRoleAdminChangedIterator, error) {
+
+	var roleRule []interface{}
+	for _, roleItem := range role {
+		roleRule = append(roleRule, roleItem)
+	}
+	var previousAdminRoleRule []interface{}
+	for _, previousAdminRoleItem := range previousAdminRole {
+		previousAdminRoleRule = append(previousAdminRoleRule, previousAdminRoleItem)
+	}
+	var newAdminRoleRule []interface{}
+	for _, newAdminRoleItem := range newAdminRole {
+		newAdminRoleRule = append(newAdminRoleRule, newAdminRoleItem)
+	}
+
+	logs, sub, err := _AccessControl.contract.FilterLogs(opts, "RoleAdminChanged", roleRule, previousAdminRoleRule, newAdminRoleRule)
+	if err != nil {
+		return nil, err
+	}
+	return &AccessControlRoleAdminChangedIterator{contract: _AccessControl.contract, event: "RoleAdminChanged", logs: logs, sub: sub}, nil
+}
+
+// WatchRoleAdminChanged is a free log subscription operation binding the contract event 0xbd79b86ffe0ab8e8776151514217cd7cacd52c909f66475c3af44e129f0b00ff.
+//
+// Solidity: event RoleAdminChanged(bytes32 indexed role, bytes32 indexed previousAdminRole, bytes32 indexed newAdminRole)
+func (_AccessControl *AccessControlFilterer) WatchRoleAdminChanged(opts *bind.WatchOpts, sink chan<- *AccessControlRoleAdminChanged, role [][32]byte, previousAdminRole [][32]byte, newAdminRole [][32]byte) (event.Subscription, error) {
+
+	var roleRule []interface{}
+	for _, roleItem := range role {
+		roleRule = append(roleRule, roleItem)
+	}
+	var previousAdminRoleRule []interface{}
+	for _, previousAdminRoleItem := range previousAdminRole {
+		previousAdminRoleRule = append(previousAdminRoleRule, previousAdminRoleItem)
+	}
+	var newAdminRoleRule []interface{}
+	for _, newAdminRoleItem := range newAdminRole {
+		newAdminRoleRule = append(newAdminRoleRule, newAdminRoleItem)
+	}
+
+	logs, sub, err := _AccessControl.contract.WatchLogs(opts, "RoleAdminChanged", roleRule, previousAdminRoleRule, newAdminRoleRule)
+	if err != nil {
+		return nil, err
+	}
+	return event.NewSubscription(func(quit <-chan struct{}) error {
+		defer sub.Unsubscribe()
+		for {
+			select {
+			case log := <-logs:
+				// New log arrived, parse the event and forward to the user
+				event := new(AccessControlRoleAdminChanged)
+				if err := _AccessControl.contract.UnpackLog(event, "RoleAdminChanged", log); err != nil {
+					return err
+				}
+				event.Raw = log
+
+				select {
+				case sink <- event:
+				case err := <-sub.Err():
+					return err
+				case <-quit:
+					return nil
+				}
+			case err := <-sub.Err():
+				return err
+			case <-quit:
+				return nil
+			}
+		}
+	}), nil
+}
+
+// ParseRoleAdminChanged is a log parse operation binding the contract event 0xbd79b86ffe0ab8e8776151514217cd7cacd52c909f66475c3af44e129f0b00ff.
+//
+// Solidity: event RoleAdminChanged(bytes32 indexed role, bytes32 indexed previousAdminRole, bytes32 indexed newAdminRole)
+func (_AccessControl *AccessControlFilterer) ParseRoleAdminChanged(log types.Log) (*AccessControlRoleAdminChanged, error) {
+	event := new(AccessControlRoleAdminChanged)
+	if err := _AccessControl.contract.UnpackLog(event, "RoleAdminChanged", log); err != nil {
+		return nil, err
+	}
+	return event, nil
 }
 
 // AccessControlRoleGrantedIterator is returned from FilterRoleGranted and is used to iterate over the raw logs and unpacked data for RoleGranted events raised by the AccessControl contract.

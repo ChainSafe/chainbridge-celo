@@ -20,6 +20,7 @@ var (
 	_ = big.NewInt
 	_ = strings.NewReader
 	_ = ethereum.NotFound
+	_ = abi.U256
 	_ = bind.Bind
 	_ = common.Big1
 	_ = types.BloomLookup
@@ -133,6 +134,15 @@ func bindIERC721Enumerable(address common.Address, caller bind.ContractCaller, t
 	return bind.NewBoundContract(address, parsed, caller, transactor, filterer), nil
 }
 
+// ParseIERC721EnumerableABI parses the ABI
+func ParseIERC721EnumerableABI() (*abi.ABI, error) {
+	parsed, err := abi.JSON(strings.NewReader(IERC721EnumerableABI))
+	if err != nil {
+		return nil, err
+	}
+	return &parsed, nil
+}
+
 // Call invokes the (constant) contract method with params as input values and
 // sets the output to result. The result type might be a single field for simple
 // returns, a slice of interfaces for anonymous returns and a struct for named
@@ -171,214 +181,6 @@ func (_IERC721Enumerable *IERC721EnumerableTransactorRaw) Transact(opts *bind.Tr
 	return _IERC721Enumerable.Contract.contract.Transact(opts, method, params...)
 }
 
-// BalanceOf is a free data retrieval call binding the contract method 0x70a08231.
-//
-// Solidity: function balanceOf(address owner) view returns(uint256 balance)
-func (_IERC721Enumerable *IERC721EnumerableCaller) BalanceOf(opts *bind.CallOpts, owner common.Address) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _IERC721Enumerable.contract.Call(opts, out, "balanceOf", owner)
-	return *ret0, err
-}
-
-// BalanceOf is a free data retrieval call binding the contract method 0x70a08231.
-//
-// Solidity: function balanceOf(address owner) view returns(uint256 balance)
-func (_IERC721Enumerable *IERC721EnumerableSession) BalanceOf(owner common.Address) (*big.Int, error) {
-	return _IERC721Enumerable.Contract.BalanceOf(&_IERC721Enumerable.CallOpts, owner)
-}
-
-// BalanceOf is a free data retrieval call binding the contract method 0x70a08231.
-//
-// Solidity: function balanceOf(address owner) view returns(uint256 balance)
-func (_IERC721Enumerable *IERC721EnumerableCallerSession) BalanceOf(owner common.Address) (*big.Int, error) {
-	return _IERC721Enumerable.Contract.BalanceOf(&_IERC721Enumerable.CallOpts, owner)
-}
-
-// GetApproved is a free data retrieval call binding the contract method 0x081812fc.
-//
-// Solidity: function getApproved(uint256 tokenId) view returns(address operator)
-func (_IERC721Enumerable *IERC721EnumerableCaller) GetApproved(opts *bind.CallOpts, tokenId *big.Int) (common.Address, error) {
-	var (
-		ret0 = new(common.Address)
-	)
-	out := ret0
-	err := _IERC721Enumerable.contract.Call(opts, out, "getApproved", tokenId)
-	return *ret0, err
-}
-
-// GetApproved is a free data retrieval call binding the contract method 0x081812fc.
-//
-// Solidity: function getApproved(uint256 tokenId) view returns(address operator)
-func (_IERC721Enumerable *IERC721EnumerableSession) GetApproved(tokenId *big.Int) (common.Address, error) {
-	return _IERC721Enumerable.Contract.GetApproved(&_IERC721Enumerable.CallOpts, tokenId)
-}
-
-// GetApproved is a free data retrieval call binding the contract method 0x081812fc.
-//
-// Solidity: function getApproved(uint256 tokenId) view returns(address operator)
-func (_IERC721Enumerable *IERC721EnumerableCallerSession) GetApproved(tokenId *big.Int) (common.Address, error) {
-	return _IERC721Enumerable.Contract.GetApproved(&_IERC721Enumerable.CallOpts, tokenId)
-}
-
-// IsApprovedForAll is a free data retrieval call binding the contract method 0xe985e9c5.
-//
-// Solidity: function isApprovedForAll(address owner, address operator) view returns(bool)
-func (_IERC721Enumerable *IERC721EnumerableCaller) IsApprovedForAll(opts *bind.CallOpts, owner common.Address, operator common.Address) (bool, error) {
-	var (
-		ret0 = new(bool)
-	)
-	out := ret0
-	err := _IERC721Enumerable.contract.Call(opts, out, "isApprovedForAll", owner, operator)
-	return *ret0, err
-}
-
-// IsApprovedForAll is a free data retrieval call binding the contract method 0xe985e9c5.
-//
-// Solidity: function isApprovedForAll(address owner, address operator) view returns(bool)
-func (_IERC721Enumerable *IERC721EnumerableSession) IsApprovedForAll(owner common.Address, operator common.Address) (bool, error) {
-	return _IERC721Enumerable.Contract.IsApprovedForAll(&_IERC721Enumerable.CallOpts, owner, operator)
-}
-
-// IsApprovedForAll is a free data retrieval call binding the contract method 0xe985e9c5.
-//
-// Solidity: function isApprovedForAll(address owner, address operator) view returns(bool)
-func (_IERC721Enumerable *IERC721EnumerableCallerSession) IsApprovedForAll(owner common.Address, operator common.Address) (bool, error) {
-	return _IERC721Enumerable.Contract.IsApprovedForAll(&_IERC721Enumerable.CallOpts, owner, operator)
-}
-
-// OwnerOf is a free data retrieval call binding the contract method 0x6352211e.
-//
-// Solidity: function ownerOf(uint256 tokenId) view returns(address owner)
-func (_IERC721Enumerable *IERC721EnumerableCaller) OwnerOf(opts *bind.CallOpts, tokenId *big.Int) (common.Address, error) {
-	var (
-		ret0 = new(common.Address)
-	)
-	out := ret0
-	err := _IERC721Enumerable.contract.Call(opts, out, "ownerOf", tokenId)
-	return *ret0, err
-}
-
-// OwnerOf is a free data retrieval call binding the contract method 0x6352211e.
-//
-// Solidity: function ownerOf(uint256 tokenId) view returns(address owner)
-func (_IERC721Enumerable *IERC721EnumerableSession) OwnerOf(tokenId *big.Int) (common.Address, error) {
-	return _IERC721Enumerable.Contract.OwnerOf(&_IERC721Enumerable.CallOpts, tokenId)
-}
-
-// OwnerOf is a free data retrieval call binding the contract method 0x6352211e.
-//
-// Solidity: function ownerOf(uint256 tokenId) view returns(address owner)
-func (_IERC721Enumerable *IERC721EnumerableCallerSession) OwnerOf(tokenId *big.Int) (common.Address, error) {
-	return _IERC721Enumerable.Contract.OwnerOf(&_IERC721Enumerable.CallOpts, tokenId)
-}
-
-// SupportsInterface is a free data retrieval call binding the contract method 0x01ffc9a7.
-//
-// Solidity: function supportsInterface(bytes4 interfaceId) view returns(bool)
-func (_IERC721Enumerable *IERC721EnumerableCaller) SupportsInterface(opts *bind.CallOpts, interfaceId [4]byte) (bool, error) {
-	var (
-		ret0 = new(bool)
-	)
-	out := ret0
-	err := _IERC721Enumerable.contract.Call(opts, out, "supportsInterface", interfaceId)
-	return *ret0, err
-}
-
-// SupportsInterface is a free data retrieval call binding the contract method 0x01ffc9a7.
-//
-// Solidity: function supportsInterface(bytes4 interfaceId) view returns(bool)
-func (_IERC721Enumerable *IERC721EnumerableSession) SupportsInterface(interfaceId [4]byte) (bool, error) {
-	return _IERC721Enumerable.Contract.SupportsInterface(&_IERC721Enumerable.CallOpts, interfaceId)
-}
-
-// SupportsInterface is a free data retrieval call binding the contract method 0x01ffc9a7.
-//
-// Solidity: function supportsInterface(bytes4 interfaceId) view returns(bool)
-func (_IERC721Enumerable *IERC721EnumerableCallerSession) SupportsInterface(interfaceId [4]byte) (bool, error) {
-	return _IERC721Enumerable.Contract.SupportsInterface(&_IERC721Enumerable.CallOpts, interfaceId)
-}
-
-// TokenByIndex is a free data retrieval call binding the contract method 0x4f6ccce7.
-//
-// Solidity: function tokenByIndex(uint256 index) view returns(uint256)
-func (_IERC721Enumerable *IERC721EnumerableCaller) TokenByIndex(opts *bind.CallOpts, index *big.Int) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _IERC721Enumerable.contract.Call(opts, out, "tokenByIndex", index)
-	return *ret0, err
-}
-
-// TokenByIndex is a free data retrieval call binding the contract method 0x4f6ccce7.
-//
-// Solidity: function tokenByIndex(uint256 index) view returns(uint256)
-func (_IERC721Enumerable *IERC721EnumerableSession) TokenByIndex(index *big.Int) (*big.Int, error) {
-	return _IERC721Enumerable.Contract.TokenByIndex(&_IERC721Enumerable.CallOpts, index)
-}
-
-// TokenByIndex is a free data retrieval call binding the contract method 0x4f6ccce7.
-//
-// Solidity: function tokenByIndex(uint256 index) view returns(uint256)
-func (_IERC721Enumerable *IERC721EnumerableCallerSession) TokenByIndex(index *big.Int) (*big.Int, error) {
-	return _IERC721Enumerable.Contract.TokenByIndex(&_IERC721Enumerable.CallOpts, index)
-}
-
-// TokenOfOwnerByIndex is a free data retrieval call binding the contract method 0x2f745c59.
-//
-// Solidity: function tokenOfOwnerByIndex(address owner, uint256 index) view returns(uint256 tokenId)
-func (_IERC721Enumerable *IERC721EnumerableCaller) TokenOfOwnerByIndex(opts *bind.CallOpts, owner common.Address, index *big.Int) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _IERC721Enumerable.contract.Call(opts, out, "tokenOfOwnerByIndex", owner, index)
-	return *ret0, err
-}
-
-// TokenOfOwnerByIndex is a free data retrieval call binding the contract method 0x2f745c59.
-//
-// Solidity: function tokenOfOwnerByIndex(address owner, uint256 index) view returns(uint256 tokenId)
-func (_IERC721Enumerable *IERC721EnumerableSession) TokenOfOwnerByIndex(owner common.Address, index *big.Int) (*big.Int, error) {
-	return _IERC721Enumerable.Contract.TokenOfOwnerByIndex(&_IERC721Enumerable.CallOpts, owner, index)
-}
-
-// TokenOfOwnerByIndex is a free data retrieval call binding the contract method 0x2f745c59.
-//
-// Solidity: function tokenOfOwnerByIndex(address owner, uint256 index) view returns(uint256 tokenId)
-func (_IERC721Enumerable *IERC721EnumerableCallerSession) TokenOfOwnerByIndex(owner common.Address, index *big.Int) (*big.Int, error) {
-	return _IERC721Enumerable.Contract.TokenOfOwnerByIndex(&_IERC721Enumerable.CallOpts, owner, index)
-}
-
-// TotalSupply is a free data retrieval call binding the contract method 0x18160ddd.
-//
-// Solidity: function totalSupply() view returns(uint256)
-func (_IERC721Enumerable *IERC721EnumerableCaller) TotalSupply(opts *bind.CallOpts) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _IERC721Enumerable.contract.Call(opts, out, "totalSupply")
-	return *ret0, err
-}
-
-// TotalSupply is a free data retrieval call binding the contract method 0x18160ddd.
-//
-// Solidity: function totalSupply() view returns(uint256)
-func (_IERC721Enumerable *IERC721EnumerableSession) TotalSupply() (*big.Int, error) {
-	return _IERC721Enumerable.Contract.TotalSupply(&_IERC721Enumerable.CallOpts)
-}
-
-// TotalSupply is a free data retrieval call binding the contract method 0x18160ddd.
-//
-// Solidity: function totalSupply() view returns(uint256)
-func (_IERC721Enumerable *IERC721EnumerableCallerSession) TotalSupply() (*big.Int, error) {
-	return _IERC721Enumerable.Contract.TotalSupply(&_IERC721Enumerable.CallOpts)
-}
-
 // Approve is a paid mutator transaction binding the contract method 0x095ea7b3.
 //
 // Solidity: function approve(address to, uint256 tokenId) returns()
@@ -398,6 +200,90 @@ func (_IERC721Enumerable *IERC721EnumerableSession) Approve(to common.Address, t
 // Solidity: function approve(address to, uint256 tokenId) returns()
 func (_IERC721Enumerable *IERC721EnumerableTransactorSession) Approve(to common.Address, tokenId *big.Int) (*types.Transaction, error) {
 	return _IERC721Enumerable.Contract.Approve(&_IERC721Enumerable.TransactOpts, to, tokenId)
+}
+
+// BalanceOf is a paid mutator transaction binding the contract method 0x70a08231.
+//
+// Solidity: function balanceOf(address owner) returns(uint256 balance)
+func (_IERC721Enumerable *IERC721EnumerableTransactor) BalanceOf(opts *bind.TransactOpts, owner common.Address) (*types.Transaction, error) {
+	return _IERC721Enumerable.contract.Transact(opts, "balanceOf", owner)
+}
+
+// BalanceOf is a paid mutator transaction binding the contract method 0x70a08231.
+//
+// Solidity: function balanceOf(address owner) returns(uint256 balance)
+func (_IERC721Enumerable *IERC721EnumerableSession) BalanceOf(owner common.Address) (*types.Transaction, error) {
+	return _IERC721Enumerable.Contract.BalanceOf(&_IERC721Enumerable.TransactOpts, owner)
+}
+
+// BalanceOf is a paid mutator transaction binding the contract method 0x70a08231.
+//
+// Solidity: function balanceOf(address owner) returns(uint256 balance)
+func (_IERC721Enumerable *IERC721EnumerableTransactorSession) BalanceOf(owner common.Address) (*types.Transaction, error) {
+	return _IERC721Enumerable.Contract.BalanceOf(&_IERC721Enumerable.TransactOpts, owner)
+}
+
+// GetApproved is a paid mutator transaction binding the contract method 0x081812fc.
+//
+// Solidity: function getApproved(uint256 tokenId) returns(address operator)
+func (_IERC721Enumerable *IERC721EnumerableTransactor) GetApproved(opts *bind.TransactOpts, tokenId *big.Int) (*types.Transaction, error) {
+	return _IERC721Enumerable.contract.Transact(opts, "getApproved", tokenId)
+}
+
+// GetApproved is a paid mutator transaction binding the contract method 0x081812fc.
+//
+// Solidity: function getApproved(uint256 tokenId) returns(address operator)
+func (_IERC721Enumerable *IERC721EnumerableSession) GetApproved(tokenId *big.Int) (*types.Transaction, error) {
+	return _IERC721Enumerable.Contract.GetApproved(&_IERC721Enumerable.TransactOpts, tokenId)
+}
+
+// GetApproved is a paid mutator transaction binding the contract method 0x081812fc.
+//
+// Solidity: function getApproved(uint256 tokenId) returns(address operator)
+func (_IERC721Enumerable *IERC721EnumerableTransactorSession) GetApproved(tokenId *big.Int) (*types.Transaction, error) {
+	return _IERC721Enumerable.Contract.GetApproved(&_IERC721Enumerable.TransactOpts, tokenId)
+}
+
+// IsApprovedForAll is a paid mutator transaction binding the contract method 0xe985e9c5.
+//
+// Solidity: function isApprovedForAll(address owner, address operator) returns(bool)
+func (_IERC721Enumerable *IERC721EnumerableTransactor) IsApprovedForAll(opts *bind.TransactOpts, owner common.Address, operator common.Address) (*types.Transaction, error) {
+	return _IERC721Enumerable.contract.Transact(opts, "isApprovedForAll", owner, operator)
+}
+
+// IsApprovedForAll is a paid mutator transaction binding the contract method 0xe985e9c5.
+//
+// Solidity: function isApprovedForAll(address owner, address operator) returns(bool)
+func (_IERC721Enumerable *IERC721EnumerableSession) IsApprovedForAll(owner common.Address, operator common.Address) (*types.Transaction, error) {
+	return _IERC721Enumerable.Contract.IsApprovedForAll(&_IERC721Enumerable.TransactOpts, owner, operator)
+}
+
+// IsApprovedForAll is a paid mutator transaction binding the contract method 0xe985e9c5.
+//
+// Solidity: function isApprovedForAll(address owner, address operator) returns(bool)
+func (_IERC721Enumerable *IERC721EnumerableTransactorSession) IsApprovedForAll(owner common.Address, operator common.Address) (*types.Transaction, error) {
+	return _IERC721Enumerable.Contract.IsApprovedForAll(&_IERC721Enumerable.TransactOpts, owner, operator)
+}
+
+// OwnerOf is a paid mutator transaction binding the contract method 0x6352211e.
+//
+// Solidity: function ownerOf(uint256 tokenId) returns(address owner)
+func (_IERC721Enumerable *IERC721EnumerableTransactor) OwnerOf(opts *bind.TransactOpts, tokenId *big.Int) (*types.Transaction, error) {
+	return _IERC721Enumerable.contract.Transact(opts, "ownerOf", tokenId)
+}
+
+// OwnerOf is a paid mutator transaction binding the contract method 0x6352211e.
+//
+// Solidity: function ownerOf(uint256 tokenId) returns(address owner)
+func (_IERC721Enumerable *IERC721EnumerableSession) OwnerOf(tokenId *big.Int) (*types.Transaction, error) {
+	return _IERC721Enumerable.Contract.OwnerOf(&_IERC721Enumerable.TransactOpts, tokenId)
+}
+
+// OwnerOf is a paid mutator transaction binding the contract method 0x6352211e.
+//
+// Solidity: function ownerOf(uint256 tokenId) returns(address owner)
+func (_IERC721Enumerable *IERC721EnumerableTransactorSession) OwnerOf(tokenId *big.Int) (*types.Transaction, error) {
+	return _IERC721Enumerable.Contract.OwnerOf(&_IERC721Enumerable.TransactOpts, tokenId)
 }
 
 // SafeTransferFrom is a paid mutator transaction binding the contract method 0x42842e0e.
@@ -463,6 +349,90 @@ func (_IERC721Enumerable *IERC721EnumerableTransactorSession) SetApprovalForAll(
 	return _IERC721Enumerable.Contract.SetApprovalForAll(&_IERC721Enumerable.TransactOpts, operator, _approved)
 }
 
+// SupportsInterface is a paid mutator transaction binding the contract method 0x01ffc9a7.
+//
+// Solidity: function supportsInterface(bytes4 interfaceId) returns(bool)
+func (_IERC721Enumerable *IERC721EnumerableTransactor) SupportsInterface(opts *bind.TransactOpts, interfaceId [4]byte) (*types.Transaction, error) {
+	return _IERC721Enumerable.contract.Transact(opts, "supportsInterface", interfaceId)
+}
+
+// SupportsInterface is a paid mutator transaction binding the contract method 0x01ffc9a7.
+//
+// Solidity: function supportsInterface(bytes4 interfaceId) returns(bool)
+func (_IERC721Enumerable *IERC721EnumerableSession) SupportsInterface(interfaceId [4]byte) (*types.Transaction, error) {
+	return _IERC721Enumerable.Contract.SupportsInterface(&_IERC721Enumerable.TransactOpts, interfaceId)
+}
+
+// SupportsInterface is a paid mutator transaction binding the contract method 0x01ffc9a7.
+//
+// Solidity: function supportsInterface(bytes4 interfaceId) returns(bool)
+func (_IERC721Enumerable *IERC721EnumerableTransactorSession) SupportsInterface(interfaceId [4]byte) (*types.Transaction, error) {
+	return _IERC721Enumerable.Contract.SupportsInterface(&_IERC721Enumerable.TransactOpts, interfaceId)
+}
+
+// TokenByIndex is a paid mutator transaction binding the contract method 0x4f6ccce7.
+//
+// Solidity: function tokenByIndex(uint256 index) returns(uint256)
+func (_IERC721Enumerable *IERC721EnumerableTransactor) TokenByIndex(opts *bind.TransactOpts, index *big.Int) (*types.Transaction, error) {
+	return _IERC721Enumerable.contract.Transact(opts, "tokenByIndex", index)
+}
+
+// TokenByIndex is a paid mutator transaction binding the contract method 0x4f6ccce7.
+//
+// Solidity: function tokenByIndex(uint256 index) returns(uint256)
+func (_IERC721Enumerable *IERC721EnumerableSession) TokenByIndex(index *big.Int) (*types.Transaction, error) {
+	return _IERC721Enumerable.Contract.TokenByIndex(&_IERC721Enumerable.TransactOpts, index)
+}
+
+// TokenByIndex is a paid mutator transaction binding the contract method 0x4f6ccce7.
+//
+// Solidity: function tokenByIndex(uint256 index) returns(uint256)
+func (_IERC721Enumerable *IERC721EnumerableTransactorSession) TokenByIndex(index *big.Int) (*types.Transaction, error) {
+	return _IERC721Enumerable.Contract.TokenByIndex(&_IERC721Enumerable.TransactOpts, index)
+}
+
+// TokenOfOwnerByIndex is a paid mutator transaction binding the contract method 0x2f745c59.
+//
+// Solidity: function tokenOfOwnerByIndex(address owner, uint256 index) returns(uint256 tokenId)
+func (_IERC721Enumerable *IERC721EnumerableTransactor) TokenOfOwnerByIndex(opts *bind.TransactOpts, owner common.Address, index *big.Int) (*types.Transaction, error) {
+	return _IERC721Enumerable.contract.Transact(opts, "tokenOfOwnerByIndex", owner, index)
+}
+
+// TokenOfOwnerByIndex is a paid mutator transaction binding the contract method 0x2f745c59.
+//
+// Solidity: function tokenOfOwnerByIndex(address owner, uint256 index) returns(uint256 tokenId)
+func (_IERC721Enumerable *IERC721EnumerableSession) TokenOfOwnerByIndex(owner common.Address, index *big.Int) (*types.Transaction, error) {
+	return _IERC721Enumerable.Contract.TokenOfOwnerByIndex(&_IERC721Enumerable.TransactOpts, owner, index)
+}
+
+// TokenOfOwnerByIndex is a paid mutator transaction binding the contract method 0x2f745c59.
+//
+// Solidity: function tokenOfOwnerByIndex(address owner, uint256 index) returns(uint256 tokenId)
+func (_IERC721Enumerable *IERC721EnumerableTransactorSession) TokenOfOwnerByIndex(owner common.Address, index *big.Int) (*types.Transaction, error) {
+	return _IERC721Enumerable.Contract.TokenOfOwnerByIndex(&_IERC721Enumerable.TransactOpts, owner, index)
+}
+
+// TotalSupply is a paid mutator transaction binding the contract method 0x18160ddd.
+//
+// Solidity: function totalSupply() returns(uint256)
+func (_IERC721Enumerable *IERC721EnumerableTransactor) TotalSupply(opts *bind.TransactOpts) (*types.Transaction, error) {
+	return _IERC721Enumerable.contract.Transact(opts, "totalSupply")
+}
+
+// TotalSupply is a paid mutator transaction binding the contract method 0x18160ddd.
+//
+// Solidity: function totalSupply() returns(uint256)
+func (_IERC721Enumerable *IERC721EnumerableSession) TotalSupply() (*types.Transaction, error) {
+	return _IERC721Enumerable.Contract.TotalSupply(&_IERC721Enumerable.TransactOpts)
+}
+
+// TotalSupply is a paid mutator transaction binding the contract method 0x18160ddd.
+//
+// Solidity: function totalSupply() returns(uint256)
+func (_IERC721Enumerable *IERC721EnumerableTransactorSession) TotalSupply() (*types.Transaction, error) {
+	return _IERC721Enumerable.Contract.TotalSupply(&_IERC721Enumerable.TransactOpts)
+}
+
 // TransferFrom is a paid mutator transaction binding the contract method 0x23b872dd.
 //
 // Solidity: function transferFrom(address from, address to, uint256 tokenId) returns()
@@ -482,6 +452,28 @@ func (_IERC721Enumerable *IERC721EnumerableSession) TransferFrom(from common.Add
 // Solidity: function transferFrom(address from, address to, uint256 tokenId) returns()
 func (_IERC721Enumerable *IERC721EnumerableTransactorSession) TransferFrom(from common.Address, to common.Address, tokenId *big.Int) (*types.Transaction, error) {
 	return _IERC721Enumerable.Contract.TransferFrom(&_IERC721Enumerable.TransactOpts, from, to, tokenId)
+}
+
+// TryParseLog attempts to parse a log. Returns the parsed log, evenName and whether it was succesfull
+func (_IERC721Enumerable *IERC721EnumerableFilterer) TryParseLog(log types.Log) (eventName string, event interface{}, ok bool, err error) {
+	eventName, ok, err = _IERC721Enumerable.contract.LogEventName(log)
+	if err != nil || !ok {
+		return "", nil, false, err
+	}
+
+	switch eventName {
+	case "Approval":
+		event, err = _IERC721Enumerable.ParseApproval(log)
+	case "ApprovalForAll":
+		event, err = _IERC721Enumerable.ParseApprovalForAll(log)
+	case "Transfer":
+		event, err = _IERC721Enumerable.ParseTransfer(log)
+	}
+	if err != nil {
+		return "", nil, false, err
+	}
+
+	return eventName, event, ok, nil
 }
 
 // IERC721EnumerableApprovalIterator is returned from FilterApproval and is used to iterate over the raw logs and unpacked data for Approval events raised by the IERC721Enumerable contract.

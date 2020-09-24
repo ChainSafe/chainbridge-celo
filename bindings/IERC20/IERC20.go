@@ -20,6 +20,7 @@ var (
 	_ = big.NewInt
 	_ = strings.NewReader
 	_ = ethereum.NotFound
+	_ = abi.U256
 	_ = bind.Bind
 	_ = common.Big1
 	_ = types.BloomLookup
@@ -133,6 +134,15 @@ func bindIERC20(address common.Address, caller bind.ContractCaller, transactor b
 	return bind.NewBoundContract(address, parsed, caller, transactor, filterer), nil
 }
 
+// ParseIERC20ABI parses the ABI
+func ParseIERC20ABI() (*abi.ABI, error) {
+	parsed, err := abi.JSON(strings.NewReader(IERC20ABI))
+	if err != nil {
+		return nil, err
+	}
+	return &parsed, nil
+}
+
 // Call invokes the (constant) contract method with params as input values and
 // sets the output to result. The result type might be a single field for simple
 // returns, a slice of interfaces for anonymous returns and a struct for named
@@ -171,82 +181,25 @@ func (_IERC20 *IERC20TransactorRaw) Transact(opts *bind.TransactOpts, method str
 	return _IERC20.Contract.contract.Transact(opts, method, params...)
 }
 
-// Allowance is a free data retrieval call binding the contract method 0xdd62ed3e.
+// Allowance is a paid mutator transaction binding the contract method 0xdd62ed3e.
 //
-// Solidity: function allowance(address owner, address spender) view returns(uint256)
-func (_IERC20 *IERC20Caller) Allowance(opts *bind.CallOpts, owner common.Address, spender common.Address) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _IERC20.contract.Call(opts, out, "allowance", owner, spender)
-	return *ret0, err
+// Solidity: function allowance(address owner, address spender) returns(uint256)
+func (_IERC20 *IERC20Transactor) Allowance(opts *bind.TransactOpts, owner common.Address, spender common.Address) (*types.Transaction, error) {
+	return _IERC20.contract.Transact(opts, "allowance", owner, spender)
 }
 
-// Allowance is a free data retrieval call binding the contract method 0xdd62ed3e.
+// Allowance is a paid mutator transaction binding the contract method 0xdd62ed3e.
 //
-// Solidity: function allowance(address owner, address spender) view returns(uint256)
-func (_IERC20 *IERC20Session) Allowance(owner common.Address, spender common.Address) (*big.Int, error) {
-	return _IERC20.Contract.Allowance(&_IERC20.CallOpts, owner, spender)
+// Solidity: function allowance(address owner, address spender) returns(uint256)
+func (_IERC20 *IERC20Session) Allowance(owner common.Address, spender common.Address) (*types.Transaction, error) {
+	return _IERC20.Contract.Allowance(&_IERC20.TransactOpts, owner, spender)
 }
 
-// Allowance is a free data retrieval call binding the contract method 0xdd62ed3e.
+// Allowance is a paid mutator transaction binding the contract method 0xdd62ed3e.
 //
-// Solidity: function allowance(address owner, address spender) view returns(uint256)
-func (_IERC20 *IERC20CallerSession) Allowance(owner common.Address, spender common.Address) (*big.Int, error) {
-	return _IERC20.Contract.Allowance(&_IERC20.CallOpts, owner, spender)
-}
-
-// BalanceOf is a free data retrieval call binding the contract method 0x70a08231.
-//
-// Solidity: function balanceOf(address account) view returns(uint256)
-func (_IERC20 *IERC20Caller) BalanceOf(opts *bind.CallOpts, account common.Address) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _IERC20.contract.Call(opts, out, "balanceOf", account)
-	return *ret0, err
-}
-
-// BalanceOf is a free data retrieval call binding the contract method 0x70a08231.
-//
-// Solidity: function balanceOf(address account) view returns(uint256)
-func (_IERC20 *IERC20Session) BalanceOf(account common.Address) (*big.Int, error) {
-	return _IERC20.Contract.BalanceOf(&_IERC20.CallOpts, account)
-}
-
-// BalanceOf is a free data retrieval call binding the contract method 0x70a08231.
-//
-// Solidity: function balanceOf(address account) view returns(uint256)
-func (_IERC20 *IERC20CallerSession) BalanceOf(account common.Address) (*big.Int, error) {
-	return _IERC20.Contract.BalanceOf(&_IERC20.CallOpts, account)
-}
-
-// TotalSupply is a free data retrieval call binding the contract method 0x18160ddd.
-//
-// Solidity: function totalSupply() view returns(uint256)
-func (_IERC20 *IERC20Caller) TotalSupply(opts *bind.CallOpts) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _IERC20.contract.Call(opts, out, "totalSupply")
-	return *ret0, err
-}
-
-// TotalSupply is a free data retrieval call binding the contract method 0x18160ddd.
-//
-// Solidity: function totalSupply() view returns(uint256)
-func (_IERC20 *IERC20Session) TotalSupply() (*big.Int, error) {
-	return _IERC20.Contract.TotalSupply(&_IERC20.CallOpts)
-}
-
-// TotalSupply is a free data retrieval call binding the contract method 0x18160ddd.
-//
-// Solidity: function totalSupply() view returns(uint256)
-func (_IERC20 *IERC20CallerSession) TotalSupply() (*big.Int, error) {
-	return _IERC20.Contract.TotalSupply(&_IERC20.CallOpts)
+// Solidity: function allowance(address owner, address spender) returns(uint256)
+func (_IERC20 *IERC20TransactorSession) Allowance(owner common.Address, spender common.Address) (*types.Transaction, error) {
+	return _IERC20.Contract.Allowance(&_IERC20.TransactOpts, owner, spender)
 }
 
 // Approve is a paid mutator transaction binding the contract method 0x095ea7b3.
@@ -268,6 +221,48 @@ func (_IERC20 *IERC20Session) Approve(spender common.Address, amount *big.Int) (
 // Solidity: function approve(address spender, uint256 amount) returns(bool)
 func (_IERC20 *IERC20TransactorSession) Approve(spender common.Address, amount *big.Int) (*types.Transaction, error) {
 	return _IERC20.Contract.Approve(&_IERC20.TransactOpts, spender, amount)
+}
+
+// BalanceOf is a paid mutator transaction binding the contract method 0x70a08231.
+//
+// Solidity: function balanceOf(address account) returns(uint256)
+func (_IERC20 *IERC20Transactor) BalanceOf(opts *bind.TransactOpts, account common.Address) (*types.Transaction, error) {
+	return _IERC20.contract.Transact(opts, "balanceOf", account)
+}
+
+// BalanceOf is a paid mutator transaction binding the contract method 0x70a08231.
+//
+// Solidity: function balanceOf(address account) returns(uint256)
+func (_IERC20 *IERC20Session) BalanceOf(account common.Address) (*types.Transaction, error) {
+	return _IERC20.Contract.BalanceOf(&_IERC20.TransactOpts, account)
+}
+
+// BalanceOf is a paid mutator transaction binding the contract method 0x70a08231.
+//
+// Solidity: function balanceOf(address account) returns(uint256)
+func (_IERC20 *IERC20TransactorSession) BalanceOf(account common.Address) (*types.Transaction, error) {
+	return _IERC20.Contract.BalanceOf(&_IERC20.TransactOpts, account)
+}
+
+// TotalSupply is a paid mutator transaction binding the contract method 0x18160ddd.
+//
+// Solidity: function totalSupply() returns(uint256)
+func (_IERC20 *IERC20Transactor) TotalSupply(opts *bind.TransactOpts) (*types.Transaction, error) {
+	return _IERC20.contract.Transact(opts, "totalSupply")
+}
+
+// TotalSupply is a paid mutator transaction binding the contract method 0x18160ddd.
+//
+// Solidity: function totalSupply() returns(uint256)
+func (_IERC20 *IERC20Session) TotalSupply() (*types.Transaction, error) {
+	return _IERC20.Contract.TotalSupply(&_IERC20.TransactOpts)
+}
+
+// TotalSupply is a paid mutator transaction binding the contract method 0x18160ddd.
+//
+// Solidity: function totalSupply() returns(uint256)
+func (_IERC20 *IERC20TransactorSession) TotalSupply() (*types.Transaction, error) {
+	return _IERC20.Contract.TotalSupply(&_IERC20.TransactOpts)
 }
 
 // Transfer is a paid mutator transaction binding the contract method 0xa9059cbb.
@@ -310,6 +305,26 @@ func (_IERC20 *IERC20Session) TransferFrom(sender common.Address, recipient comm
 // Solidity: function transferFrom(address sender, address recipient, uint256 amount) returns(bool)
 func (_IERC20 *IERC20TransactorSession) TransferFrom(sender common.Address, recipient common.Address, amount *big.Int) (*types.Transaction, error) {
 	return _IERC20.Contract.TransferFrom(&_IERC20.TransactOpts, sender, recipient, amount)
+}
+
+// TryParseLog attempts to parse a log. Returns the parsed log, evenName and whether it was succesfull
+func (_IERC20 *IERC20Filterer) TryParseLog(log types.Log) (eventName string, event interface{}, ok bool, err error) {
+	eventName, ok, err = _IERC20.contract.LogEventName(log)
+	if err != nil || !ok {
+		return "", nil, false, err
+	}
+
+	switch eventName {
+	case "Approval":
+		event, err = _IERC20.ParseApproval(log)
+	case "Transfer":
+		event, err = _IERC20.ParseTransfer(log)
+	}
+	if err != nil {
+		return "", nil, false, err
+	}
+
+	return eventName, event, ok, nil
 }
 
 // IERC20ApprovalIterator is returned from FilterApproval and is used to iterate over the raw logs and unpacked data for Approval events raised by the IERC20 contract.

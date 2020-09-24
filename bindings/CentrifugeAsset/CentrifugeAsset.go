@@ -20,6 +20,7 @@ var (
 	_ = big.NewInt
 	_ = strings.NewReader
 	_ = ethereum.NotFound
+	_ = abi.U256
 	_ = bind.Bind
 	_ = common.Big1
 	_ = types.BloomLookup
@@ -30,7 +31,7 @@ var (
 const CentrifugeAssetABI = "[{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"bytes32\",\"name\":\"asset\",\"type\":\"bytes32\"}],\"name\":\"AssetStored\",\"type\":\"event\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"name\":\"_assetsStored\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"asset\",\"type\":\"bytes32\"}],\"name\":\"store\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}]"
 
 // CentrifugeAssetBin is the compiled bytecode used for deploying new contracts.
-var CentrifugeAssetBin = "0x608060405234801561001057600080fd5b5061029e806100206000396000f3fe608060405234801561001057600080fd5b50600436106100365760003560e01c8063654cf88c1461003b57806396add60014610057575b600080fd5b61005560048036038101906100509190610177565b610087565b005b610071600480360381019061006c9190610177565b610142565b60405161007e91906101ef565b60405180910390f35b60008082815260200190815260200160002060009054906101000a900460ff16156100e7576040517f08c379a00000000000000000000000000000000000000000000000000000000081526004016100de9061020a565b60405180910390fd5b600160008083815260200190815260200160002060006101000a81548160ff021916908315150217905550807f08ae553713effae7116be03743b167b8b803449ee8fb912c2ec43dc2c824f53560405160405180910390a250565b60006020528060005260406000206000915054906101000a900460ff1681565b60008135905061017181610251565b92915050565b60006020828403121561018957600080fd5b600061019784828501610162565b91505092915050565b6101a98161023b565b82525050565b60006101bc60178361022a565b91507f617373657420697320616c72656164792073746f7265640000000000000000006000830152602082019050919050565b600060208201905061020460008301846101a0565b92915050565b60006020820190508181036000830152610223816101af565b9050919050565b600082825260208201905092915050565b60008115159050919050565b6000819050919050565b61025a81610247565b811461026557600080fd5b5056fea26469706673582212202b86f222530a635d80d793368d0452c8c70e0f11601e43b2389d492f9efddb1164736f6c63430006040033"
+var CentrifugeAssetBin = "0x608060405234801561001057600080fd5b50610199806100206000396000f3fe608060405234801561001057600080fd5b50600436106100365760003560e01c8063654cf88c1461003b57806396add60014610050575b600080fd5b61004e610049366004610109565b610079565b005b61006361005e366004610109565b6100f4565b6040516100709190610121565b60405180910390f35b60008181526020819052604090205460ff16156100b15760405162461bcd60e51b81526004016100a89061012c565b60405180910390fd5b600081815260208190526040808220805460ff191660011790555182917f08ae553713effae7116be03743b167b8b803449ee8fb912c2ec43dc2c824f53591a250565b60006020819052908152604090205460ff1681565b60006020828403121561011a578081fd5b5035919050565b901515815260200190565b60208082526017908201527f617373657420697320616c72656164792073746f72656400000000000000000060408201526060019056fea264697066735822122025127fa106580a82b54d45d3a57773359ec9d87f575cc8cd10d56b5a5bf3447964736f6c63430006040033"
 
 // DeployCentrifugeAsset deploys a new Ethereum contract, binding an instance of CentrifugeAsset to it.
 func DeployCentrifugeAsset(auth *bind.TransactOpts, backend bind.ContractBackend) (common.Address, *types.Transaction, *CentrifugeAsset, error) {
@@ -150,6 +151,15 @@ func bindCentrifugeAsset(address common.Address, caller bind.ContractCaller, tra
 	return bind.NewBoundContract(address, parsed, caller, transactor, filterer), nil
 }
 
+// ParseCentrifugeAssetABI parses the ABI
+func ParseCentrifugeAssetABI() (*abi.ABI, error) {
+	parsed, err := abi.JSON(strings.NewReader(CentrifugeAssetABI))
+	if err != nil {
+		return nil, err
+	}
+	return &parsed, nil
+}
+
 // Call invokes the (constant) contract method with params as input values and
 // sets the output to result. The result type might be a single field for simple
 // returns, a slice of interfaces for anonymous returns and a struct for named
@@ -188,30 +198,25 @@ func (_CentrifugeAsset *CentrifugeAssetTransactorRaw) Transact(opts *bind.Transa
 	return _CentrifugeAsset.Contract.contract.Transact(opts, method, params...)
 }
 
-// AssetsStored is a free data retrieval call binding the contract method 0x96add600.
+// AssetsStored is a paid mutator transaction binding the contract method 0x96add600.
 //
-// Solidity: function _assetsStored(bytes32 ) view returns(bool)
-func (_CentrifugeAsset *CentrifugeAssetCaller) AssetsStored(opts *bind.CallOpts, arg0 [32]byte) (bool, error) {
-	var (
-		ret0 = new(bool)
-	)
-	out := ret0
-	err := _CentrifugeAsset.contract.Call(opts, out, "_assetsStored", arg0)
-	return *ret0, err
+// Solidity: function _assetsStored(bytes32 ) returns(bool)
+func (_CentrifugeAsset *CentrifugeAssetTransactor) AssetsStored(opts *bind.TransactOpts, arg0 [32]byte) (*types.Transaction, error) {
+	return _CentrifugeAsset.contract.Transact(opts, "_assetsStored", arg0)
 }
 
-// AssetsStored is a free data retrieval call binding the contract method 0x96add600.
+// AssetsStored is a paid mutator transaction binding the contract method 0x96add600.
 //
-// Solidity: function _assetsStored(bytes32 ) view returns(bool)
-func (_CentrifugeAsset *CentrifugeAssetSession) AssetsStored(arg0 [32]byte) (bool, error) {
-	return _CentrifugeAsset.Contract.AssetsStored(&_CentrifugeAsset.CallOpts, arg0)
+// Solidity: function _assetsStored(bytes32 ) returns(bool)
+func (_CentrifugeAsset *CentrifugeAssetSession) AssetsStored(arg0 [32]byte) (*types.Transaction, error) {
+	return _CentrifugeAsset.Contract.AssetsStored(&_CentrifugeAsset.TransactOpts, arg0)
 }
 
-// AssetsStored is a free data retrieval call binding the contract method 0x96add600.
+// AssetsStored is a paid mutator transaction binding the contract method 0x96add600.
 //
-// Solidity: function _assetsStored(bytes32 ) view returns(bool)
-func (_CentrifugeAsset *CentrifugeAssetCallerSession) AssetsStored(arg0 [32]byte) (bool, error) {
-	return _CentrifugeAsset.Contract.AssetsStored(&_CentrifugeAsset.CallOpts, arg0)
+// Solidity: function _assetsStored(bytes32 ) returns(bool)
+func (_CentrifugeAsset *CentrifugeAssetTransactorSession) AssetsStored(arg0 [32]byte) (*types.Transaction, error) {
+	return _CentrifugeAsset.Contract.AssetsStored(&_CentrifugeAsset.TransactOpts, arg0)
 }
 
 // Store is a paid mutator transaction binding the contract method 0x654cf88c.
@@ -233,6 +238,24 @@ func (_CentrifugeAsset *CentrifugeAssetSession) Store(asset [32]byte) (*types.Tr
 // Solidity: function store(bytes32 asset) returns()
 func (_CentrifugeAsset *CentrifugeAssetTransactorSession) Store(asset [32]byte) (*types.Transaction, error) {
 	return _CentrifugeAsset.Contract.Store(&_CentrifugeAsset.TransactOpts, asset)
+}
+
+// TryParseLog attempts to parse a log. Returns the parsed log, evenName and whether it was succesfull
+func (_CentrifugeAsset *CentrifugeAssetFilterer) TryParseLog(log types.Log) (eventName string, event interface{}, ok bool, err error) {
+	eventName, ok, err = _CentrifugeAsset.contract.LogEventName(log)
+	if err != nil || !ok {
+		return "", nil, false, err
+	}
+
+	switch eventName {
+	case "AssetStored":
+		event, err = _CentrifugeAsset.ParseAssetStored(log)
+	}
+	if err != nil {
+		return "", nil, false, err
+	}
+
+	return eventName, event, ok, nil
 }
 
 // CentrifugeAssetAssetStoredIterator is returned from FilterAssetStored and is used to iterate over the raw logs and unpacked data for AssetStored events raised by the CentrifugeAsset contract.

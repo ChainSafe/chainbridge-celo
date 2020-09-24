@@ -20,6 +20,7 @@ var (
 	_ = big.NewInt
 	_ = strings.NewReader
 	_ = ethereum.NotFound
+	_ = abi.U256
 	_ = bind.Bind
 	_ = common.Big1
 	_ = types.BloomLookup
@@ -30,7 +31,7 @@ var (
 const HandlerHelpersABI = "[{\"inputs\":[],\"name\":\"_bridgeAddress\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"_burnList\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"_contractWhitelist\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"name\":\"_resourceIDToTokenContractAddress\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"_tokenContractAddressToResourceID\",\"outputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"resourceID\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"contractAddress\",\"type\":\"address\"}],\"name\":\"setResource\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"contractAddress\",\"type\":\"address\"}],\"name\":\"setBurnable\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"tokenAddress\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"recipient\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"amountOrTokenID\",\"type\":\"uint256\"}],\"name\":\"withdraw\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}]"
 
 // HandlerHelpersBin is the compiled bytecode used for deploying new contracts.
-var HandlerHelpersBin = "0x608060405234801561001057600080fd5b50610905806100206000396000f3fe608060405234801561001057600080fd5b50600436106100885760003560e01c80637f79bea81161005b5780637f79bea8146101e5578063b8fa373614610241578063c8ba6c871461028f578063d9caed12146102e757610088565b806307b7ed991461008d5780630a6d55d8146100d1578063318c136e1461013f5780636a70d08114610189575b600080fd5b6100cf600480360360208110156100a357600080fd5b81019080803573ffffffffffffffffffffffffffffffffffffffff169060200190929190505050610355565b005b6100fd600480360360208110156100e757600080fd5b8101908080359060200190929190505050610369565b604051808273ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200191505060405180910390f35b61014761039c565b604051808273ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200191505060405180910390f35b6101cb6004803603602081101561019f57600080fd5b81019080803573ffffffffffffffffffffffffffffffffffffffff1690602001909291905050506103c1565b604051808215151515815260200191505060405180910390f35b610227600480360360208110156101fb57600080fd5b81019080803573ffffffffffffffffffffffffffffffffffffffff1690602001909291905050506103e1565b604051808215151515815260200191505060405180910390f35b61028d6004803603604081101561025757600080fd5b8101908080359060200190929190803573ffffffffffffffffffffffffffffffffffffffff169060200190929190505050610401565b005b6102d1600480360360208110156102a557600080fd5b81019080803573ffffffffffffffffffffffffffffffffffffffff16906020019092919050505061056f565b6040518082815260200191505060405180910390f35b610353600480360360608110156102fd57600080fd5b81019080803573ffffffffffffffffffffffffffffffffffffffff169060200190929190803573ffffffffffffffffffffffffffffffffffffffff16906020019092919080359060200190929190505050610587565b005b61035d61058c565b61036681610650565b50565b60016020528060005260406000206000915054906101000a900473ffffffffffffffffffffffffffffffffffffffff1681565b6000809054906101000a900473ffffffffffffffffffffffffffffffffffffffff1681565b60046020528060005260406000206000915054906101000a900460ff1681565b60036020528060005260406000206000915054906101000a900460ff1681565b61040961058c565b600073ffffffffffffffffffffffffffffffffffffffff166001600084815260200190815260200160002060009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16146104c1576040517f08c379a00000000000000000000000000000000000000000000000000000000081526004018080602001828103825260378152602001806108996037913960400191505060405180910390fd5b6000600260008373ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1681526020019081526020016000205490506000801b8114610560576040517f08c379a00000000000000000000000000000000000000000000000000000000081526004018080602001828103825260358152602001806108406035913960400191505060405180910390fd5b61056a838361074d565b505050565b60026020528060005260406000206000915090505481565b505050565b6000809054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff163373ffffffffffffffffffffffffffffffffffffffff161461064e576040517f08c379a000000000000000000000000000000000000000000000000000000000815260040180806020018281038252601e8152602001807f73656e646572206d7573742062652062726964676520636f6e7472616374000081525060200191505060405180910390fd5b565b600360008273ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060009054906101000a900460ff166106f2576040517f08c379a00000000000000000000000000000000000000000000000000000000081526004018080602001828103825260248152602001806108756024913960400191505060405180910390fd5b6001600460008373ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060006101000a81548160ff02191690831515021790555050565b806001600084815260200190815260200160002060006101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff16021790555081600260008373ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff168152602001908152602001600020819055506001600360008373ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060006101000a81548160ff021916908315150217905550505056fe636f6e7472616374206164647265737320616c72656164792068617320636f72726573706f6e64696e67207265736f75726365494470726f766964656420636f6e7472616374206973206e6f742077686974656c69737465647265736f75726365494420616c726561647920686173206120636f72726573706f6e64696e6720636f6e74726163742061646472657373a26469706673582212207794d9f6794394360f368d429c3264771e3a6aeda59de4a053d9f147f33893bb64736f6c63430006040033"
+var HandlerHelpersBin = "0x608060405234801561001057600080fd5b5061040a806100206000396000f3fe608060405234801561001057600080fd5b50600436106100885760003560e01c80637f79bea81161005b5780637f79bea814610130578063b8fa373614610156578063c8ba6c8714610182578063d9caed12146101ba57610088565b806307b7ed991461008d5780630a6d55d8146100b5578063318c136e146100ee5780636a70d081146100f6575b600080fd5b6100b3600480360360208110156100a357600080fd5b50356001600160a01b03166101f0565b005b6100d2600480360360208110156100cb57600080fd5b5035610204565b604080516001600160a01b039092168252519081900360200190f35b6100d261021f565b61011c6004803603602081101561010c57600080fd5b50356001600160a01b031661022e565b604080519115158252519081900360200190f35b61011c6004803603602081101561014657600080fd5b50356001600160a01b0316610243565b6100b36004803603604081101561016c57600080fd5b50803590602001356001600160a01b0316610258565b6101a86004803603602081101561019857600080fd5b50356001600160a01b031661026e565b60408051918252519081900360200190f35b6100b3600480360360608110156101d057600080fd5b506001600160a01b03813581169160208101359091169060400135610280565b6101f8610285565b610201816102e6565b50565b6001602052600090815260409020546001600160a01b031681565b6000546001600160a01b031681565b60046020526000908152604090205460ff1681565b60036020526000908152604090205460ff1681565b610260610285565b61026a8282610361565b5050565b60026020526000908152604090205481565b505050565b6000546001600160a01b031633146102e4576040805162461bcd60e51b815260206004820152601e60248201527f73656e646572206d7573742062652062726964676520636f6e74726163740000604482015290519081900360640190fd5b565b6001600160a01b03811660009081526003602052604090205460ff1661033d5760405162461bcd60e51b81526004018080602001828103825260248152602001806103b16024913960400191505060405180910390fd5b6001600160a01b03166000908152600460205260409020805460ff19166001179055565b600082815260016020818152604080842080546001600160a01b039096166001600160a01b0319909616861790559383526002815283832094909455600390935220805460ff1916909117905556fe70726f766964656420636f6e7472616374206973206e6f742077686974656c6973746564a264697066735822122051907f5dc6838f0031251c5e7e1e043c763a53e613c25bc3d2f7787a0b6ad14664736f6c63430006040033"
 
 // DeployHandlerHelpers deploys a new Ethereum contract, binding an instance of HandlerHelpers to it.
 func DeployHandlerHelpers(auth *bind.TransactOpts, backend bind.ContractBackend) (common.Address, *types.Transaction, *HandlerHelpers, error) {
@@ -150,6 +151,15 @@ func bindHandlerHelpers(address common.Address, caller bind.ContractCaller, tran
 	return bind.NewBoundContract(address, parsed, caller, transactor, filterer), nil
 }
 
+// ParseHandlerHelpersABI parses the ABI
+func ParseHandlerHelpersABI() (*abi.ABI, error) {
+	parsed, err := abi.JSON(strings.NewReader(HandlerHelpersABI))
+	if err != nil {
+		return nil, err
+	}
+	return &parsed, nil
+}
+
 // Call invokes the (constant) contract method with params as input values and
 // sets the output to result. The result type might be a single field for simple
 // returns, a slice of interfaces for anonymous returns and a struct for named
@@ -188,134 +198,109 @@ func (_HandlerHelpers *HandlerHelpersTransactorRaw) Transact(opts *bind.Transact
 	return _HandlerHelpers.Contract.contract.Transact(opts, method, params...)
 }
 
-// BridgeAddress is a free data retrieval call binding the contract method 0x318c136e.
+// BridgeAddress is a paid mutator transaction binding the contract method 0x318c136e.
 //
-// Solidity: function _bridgeAddress() view returns(address)
-func (_HandlerHelpers *HandlerHelpersCaller) BridgeAddress(opts *bind.CallOpts) (common.Address, error) {
-	var (
-		ret0 = new(common.Address)
-	)
-	out := ret0
-	err := _HandlerHelpers.contract.Call(opts, out, "_bridgeAddress")
-	return *ret0, err
+// Solidity: function _bridgeAddress() returns(address)
+func (_HandlerHelpers *HandlerHelpersTransactor) BridgeAddress(opts *bind.TransactOpts) (*types.Transaction, error) {
+	return _HandlerHelpers.contract.Transact(opts, "_bridgeAddress")
 }
 
-// BridgeAddress is a free data retrieval call binding the contract method 0x318c136e.
+// BridgeAddress is a paid mutator transaction binding the contract method 0x318c136e.
 //
-// Solidity: function _bridgeAddress() view returns(address)
-func (_HandlerHelpers *HandlerHelpersSession) BridgeAddress() (common.Address, error) {
-	return _HandlerHelpers.Contract.BridgeAddress(&_HandlerHelpers.CallOpts)
+// Solidity: function _bridgeAddress() returns(address)
+func (_HandlerHelpers *HandlerHelpersSession) BridgeAddress() (*types.Transaction, error) {
+	return _HandlerHelpers.Contract.BridgeAddress(&_HandlerHelpers.TransactOpts)
 }
 
-// BridgeAddress is a free data retrieval call binding the contract method 0x318c136e.
+// BridgeAddress is a paid mutator transaction binding the contract method 0x318c136e.
 //
-// Solidity: function _bridgeAddress() view returns(address)
-func (_HandlerHelpers *HandlerHelpersCallerSession) BridgeAddress() (common.Address, error) {
-	return _HandlerHelpers.Contract.BridgeAddress(&_HandlerHelpers.CallOpts)
+// Solidity: function _bridgeAddress() returns(address)
+func (_HandlerHelpers *HandlerHelpersTransactorSession) BridgeAddress() (*types.Transaction, error) {
+	return _HandlerHelpers.Contract.BridgeAddress(&_HandlerHelpers.TransactOpts)
 }
 
-// BurnList is a free data retrieval call binding the contract method 0x6a70d081.
+// BurnList is a paid mutator transaction binding the contract method 0x6a70d081.
 //
-// Solidity: function _burnList(address ) view returns(bool)
-func (_HandlerHelpers *HandlerHelpersCaller) BurnList(opts *bind.CallOpts, arg0 common.Address) (bool, error) {
-	var (
-		ret0 = new(bool)
-	)
-	out := ret0
-	err := _HandlerHelpers.contract.Call(opts, out, "_burnList", arg0)
-	return *ret0, err
+// Solidity: function _burnList(address ) returns(bool)
+func (_HandlerHelpers *HandlerHelpersTransactor) BurnList(opts *bind.TransactOpts, arg0 common.Address) (*types.Transaction, error) {
+	return _HandlerHelpers.contract.Transact(opts, "_burnList", arg0)
 }
 
-// BurnList is a free data retrieval call binding the contract method 0x6a70d081.
+// BurnList is a paid mutator transaction binding the contract method 0x6a70d081.
 //
-// Solidity: function _burnList(address ) view returns(bool)
-func (_HandlerHelpers *HandlerHelpersSession) BurnList(arg0 common.Address) (bool, error) {
-	return _HandlerHelpers.Contract.BurnList(&_HandlerHelpers.CallOpts, arg0)
+// Solidity: function _burnList(address ) returns(bool)
+func (_HandlerHelpers *HandlerHelpersSession) BurnList(arg0 common.Address) (*types.Transaction, error) {
+	return _HandlerHelpers.Contract.BurnList(&_HandlerHelpers.TransactOpts, arg0)
 }
 
-// BurnList is a free data retrieval call binding the contract method 0x6a70d081.
+// BurnList is a paid mutator transaction binding the contract method 0x6a70d081.
 //
-// Solidity: function _burnList(address ) view returns(bool)
-func (_HandlerHelpers *HandlerHelpersCallerSession) BurnList(arg0 common.Address) (bool, error) {
-	return _HandlerHelpers.Contract.BurnList(&_HandlerHelpers.CallOpts, arg0)
+// Solidity: function _burnList(address ) returns(bool)
+func (_HandlerHelpers *HandlerHelpersTransactorSession) BurnList(arg0 common.Address) (*types.Transaction, error) {
+	return _HandlerHelpers.Contract.BurnList(&_HandlerHelpers.TransactOpts, arg0)
 }
 
-// ContractWhitelist is a free data retrieval call binding the contract method 0x7f79bea8.
+// ContractWhitelist is a paid mutator transaction binding the contract method 0x7f79bea8.
 //
-// Solidity: function _contractWhitelist(address ) view returns(bool)
-func (_HandlerHelpers *HandlerHelpersCaller) ContractWhitelist(opts *bind.CallOpts, arg0 common.Address) (bool, error) {
-	var (
-		ret0 = new(bool)
-	)
-	out := ret0
-	err := _HandlerHelpers.contract.Call(opts, out, "_contractWhitelist", arg0)
-	return *ret0, err
+// Solidity: function _contractWhitelist(address ) returns(bool)
+func (_HandlerHelpers *HandlerHelpersTransactor) ContractWhitelist(opts *bind.TransactOpts, arg0 common.Address) (*types.Transaction, error) {
+	return _HandlerHelpers.contract.Transact(opts, "_contractWhitelist", arg0)
 }
 
-// ContractWhitelist is a free data retrieval call binding the contract method 0x7f79bea8.
+// ContractWhitelist is a paid mutator transaction binding the contract method 0x7f79bea8.
 //
-// Solidity: function _contractWhitelist(address ) view returns(bool)
-func (_HandlerHelpers *HandlerHelpersSession) ContractWhitelist(arg0 common.Address) (bool, error) {
-	return _HandlerHelpers.Contract.ContractWhitelist(&_HandlerHelpers.CallOpts, arg0)
+// Solidity: function _contractWhitelist(address ) returns(bool)
+func (_HandlerHelpers *HandlerHelpersSession) ContractWhitelist(arg0 common.Address) (*types.Transaction, error) {
+	return _HandlerHelpers.Contract.ContractWhitelist(&_HandlerHelpers.TransactOpts, arg0)
 }
 
-// ContractWhitelist is a free data retrieval call binding the contract method 0x7f79bea8.
+// ContractWhitelist is a paid mutator transaction binding the contract method 0x7f79bea8.
 //
-// Solidity: function _contractWhitelist(address ) view returns(bool)
-func (_HandlerHelpers *HandlerHelpersCallerSession) ContractWhitelist(arg0 common.Address) (bool, error) {
-	return _HandlerHelpers.Contract.ContractWhitelist(&_HandlerHelpers.CallOpts, arg0)
+// Solidity: function _contractWhitelist(address ) returns(bool)
+func (_HandlerHelpers *HandlerHelpersTransactorSession) ContractWhitelist(arg0 common.Address) (*types.Transaction, error) {
+	return _HandlerHelpers.Contract.ContractWhitelist(&_HandlerHelpers.TransactOpts, arg0)
 }
 
-// ResourceIDToTokenContractAddress is a free data retrieval call binding the contract method 0x0a6d55d8.
+// ResourceIDToTokenContractAddress is a paid mutator transaction binding the contract method 0x0a6d55d8.
 //
-// Solidity: function _resourceIDToTokenContractAddress(bytes32 ) view returns(address)
-func (_HandlerHelpers *HandlerHelpersCaller) ResourceIDToTokenContractAddress(opts *bind.CallOpts, arg0 [32]byte) (common.Address, error) {
-	var (
-		ret0 = new(common.Address)
-	)
-	out := ret0
-	err := _HandlerHelpers.contract.Call(opts, out, "_resourceIDToTokenContractAddress", arg0)
-	return *ret0, err
+// Solidity: function _resourceIDToTokenContractAddress(bytes32 ) returns(address)
+func (_HandlerHelpers *HandlerHelpersTransactor) ResourceIDToTokenContractAddress(opts *bind.TransactOpts, arg0 [32]byte) (*types.Transaction, error) {
+	return _HandlerHelpers.contract.Transact(opts, "_resourceIDToTokenContractAddress", arg0)
 }
 
-// ResourceIDToTokenContractAddress is a free data retrieval call binding the contract method 0x0a6d55d8.
+// ResourceIDToTokenContractAddress is a paid mutator transaction binding the contract method 0x0a6d55d8.
 //
-// Solidity: function _resourceIDToTokenContractAddress(bytes32 ) view returns(address)
-func (_HandlerHelpers *HandlerHelpersSession) ResourceIDToTokenContractAddress(arg0 [32]byte) (common.Address, error) {
-	return _HandlerHelpers.Contract.ResourceIDToTokenContractAddress(&_HandlerHelpers.CallOpts, arg0)
+// Solidity: function _resourceIDToTokenContractAddress(bytes32 ) returns(address)
+func (_HandlerHelpers *HandlerHelpersSession) ResourceIDToTokenContractAddress(arg0 [32]byte) (*types.Transaction, error) {
+	return _HandlerHelpers.Contract.ResourceIDToTokenContractAddress(&_HandlerHelpers.TransactOpts, arg0)
 }
 
-// ResourceIDToTokenContractAddress is a free data retrieval call binding the contract method 0x0a6d55d8.
+// ResourceIDToTokenContractAddress is a paid mutator transaction binding the contract method 0x0a6d55d8.
 //
-// Solidity: function _resourceIDToTokenContractAddress(bytes32 ) view returns(address)
-func (_HandlerHelpers *HandlerHelpersCallerSession) ResourceIDToTokenContractAddress(arg0 [32]byte) (common.Address, error) {
-	return _HandlerHelpers.Contract.ResourceIDToTokenContractAddress(&_HandlerHelpers.CallOpts, arg0)
+// Solidity: function _resourceIDToTokenContractAddress(bytes32 ) returns(address)
+func (_HandlerHelpers *HandlerHelpersTransactorSession) ResourceIDToTokenContractAddress(arg0 [32]byte) (*types.Transaction, error) {
+	return _HandlerHelpers.Contract.ResourceIDToTokenContractAddress(&_HandlerHelpers.TransactOpts, arg0)
 }
 
-// TokenContractAddressToResourceID is a free data retrieval call binding the contract method 0xc8ba6c87.
+// TokenContractAddressToResourceID is a paid mutator transaction binding the contract method 0xc8ba6c87.
 //
-// Solidity: function _tokenContractAddressToResourceID(address ) view returns(bytes32)
-func (_HandlerHelpers *HandlerHelpersCaller) TokenContractAddressToResourceID(opts *bind.CallOpts, arg0 common.Address) ([32]byte, error) {
-	var (
-		ret0 = new([32]byte)
-	)
-	out := ret0
-	err := _HandlerHelpers.contract.Call(opts, out, "_tokenContractAddressToResourceID", arg0)
-	return *ret0, err
+// Solidity: function _tokenContractAddressToResourceID(address ) returns(bytes32)
+func (_HandlerHelpers *HandlerHelpersTransactor) TokenContractAddressToResourceID(opts *bind.TransactOpts, arg0 common.Address) (*types.Transaction, error) {
+	return _HandlerHelpers.contract.Transact(opts, "_tokenContractAddressToResourceID", arg0)
 }
 
-// TokenContractAddressToResourceID is a free data retrieval call binding the contract method 0xc8ba6c87.
+// TokenContractAddressToResourceID is a paid mutator transaction binding the contract method 0xc8ba6c87.
 //
-// Solidity: function _tokenContractAddressToResourceID(address ) view returns(bytes32)
-func (_HandlerHelpers *HandlerHelpersSession) TokenContractAddressToResourceID(arg0 common.Address) ([32]byte, error) {
-	return _HandlerHelpers.Contract.TokenContractAddressToResourceID(&_HandlerHelpers.CallOpts, arg0)
+// Solidity: function _tokenContractAddressToResourceID(address ) returns(bytes32)
+func (_HandlerHelpers *HandlerHelpersSession) TokenContractAddressToResourceID(arg0 common.Address) (*types.Transaction, error) {
+	return _HandlerHelpers.Contract.TokenContractAddressToResourceID(&_HandlerHelpers.TransactOpts, arg0)
 }
 
-// TokenContractAddressToResourceID is a free data retrieval call binding the contract method 0xc8ba6c87.
+// TokenContractAddressToResourceID is a paid mutator transaction binding the contract method 0xc8ba6c87.
 //
-// Solidity: function _tokenContractAddressToResourceID(address ) view returns(bytes32)
-func (_HandlerHelpers *HandlerHelpersCallerSession) TokenContractAddressToResourceID(arg0 common.Address) ([32]byte, error) {
-	return _HandlerHelpers.Contract.TokenContractAddressToResourceID(&_HandlerHelpers.CallOpts, arg0)
+// Solidity: function _tokenContractAddressToResourceID(address ) returns(bytes32)
+func (_HandlerHelpers *HandlerHelpersTransactorSession) TokenContractAddressToResourceID(arg0 common.Address) (*types.Transaction, error) {
+	return _HandlerHelpers.Contract.TokenContractAddressToResourceID(&_HandlerHelpers.TransactOpts, arg0)
 }
 
 // SetBurnable is a paid mutator transaction binding the contract method 0x07b7ed99.
@@ -379,4 +364,20 @@ func (_HandlerHelpers *HandlerHelpersSession) Withdraw(tokenAddress common.Addre
 // Solidity: function withdraw(address tokenAddress, address recipient, uint256 amountOrTokenID) returns()
 func (_HandlerHelpers *HandlerHelpersTransactorSession) Withdraw(tokenAddress common.Address, recipient common.Address, amountOrTokenID *big.Int) (*types.Transaction, error) {
 	return _HandlerHelpers.Contract.Withdraw(&_HandlerHelpers.TransactOpts, tokenAddress, recipient, amountOrTokenID)
+}
+
+// TryParseLog attempts to parse a log. Returns the parsed log, evenName and whether it was succesfull
+func (_HandlerHelpers *HandlerHelpersFilterer) TryParseLog(log types.Log) (eventName string, event interface{}, ok bool, err error) {
+	eventName, ok, err = _HandlerHelpers.contract.LogEventName(log)
+	if err != nil || !ok {
+		return "", nil, false, err
+	}
+
+	switch eventName {
+	}
+	if err != nil {
+		return "", nil, false, err
+	}
+
+	return eventName, event, ok, nil
 }

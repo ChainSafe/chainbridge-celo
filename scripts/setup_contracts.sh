@@ -2,9 +2,9 @@
 # Copyright 2020 ChainSafe Systems
 # SPDX-License-Identifier: LGPL-3.0-only
 
-CONTRACTS_REPO="https://github.com/ChainSafe/chainbridge-solidity"
-CONTRACTS_BRANCH="v0.0.1-alpha"
-CONTRACTS_COMMIT="5382f0c889b4c4e61a1700568ef005af6a5b24e7"
+CONTRACTS_REPO="https://github.com/ChainSafe/chainbridge-celo-solidity/"
+CONTRACTS_BRANCH="main"
+CONTRACTS_COMMIT="ee9c10f4f913b06f1f1de44ec3b74855dfb03382"
 CONTRACTS_DIR="./solidity"
 DEST_DIR="./bindings"
 

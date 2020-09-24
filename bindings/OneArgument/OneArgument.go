@@ -20,6 +20,7 @@ var (
 	_ = big.NewInt
 	_ = strings.NewReader
 	_ = ethereum.NotFound
+	_ = abi.U256
 	_ = bind.Bind
 	_ = common.Big1
 	_ = types.BloomLookup
@@ -30,7 +31,7 @@ var (
 const OneArgumentABI = "[{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"uint256\",\"name\":\"argumentOne\",\"type\":\"uint256\"}],\"name\":\"OneArgumentCalled\",\"type\":\"event\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"argumentOne\",\"type\":\"uint256\"}],\"name\":\"oneArgument\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}]"
 
 // OneArgumentBin is the compiled bytecode used for deploying new contracts.
-var OneArgumentBin = "0x6080604052348015600f57600080fd5b5060be8061001e6000396000f3fe6080604052348015600f57600080fd5b506004361060285760003560e01c8063c95cf0d814602d575b600080fd5b605660048036036020811015604157600080fd5b81019080803590602001909291905050506058565b005b807f29ab08c845830c69b55a1fba5c95718f65dc24361a471e3da14cd5ff2b37315960405160405180910390a25056fea26469706673582212206783beba4abc4822e95a623854c124e160893328b2a060c1db8b1d11e10c123b64736f6c63430006040033"
+var OneArgumentBin = "0x6080604052348015600f57600080fd5b5060ad8061001e6000396000f3fe6080604052348015600f57600080fd5b506004361060285760003560e01c8063c95cf0d814602d575b600080fd5b604760048036036020811015604157600080fd5b50356049565b005b60405181907f29ab08c845830c69b55a1fba5c95718f65dc24361a471e3da14cd5ff2b37315990600090a25056fea26469706673582212207abacfcf6b6fb472e1efe98a600a334e39f5a63f98b7ca3d26e7bdf3a1e160cd64736f6c63430006040033"
 
 // DeployOneArgument deploys a new Ethereum contract, binding an instance of OneArgument to it.
 func DeployOneArgument(auth *bind.TransactOpts, backend bind.ContractBackend) (common.Address, *types.Transaction, *OneArgument, error) {
@@ -150,6 +151,15 @@ func bindOneArgument(address common.Address, caller bind.ContractCaller, transac
 	return bind.NewBoundContract(address, parsed, caller, transactor, filterer), nil
 }
 
+// ParseOneArgumentABI parses the ABI
+func ParseOneArgumentABI() (*abi.ABI, error) {
+	parsed, err := abi.JSON(strings.NewReader(OneArgumentABI))
+	if err != nil {
+		return nil, err
+	}
+	return &parsed, nil
+}
+
 // Call invokes the (constant) contract method with params as input values and
 // sets the output to result. The result type might be a single field for simple
 // returns, a slice of interfaces for anonymous returns and a struct for named
@@ -207,6 +217,24 @@ func (_OneArgument *OneArgumentSession) OneArgument(argumentOne *big.Int) (*type
 // Solidity: function oneArgument(uint256 argumentOne) returns()
 func (_OneArgument *OneArgumentTransactorSession) OneArgument(argumentOne *big.Int) (*types.Transaction, error) {
 	return _OneArgument.Contract.OneArgument(&_OneArgument.TransactOpts, argumentOne)
+}
+
+// TryParseLog attempts to parse a log. Returns the parsed log, evenName and whether it was succesfull
+func (_OneArgument *OneArgumentFilterer) TryParseLog(log types.Log) (eventName string, event interface{}, ok bool, err error) {
+	eventName, ok, err = _OneArgument.contract.LogEventName(log)
+	if err != nil || !ok {
+		return "", nil, false, err
+	}
+
+	switch eventName {
+	case "OneArgumentCalled":
+		event, err = _OneArgument.ParseOneArgumentCalled(log)
+	}
+	if err != nil {
+		return "", nil, false, err
+	}
+
+	return eventName, event, ok, nil
 }
 
 // OneArgumentOneArgumentCalledIterator is returned from FilterOneArgumentCalled and is used to iterate over the raw logs and unpacked data for OneArgumentCalled events raised by the OneArgument contract.

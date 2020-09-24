@@ -20,6 +20,7 @@ var (
 	_ = big.NewInt
 	_ = strings.NewReader
 	_ = ethereum.NotFound
+	_ = abi.U256
 	_ = bind.Bind
 	_ = common.Big1
 	_ = types.BloomLookup
@@ -133,6 +134,15 @@ func bindERC721Pausable(address common.Address, caller bind.ContractCaller, tran
 	return bind.NewBoundContract(address, parsed, caller, transactor, filterer), nil
 }
 
+// ParseERC721PausableABI parses the ABI
+func ParseERC721PausableABI() (*abi.ABI, error) {
+	parsed, err := abi.JSON(strings.NewReader(ERC721PausableABI))
+	if err != nil {
+		return nil, err
+	}
+	return &parsed, nil
+}
+
 // Call invokes the (constant) contract method with params as input values and
 // sets the output to result. The result type might be a single field for simple
 // returns, a slice of interfaces for anonymous returns and a struct for named
@@ -171,344 +181,6 @@ func (_ERC721Pausable *ERC721PausableTransactorRaw) Transact(opts *bind.Transact
 	return _ERC721Pausable.Contract.contract.Transact(opts, method, params...)
 }
 
-// BalanceOf is a free data retrieval call binding the contract method 0x70a08231.
-//
-// Solidity: function balanceOf(address owner) view returns(uint256)
-func (_ERC721Pausable *ERC721PausableCaller) BalanceOf(opts *bind.CallOpts, owner common.Address) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _ERC721Pausable.contract.Call(opts, out, "balanceOf", owner)
-	return *ret0, err
-}
-
-// BalanceOf is a free data retrieval call binding the contract method 0x70a08231.
-//
-// Solidity: function balanceOf(address owner) view returns(uint256)
-func (_ERC721Pausable *ERC721PausableSession) BalanceOf(owner common.Address) (*big.Int, error) {
-	return _ERC721Pausable.Contract.BalanceOf(&_ERC721Pausable.CallOpts, owner)
-}
-
-// BalanceOf is a free data retrieval call binding the contract method 0x70a08231.
-//
-// Solidity: function balanceOf(address owner) view returns(uint256)
-func (_ERC721Pausable *ERC721PausableCallerSession) BalanceOf(owner common.Address) (*big.Int, error) {
-	return _ERC721Pausable.Contract.BalanceOf(&_ERC721Pausable.CallOpts, owner)
-}
-
-// BaseURI is a free data retrieval call binding the contract method 0x6c0360eb.
-//
-// Solidity: function baseURI() view returns(string)
-func (_ERC721Pausable *ERC721PausableCaller) BaseURI(opts *bind.CallOpts) (string, error) {
-	var (
-		ret0 = new(string)
-	)
-	out := ret0
-	err := _ERC721Pausable.contract.Call(opts, out, "baseURI")
-	return *ret0, err
-}
-
-// BaseURI is a free data retrieval call binding the contract method 0x6c0360eb.
-//
-// Solidity: function baseURI() view returns(string)
-func (_ERC721Pausable *ERC721PausableSession) BaseURI() (string, error) {
-	return _ERC721Pausable.Contract.BaseURI(&_ERC721Pausable.CallOpts)
-}
-
-// BaseURI is a free data retrieval call binding the contract method 0x6c0360eb.
-//
-// Solidity: function baseURI() view returns(string)
-func (_ERC721Pausable *ERC721PausableCallerSession) BaseURI() (string, error) {
-	return _ERC721Pausable.Contract.BaseURI(&_ERC721Pausable.CallOpts)
-}
-
-// GetApproved is a free data retrieval call binding the contract method 0x081812fc.
-//
-// Solidity: function getApproved(uint256 tokenId) view returns(address)
-func (_ERC721Pausable *ERC721PausableCaller) GetApproved(opts *bind.CallOpts, tokenId *big.Int) (common.Address, error) {
-	var (
-		ret0 = new(common.Address)
-	)
-	out := ret0
-	err := _ERC721Pausable.contract.Call(opts, out, "getApproved", tokenId)
-	return *ret0, err
-}
-
-// GetApproved is a free data retrieval call binding the contract method 0x081812fc.
-//
-// Solidity: function getApproved(uint256 tokenId) view returns(address)
-func (_ERC721Pausable *ERC721PausableSession) GetApproved(tokenId *big.Int) (common.Address, error) {
-	return _ERC721Pausable.Contract.GetApproved(&_ERC721Pausable.CallOpts, tokenId)
-}
-
-// GetApproved is a free data retrieval call binding the contract method 0x081812fc.
-//
-// Solidity: function getApproved(uint256 tokenId) view returns(address)
-func (_ERC721Pausable *ERC721PausableCallerSession) GetApproved(tokenId *big.Int) (common.Address, error) {
-	return _ERC721Pausable.Contract.GetApproved(&_ERC721Pausable.CallOpts, tokenId)
-}
-
-// IsApprovedForAll is a free data retrieval call binding the contract method 0xe985e9c5.
-//
-// Solidity: function isApprovedForAll(address owner, address operator) view returns(bool)
-func (_ERC721Pausable *ERC721PausableCaller) IsApprovedForAll(opts *bind.CallOpts, owner common.Address, operator common.Address) (bool, error) {
-	var (
-		ret0 = new(bool)
-	)
-	out := ret0
-	err := _ERC721Pausable.contract.Call(opts, out, "isApprovedForAll", owner, operator)
-	return *ret0, err
-}
-
-// IsApprovedForAll is a free data retrieval call binding the contract method 0xe985e9c5.
-//
-// Solidity: function isApprovedForAll(address owner, address operator) view returns(bool)
-func (_ERC721Pausable *ERC721PausableSession) IsApprovedForAll(owner common.Address, operator common.Address) (bool, error) {
-	return _ERC721Pausable.Contract.IsApprovedForAll(&_ERC721Pausable.CallOpts, owner, operator)
-}
-
-// IsApprovedForAll is a free data retrieval call binding the contract method 0xe985e9c5.
-//
-// Solidity: function isApprovedForAll(address owner, address operator) view returns(bool)
-func (_ERC721Pausable *ERC721PausableCallerSession) IsApprovedForAll(owner common.Address, operator common.Address) (bool, error) {
-	return _ERC721Pausable.Contract.IsApprovedForAll(&_ERC721Pausable.CallOpts, owner, operator)
-}
-
-// Name is a free data retrieval call binding the contract method 0x06fdde03.
-//
-// Solidity: function name() view returns(string)
-func (_ERC721Pausable *ERC721PausableCaller) Name(opts *bind.CallOpts) (string, error) {
-	var (
-		ret0 = new(string)
-	)
-	out := ret0
-	err := _ERC721Pausable.contract.Call(opts, out, "name")
-	return *ret0, err
-}
-
-// Name is a free data retrieval call binding the contract method 0x06fdde03.
-//
-// Solidity: function name() view returns(string)
-func (_ERC721Pausable *ERC721PausableSession) Name() (string, error) {
-	return _ERC721Pausable.Contract.Name(&_ERC721Pausable.CallOpts)
-}
-
-// Name is a free data retrieval call binding the contract method 0x06fdde03.
-//
-// Solidity: function name() view returns(string)
-func (_ERC721Pausable *ERC721PausableCallerSession) Name() (string, error) {
-	return _ERC721Pausable.Contract.Name(&_ERC721Pausable.CallOpts)
-}
-
-// OwnerOf is a free data retrieval call binding the contract method 0x6352211e.
-//
-// Solidity: function ownerOf(uint256 tokenId) view returns(address)
-func (_ERC721Pausable *ERC721PausableCaller) OwnerOf(opts *bind.CallOpts, tokenId *big.Int) (common.Address, error) {
-	var (
-		ret0 = new(common.Address)
-	)
-	out := ret0
-	err := _ERC721Pausable.contract.Call(opts, out, "ownerOf", tokenId)
-	return *ret0, err
-}
-
-// OwnerOf is a free data retrieval call binding the contract method 0x6352211e.
-//
-// Solidity: function ownerOf(uint256 tokenId) view returns(address)
-func (_ERC721Pausable *ERC721PausableSession) OwnerOf(tokenId *big.Int) (common.Address, error) {
-	return _ERC721Pausable.Contract.OwnerOf(&_ERC721Pausable.CallOpts, tokenId)
-}
-
-// OwnerOf is a free data retrieval call binding the contract method 0x6352211e.
-//
-// Solidity: function ownerOf(uint256 tokenId) view returns(address)
-func (_ERC721Pausable *ERC721PausableCallerSession) OwnerOf(tokenId *big.Int) (common.Address, error) {
-	return _ERC721Pausable.Contract.OwnerOf(&_ERC721Pausable.CallOpts, tokenId)
-}
-
-// Paused is a free data retrieval call binding the contract method 0x5c975abb.
-//
-// Solidity: function paused() view returns(bool)
-func (_ERC721Pausable *ERC721PausableCaller) Paused(opts *bind.CallOpts) (bool, error) {
-	var (
-		ret0 = new(bool)
-	)
-	out := ret0
-	err := _ERC721Pausable.contract.Call(opts, out, "paused")
-	return *ret0, err
-}
-
-// Paused is a free data retrieval call binding the contract method 0x5c975abb.
-//
-// Solidity: function paused() view returns(bool)
-func (_ERC721Pausable *ERC721PausableSession) Paused() (bool, error) {
-	return _ERC721Pausable.Contract.Paused(&_ERC721Pausable.CallOpts)
-}
-
-// Paused is a free data retrieval call binding the contract method 0x5c975abb.
-//
-// Solidity: function paused() view returns(bool)
-func (_ERC721Pausable *ERC721PausableCallerSession) Paused() (bool, error) {
-	return _ERC721Pausable.Contract.Paused(&_ERC721Pausable.CallOpts)
-}
-
-// SupportsInterface is a free data retrieval call binding the contract method 0x01ffc9a7.
-//
-// Solidity: function supportsInterface(bytes4 interfaceId) view returns(bool)
-func (_ERC721Pausable *ERC721PausableCaller) SupportsInterface(opts *bind.CallOpts, interfaceId [4]byte) (bool, error) {
-	var (
-		ret0 = new(bool)
-	)
-	out := ret0
-	err := _ERC721Pausable.contract.Call(opts, out, "supportsInterface", interfaceId)
-	return *ret0, err
-}
-
-// SupportsInterface is a free data retrieval call binding the contract method 0x01ffc9a7.
-//
-// Solidity: function supportsInterface(bytes4 interfaceId) view returns(bool)
-func (_ERC721Pausable *ERC721PausableSession) SupportsInterface(interfaceId [4]byte) (bool, error) {
-	return _ERC721Pausable.Contract.SupportsInterface(&_ERC721Pausable.CallOpts, interfaceId)
-}
-
-// SupportsInterface is a free data retrieval call binding the contract method 0x01ffc9a7.
-//
-// Solidity: function supportsInterface(bytes4 interfaceId) view returns(bool)
-func (_ERC721Pausable *ERC721PausableCallerSession) SupportsInterface(interfaceId [4]byte) (bool, error) {
-	return _ERC721Pausable.Contract.SupportsInterface(&_ERC721Pausable.CallOpts, interfaceId)
-}
-
-// Symbol is a free data retrieval call binding the contract method 0x95d89b41.
-//
-// Solidity: function symbol() view returns(string)
-func (_ERC721Pausable *ERC721PausableCaller) Symbol(opts *bind.CallOpts) (string, error) {
-	var (
-		ret0 = new(string)
-	)
-	out := ret0
-	err := _ERC721Pausable.contract.Call(opts, out, "symbol")
-	return *ret0, err
-}
-
-// Symbol is a free data retrieval call binding the contract method 0x95d89b41.
-//
-// Solidity: function symbol() view returns(string)
-func (_ERC721Pausable *ERC721PausableSession) Symbol() (string, error) {
-	return _ERC721Pausable.Contract.Symbol(&_ERC721Pausable.CallOpts)
-}
-
-// Symbol is a free data retrieval call binding the contract method 0x95d89b41.
-//
-// Solidity: function symbol() view returns(string)
-func (_ERC721Pausable *ERC721PausableCallerSession) Symbol() (string, error) {
-	return _ERC721Pausable.Contract.Symbol(&_ERC721Pausable.CallOpts)
-}
-
-// TokenByIndex is a free data retrieval call binding the contract method 0x4f6ccce7.
-//
-// Solidity: function tokenByIndex(uint256 index) view returns(uint256)
-func (_ERC721Pausable *ERC721PausableCaller) TokenByIndex(opts *bind.CallOpts, index *big.Int) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _ERC721Pausable.contract.Call(opts, out, "tokenByIndex", index)
-	return *ret0, err
-}
-
-// TokenByIndex is a free data retrieval call binding the contract method 0x4f6ccce7.
-//
-// Solidity: function tokenByIndex(uint256 index) view returns(uint256)
-func (_ERC721Pausable *ERC721PausableSession) TokenByIndex(index *big.Int) (*big.Int, error) {
-	return _ERC721Pausable.Contract.TokenByIndex(&_ERC721Pausable.CallOpts, index)
-}
-
-// TokenByIndex is a free data retrieval call binding the contract method 0x4f6ccce7.
-//
-// Solidity: function tokenByIndex(uint256 index) view returns(uint256)
-func (_ERC721Pausable *ERC721PausableCallerSession) TokenByIndex(index *big.Int) (*big.Int, error) {
-	return _ERC721Pausable.Contract.TokenByIndex(&_ERC721Pausable.CallOpts, index)
-}
-
-// TokenOfOwnerByIndex is a free data retrieval call binding the contract method 0x2f745c59.
-//
-// Solidity: function tokenOfOwnerByIndex(address owner, uint256 index) view returns(uint256)
-func (_ERC721Pausable *ERC721PausableCaller) TokenOfOwnerByIndex(opts *bind.CallOpts, owner common.Address, index *big.Int) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _ERC721Pausable.contract.Call(opts, out, "tokenOfOwnerByIndex", owner, index)
-	return *ret0, err
-}
-
-// TokenOfOwnerByIndex is a free data retrieval call binding the contract method 0x2f745c59.
-//
-// Solidity: function tokenOfOwnerByIndex(address owner, uint256 index) view returns(uint256)
-func (_ERC721Pausable *ERC721PausableSession) TokenOfOwnerByIndex(owner common.Address, index *big.Int) (*big.Int, error) {
-	return _ERC721Pausable.Contract.TokenOfOwnerByIndex(&_ERC721Pausable.CallOpts, owner, index)
-}
-
-// TokenOfOwnerByIndex is a free data retrieval call binding the contract method 0x2f745c59.
-//
-// Solidity: function tokenOfOwnerByIndex(address owner, uint256 index) view returns(uint256)
-func (_ERC721Pausable *ERC721PausableCallerSession) TokenOfOwnerByIndex(owner common.Address, index *big.Int) (*big.Int, error) {
-	return _ERC721Pausable.Contract.TokenOfOwnerByIndex(&_ERC721Pausable.CallOpts, owner, index)
-}
-
-// TokenURI is a free data retrieval call binding the contract method 0xc87b56dd.
-//
-// Solidity: function tokenURI(uint256 tokenId) view returns(string)
-func (_ERC721Pausable *ERC721PausableCaller) TokenURI(opts *bind.CallOpts, tokenId *big.Int) (string, error) {
-	var (
-		ret0 = new(string)
-	)
-	out := ret0
-	err := _ERC721Pausable.contract.Call(opts, out, "tokenURI", tokenId)
-	return *ret0, err
-}
-
-// TokenURI is a free data retrieval call binding the contract method 0xc87b56dd.
-//
-// Solidity: function tokenURI(uint256 tokenId) view returns(string)
-func (_ERC721Pausable *ERC721PausableSession) TokenURI(tokenId *big.Int) (string, error) {
-	return _ERC721Pausable.Contract.TokenURI(&_ERC721Pausable.CallOpts, tokenId)
-}
-
-// TokenURI is a free data retrieval call binding the contract method 0xc87b56dd.
-//
-// Solidity: function tokenURI(uint256 tokenId) view returns(string)
-func (_ERC721Pausable *ERC721PausableCallerSession) TokenURI(tokenId *big.Int) (string, error) {
-	return _ERC721Pausable.Contract.TokenURI(&_ERC721Pausable.CallOpts, tokenId)
-}
-
-// TotalSupply is a free data retrieval call binding the contract method 0x18160ddd.
-//
-// Solidity: function totalSupply() view returns(uint256)
-func (_ERC721Pausable *ERC721PausableCaller) TotalSupply(opts *bind.CallOpts) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _ERC721Pausable.contract.Call(opts, out, "totalSupply")
-	return *ret0, err
-}
-
-// TotalSupply is a free data retrieval call binding the contract method 0x18160ddd.
-//
-// Solidity: function totalSupply() view returns(uint256)
-func (_ERC721Pausable *ERC721PausableSession) TotalSupply() (*big.Int, error) {
-	return _ERC721Pausable.Contract.TotalSupply(&_ERC721Pausable.CallOpts)
-}
-
-// TotalSupply is a free data retrieval call binding the contract method 0x18160ddd.
-//
-// Solidity: function totalSupply() view returns(uint256)
-func (_ERC721Pausable *ERC721PausableCallerSession) TotalSupply() (*big.Int, error) {
-	return _ERC721Pausable.Contract.TotalSupply(&_ERC721Pausable.CallOpts)
-}
-
 // Approve is a paid mutator transaction binding the contract method 0x095ea7b3.
 //
 // Solidity: function approve(address to, uint256 tokenId) returns()
@@ -528,6 +200,153 @@ func (_ERC721Pausable *ERC721PausableSession) Approve(to common.Address, tokenId
 // Solidity: function approve(address to, uint256 tokenId) returns()
 func (_ERC721Pausable *ERC721PausableTransactorSession) Approve(to common.Address, tokenId *big.Int) (*types.Transaction, error) {
 	return _ERC721Pausable.Contract.Approve(&_ERC721Pausable.TransactOpts, to, tokenId)
+}
+
+// BalanceOf is a paid mutator transaction binding the contract method 0x70a08231.
+//
+// Solidity: function balanceOf(address owner) returns(uint256)
+func (_ERC721Pausable *ERC721PausableTransactor) BalanceOf(opts *bind.TransactOpts, owner common.Address) (*types.Transaction, error) {
+	return _ERC721Pausable.contract.Transact(opts, "balanceOf", owner)
+}
+
+// BalanceOf is a paid mutator transaction binding the contract method 0x70a08231.
+//
+// Solidity: function balanceOf(address owner) returns(uint256)
+func (_ERC721Pausable *ERC721PausableSession) BalanceOf(owner common.Address) (*types.Transaction, error) {
+	return _ERC721Pausable.Contract.BalanceOf(&_ERC721Pausable.TransactOpts, owner)
+}
+
+// BalanceOf is a paid mutator transaction binding the contract method 0x70a08231.
+//
+// Solidity: function balanceOf(address owner) returns(uint256)
+func (_ERC721Pausable *ERC721PausableTransactorSession) BalanceOf(owner common.Address) (*types.Transaction, error) {
+	return _ERC721Pausable.Contract.BalanceOf(&_ERC721Pausable.TransactOpts, owner)
+}
+
+// BaseURI is a paid mutator transaction binding the contract method 0x6c0360eb.
+//
+// Solidity: function baseURI() returns(string)
+func (_ERC721Pausable *ERC721PausableTransactor) BaseURI(opts *bind.TransactOpts) (*types.Transaction, error) {
+	return _ERC721Pausable.contract.Transact(opts, "baseURI")
+}
+
+// BaseURI is a paid mutator transaction binding the contract method 0x6c0360eb.
+//
+// Solidity: function baseURI() returns(string)
+func (_ERC721Pausable *ERC721PausableSession) BaseURI() (*types.Transaction, error) {
+	return _ERC721Pausable.Contract.BaseURI(&_ERC721Pausable.TransactOpts)
+}
+
+// BaseURI is a paid mutator transaction binding the contract method 0x6c0360eb.
+//
+// Solidity: function baseURI() returns(string)
+func (_ERC721Pausable *ERC721PausableTransactorSession) BaseURI() (*types.Transaction, error) {
+	return _ERC721Pausable.Contract.BaseURI(&_ERC721Pausable.TransactOpts)
+}
+
+// GetApproved is a paid mutator transaction binding the contract method 0x081812fc.
+//
+// Solidity: function getApproved(uint256 tokenId) returns(address)
+func (_ERC721Pausable *ERC721PausableTransactor) GetApproved(opts *bind.TransactOpts, tokenId *big.Int) (*types.Transaction, error) {
+	return _ERC721Pausable.contract.Transact(opts, "getApproved", tokenId)
+}
+
+// GetApproved is a paid mutator transaction binding the contract method 0x081812fc.
+//
+// Solidity: function getApproved(uint256 tokenId) returns(address)
+func (_ERC721Pausable *ERC721PausableSession) GetApproved(tokenId *big.Int) (*types.Transaction, error) {
+	return _ERC721Pausable.Contract.GetApproved(&_ERC721Pausable.TransactOpts, tokenId)
+}
+
+// GetApproved is a paid mutator transaction binding the contract method 0x081812fc.
+//
+// Solidity: function getApproved(uint256 tokenId) returns(address)
+func (_ERC721Pausable *ERC721PausableTransactorSession) GetApproved(tokenId *big.Int) (*types.Transaction, error) {
+	return _ERC721Pausable.Contract.GetApproved(&_ERC721Pausable.TransactOpts, tokenId)
+}
+
+// IsApprovedForAll is a paid mutator transaction binding the contract method 0xe985e9c5.
+//
+// Solidity: function isApprovedForAll(address owner, address operator) returns(bool)
+func (_ERC721Pausable *ERC721PausableTransactor) IsApprovedForAll(opts *bind.TransactOpts, owner common.Address, operator common.Address) (*types.Transaction, error) {
+	return _ERC721Pausable.contract.Transact(opts, "isApprovedForAll", owner, operator)
+}
+
+// IsApprovedForAll is a paid mutator transaction binding the contract method 0xe985e9c5.
+//
+// Solidity: function isApprovedForAll(address owner, address operator) returns(bool)
+func (_ERC721Pausable *ERC721PausableSession) IsApprovedForAll(owner common.Address, operator common.Address) (*types.Transaction, error) {
+	return _ERC721Pausable.Contract.IsApprovedForAll(&_ERC721Pausable.TransactOpts, owner, operator)
+}
+
+// IsApprovedForAll is a paid mutator transaction binding the contract method 0xe985e9c5.
+//
+// Solidity: function isApprovedForAll(address owner, address operator) returns(bool)
+func (_ERC721Pausable *ERC721PausableTransactorSession) IsApprovedForAll(owner common.Address, operator common.Address) (*types.Transaction, error) {
+	return _ERC721Pausable.Contract.IsApprovedForAll(&_ERC721Pausable.TransactOpts, owner, operator)
+}
+
+// Name is a paid mutator transaction binding the contract method 0x06fdde03.
+//
+// Solidity: function name() returns(string)
+func (_ERC721Pausable *ERC721PausableTransactor) Name(opts *bind.TransactOpts) (*types.Transaction, error) {
+	return _ERC721Pausable.contract.Transact(opts, "name")
+}
+
+// Name is a paid mutator transaction binding the contract method 0x06fdde03.
+//
+// Solidity: function name() returns(string)
+func (_ERC721Pausable *ERC721PausableSession) Name() (*types.Transaction, error) {
+	return _ERC721Pausable.Contract.Name(&_ERC721Pausable.TransactOpts)
+}
+
+// Name is a paid mutator transaction binding the contract method 0x06fdde03.
+//
+// Solidity: function name() returns(string)
+func (_ERC721Pausable *ERC721PausableTransactorSession) Name() (*types.Transaction, error) {
+	return _ERC721Pausable.Contract.Name(&_ERC721Pausable.TransactOpts)
+}
+
+// OwnerOf is a paid mutator transaction binding the contract method 0x6352211e.
+//
+// Solidity: function ownerOf(uint256 tokenId) returns(address)
+func (_ERC721Pausable *ERC721PausableTransactor) OwnerOf(opts *bind.TransactOpts, tokenId *big.Int) (*types.Transaction, error) {
+	return _ERC721Pausable.contract.Transact(opts, "ownerOf", tokenId)
+}
+
+// OwnerOf is a paid mutator transaction binding the contract method 0x6352211e.
+//
+// Solidity: function ownerOf(uint256 tokenId) returns(address)
+func (_ERC721Pausable *ERC721PausableSession) OwnerOf(tokenId *big.Int) (*types.Transaction, error) {
+	return _ERC721Pausable.Contract.OwnerOf(&_ERC721Pausable.TransactOpts, tokenId)
+}
+
+// OwnerOf is a paid mutator transaction binding the contract method 0x6352211e.
+//
+// Solidity: function ownerOf(uint256 tokenId) returns(address)
+func (_ERC721Pausable *ERC721PausableTransactorSession) OwnerOf(tokenId *big.Int) (*types.Transaction, error) {
+	return _ERC721Pausable.Contract.OwnerOf(&_ERC721Pausable.TransactOpts, tokenId)
+}
+
+// Paused is a paid mutator transaction binding the contract method 0x5c975abb.
+//
+// Solidity: function paused() returns(bool)
+func (_ERC721Pausable *ERC721PausableTransactor) Paused(opts *bind.TransactOpts) (*types.Transaction, error) {
+	return _ERC721Pausable.contract.Transact(opts, "paused")
+}
+
+// Paused is a paid mutator transaction binding the contract method 0x5c975abb.
+//
+// Solidity: function paused() returns(bool)
+func (_ERC721Pausable *ERC721PausableSession) Paused() (*types.Transaction, error) {
+	return _ERC721Pausable.Contract.Paused(&_ERC721Pausable.TransactOpts)
+}
+
+// Paused is a paid mutator transaction binding the contract method 0x5c975abb.
+//
+// Solidity: function paused() returns(bool)
+func (_ERC721Pausable *ERC721PausableTransactorSession) Paused() (*types.Transaction, error) {
+	return _ERC721Pausable.Contract.Paused(&_ERC721Pausable.TransactOpts)
 }
 
 // SafeTransferFrom is a paid mutator transaction binding the contract method 0x42842e0e.
@@ -593,6 +412,132 @@ func (_ERC721Pausable *ERC721PausableTransactorSession) SetApprovalForAll(operat
 	return _ERC721Pausable.Contract.SetApprovalForAll(&_ERC721Pausable.TransactOpts, operator, approved)
 }
 
+// SupportsInterface is a paid mutator transaction binding the contract method 0x01ffc9a7.
+//
+// Solidity: function supportsInterface(bytes4 interfaceId) returns(bool)
+func (_ERC721Pausable *ERC721PausableTransactor) SupportsInterface(opts *bind.TransactOpts, interfaceId [4]byte) (*types.Transaction, error) {
+	return _ERC721Pausable.contract.Transact(opts, "supportsInterface", interfaceId)
+}
+
+// SupportsInterface is a paid mutator transaction binding the contract method 0x01ffc9a7.
+//
+// Solidity: function supportsInterface(bytes4 interfaceId) returns(bool)
+func (_ERC721Pausable *ERC721PausableSession) SupportsInterface(interfaceId [4]byte) (*types.Transaction, error) {
+	return _ERC721Pausable.Contract.SupportsInterface(&_ERC721Pausable.TransactOpts, interfaceId)
+}
+
+// SupportsInterface is a paid mutator transaction binding the contract method 0x01ffc9a7.
+//
+// Solidity: function supportsInterface(bytes4 interfaceId) returns(bool)
+func (_ERC721Pausable *ERC721PausableTransactorSession) SupportsInterface(interfaceId [4]byte) (*types.Transaction, error) {
+	return _ERC721Pausable.Contract.SupportsInterface(&_ERC721Pausable.TransactOpts, interfaceId)
+}
+
+// Symbol is a paid mutator transaction binding the contract method 0x95d89b41.
+//
+// Solidity: function symbol() returns(string)
+func (_ERC721Pausable *ERC721PausableTransactor) Symbol(opts *bind.TransactOpts) (*types.Transaction, error) {
+	return _ERC721Pausable.contract.Transact(opts, "symbol")
+}
+
+// Symbol is a paid mutator transaction binding the contract method 0x95d89b41.
+//
+// Solidity: function symbol() returns(string)
+func (_ERC721Pausable *ERC721PausableSession) Symbol() (*types.Transaction, error) {
+	return _ERC721Pausable.Contract.Symbol(&_ERC721Pausable.TransactOpts)
+}
+
+// Symbol is a paid mutator transaction binding the contract method 0x95d89b41.
+//
+// Solidity: function symbol() returns(string)
+func (_ERC721Pausable *ERC721PausableTransactorSession) Symbol() (*types.Transaction, error) {
+	return _ERC721Pausable.Contract.Symbol(&_ERC721Pausable.TransactOpts)
+}
+
+// TokenByIndex is a paid mutator transaction binding the contract method 0x4f6ccce7.
+//
+// Solidity: function tokenByIndex(uint256 index) returns(uint256)
+func (_ERC721Pausable *ERC721PausableTransactor) TokenByIndex(opts *bind.TransactOpts, index *big.Int) (*types.Transaction, error) {
+	return _ERC721Pausable.contract.Transact(opts, "tokenByIndex", index)
+}
+
+// TokenByIndex is a paid mutator transaction binding the contract method 0x4f6ccce7.
+//
+// Solidity: function tokenByIndex(uint256 index) returns(uint256)
+func (_ERC721Pausable *ERC721PausableSession) TokenByIndex(index *big.Int) (*types.Transaction, error) {
+	return _ERC721Pausable.Contract.TokenByIndex(&_ERC721Pausable.TransactOpts, index)
+}
+
+// TokenByIndex is a paid mutator transaction binding the contract method 0x4f6ccce7.
+//
+// Solidity: function tokenByIndex(uint256 index) returns(uint256)
+func (_ERC721Pausable *ERC721PausableTransactorSession) TokenByIndex(index *big.Int) (*types.Transaction, error) {
+	return _ERC721Pausable.Contract.TokenByIndex(&_ERC721Pausable.TransactOpts, index)
+}
+
+// TokenOfOwnerByIndex is a paid mutator transaction binding the contract method 0x2f745c59.
+//
+// Solidity: function tokenOfOwnerByIndex(address owner, uint256 index) returns(uint256)
+func (_ERC721Pausable *ERC721PausableTransactor) TokenOfOwnerByIndex(opts *bind.TransactOpts, owner common.Address, index *big.Int) (*types.Transaction, error) {
+	return _ERC721Pausable.contract.Transact(opts, "tokenOfOwnerByIndex", owner, index)
+}
+
+// TokenOfOwnerByIndex is a paid mutator transaction binding the contract method 0x2f745c59.
+//
+// Solidity: function tokenOfOwnerByIndex(address owner, uint256 index) returns(uint256)
+func (_ERC721Pausable *ERC721PausableSession) TokenOfOwnerByIndex(owner common.Address, index *big.Int) (*types.Transaction, error) {
+	return _ERC721Pausable.Contract.TokenOfOwnerByIndex(&_ERC721Pausable.TransactOpts, owner, index)
+}
+
+// TokenOfOwnerByIndex is a paid mutator transaction binding the contract method 0x2f745c59.
+//
+// Solidity: function tokenOfOwnerByIndex(address owner, uint256 index) returns(uint256)
+func (_ERC721Pausable *ERC721PausableTransactorSession) TokenOfOwnerByIndex(owner common.Address, index *big.Int) (*types.Transaction, error) {
+	return _ERC721Pausable.Contract.TokenOfOwnerByIndex(&_ERC721Pausable.TransactOpts, owner, index)
+}
+
+// TokenURI is a paid mutator transaction binding the contract method 0xc87b56dd.
+//
+// Solidity: function tokenURI(uint256 tokenId) returns(string)
+func (_ERC721Pausable *ERC721PausableTransactor) TokenURI(opts *bind.TransactOpts, tokenId *big.Int) (*types.Transaction, error) {
+	return _ERC721Pausable.contract.Transact(opts, "tokenURI", tokenId)
+}
+
+// TokenURI is a paid mutator transaction binding the contract method 0xc87b56dd.
+//
+// Solidity: function tokenURI(uint256 tokenId) returns(string)
+func (_ERC721Pausable *ERC721PausableSession) TokenURI(tokenId *big.Int) (*types.Transaction, error) {
+	return _ERC721Pausable.Contract.TokenURI(&_ERC721Pausable.TransactOpts, tokenId)
+}
+
+// TokenURI is a paid mutator transaction binding the contract method 0xc87b56dd.
+//
+// Solidity: function tokenURI(uint256 tokenId) returns(string)
+func (_ERC721Pausable *ERC721PausableTransactorSession) TokenURI(tokenId *big.Int) (*types.Transaction, error) {
+	return _ERC721Pausable.Contract.TokenURI(&_ERC721Pausable.TransactOpts, tokenId)
+}
+
+// TotalSupply is a paid mutator transaction binding the contract method 0x18160ddd.
+//
+// Solidity: function totalSupply() returns(uint256)
+func (_ERC721Pausable *ERC721PausableTransactor) TotalSupply(opts *bind.TransactOpts) (*types.Transaction, error) {
+	return _ERC721Pausable.contract.Transact(opts, "totalSupply")
+}
+
+// TotalSupply is a paid mutator transaction binding the contract method 0x18160ddd.
+//
+// Solidity: function totalSupply() returns(uint256)
+func (_ERC721Pausable *ERC721PausableSession) TotalSupply() (*types.Transaction, error) {
+	return _ERC721Pausable.Contract.TotalSupply(&_ERC721Pausable.TransactOpts)
+}
+
+// TotalSupply is a paid mutator transaction binding the contract method 0x18160ddd.
+//
+// Solidity: function totalSupply() returns(uint256)
+func (_ERC721Pausable *ERC721PausableTransactorSession) TotalSupply() (*types.Transaction, error) {
+	return _ERC721Pausable.Contract.TotalSupply(&_ERC721Pausable.TransactOpts)
+}
+
 // TransferFrom is a paid mutator transaction binding the contract method 0x23b872dd.
 //
 // Solidity: function transferFrom(address from, address to, uint256 tokenId) returns()
@@ -612,6 +557,32 @@ func (_ERC721Pausable *ERC721PausableSession) TransferFrom(from common.Address, 
 // Solidity: function transferFrom(address from, address to, uint256 tokenId) returns()
 func (_ERC721Pausable *ERC721PausableTransactorSession) TransferFrom(from common.Address, to common.Address, tokenId *big.Int) (*types.Transaction, error) {
 	return _ERC721Pausable.Contract.TransferFrom(&_ERC721Pausable.TransactOpts, from, to, tokenId)
+}
+
+// TryParseLog attempts to parse a log. Returns the parsed log, evenName and whether it was succesfull
+func (_ERC721Pausable *ERC721PausableFilterer) TryParseLog(log types.Log) (eventName string, event interface{}, ok bool, err error) {
+	eventName, ok, err = _ERC721Pausable.contract.LogEventName(log)
+	if err != nil || !ok {
+		return "", nil, false, err
+	}
+
+	switch eventName {
+	case "Approval":
+		event, err = _ERC721Pausable.ParseApproval(log)
+	case "ApprovalForAll":
+		event, err = _ERC721Pausable.ParseApprovalForAll(log)
+	case "Paused":
+		event, err = _ERC721Pausable.ParsePaused(log)
+	case "Transfer":
+		event, err = _ERC721Pausable.ParseTransfer(log)
+	case "Unpaused":
+		event, err = _ERC721Pausable.ParseUnpaused(log)
+	}
+	if err != nil {
+		return "", nil, false, err
+	}
+
+	return eventName, event, ok, nil
 }
 
 // ERC721PausableApprovalIterator is returned from FilterApproval and is used to iterate over the raw logs and unpacked data for Approval events raised by the ERC721Pausable contract.

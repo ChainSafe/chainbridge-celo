@@ -20,6 +20,7 @@ var (
 	_ = big.NewInt
 	_ = strings.NewReader
 	_ = ethereum.NotFound
+	_ = abi.U256
 	_ = bind.Bind
 	_ = common.Big1
 	_ = types.BloomLookup
@@ -133,6 +134,15 @@ func bindERC20Burnable(address common.Address, caller bind.ContractCaller, trans
 	return bind.NewBoundContract(address, parsed, caller, transactor, filterer), nil
 }
 
+// ParseERC20BurnableABI parses the ABI
+func ParseERC20BurnableABI() (*abi.ABI, error) {
+	parsed, err := abi.JSON(strings.NewReader(ERC20BurnableABI))
+	if err != nil {
+		return nil, err
+	}
+	return &parsed, nil
+}
+
 // Call invokes the (constant) contract method with params as input values and
 // sets the output to result. The result type might be a single field for simple
 // returns, a slice of interfaces for anonymous returns and a struct for named
@@ -171,160 +181,25 @@ func (_ERC20Burnable *ERC20BurnableTransactorRaw) Transact(opts *bind.TransactOp
 	return _ERC20Burnable.Contract.contract.Transact(opts, method, params...)
 }
 
-// Allowance is a free data retrieval call binding the contract method 0xdd62ed3e.
+// Allowance is a paid mutator transaction binding the contract method 0xdd62ed3e.
 //
-// Solidity: function allowance(address owner, address spender) view returns(uint256)
-func (_ERC20Burnable *ERC20BurnableCaller) Allowance(opts *bind.CallOpts, owner common.Address, spender common.Address) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _ERC20Burnable.contract.Call(opts, out, "allowance", owner, spender)
-	return *ret0, err
+// Solidity: function allowance(address owner, address spender) returns(uint256)
+func (_ERC20Burnable *ERC20BurnableTransactor) Allowance(opts *bind.TransactOpts, owner common.Address, spender common.Address) (*types.Transaction, error) {
+	return _ERC20Burnable.contract.Transact(opts, "allowance", owner, spender)
 }
 
-// Allowance is a free data retrieval call binding the contract method 0xdd62ed3e.
+// Allowance is a paid mutator transaction binding the contract method 0xdd62ed3e.
 //
-// Solidity: function allowance(address owner, address spender) view returns(uint256)
-func (_ERC20Burnable *ERC20BurnableSession) Allowance(owner common.Address, spender common.Address) (*big.Int, error) {
-	return _ERC20Burnable.Contract.Allowance(&_ERC20Burnable.CallOpts, owner, spender)
+// Solidity: function allowance(address owner, address spender) returns(uint256)
+func (_ERC20Burnable *ERC20BurnableSession) Allowance(owner common.Address, spender common.Address) (*types.Transaction, error) {
+	return _ERC20Burnable.Contract.Allowance(&_ERC20Burnable.TransactOpts, owner, spender)
 }
 
-// Allowance is a free data retrieval call binding the contract method 0xdd62ed3e.
+// Allowance is a paid mutator transaction binding the contract method 0xdd62ed3e.
 //
-// Solidity: function allowance(address owner, address spender) view returns(uint256)
-func (_ERC20Burnable *ERC20BurnableCallerSession) Allowance(owner common.Address, spender common.Address) (*big.Int, error) {
-	return _ERC20Burnable.Contract.Allowance(&_ERC20Burnable.CallOpts, owner, spender)
-}
-
-// BalanceOf is a free data retrieval call binding the contract method 0x70a08231.
-//
-// Solidity: function balanceOf(address account) view returns(uint256)
-func (_ERC20Burnable *ERC20BurnableCaller) BalanceOf(opts *bind.CallOpts, account common.Address) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _ERC20Burnable.contract.Call(opts, out, "balanceOf", account)
-	return *ret0, err
-}
-
-// BalanceOf is a free data retrieval call binding the contract method 0x70a08231.
-//
-// Solidity: function balanceOf(address account) view returns(uint256)
-func (_ERC20Burnable *ERC20BurnableSession) BalanceOf(account common.Address) (*big.Int, error) {
-	return _ERC20Burnable.Contract.BalanceOf(&_ERC20Burnable.CallOpts, account)
-}
-
-// BalanceOf is a free data retrieval call binding the contract method 0x70a08231.
-//
-// Solidity: function balanceOf(address account) view returns(uint256)
-func (_ERC20Burnable *ERC20BurnableCallerSession) BalanceOf(account common.Address) (*big.Int, error) {
-	return _ERC20Burnable.Contract.BalanceOf(&_ERC20Burnable.CallOpts, account)
-}
-
-// Decimals is a free data retrieval call binding the contract method 0x313ce567.
-//
-// Solidity: function decimals() view returns(uint8)
-func (_ERC20Burnable *ERC20BurnableCaller) Decimals(opts *bind.CallOpts) (uint8, error) {
-	var (
-		ret0 = new(uint8)
-	)
-	out := ret0
-	err := _ERC20Burnable.contract.Call(opts, out, "decimals")
-	return *ret0, err
-}
-
-// Decimals is a free data retrieval call binding the contract method 0x313ce567.
-//
-// Solidity: function decimals() view returns(uint8)
-func (_ERC20Burnable *ERC20BurnableSession) Decimals() (uint8, error) {
-	return _ERC20Burnable.Contract.Decimals(&_ERC20Burnable.CallOpts)
-}
-
-// Decimals is a free data retrieval call binding the contract method 0x313ce567.
-//
-// Solidity: function decimals() view returns(uint8)
-func (_ERC20Burnable *ERC20BurnableCallerSession) Decimals() (uint8, error) {
-	return _ERC20Burnable.Contract.Decimals(&_ERC20Burnable.CallOpts)
-}
-
-// Name is a free data retrieval call binding the contract method 0x06fdde03.
-//
-// Solidity: function name() view returns(string)
-func (_ERC20Burnable *ERC20BurnableCaller) Name(opts *bind.CallOpts) (string, error) {
-	var (
-		ret0 = new(string)
-	)
-	out := ret0
-	err := _ERC20Burnable.contract.Call(opts, out, "name")
-	return *ret0, err
-}
-
-// Name is a free data retrieval call binding the contract method 0x06fdde03.
-//
-// Solidity: function name() view returns(string)
-func (_ERC20Burnable *ERC20BurnableSession) Name() (string, error) {
-	return _ERC20Burnable.Contract.Name(&_ERC20Burnable.CallOpts)
-}
-
-// Name is a free data retrieval call binding the contract method 0x06fdde03.
-//
-// Solidity: function name() view returns(string)
-func (_ERC20Burnable *ERC20BurnableCallerSession) Name() (string, error) {
-	return _ERC20Burnable.Contract.Name(&_ERC20Burnable.CallOpts)
-}
-
-// Symbol is a free data retrieval call binding the contract method 0x95d89b41.
-//
-// Solidity: function symbol() view returns(string)
-func (_ERC20Burnable *ERC20BurnableCaller) Symbol(opts *bind.CallOpts) (string, error) {
-	var (
-		ret0 = new(string)
-	)
-	out := ret0
-	err := _ERC20Burnable.contract.Call(opts, out, "symbol")
-	return *ret0, err
-}
-
-// Symbol is a free data retrieval call binding the contract method 0x95d89b41.
-//
-// Solidity: function symbol() view returns(string)
-func (_ERC20Burnable *ERC20BurnableSession) Symbol() (string, error) {
-	return _ERC20Burnable.Contract.Symbol(&_ERC20Burnable.CallOpts)
-}
-
-// Symbol is a free data retrieval call binding the contract method 0x95d89b41.
-//
-// Solidity: function symbol() view returns(string)
-func (_ERC20Burnable *ERC20BurnableCallerSession) Symbol() (string, error) {
-	return _ERC20Burnable.Contract.Symbol(&_ERC20Burnable.CallOpts)
-}
-
-// TotalSupply is a free data retrieval call binding the contract method 0x18160ddd.
-//
-// Solidity: function totalSupply() view returns(uint256)
-func (_ERC20Burnable *ERC20BurnableCaller) TotalSupply(opts *bind.CallOpts) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _ERC20Burnable.contract.Call(opts, out, "totalSupply")
-	return *ret0, err
-}
-
-// TotalSupply is a free data retrieval call binding the contract method 0x18160ddd.
-//
-// Solidity: function totalSupply() view returns(uint256)
-func (_ERC20Burnable *ERC20BurnableSession) TotalSupply() (*big.Int, error) {
-	return _ERC20Burnable.Contract.TotalSupply(&_ERC20Burnable.CallOpts)
-}
-
-// TotalSupply is a free data retrieval call binding the contract method 0x18160ddd.
-//
-// Solidity: function totalSupply() view returns(uint256)
-func (_ERC20Burnable *ERC20BurnableCallerSession) TotalSupply() (*big.Int, error) {
-	return _ERC20Burnable.Contract.TotalSupply(&_ERC20Burnable.CallOpts)
+// Solidity: function allowance(address owner, address spender) returns(uint256)
+func (_ERC20Burnable *ERC20BurnableTransactorSession) Allowance(owner common.Address, spender common.Address) (*types.Transaction, error) {
+	return _ERC20Burnable.Contract.Allowance(&_ERC20Burnable.TransactOpts, owner, spender)
 }
 
 // Approve is a paid mutator transaction binding the contract method 0x095ea7b3.
@@ -346,6 +221,27 @@ func (_ERC20Burnable *ERC20BurnableSession) Approve(spender common.Address, amou
 // Solidity: function approve(address spender, uint256 amount) returns(bool)
 func (_ERC20Burnable *ERC20BurnableTransactorSession) Approve(spender common.Address, amount *big.Int) (*types.Transaction, error) {
 	return _ERC20Burnable.Contract.Approve(&_ERC20Burnable.TransactOpts, spender, amount)
+}
+
+// BalanceOf is a paid mutator transaction binding the contract method 0x70a08231.
+//
+// Solidity: function balanceOf(address account) returns(uint256)
+func (_ERC20Burnable *ERC20BurnableTransactor) BalanceOf(opts *bind.TransactOpts, account common.Address) (*types.Transaction, error) {
+	return _ERC20Burnable.contract.Transact(opts, "balanceOf", account)
+}
+
+// BalanceOf is a paid mutator transaction binding the contract method 0x70a08231.
+//
+// Solidity: function balanceOf(address account) returns(uint256)
+func (_ERC20Burnable *ERC20BurnableSession) BalanceOf(account common.Address) (*types.Transaction, error) {
+	return _ERC20Burnable.Contract.BalanceOf(&_ERC20Burnable.TransactOpts, account)
+}
+
+// BalanceOf is a paid mutator transaction binding the contract method 0x70a08231.
+//
+// Solidity: function balanceOf(address account) returns(uint256)
+func (_ERC20Burnable *ERC20BurnableTransactorSession) BalanceOf(account common.Address) (*types.Transaction, error) {
+	return _ERC20Burnable.Contract.BalanceOf(&_ERC20Burnable.TransactOpts, account)
 }
 
 // Burn is a paid mutator transaction binding the contract method 0x42966c68.
@@ -390,6 +286,27 @@ func (_ERC20Burnable *ERC20BurnableTransactorSession) BurnFrom(account common.Ad
 	return _ERC20Burnable.Contract.BurnFrom(&_ERC20Burnable.TransactOpts, account, amount)
 }
 
+// Decimals is a paid mutator transaction binding the contract method 0x313ce567.
+//
+// Solidity: function decimals() returns(uint8)
+func (_ERC20Burnable *ERC20BurnableTransactor) Decimals(opts *bind.TransactOpts) (*types.Transaction, error) {
+	return _ERC20Burnable.contract.Transact(opts, "decimals")
+}
+
+// Decimals is a paid mutator transaction binding the contract method 0x313ce567.
+//
+// Solidity: function decimals() returns(uint8)
+func (_ERC20Burnable *ERC20BurnableSession) Decimals() (*types.Transaction, error) {
+	return _ERC20Burnable.Contract.Decimals(&_ERC20Burnable.TransactOpts)
+}
+
+// Decimals is a paid mutator transaction binding the contract method 0x313ce567.
+//
+// Solidity: function decimals() returns(uint8)
+func (_ERC20Burnable *ERC20BurnableTransactorSession) Decimals() (*types.Transaction, error) {
+	return _ERC20Burnable.Contract.Decimals(&_ERC20Burnable.TransactOpts)
+}
+
 // DecreaseAllowance is a paid mutator transaction binding the contract method 0xa457c2d7.
 //
 // Solidity: function decreaseAllowance(address spender, uint256 subtractedValue) returns(bool)
@@ -432,6 +349,69 @@ func (_ERC20Burnable *ERC20BurnableTransactorSession) IncreaseAllowance(spender 
 	return _ERC20Burnable.Contract.IncreaseAllowance(&_ERC20Burnable.TransactOpts, spender, addedValue)
 }
 
+// Name is a paid mutator transaction binding the contract method 0x06fdde03.
+//
+// Solidity: function name() returns(string)
+func (_ERC20Burnable *ERC20BurnableTransactor) Name(opts *bind.TransactOpts) (*types.Transaction, error) {
+	return _ERC20Burnable.contract.Transact(opts, "name")
+}
+
+// Name is a paid mutator transaction binding the contract method 0x06fdde03.
+//
+// Solidity: function name() returns(string)
+func (_ERC20Burnable *ERC20BurnableSession) Name() (*types.Transaction, error) {
+	return _ERC20Burnable.Contract.Name(&_ERC20Burnable.TransactOpts)
+}
+
+// Name is a paid mutator transaction binding the contract method 0x06fdde03.
+//
+// Solidity: function name() returns(string)
+func (_ERC20Burnable *ERC20BurnableTransactorSession) Name() (*types.Transaction, error) {
+	return _ERC20Burnable.Contract.Name(&_ERC20Burnable.TransactOpts)
+}
+
+// Symbol is a paid mutator transaction binding the contract method 0x95d89b41.
+//
+// Solidity: function symbol() returns(string)
+func (_ERC20Burnable *ERC20BurnableTransactor) Symbol(opts *bind.TransactOpts) (*types.Transaction, error) {
+	return _ERC20Burnable.contract.Transact(opts, "symbol")
+}
+
+// Symbol is a paid mutator transaction binding the contract method 0x95d89b41.
+//
+// Solidity: function symbol() returns(string)
+func (_ERC20Burnable *ERC20BurnableSession) Symbol() (*types.Transaction, error) {
+	return _ERC20Burnable.Contract.Symbol(&_ERC20Burnable.TransactOpts)
+}
+
+// Symbol is a paid mutator transaction binding the contract method 0x95d89b41.
+//
+// Solidity: function symbol() returns(string)
+func (_ERC20Burnable *ERC20BurnableTransactorSession) Symbol() (*types.Transaction, error) {
+	return _ERC20Burnable.Contract.Symbol(&_ERC20Burnable.TransactOpts)
+}
+
+// TotalSupply is a paid mutator transaction binding the contract method 0x18160ddd.
+//
+// Solidity: function totalSupply() returns(uint256)
+func (_ERC20Burnable *ERC20BurnableTransactor) TotalSupply(opts *bind.TransactOpts) (*types.Transaction, error) {
+	return _ERC20Burnable.contract.Transact(opts, "totalSupply")
+}
+
+// TotalSupply is a paid mutator transaction binding the contract method 0x18160ddd.
+//
+// Solidity: function totalSupply() returns(uint256)
+func (_ERC20Burnable *ERC20BurnableSession) TotalSupply() (*types.Transaction, error) {
+	return _ERC20Burnable.Contract.TotalSupply(&_ERC20Burnable.TransactOpts)
+}
+
+// TotalSupply is a paid mutator transaction binding the contract method 0x18160ddd.
+//
+// Solidity: function totalSupply() returns(uint256)
+func (_ERC20Burnable *ERC20BurnableTransactorSession) TotalSupply() (*types.Transaction, error) {
+	return _ERC20Burnable.Contract.TotalSupply(&_ERC20Burnable.TransactOpts)
+}
+
 // Transfer is a paid mutator transaction binding the contract method 0xa9059cbb.
 //
 // Solidity: function transfer(address recipient, uint256 amount) returns(bool)
@@ -472,6 +452,26 @@ func (_ERC20Burnable *ERC20BurnableSession) TransferFrom(sender common.Address, 
 // Solidity: function transferFrom(address sender, address recipient, uint256 amount) returns(bool)
 func (_ERC20Burnable *ERC20BurnableTransactorSession) TransferFrom(sender common.Address, recipient common.Address, amount *big.Int) (*types.Transaction, error) {
 	return _ERC20Burnable.Contract.TransferFrom(&_ERC20Burnable.TransactOpts, sender, recipient, amount)
+}
+
+// TryParseLog attempts to parse a log. Returns the parsed log, evenName and whether it was succesfull
+func (_ERC20Burnable *ERC20BurnableFilterer) TryParseLog(log types.Log) (eventName string, event interface{}, ok bool, err error) {
+	eventName, ok, err = _ERC20Burnable.contract.LogEventName(log)
+	if err != nil || !ok {
+		return "", nil, false, err
+	}
+
+	switch eventName {
+	case "Approval":
+		event, err = _ERC20Burnable.ParseApproval(log)
+	case "Transfer":
+		event, err = _ERC20Burnable.ParseTransfer(log)
+	}
+	if err != nil {
+		return "", nil, false, err
+	}
+
+	return eventName, event, ok, nil
 }
 
 // ERC20BurnableApprovalIterator is returned from FilterApproval and is used to iterate over the raw logs and unpacked data for Approval events raised by the ERC20Burnable contract.
