@@ -5,9 +5,7 @@ version: '3'
 
 services:
   celo1:
-    build:
-      context: ./scripts/celo
-      dockerfile: Dockerfile-elections-node
+    build: ./scripts/celo
     image: celo-node:elections
     networks:
       custom:
@@ -17,8 +15,6 @@ services:
       - "8545:8545"
       - "8546:8546"
     environment:
-      - ACCOUNTS=0xf4314cb9046bece6aa54bb9533155434d0c76909,0xff93B45308FD417dF303D6515aB04D9e89a750Ca,0x8e0a907331554AF72563Bd8D43051C2E64Be5d35,0x24962717f8fA5BA3b931bACaF9ac03924EB475a0,0x148FfB2074A9e59eD58142822b3eB3fcBffb0cd7,0x4CEEf6139f00F9F4535Ad19640Ff7A0137708485
-      - BOOTNODE=enode://47eccabfa6fa81f7ae7d8c094485fd521789e22e529916a2409970b6e99b1d1b6c590ad71bd08f182071313b2e03d319f4f6b625b28b6ab7768bb2de3f2a6eed@10.10.0.30:30303
       - NODEKEY=98ab333347a12cef869f92b3de44085f9e44891e513bcf1d76a99eecbcdd5e17
 
   celo2:
@@ -34,7 +30,6 @@ services:
     environment:
       - ACCOUNTS=0xff93B45308FD417dF303D6515aB04D9e89a750Ca
       - BOOTNODE=enode://47eccabfa6fa81f7ae7d8c094485fd521789e22e529916a2409970b6e99b1d1b6c590ad71bd08f182071313b2e03d319f4f6b625b28b6ab7768bb2de3f2a6eed@10.10.0.30:30303
-      - NODEKEY=98ab333347a12cef869f92b3de44085f9e44891e513bcf1d76a99eecbcdd5e18
 
   celo3:
     image: celo-node:elections
@@ -49,11 +44,9 @@ services:
     environment:
       - ACCOUNTS=0x8e0a907331554AF72563Bd8D43051C2E64Be5d35
       - BOOTNODE=enode://47eccabfa6fa81f7ae7d8c094485fd521789e22e529916a2409970b6e99b1d1b6c590ad71bd08f182071313b2e03d319f4f6b625b28b6ab7768bb2de3f2a6eed@10.10.0.30:30303
-      - NODEKEY=98ab333347a12cef869f92b3de44085f9e44891e513bcf1d76a99eecbcdd5e19
 
   celo-elections:
-    build: ./scripts/celo/elections/
-    image: celo-elections
+    image: chainsafe/chainbridge-celo-elections:20200928144404-87e4be2
     networks:
       - custom
     container_name: celo-elections
