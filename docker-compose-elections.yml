@@ -5,8 +5,7 @@ version: '3'
 
 services:
   celo1:
-    build: ./scripts/celo
-    image: celo-node:elections
+    image: "chainsafe/chainbridge-celo-blockchain:20200930172130-7413614"
     networks:
       custom:
         ipv4_address: 10.10.0.30
@@ -18,7 +17,7 @@ services:
       - NODEKEY=98ab333347a12cef869f92b3de44085f9e44891e513bcf1d76a99eecbcdd5e17
 
   celo2:
-    image: celo-node:elections
+    image: "chainsafe/chainbridge-celo-blockchain:20200930172130-7413614"
     networks:
       - custom
     container_name: celo2
@@ -32,7 +31,7 @@ services:
       - BOOTNODE=enode://47eccabfa6fa81f7ae7d8c094485fd521789e22e529916a2409970b6e99b1d1b6c590ad71bd08f182071313b2e03d319f4f6b625b28b6ab7768bb2de3f2a6eed@10.10.0.30:30303
 
   celo3:
-    image: celo-node:elections
+    image: "chainsafe/chainbridge-celo-blockchain:20200930172130-7413614"
     networks:
       - custom
     container_name: celo3
@@ -46,7 +45,7 @@ services:
       - BOOTNODE=enode://47eccabfa6fa81f7ae7d8c094485fd521789e22e529916a2409970b6e99b1d1b6c590ad71bd08f182071313b2e03d319f4f6b625b28b6ab7768bb2de3f2a6eed@10.10.0.30:30303
 
   celo-elections:
-    image: chainsafe/chainbridge-celo-elections:20200928144404-87e4be2
+    image: "chainsafe/chainbridge-celo-elections:20200928144404-87e4be2"
     networks:
       - custom
     container_name: celo-elections
