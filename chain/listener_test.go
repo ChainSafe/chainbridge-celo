@@ -12,6 +12,7 @@ import (
 
 	"github.com/ChainSafe/chainbridge-celo/connection"
 	"github.com/ChainSafe/log15"
+	"github.com/ChainSafe/chainbridge-utils/blockstore"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/ethclient"
@@ -21,8 +22,13 @@ var GasLimitUint64 = uint64(connection.DefaultGasLimit)
 var ZeroAddress = common.HexToAddress("0x0000000000000000000000000000000000000000")
 
 func createTestListener(t *testing.T) *listener {
+	newConfig := Config{}
 	conn := connection.NewConnection(TestEndpoint, false, AliceKp, log15.Root(), GasLimit, GasPrice)
-	l := NewListener(conn)
+	vsyncer := ValidatorSyncer{conn: conn}
+	stop := make(chan int)
+	errs := make(chan error)
+
+	l := NewListener(conn, &newConfig, log15.Root(), &blockstore.EmptyStore{}, stop, errs, vsyncer)
 
 	return l
 }
