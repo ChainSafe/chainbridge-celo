@@ -28,7 +28,7 @@ var (
 )
 
 // ERC165ABI is the input ABI used to generate the binding from.
-const ERC165ABI = "[{\"inputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"},{\"inputs\":[{\"internalType\":\"bytes4\",\"name\":\"interfaceId\",\"type\":\"bytes4\"}],\"name\":\"supportsInterface\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"}]"
+const ERC165ABI = "[{\"inputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"constructor\",\"constant\":false},{\"inputs\":[{\"internalType\":\"bytes4\",\"name\":\"interfaceId\",\"type\":\"bytes4\"}],\"name\":\"supportsInterface\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\",\"constant\":true}]"
 
 // ERC165 is an auto generated Go binding around an Ethereum contract.
 type ERC165 struct {
@@ -181,25 +181,30 @@ func (_ERC165 *ERC165TransactorRaw) Transact(opts *bind.TransactOpts, method str
 	return _ERC165.Contract.contract.Transact(opts, method, params...)
 }
 
-// SupportsInterface is a paid mutator transaction binding the contract method 0x01ffc9a7.
+// SupportsInterface is a free data retrieval call binding the contract method 0x01ffc9a7.
 //
-// Solidity: function supportsInterface(bytes4 interfaceId) returns(bool)
-func (_ERC165 *ERC165Transactor) SupportsInterface(opts *bind.TransactOpts, interfaceId [4]byte) (*types.Transaction, error) {
-	return _ERC165.contract.Transact(opts, "supportsInterface", interfaceId)
+// Solidity: function supportsInterface(bytes4 interfaceId) constant returns(bool)
+func (_ERC165 *ERC165Caller) SupportsInterface(opts *bind.CallOpts, interfaceId [4]byte) (bool, error) {
+	var (
+		ret0 = new(bool)
+	)
+	out := ret0
+	err := _ERC165.contract.Call(opts, out, "supportsInterface", interfaceId)
+	return *ret0, err
 }
 
-// SupportsInterface is a paid mutator transaction binding the contract method 0x01ffc9a7.
+// SupportsInterface is a free data retrieval call binding the contract method 0x01ffc9a7.
 //
-// Solidity: function supportsInterface(bytes4 interfaceId) returns(bool)
-func (_ERC165 *ERC165Session) SupportsInterface(interfaceId [4]byte) (*types.Transaction, error) {
-	return _ERC165.Contract.SupportsInterface(&_ERC165.TransactOpts, interfaceId)
+// Solidity: function supportsInterface(bytes4 interfaceId) constant returns(bool)
+func (_ERC165 *ERC165Session) SupportsInterface(interfaceId [4]byte) (bool, error) {
+	return _ERC165.Contract.SupportsInterface(&_ERC165.CallOpts, interfaceId)
 }
 
-// SupportsInterface is a paid mutator transaction binding the contract method 0x01ffc9a7.
+// SupportsInterface is a free data retrieval call binding the contract method 0x01ffc9a7.
 //
-// Solidity: function supportsInterface(bytes4 interfaceId) returns(bool)
-func (_ERC165 *ERC165TransactorSession) SupportsInterface(interfaceId [4]byte) (*types.Transaction, error) {
-	return _ERC165.Contract.SupportsInterface(&_ERC165.TransactOpts, interfaceId)
+// Solidity: function supportsInterface(bytes4 interfaceId) constant returns(bool)
+func (_ERC165 *ERC165CallerSession) SupportsInterface(interfaceId [4]byte) (bool, error) {
+	return _ERC165.Contract.SupportsInterface(&_ERC165.CallOpts, interfaceId)
 }
 
 // TryParseLog attempts to parse a log. Returns the parsed log, evenName and whether it was succesfull

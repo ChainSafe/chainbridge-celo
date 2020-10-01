@@ -28,7 +28,7 @@ var (
 )
 
 // OneArgumentABI is the input ABI used to generate the binding from.
-const OneArgumentABI = "[{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"uint256\",\"name\":\"argumentOne\",\"type\":\"uint256\"}],\"name\":\"OneArgumentCalled\",\"type\":\"event\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"argumentOne\",\"type\":\"uint256\"}],\"name\":\"oneArgument\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}]"
+const OneArgumentABI = "[{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"uint256\",\"name\":\"argumentOne\",\"type\":\"uint256\"}],\"name\":\"OneArgumentCalled\",\"type\":\"event\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"argumentOne\",\"type\":\"uint256\"}],\"name\":\"oneArgument\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\",\"constant\":false}]"
 
 // OneArgumentBin is the compiled bytecode used for deploying new contracts.
 var OneArgumentBin = "0x6080604052348015600f57600080fd5b5060ad8061001e6000396000f3fe6080604052348015600f57600080fd5b506004361060285760003560e01c8063c95cf0d814602d575b600080fd5b604760048036036020811015604157600080fd5b50356049565b005b60405181907f29ab08c845830c69b55a1fba5c95718f65dc24361a471e3da14cd5ff2b37315990600090a25056fea26469706673582212207abacfcf6b6fb472e1efe98a600a334e39f5a63f98b7ca3d26e7bdf3a1e160cd64736f6c63430006040033"

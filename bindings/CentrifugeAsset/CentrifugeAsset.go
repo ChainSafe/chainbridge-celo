@@ -28,7 +28,7 @@ var (
 )
 
 // CentrifugeAssetABI is the input ABI used to generate the binding from.
-const CentrifugeAssetABI = "[{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"bytes32\",\"name\":\"asset\",\"type\":\"bytes32\"}],\"name\":\"AssetStored\",\"type\":\"event\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"name\":\"_assetsStored\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"asset\",\"type\":\"bytes32\"}],\"name\":\"store\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}]"
+const CentrifugeAssetABI = "[{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"bytes32\",\"name\":\"asset\",\"type\":\"bytes32\"}],\"name\":\"AssetStored\",\"type\":\"event\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"name\":\"_assetsStored\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\",\"constant\":true},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"asset\",\"type\":\"bytes32\"}],\"name\":\"store\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\",\"constant\":false}]"
 
 // CentrifugeAssetBin is the compiled bytecode used for deploying new contracts.
 var CentrifugeAssetBin = "0x608060405234801561001057600080fd5b50610199806100206000396000f3fe608060405234801561001057600080fd5b50600436106100365760003560e01c8063654cf88c1461003b57806396add60014610050575b600080fd5b61004e610049366004610109565b610079565b005b61006361005e366004610109565b6100f4565b6040516100709190610121565b60405180910390f35b60008181526020819052604090205460ff16156100b15760405162461bcd60e51b81526004016100a89061012c565b60405180910390fd5b600081815260208190526040808220805460ff191660011790555182917f08ae553713effae7116be03743b167b8b803449ee8fb912c2ec43dc2c824f53591a250565b60006020819052908152604090205460ff1681565b60006020828403121561011a578081fd5b5035919050565b901515815260200190565b60208082526017908201527f617373657420697320616c72656164792073746f72656400000000000000000060408201526060019056fea264697066735822122025127fa106580a82b54d45d3a57773359ec9d87f575cc8cd10d56b5a5bf3447964736f6c63430006040033"
@@ -198,25 +198,30 @@ func (_CentrifugeAsset *CentrifugeAssetTransactorRaw) Transact(opts *bind.Transa
 	return _CentrifugeAsset.Contract.contract.Transact(opts, method, params...)
 }
 
-// AssetsStored is a paid mutator transaction binding the contract method 0x96add600.
+// AssetsStored is a free data retrieval call binding the contract method 0x96add600.
 //
-// Solidity: function _assetsStored(bytes32 ) returns(bool)
-func (_CentrifugeAsset *CentrifugeAssetTransactor) AssetsStored(opts *bind.TransactOpts, arg0 [32]byte) (*types.Transaction, error) {
-	return _CentrifugeAsset.contract.Transact(opts, "_assetsStored", arg0)
+// Solidity: function _assetsStored(bytes32 ) constant returns(bool)
+func (_CentrifugeAsset *CentrifugeAssetCaller) AssetsStored(opts *bind.CallOpts, arg0 [32]byte) (bool, error) {
+	var (
+		ret0 = new(bool)
+	)
+	out := ret0
+	err := _CentrifugeAsset.contract.Call(opts, out, "_assetsStored", arg0)
+	return *ret0, err
 }
 
-// AssetsStored is a paid mutator transaction binding the contract method 0x96add600.
+// AssetsStored is a free data retrieval call binding the contract method 0x96add600.
 //
-// Solidity: function _assetsStored(bytes32 ) returns(bool)
-func (_CentrifugeAsset *CentrifugeAssetSession) AssetsStored(arg0 [32]byte) (*types.Transaction, error) {
-	return _CentrifugeAsset.Contract.AssetsStored(&_CentrifugeAsset.TransactOpts, arg0)
+// Solidity: function _assetsStored(bytes32 ) constant returns(bool)
+func (_CentrifugeAsset *CentrifugeAssetSession) AssetsStored(arg0 [32]byte) (bool, error) {
+	return _CentrifugeAsset.Contract.AssetsStored(&_CentrifugeAsset.CallOpts, arg0)
 }
 
-// AssetsStored is a paid mutator transaction binding the contract method 0x96add600.
+// AssetsStored is a free data retrieval call binding the contract method 0x96add600.
 //
-// Solidity: function _assetsStored(bytes32 ) returns(bool)
-func (_CentrifugeAsset *CentrifugeAssetTransactorSession) AssetsStored(arg0 [32]byte) (*types.Transaction, error) {
-	return _CentrifugeAsset.Contract.AssetsStored(&_CentrifugeAsset.TransactOpts, arg0)
+// Solidity: function _assetsStored(bytes32 ) constant returns(bool)
+func (_CentrifugeAsset *CentrifugeAssetCallerSession) AssetsStored(arg0 [32]byte) (bool, error) {
+	return _CentrifugeAsset.Contract.AssetsStored(&_CentrifugeAsset.CallOpts, arg0)
 }
 
 // Store is a paid mutator transaction binding the contract method 0x654cf88c.

@@ -28,7 +28,7 @@ var (
 )
 
 // NoArgumentABI is the input ABI used to generate the binding from.
-const NoArgumentABI = "[{\"anonymous\":false,\"inputs\":[],\"name\":\"NoArgumentCalled\",\"type\":\"event\"},{\"inputs\":[],\"name\":\"noArgument\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}]"
+const NoArgumentABI = "[{\"anonymous\":false,\"inputs\":[],\"name\":\"NoArgumentCalled\",\"type\":\"event\"},{\"inputs\":[],\"name\":\"noArgument\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\",\"constant\":false}]"
 
 // NoArgumentBin is the compiled bytecode used for deploying new contracts.
 var NoArgumentBin = "0x6080604052348015600f57600080fd5b5060968061001e6000396000f3fe6080604052348015600f57600080fd5b506004361060285760003560e01c8063568959ca14602d575b600080fd5b60336035565b005b6040517fc582abe1670c5a7f7cad8f171e4af03c793dd9f59fee6714179f56b6e9aea26f90600090a156fea2646970667358221220ceadec9bf7a4960ba3d748a36866472771ba1179c9087a042b3e8382dc830a8664736f6c63430006040033"

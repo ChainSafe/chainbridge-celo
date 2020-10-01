@@ -28,7 +28,7 @@ var (
 )
 
 // ERC721MinterBurnerPauserABI is the input ABI used to generate the binding from.
-const ERC721MinterBurnerPauserABI = "[{\"inputs\":[{\"internalType\":\"string\",\"name\":\"name\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"symbol\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"baseURI\",\"type\":\"string\"}],\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"owner\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"approved\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"uint256\",\"name\":\"tokenId\",\"type\":\"uint256\"}],\"name\":\"Approval\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"owner\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"operator\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"bool\",\"name\":\"approved\",\"type\":\"bool\"}],\"name\":\"ApprovalForAll\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"}],\"name\":\"Paused\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"},{\"indexed\":true,\"internalType\":\"bytes32\",\"name\":\"previousAdminRole\",\"type\":\"bytes32\"},{\"indexed\":true,\"internalType\":\"bytes32\",\"name\":\"newAdminRole\",\"type\":\"bytes32\"}],\"name\":\"RoleAdminChanged\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"sender\",\"type\":\"address\"}],\"name\":\"RoleGranted\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"sender\",\"type\":\"address\"}],\"name\":\"RoleRevoked\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"from\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"to\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"uint256\",\"name\":\"tokenId\",\"type\":\"uint256\"}],\"name\":\"Transfer\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"}],\"name\":\"Unpaused\",\"type\":\"event\"},{\"inputs\":[],\"name\":\"DEFAULT_ADMIN_ROLE\",\"outputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"MINTER_ROLE\",\"outputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"PAUSER_ROLE\",\"outputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"to\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"tokenId\",\"type\":\"uint256\"}],\"name\":\"approve\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"owner\",\"type\":\"address\"}],\"name\":\"balanceOf\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"baseURI\",\"outputs\":[{\"internalType\":\"string\",\"name\":\"\",\"type\":\"string\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"tokenId\",\"type\":\"uint256\"}],\"name\":\"burn\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"tokenId\",\"type\":\"uint256\"}],\"name\":\"getApproved\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"}],\"name\":\"getRoleAdmin\",\"outputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"},{\"internalType\":\"uint256\",\"name\":\"index\",\"type\":\"uint256\"}],\"name\":\"getRoleMember\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"}],\"name\":\"getRoleMemberCount\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"}],\"name\":\"grantRole\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"}],\"name\":\"hasRole\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"owner\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"operator\",\"type\":\"address\"}],\"name\":\"isApprovedForAll\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"name\",\"outputs\":[{\"internalType\":\"string\",\"name\":\"\",\"type\":\"string\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"tokenId\",\"type\":\"uint256\"}],\"name\":\"ownerOf\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"paused\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"}],\"name\":\"renounceRole\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"}],\"name\":\"revokeRole\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"from\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"to\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"tokenId\",\"type\":\"uint256\"}],\"name\":\"safeTransferFrom\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"from\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"to\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"tokenId\",\"type\":\"uint256\"},{\"internalType\":\"bytes\",\"name\":\"_data\",\"type\":\"bytes\"}],\"name\":\"safeTransferFrom\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"operator\",\"type\":\"address\"},{\"internalType\":\"bool\",\"name\":\"approved\",\"type\":\"bool\"}],\"name\":\"setApprovalForAll\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes4\",\"name\":\"interfaceId\",\"type\":\"bytes4\"}],\"name\":\"supportsInterface\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"symbol\",\"outputs\":[{\"internalType\":\"string\",\"name\":\"\",\"type\":\"string\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"index\",\"type\":\"uint256\"}],\"name\":\"tokenByIndex\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"owner\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"index\",\"type\":\"uint256\"}],\"name\":\"tokenOfOwnerByIndex\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"tokenId\",\"type\":\"uint256\"}],\"name\":\"tokenURI\",\"outputs\":[{\"internalType\":\"string\",\"name\":\"\",\"type\":\"string\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"totalSupply\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"from\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"to\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"tokenId\",\"type\":\"uint256\"}],\"name\":\"transferFrom\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"to\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"tokenId\",\"type\":\"uint256\"},{\"internalType\":\"string\",\"name\":\"_data\",\"type\":\"string\"}],\"name\":\"mint\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"pause\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"unpause\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}]"
+const ERC721MinterBurnerPauserABI = "[{\"inputs\":[{\"internalType\":\"string\",\"name\":\"name\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"symbol\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"baseURI\",\"type\":\"string\"}],\"stateMutability\":\"nonpayable\",\"type\":\"constructor\",\"constant\":false},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"owner\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"approved\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"uint256\",\"name\":\"tokenId\",\"type\":\"uint256\"}],\"name\":\"Approval\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"owner\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"operator\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"bool\",\"name\":\"approved\",\"type\":\"bool\"}],\"name\":\"ApprovalForAll\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"}],\"name\":\"Paused\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"},{\"indexed\":true,\"internalType\":\"bytes32\",\"name\":\"previousAdminRole\",\"type\":\"bytes32\"},{\"indexed\":true,\"internalType\":\"bytes32\",\"name\":\"newAdminRole\",\"type\":\"bytes32\"}],\"name\":\"RoleAdminChanged\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"sender\",\"type\":\"address\"}],\"name\":\"RoleGranted\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"sender\",\"type\":\"address\"}],\"name\":\"RoleRevoked\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"from\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"to\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"uint256\",\"name\":\"tokenId\",\"type\":\"uint256\"}],\"name\":\"Transfer\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"}],\"name\":\"Unpaused\",\"type\":\"event\"},{\"inputs\":[],\"name\":\"DEFAULT_ADMIN_ROLE\",\"outputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"stateMutability\":\"view\",\"type\":\"function\",\"constant\":true},{\"inputs\":[],\"name\":\"MINTER_ROLE\",\"outputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"stateMutability\":\"view\",\"type\":\"function\",\"constant\":true},{\"inputs\":[],\"name\":\"PAUSER_ROLE\",\"outputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"stateMutability\":\"view\",\"type\":\"function\",\"constant\":true},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"to\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"tokenId\",\"type\":\"uint256\"}],\"name\":\"approve\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\",\"constant\":false},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"owner\",\"type\":\"address\"}],\"name\":\"balanceOf\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\",\"constant\":true},{\"inputs\":[],\"name\":\"baseURI\",\"outputs\":[{\"internalType\":\"string\",\"name\":\"\",\"type\":\"string\"}],\"stateMutability\":\"view\",\"type\":\"function\",\"constant\":true},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"tokenId\",\"type\":\"uint256\"}],\"name\":\"burn\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\",\"constant\":false},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"tokenId\",\"type\":\"uint256\"}],\"name\":\"getApproved\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\",\"constant\":true},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"}],\"name\":\"getRoleAdmin\",\"outputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"stateMutability\":\"view\",\"type\":\"function\",\"constant\":true},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"},{\"internalType\":\"uint256\",\"name\":\"index\",\"type\":\"uint256\"}],\"name\":\"getRoleMember\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\",\"constant\":true},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"}],\"name\":\"getRoleMemberCount\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\",\"constant\":true},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"}],\"name\":\"grantRole\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\",\"constant\":false},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"}],\"name\":\"hasRole\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\",\"constant\":true},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"owner\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"operator\",\"type\":\"address\"}],\"name\":\"isApprovedForAll\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\",\"constant\":true},{\"inputs\":[],\"name\":\"name\",\"outputs\":[{\"internalType\":\"string\",\"name\":\"\",\"type\":\"string\"}],\"stateMutability\":\"view\",\"type\":\"function\",\"constant\":true},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"tokenId\",\"type\":\"uint256\"}],\"name\":\"ownerOf\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\",\"constant\":true},{\"inputs\":[],\"name\":\"paused\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\",\"constant\":true},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"}],\"name\":\"renounceRole\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\",\"constant\":false},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"}],\"name\":\"revokeRole\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\",\"constant\":false},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"from\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"to\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"tokenId\",\"type\":\"uint256\"}],\"name\":\"safeTransferFrom\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\",\"constant\":false},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"from\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"to\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"tokenId\",\"type\":\"uint256\"},{\"internalType\":\"bytes\",\"name\":\"_data\",\"type\":\"bytes\"}],\"name\":\"safeTransferFrom\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\",\"constant\":false},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"operator\",\"type\":\"address\"},{\"internalType\":\"bool\",\"name\":\"approved\",\"type\":\"bool\"}],\"name\":\"setApprovalForAll\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\",\"constant\":false},{\"inputs\":[{\"internalType\":\"bytes4\",\"name\":\"interfaceId\",\"type\":\"bytes4\"}],\"name\":\"supportsInterface\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\",\"constant\":true},{\"inputs\":[],\"name\":\"symbol\",\"outputs\":[{\"internalType\":\"string\",\"name\":\"\",\"type\":\"string\"}],\"stateMutability\":\"view\",\"type\":\"function\",\"constant\":true},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"index\",\"type\":\"uint256\"}],\"name\":\"tokenByIndex\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\",\"constant\":true},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"owner\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"index\",\"type\":\"uint256\"}],\"name\":\"tokenOfOwnerByIndex\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\",\"constant\":true},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"tokenId\",\"type\":\"uint256\"}],\"name\":\"tokenURI\",\"outputs\":[{\"internalType\":\"string\",\"name\":\"\",\"type\":\"string\"}],\"stateMutability\":\"view\",\"type\":\"function\",\"constant\":true},{\"inputs\":[],\"name\":\"totalSupply\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\",\"constant\":true},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"from\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"to\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"tokenId\",\"type\":\"uint256\"}],\"name\":\"transferFrom\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\",\"constant\":false},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"to\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"tokenId\",\"type\":\"uint256\"},{\"internalType\":\"string\",\"name\":\"_data\",\"type\":\"string\"}],\"name\":\"mint\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\",\"constant\":false},{\"inputs\":[],\"name\":\"pause\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\",\"constant\":false},{\"inputs\":[],\"name\":\"unpause\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\",\"constant\":false}]"
 
 // ERC721MinterBurnerPauserBin is the compiled bytecode used for deploying new contracts.
 var ERC721MinterBurnerPauserBin = "0x60806040523480156200001157600080fd5b5060405162002f4638038062002f46833981810160405260608110156200003757600080fd5b81019080805160405193929190846401000000008211156200005857600080fd5b9083019060208201858111156200006e57600080fd5b82516401000000008111828201881017156200008957600080fd5b82525081516020918201929091019080838360005b83811015620000b85781810151838201526020016200009e565b50505050905090810190601f168015620000e65780820380516001836020036101000a031916815260200191505b50604052602001805160405193929190846401000000008211156200010a57600080fd5b9083019060208201858111156200012057600080fd5b82516401000000008111828201881017156200013b57600080fd5b82525081516020918201929091019080838360005b838110156200016a57818101518382015260200162000150565b50505050905090810190601f168015620001985780820380516001836020036101000a031916815260200191505b5060405260200180516040519392919084640100000000821115620001bc57600080fd5b908301906020820185811115620001d257600080fd5b8251640100000000811182820188101715620001ed57600080fd5b82525081516020918201929091019080838360005b838110156200021c57818101518382015260200162000202565b50505050905090810190601f1680156200024a5780820380516001836020036101000a031916815260200191505b5060405250849150839050620002706301ffc9a760e01b6001600160e01b03620003ae16565b81516200028590600790602085019062000584565b5080516200029b90600890602084019062000584565b50620002b76380ac58cd60e01b6001600160e01b03620003ae16565b620002d2635b5e139f60e01b6001600160e01b03620003ae16565b620002ed63780e9d6360e01b6001600160e01b03620003ae16565b5050600b805460ff19169055620003216000620003126001600160e01b036200043616565b6001600160e01b036200043b16565b604080516a4d494e5445525f524f4c4560a81b8152905190819003600b0190206200035990620003126001600160e01b036200043616565b604080516a5041555345525f524f4c4560a81b8152905190819003600b0190206200039190620003126001600160e01b036200043616565b620003a5816001600160e01b036200045416565b50505062000626565b6001600160e01b031980821614156200040e576040805162461bcd60e51b815260206004820152601c60248201527f4552433136353a20696e76616c696420696e7465726661636520696400000000604482015290519081900360640190fd5b6001600160e01b0319166000908152600160208190526040909120805460ff19169091179055565b335b90565b6200045082826001600160e01b036200046916565b5050565b80516200045090600a90602084019062000584565b6000828152602081815260409091206200048e91839062001c28620004eb821b17901c565b156200045057620004a76001600160e01b036200043616565b6001600160a01b0316816001600160a01b0316837f2f8788117e7eff1d82e926ec794901d17c78024a50270940304540a733656f0d60405160405180910390a45050565b60006200050b836001600160a01b0384166001600160e01b036200051416565b90505b92915050565b60006200052b83836001600160e01b036200056c16565b62000563575081546001818101845560008481526020808220909301849055845484825282860190935260409020919091556200050e565b5060006200050e565b60009081526001919091016020526040902054151590565b828054600181600116156101000203166002900490600052602060002090601f016020900481019282601f10620005c757805160ff1916838001178555620005f7565b82800160010185558215620005f7579182015b82811115620005f7578251825591602001919060010190620005da565b506200060592915062000609565b5090565b6200043891905b8082111562000605576000815560010162000610565b61291080620006366000396000f3fe608060405234801561001057600080fd5b50600436106101f05760003560e01c80636c0360eb1161010f578063b88d4fde116100a2578063d539139311610071578063d539139314610720578063d547741f14610728578063e63ab1e914610754578063e985e9c51461075c576101f0565b8063b88d4fde14610565578063c87b56dd1461062b578063ca15c87314610648578063d3fc986414610665576101f0565b806391d14854116100de57806391d14854146104fb57806395d89b4114610527578063a217fddf1461052f578063a22cb46514610537576101f0565b80636c0360eb146104a257806370a08231146104aa5780638456cb59146104d05780639010d07c146104d8576101f0565b80632f745c591161018757806342966c681161015657806342966c68146104435780634f6ccce7146104605780635c975abb1461047d5780636352211e14610485576101f0565b80632f745c59146103ad57806336568abe146103d95780633f4ba83a1461040557806342842e0e1461040d576101f0565b806318160ddd116101c357806318160ddd1461031457806323b872dd1461032e578063248a9ca3146103645780632f2ff15d14610381576101f0565b806301ffc9a7146101f557806306fdde0314610230578063081812fc146102ad578063095ea7b3146102e6575b600080fd5b61021c6004803603602081101561020b57600080fd5b50356001600160e01b03191661078a565b604080519115158252519081900360200190f35b6102386107ad565b6040805160208082528351818301528351919283929083019185019080838360005b8381101561027257818101518382015260200161025a565b50505050905090810190601f16801561029f5780820380516001836020036101000a031916815260200191505b509250505060405180910390f35b6102ca600480360360208110156102c357600080fd5b5035610844565b604080516001600160a01b039092168252519081900360200190f35b610312600480360360408110156102fc57600080fd5b506001600160a01b0381351690602001356108a6565b005b61031c610981565b60408051918252519081900360200190f35b6103126004803603606081101561034457600080fd5b506001600160a01b03813581169160208101359091169060400135610992565b61031c6004803603602081101561037a57600080fd5b50356109e9565b6103126004803603604081101561039757600080fd5b50803590602001356001600160a01b03166109fe565b61031c600480360360408110156103c357600080fd5b506001600160a01b038135169060200135610a6a565b610312600480360360408110156103ef57600080fd5b50803590602001356001600160a01b0316610a9b565b610312610afc565b6103126004803603606081101561042357600080fd5b506001600160a01b03813581169160208101359091169060400135610b6d565b6103126004803603602081101561045957600080fd5b5035610b88565b61031c6004803603602081101561047657600080fd5b5035610bda565b61021c610bf6565b6102ca6004803603602081101561049b57600080fd5b5035610bff565b610238610c2d565b61031c600480360360208110156104c057600080fd5b50356001600160a01b0316610c8e565b610312610cf6565b6102ca600480360360408110156104ee57600080fd5b5080359060200135610d65565b61021c6004803603604081101561051157600080fd5b50803590602001356001600160a01b0316610d83565b610238610da1565b61031c610e02565b6103126004803603604081101561054d57600080fd5b506001600160a01b0381351690602001351515610e07565b6103126004803603608081101561057b57600080fd5b6001600160a01b038235811692602081013590911691604082013591908101906080810160608201356401000000008111156105b657600080fd5b8201836020820111156105c857600080fd5b803590602001918460018302840111640100000000831117156105ea57600080fd5b91908080601f016020809104026020016040519081016040528093929190818152602001838380828437600092019190915250929550610f0c945050505050565b6102386004803603602081101561064157600080fd5b5035610f6a565b61031c6004803603602081101561065e57600080fd5b5035611211565b6103126004803603606081101561067b57600080fd5b6001600160a01b03823516916020810135918101906060810160408201356401000000008111156106ab57600080fd5b8201836020820111156106bd57600080fd5b803590602001918460018302840111640100000000831117156106df57600080fd5b91908080601f016020809104026020016040519081016040528093929190818152602001838380828437600092019190915250929550611228945050505050565b61031c6112a3565b6103126004803603604081101561073e57600080fd5b50803590602001356001600160a01b03166112c6565b61031c61131f565b61021c6004803603604081101561077257600080fd5b506001600160a01b0381358116916020013516611342565b6001600160e01b0319811660009081526001602052604090205460ff165b919050565b60078054604080516020601f60026000196101006001881615020190951694909404938401819004810282018101909252828152606093909290918301828280156108395780601f1061080e57610100808354040283529160200191610839565b820191906000526020600020905b81548152906001019060200180831161081c57829003601f168201915b505050505090505b90565b600061084f82611370565b61088a5760405162461bcd60e51b815260040180806020018281038252602c815260200180612743602c913960400191505060405180910390fd5b506000908152600560205260409020546001600160a01b031690565b60006108b182610bff565b9050806001600160a01b0316836001600160a01b031614156109045760405162461bcd60e51b81526004018080602001828103825260218152602001806127f36021913960400191505060405180910390fd5b806001600160a01b0316610916611383565b6001600160a01b03161480610937575061093781610932611383565b611342565b6109725760405162461bcd60e51b81526004018080602001828103825260388152602001806126966038913960400191505060405180910390fd5b61097c8383611387565b505050565b600061098d60036113f5565b905090565b6109a361099d611383565b82611400565b6109de5760405162461bcd60e51b81526004018080602001828103825260318152602001806128146031913960400191505060405180910390fd5b61097c8383836114a4565b60009081526020819052604090206002015490565b600082815260208190526040902060020154610a2190610a1c611383565b610d83565b610a5c5760405162461bcd60e51b815260040180806020018281038252602f815260200180612543602f913960400191505060405180910390fd5b610a668282611602565b5050565b6001600160a01b0382166000908152600260205260408120610a92908363ffffffff61167116565b90505b92915050565b610aa3611383565b6001600160a01b0316816001600160a01b031614610af25760405162461bcd60e51b815260040180806020018281038252602f815260200180612875602f913960400191505060405180910390fd5b610a66828261167d565b604080516a5041555345525f524f4c4560a81b8152905190819003600b019020610b2890610a1c611383565b610b635760405162461bcd60e51b815260040180806020018281038252603a81526020018061262c603a913960400191505060405180910390fd5b610b6b6116ec565b565b61097c83838360405180602001604052806000815250610f0c565b610b9361099d611383565b610bce5760405162461bcd60e51b81526004018080602001828103825260308152602001806128456030913960400191505060405180910390fd5b610bd78161178a565b50565b600080610bee60038463ffffffff61186316565b509392505050565b600b5460ff1690565b6000610a95826040518060600160405280602981526020016126f8602991396003919063ffffffff61187f16565b600a8054604080516020601f60026000196101006001881615020190951694909404938401819004810282018101909252828152606093909290918301828280156108395780601f1061080e57610100808354040283529160200191610839565b60006001600160a01b038216610cd55760405162461bcd60e51b815260040180806020018281038252602a8152602001806126ce602a913960400191505060405180910390fd5b6001600160a01b0382166000908152600260205260409020610a95906113f5565b604080516a5041555345525f524f4c4560a81b8152905190819003600b019020610d2290610a1c611383565b610d5d5760405162461bcd60e51b81526004018080602001828103825260388152602001806125f46038913960400191505060405180910390fd5b610b6b611896565b6000828152602081905260408120610a92908363ffffffff61167116565b6000828152602081905260408120610a92908363ffffffff61191716565b60088054604080516020601f60026000196101006001881615020190951694909404938401819004810282018101909252828152606093909290918301828280156108395780601f1061080e57610100808354040283529160200191610839565b600081565b610e0f611383565b6001600160a01b0316826001600160a01b03161415610e75576040805162461bcd60e51b815260206004820152601960248201527f4552433732313a20617070726f766520746f2063616c6c657200000000000000604482015290519081900360640190fd5b8060066000610e82611383565b6001600160a01b03908116825260208083019390935260409182016000908120918716808252919093529120805460ff191692151592909217909155610ec6611383565b60408051841515815290516001600160a01b0392909216917f17307eab39ab6107e8899845ad3d59bd9653f200f220920489ca2b5937696c319181900360200190a35050565b610f1d610f17611383565b83611400565b610f585760405162461bcd60e51b81526004018080602001828103825260318152602001806128146031913960400191505060405180910390fd5b610f648484848461192c565b50505050565b6060610f7582611370565b610fb05760405162461bcd60e51b815260040180806020018281038252602f8152602001806127c4602f913960400191505060405180910390fd5b60008281526009602090815260409182902080548351601f60026000196101006001861615020190931692909204918201849004840281018401909452808452606093928301828280156110455780601f1061101a57610100808354040283529160200191611045565b820191906000526020600020905b81548152906001019060200180831161102857829003601f168201915b5050600a549394505050506002600019610100600184161502019091160461106e5790506107a8565b80511561113f57600a8160405160200180838054600181600116156101000203166002900480156110d65780601f106110b45761010080835404028352918201916110d6565b820191906000526020600020905b8154815290600101906020018083116110c2575b5050825160208401908083835b602083106111025780518252601f1990920191602091820191016110e3565b6001836020036101000a038019825116818451168082178552505050505050905001925050506040516020818303038152906040529150506107a8565b600a61114a8461197e565b60405160200180838054600181600116156101000203166002900480156111a85780601f106111865761010080835404028352918201916111a8565b820191906000526020600020905b815481529060010190602001808311611194575b5050825160208401908083835b602083106111d45780518252601f1990920191602091820191016111b5565b6001836020036101000a03801982511681845116808217855250505050505090500192505050604051602081830303815290604052915050919050565b6000818152602081905260408120610a95906113f5565b604080516a4d494e5445525f524f4c4560a81b8152905190819003600b01902061125490610a1c611383565b61128f5760405162461bcd60e51b81526004018080602001828103825260378152602001806128a46037913960400191505060405180910390fd5b6112998383611a42565b61097c8282611b7c565b604080516a4d494e5445525f524f4c4560a81b8152905190819003600b01902081565b6000828152602081905260409020600201546112e490610a1c611383565b610af25760405162461bcd60e51b81526004018080602001828103825260308152602001806126666030913960400191505060405180910390fd5b604080516a5041555345525f524f4c4560a81b8152905190819003600b01902081565b6001600160a01b03918216600090815260066020908152604080832093909416825291909152205460ff1690565b6000610a9560038363ffffffff611bdf16565b3390565b600081815260056020526040902080546001600160a01b0319166001600160a01b03841690811790915581906113bc82610bff565b6001600160a01b03167f8c5be1e5ebec7d5bd14f71427d1e84f3dd0314c0f7b2291e5b200ac8c7c3b92560405160405180910390a45050565b6000610a9582611beb565b600061140b82611370565b6114465760405162461bcd60e51b815260040180806020018281038252602c8152602001806125c8602c913960400191505060405180910390fd5b600061145183610bff565b9050806001600160a01b0316846001600160a01b0316148061148c5750836001600160a01b031661148184610844565b6001600160a01b0316145b8061149c575061149c8185611342565b949350505050565b826001600160a01b03166114b782610bff565b6001600160a01b0316146114fc5760405162461bcd60e51b815260040180806020018281038252602981526020018061279b6029913960400191505060405180910390fd5b6001600160a01b0382166115415760405162461bcd60e51b81526004018080602001828103825260248152602001806125a46024913960400191505060405180910390fd5b61154c838383611bef565b611557600082611387565b6001600160a01b038316600090815260026020526040902061157f908263ffffffff611bfa16565b506001600160a01b03821660009081526002602052604090206115a8908263ffffffff611c0616565b506115bb6003828463ffffffff611c1216565b5080826001600160a01b0316846001600160a01b03167fddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef60405160405180910390a4505050565b6000828152602081905260409020611620908263ffffffff611c2816565b15610a665761162d611383565b6001600160a01b0316816001600160a01b0316837f2f8788117e7eff1d82e926ec794901d17c78024a50270940304540a733656f0d60405160405180910390a45050565b6000610a928383611c3d565b600082815260208190526040902061169b908263ffffffff611ca116565b15610a66576116a8611383565b6001600160a01b0316816001600160a01b0316837ff6391f5c32d9c69d2a47ea670b442974b53935d1edc7fd64eb21e047a839171b60405160405180910390a45050565b600b5460ff1661173a576040805162461bcd60e51b815260206004820152601460248201527314185d5cd8589b194e881b9bdd081c185d5cd95960621b604482015290519081900360640190fd5b600b805460ff191690557f5db9ee0a495bf2e6ff9c91a7834c1ba4fdd244a5e8aa4e537bd38aeae4b073aa61176d611383565b604080516001600160a01b039092168252519081900360200190a1565b600061179582610bff565b90506117a381600084611bef565b6117ae600083611387565b60008281526009602052604090205460026000196101006001841615020190911604156117ec5760008281526009602052604081206117ec91612419565b6001600160a01b0381166000908152600260205260409020611814908363ffffffff611bfa16565b5061182660038363ffffffff611cb616565b5060405182906000906001600160a01b038416907fddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef908390a45050565b60008080806118728686611cc2565b9097909650945050505050565b600061188c848484611d3d565b90505b9392505050565b600b5460ff16156118e1576040805162461bcd60e51b815260206004820152601060248201526f14185d5cd8589b194e881c185d5cd95960821b604482015290519081900360640190fd5b600b805460ff191660011790557f62e78cea01bee320cd4e420270b5ea74000d11b0c9f74754ebdbfc544b05a25861176d611383565b6000610a92836001600160a01b038416611e07565b6119378484846114a4565b61194384848484611e1f565b610f645760405162461bcd60e51b81526004018080602001828103825260328152602001806125726032913960400191505060405180910390fd5b6060816119a357506040805180820190915260018152600360fc1b60208201526107a8565b8160005b81156119bb57600101600a820491506119a7565b6060816040519080825280601f01601f1916602001820160405280156119e8576020820181803683370190505b50859350905060001982015b8315611a3957600a840660300160f81b82828060019003935081518110611a1757fe5b60200101906001600160f81b031916908160001a905350600a840493506119f4565b50949350505050565b6001600160a01b038216611a9d576040805162461bcd60e51b815260206004820181905260248201527f4552433732313a206d696e7420746f20746865207a65726f2061646472657373604482015290519081900360640190fd5b611aa681611370565b15611af8576040805162461bcd60e51b815260206004820152601c60248201527f4552433732313a20746f6b656e20616c7265616479206d696e74656400000000604482015290519081900360640190fd5b611b0460008383611bef565b6001600160a01b0382166000908152600260205260409020611b2c908263ffffffff611c0616565b50611b3f6003828463ffffffff611c1216565b5060405181906001600160a01b038416906000907fddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef908290a45050565b611b8582611370565b611bc05760405162461bcd60e51b815260040180806020018281038252602c81526020018061276f602c913960400191505060405180910390fd5b6000828152600960209081526040909120825161097c9284019061245d565b6000610a928383611e07565b5490565b61097c838383611f9f565b6000610a928383611fee565b6000610a9283836120b4565b600061188c84846001600160a01b0385166120fe565b6000610a92836001600160a01b0384166120b4565b81546000908210611c7f5760405162461bcd60e51b81526004018080602001828103825260228152602001806124f66022913960400191505060405180910390fd5b826000018281548110611c8e57fe5b9060005260206000200154905092915050565b6000610a92836001600160a01b038416611fee565b6000610a928383612195565b815460009081908310611d065760405162461bcd60e51b81526004018080602001828103825260228152602001806127216022913960400191505060405180910390fd5b6000846000018481548110611d1757fe5b906000526020600020906002020190508060000154816001015492509250509250929050565b60008281526001840160205260408120548281611dd85760405162461bcd60e51b81526004018080602001828103825283818151815260200191508051906020019080838360005b83811015611d9d578181015183820152602001611d85565b50505050905090810190601f168015611dca5780820380516001836020036101000a031916815260200191505b509250505060405180910390fd5b50846000016001820381548110611deb57fe5b9060005260206000209060020201600101549150509392505050565b60009081526001919091016020526040902054151590565b6000611e33846001600160a01b0316612269565b611e3f5750600161149c565b6060611f65630a85bd0160e11b611e54611383565b88878760405160240180856001600160a01b03166001600160a01b03168152602001846001600160a01b03166001600160a01b0316815260200183815260200180602001828103825283818151815260200191508051906020019080838360005b83811015611ecd578181015183820152602001611eb5565b50505050905090810190601f168015611efa5780820380516001836020036101000a031916815260200191505b5095505050505050604051602081830303815290604052906001600160e01b0319166020820180516001600160e01b038381831617835250505050604051806060016040528060328152602001612572603291396001600160a01b038816919063ffffffff6122a216565b90506000818060200190516020811015611f7e57600080fd5b50516001600160e01b031916630a85bd0160e11b1492505050949350505050565b611faa83838361097c565b611fb2610bf6565b1561097c5760405162461bcd60e51b815260040180806020018281038252602b815260200180612518602b913960400191505060405180910390fd5b600081815260018301602052604081205480156120aa578354600019808301919081019060009087908390811061202157fe5b906000526020600020015490508087600001848154811061203e57fe5b60009182526020808320909101929092558281526001898101909252604090209084019055865487908061206e57fe5b60019003818190600052602060002001600090559055866001016000878152602001908152602001600020600090556001945050505050610a95565b6000915050610a95565b60006120c08383611e07565b6120f657508154600181810184556000848152602080822090930184905584548482528286019093526040902091909155610a95565b506000610a95565b60008281526001840160205260408120548061216357505060408051808201825283815260208082018481528654600181810189556000898152848120955160029093029095019182559151908201558654868452818801909252929091205561188f565b8285600001600183038154811061217657fe5b906000526020600020906002020160010181905550600091505061188f565b600081815260018301602052604081205480156120aa57835460001980830191908101906000908790839081106121c857fe5b90600052602060002090600202019050808760000184815481106121e857fe5b60009182526020808320845460029093020191825560019384015491840191909155835482528983019052604090209084019055865487908061222757fe5b6000828152602080822060026000199094019384020182815560019081018390559290935588815289820190925260408220919091559450610a959350505050565b6000813f7fc5d2460186f7233c927e7db2dcc703c0e500b653ca82273b7bfad8045d85a47081811480159061149c575050151592915050565b606061188c848460008560606122b785612269565b612308576040805162461bcd60e51b815260206004820152601d60248201527f416464726573733a2063616c6c20746f206e6f6e2d636f6e7472616374000000604482015290519081900360640190fd5b60006060866001600160a01b031685876040518082805190602001908083835b602083106123475780518252601f199092019160209182019101612328565b6001836020036101000a03801982511681845116808217855250505050505090500191505060006040518083038185875af1925050503d80600081146123a9576040519150601f19603f3d011682016040523d82523d6000602084013e6123ae565b606091505b509150915081156123c257915061149c9050565b8051156123d25780518082602001fd5b60405162461bcd60e51b8152602060048201818152865160248401528651879391928392604401919085019080838360008315611d9d578181015183820152602001611d85565b50805460018160011615610100020316600290046000825580601f1061243f5750610bd7565b601f016020900490600052602060002090810190610bd791906124db565b828054600181600116156101000203166002900490600052602060002090601f016020900481019282601f1061249e57805160ff19168380011785556124cb565b828001600101855582156124cb579182015b828111156124cb5782518255916020019190600101906124b0565b506124d79291506124db565b5090565b61084191905b808211156124d757600081556001016124e156fe456e756d657261626c655365743a20696e646578206f7574206f6620626f756e64734552433732315061757361626c653a20746f6b656e207472616e73666572207768696c6520706175736564416363657373436f6e74726f6c3a2073656e646572206d75737420626520616e2061646d696e20746f206772616e744552433732313a207472616e7366657220746f206e6f6e20455243373231526563656976657220696d706c656d656e7465724552433732313a207472616e7366657220746f20746865207a65726f20616464726573734552433732313a206f70657261746f7220717565727920666f72206e6f6e6578697374656e7420746f6b656e4552433732314d696e7465724275726e65725061757365723a206d75737420686176652070617573657220726f6c6520746f2070617573654552433732314d696e7465724275726e65725061757365723a206d75737420686176652070617573657220726f6c6520746f20756e7061757365416363657373436f6e74726f6c3a2073656e646572206d75737420626520616e2061646d696e20746f207265766f6b654552433732313a20617070726f76652063616c6c6572206973206e6f74206f776e6572206e6f7220617070726f76656420666f7220616c6c4552433732313a2062616c616e636520717565727920666f7220746865207a65726f20616464726573734552433732313a206f776e657220717565727920666f72206e6f6e6578697374656e7420746f6b656e456e756d657261626c654d61703a20696e646578206f7574206f6620626f756e64734552433732313a20617070726f76656420717565727920666f72206e6f6e6578697374656e7420746f6b656e4552433732314d657461646174613a2055524920736574206f66206e6f6e6578697374656e7420746f6b656e4552433732313a207472616e73666572206f6620746f6b656e2074686174206973206e6f74206f776e4552433732314d657461646174613a2055524920717565727920666f72206e6f6e6578697374656e7420746f6b656e4552433732313a20617070726f76616c20746f2063757272656e74206f776e65724552433732313a207472616e736665722063616c6c6572206973206e6f74206f776e6572206e6f7220617070726f7665644552433732314275726e61626c653a2063616c6c6572206973206e6f74206f776e6572206e6f7220617070726f766564416363657373436f6e74726f6c3a2063616e206f6e6c792072656e6f756e636520726f6c657320666f722073656c664552433732314d696e7465724275726e65725061757365723a206d7573742068617665206d696e74657220726f6c6520746f206d696e74a26469706673582212209e9e23ad3ea8973de670604db3acaf2d710e5aa9856030c4c2110009c8408a1664736f6c63430006040033"
@@ -198,67 +198,524 @@ func (_ERC721MinterBurnerPauser *ERC721MinterBurnerPauserTransactorRaw) Transact
 	return _ERC721MinterBurnerPauser.Contract.contract.Transact(opts, method, params...)
 }
 
-// DEFAULTADMINROLE is a paid mutator transaction binding the contract method 0xa217fddf.
+// DEFAULTADMINROLE is a free data retrieval call binding the contract method 0xa217fddf.
 //
-// Solidity: function DEFAULT_ADMIN_ROLE() returns(bytes32)
-func (_ERC721MinterBurnerPauser *ERC721MinterBurnerPauserTransactor) DEFAULTADMINROLE(opts *bind.TransactOpts) (*types.Transaction, error) {
-	return _ERC721MinterBurnerPauser.contract.Transact(opts, "DEFAULT_ADMIN_ROLE")
+// Solidity: function DEFAULT_ADMIN_ROLE() constant returns(bytes32)
+func (_ERC721MinterBurnerPauser *ERC721MinterBurnerPauserCaller) DEFAULTADMINROLE(opts *bind.CallOpts) ([32]byte, error) {
+	var (
+		ret0 = new([32]byte)
+	)
+	out := ret0
+	err := _ERC721MinterBurnerPauser.contract.Call(opts, out, "DEFAULT_ADMIN_ROLE")
+	return *ret0, err
 }
 
-// DEFAULTADMINROLE is a paid mutator transaction binding the contract method 0xa217fddf.
+// DEFAULTADMINROLE is a free data retrieval call binding the contract method 0xa217fddf.
 //
-// Solidity: function DEFAULT_ADMIN_ROLE() returns(bytes32)
-func (_ERC721MinterBurnerPauser *ERC721MinterBurnerPauserSession) DEFAULTADMINROLE() (*types.Transaction, error) {
-	return _ERC721MinterBurnerPauser.Contract.DEFAULTADMINROLE(&_ERC721MinterBurnerPauser.TransactOpts)
+// Solidity: function DEFAULT_ADMIN_ROLE() constant returns(bytes32)
+func (_ERC721MinterBurnerPauser *ERC721MinterBurnerPauserSession) DEFAULTADMINROLE() ([32]byte, error) {
+	return _ERC721MinterBurnerPauser.Contract.DEFAULTADMINROLE(&_ERC721MinterBurnerPauser.CallOpts)
 }
 
-// DEFAULTADMINROLE is a paid mutator transaction binding the contract method 0xa217fddf.
+// DEFAULTADMINROLE is a free data retrieval call binding the contract method 0xa217fddf.
 //
-// Solidity: function DEFAULT_ADMIN_ROLE() returns(bytes32)
-func (_ERC721MinterBurnerPauser *ERC721MinterBurnerPauserTransactorSession) DEFAULTADMINROLE() (*types.Transaction, error) {
-	return _ERC721MinterBurnerPauser.Contract.DEFAULTADMINROLE(&_ERC721MinterBurnerPauser.TransactOpts)
+// Solidity: function DEFAULT_ADMIN_ROLE() constant returns(bytes32)
+func (_ERC721MinterBurnerPauser *ERC721MinterBurnerPauserCallerSession) DEFAULTADMINROLE() ([32]byte, error) {
+	return _ERC721MinterBurnerPauser.Contract.DEFAULTADMINROLE(&_ERC721MinterBurnerPauser.CallOpts)
 }
 
-// MINTERROLE is a paid mutator transaction binding the contract method 0xd5391393.
+// MINTERROLE is a free data retrieval call binding the contract method 0xd5391393.
 //
-// Solidity: function MINTER_ROLE() returns(bytes32)
-func (_ERC721MinterBurnerPauser *ERC721MinterBurnerPauserTransactor) MINTERROLE(opts *bind.TransactOpts) (*types.Transaction, error) {
-	return _ERC721MinterBurnerPauser.contract.Transact(opts, "MINTER_ROLE")
+// Solidity: function MINTER_ROLE() constant returns(bytes32)
+func (_ERC721MinterBurnerPauser *ERC721MinterBurnerPauserCaller) MINTERROLE(opts *bind.CallOpts) ([32]byte, error) {
+	var (
+		ret0 = new([32]byte)
+	)
+	out := ret0
+	err := _ERC721MinterBurnerPauser.contract.Call(opts, out, "MINTER_ROLE")
+	return *ret0, err
 }
 
-// MINTERROLE is a paid mutator transaction binding the contract method 0xd5391393.
+// MINTERROLE is a free data retrieval call binding the contract method 0xd5391393.
 //
-// Solidity: function MINTER_ROLE() returns(bytes32)
-func (_ERC721MinterBurnerPauser *ERC721MinterBurnerPauserSession) MINTERROLE() (*types.Transaction, error) {
-	return _ERC721MinterBurnerPauser.Contract.MINTERROLE(&_ERC721MinterBurnerPauser.TransactOpts)
+// Solidity: function MINTER_ROLE() constant returns(bytes32)
+func (_ERC721MinterBurnerPauser *ERC721MinterBurnerPauserSession) MINTERROLE() ([32]byte, error) {
+	return _ERC721MinterBurnerPauser.Contract.MINTERROLE(&_ERC721MinterBurnerPauser.CallOpts)
 }
 
-// MINTERROLE is a paid mutator transaction binding the contract method 0xd5391393.
+// MINTERROLE is a free data retrieval call binding the contract method 0xd5391393.
 //
-// Solidity: function MINTER_ROLE() returns(bytes32)
-func (_ERC721MinterBurnerPauser *ERC721MinterBurnerPauserTransactorSession) MINTERROLE() (*types.Transaction, error) {
-	return _ERC721MinterBurnerPauser.Contract.MINTERROLE(&_ERC721MinterBurnerPauser.TransactOpts)
+// Solidity: function MINTER_ROLE() constant returns(bytes32)
+func (_ERC721MinterBurnerPauser *ERC721MinterBurnerPauserCallerSession) MINTERROLE() ([32]byte, error) {
+	return _ERC721MinterBurnerPauser.Contract.MINTERROLE(&_ERC721MinterBurnerPauser.CallOpts)
 }
 
-// PAUSERROLE is a paid mutator transaction binding the contract method 0xe63ab1e9.
+// PAUSERROLE is a free data retrieval call binding the contract method 0xe63ab1e9.
 //
-// Solidity: function PAUSER_ROLE() returns(bytes32)
-func (_ERC721MinterBurnerPauser *ERC721MinterBurnerPauserTransactor) PAUSERROLE(opts *bind.TransactOpts) (*types.Transaction, error) {
-	return _ERC721MinterBurnerPauser.contract.Transact(opts, "PAUSER_ROLE")
+// Solidity: function PAUSER_ROLE() constant returns(bytes32)
+func (_ERC721MinterBurnerPauser *ERC721MinterBurnerPauserCaller) PAUSERROLE(opts *bind.CallOpts) ([32]byte, error) {
+	var (
+		ret0 = new([32]byte)
+	)
+	out := ret0
+	err := _ERC721MinterBurnerPauser.contract.Call(opts, out, "PAUSER_ROLE")
+	return *ret0, err
 }
 
-// PAUSERROLE is a paid mutator transaction binding the contract method 0xe63ab1e9.
+// PAUSERROLE is a free data retrieval call binding the contract method 0xe63ab1e9.
 //
-// Solidity: function PAUSER_ROLE() returns(bytes32)
-func (_ERC721MinterBurnerPauser *ERC721MinterBurnerPauserSession) PAUSERROLE() (*types.Transaction, error) {
-	return _ERC721MinterBurnerPauser.Contract.PAUSERROLE(&_ERC721MinterBurnerPauser.TransactOpts)
+// Solidity: function PAUSER_ROLE() constant returns(bytes32)
+func (_ERC721MinterBurnerPauser *ERC721MinterBurnerPauserSession) PAUSERROLE() ([32]byte, error) {
+	return _ERC721MinterBurnerPauser.Contract.PAUSERROLE(&_ERC721MinterBurnerPauser.CallOpts)
 }
 
-// PAUSERROLE is a paid mutator transaction binding the contract method 0xe63ab1e9.
+// PAUSERROLE is a free data retrieval call binding the contract method 0xe63ab1e9.
 //
-// Solidity: function PAUSER_ROLE() returns(bytes32)
-func (_ERC721MinterBurnerPauser *ERC721MinterBurnerPauserTransactorSession) PAUSERROLE() (*types.Transaction, error) {
-	return _ERC721MinterBurnerPauser.Contract.PAUSERROLE(&_ERC721MinterBurnerPauser.TransactOpts)
+// Solidity: function PAUSER_ROLE() constant returns(bytes32)
+func (_ERC721MinterBurnerPauser *ERC721MinterBurnerPauserCallerSession) PAUSERROLE() ([32]byte, error) {
+	return _ERC721MinterBurnerPauser.Contract.PAUSERROLE(&_ERC721MinterBurnerPauser.CallOpts)
+}
+
+// BalanceOf is a free data retrieval call binding the contract method 0x70a08231.
+//
+// Solidity: function balanceOf(address owner) constant returns(uint256)
+func (_ERC721MinterBurnerPauser *ERC721MinterBurnerPauserCaller) BalanceOf(opts *bind.CallOpts, owner common.Address) (*big.Int, error) {
+	var (
+		ret0 = new(*big.Int)
+	)
+	out := ret0
+	err := _ERC721MinterBurnerPauser.contract.Call(opts, out, "balanceOf", owner)
+	return *ret0, err
+}
+
+// BalanceOf is a free data retrieval call binding the contract method 0x70a08231.
+//
+// Solidity: function balanceOf(address owner) constant returns(uint256)
+func (_ERC721MinterBurnerPauser *ERC721MinterBurnerPauserSession) BalanceOf(owner common.Address) (*big.Int, error) {
+	return _ERC721MinterBurnerPauser.Contract.BalanceOf(&_ERC721MinterBurnerPauser.CallOpts, owner)
+}
+
+// BalanceOf is a free data retrieval call binding the contract method 0x70a08231.
+//
+// Solidity: function balanceOf(address owner) constant returns(uint256)
+func (_ERC721MinterBurnerPauser *ERC721MinterBurnerPauserCallerSession) BalanceOf(owner common.Address) (*big.Int, error) {
+	return _ERC721MinterBurnerPauser.Contract.BalanceOf(&_ERC721MinterBurnerPauser.CallOpts, owner)
+}
+
+// BaseURI is a free data retrieval call binding the contract method 0x6c0360eb.
+//
+// Solidity: function baseURI() constant returns(string)
+func (_ERC721MinterBurnerPauser *ERC721MinterBurnerPauserCaller) BaseURI(opts *bind.CallOpts) (string, error) {
+	var (
+		ret0 = new(string)
+	)
+	out := ret0
+	err := _ERC721MinterBurnerPauser.contract.Call(opts, out, "baseURI")
+	return *ret0, err
+}
+
+// BaseURI is a free data retrieval call binding the contract method 0x6c0360eb.
+//
+// Solidity: function baseURI() constant returns(string)
+func (_ERC721MinterBurnerPauser *ERC721MinterBurnerPauserSession) BaseURI() (string, error) {
+	return _ERC721MinterBurnerPauser.Contract.BaseURI(&_ERC721MinterBurnerPauser.CallOpts)
+}
+
+// BaseURI is a free data retrieval call binding the contract method 0x6c0360eb.
+//
+// Solidity: function baseURI() constant returns(string)
+func (_ERC721MinterBurnerPauser *ERC721MinterBurnerPauserCallerSession) BaseURI() (string, error) {
+	return _ERC721MinterBurnerPauser.Contract.BaseURI(&_ERC721MinterBurnerPauser.CallOpts)
+}
+
+// GetApproved is a free data retrieval call binding the contract method 0x081812fc.
+//
+// Solidity: function getApproved(uint256 tokenId) constant returns(address)
+func (_ERC721MinterBurnerPauser *ERC721MinterBurnerPauserCaller) GetApproved(opts *bind.CallOpts, tokenId *big.Int) (common.Address, error) {
+	var (
+		ret0 = new(common.Address)
+	)
+	out := ret0
+	err := _ERC721MinterBurnerPauser.contract.Call(opts, out, "getApproved", tokenId)
+	return *ret0, err
+}
+
+// GetApproved is a free data retrieval call binding the contract method 0x081812fc.
+//
+// Solidity: function getApproved(uint256 tokenId) constant returns(address)
+func (_ERC721MinterBurnerPauser *ERC721MinterBurnerPauserSession) GetApproved(tokenId *big.Int) (common.Address, error) {
+	return _ERC721MinterBurnerPauser.Contract.GetApproved(&_ERC721MinterBurnerPauser.CallOpts, tokenId)
+}
+
+// GetApproved is a free data retrieval call binding the contract method 0x081812fc.
+//
+// Solidity: function getApproved(uint256 tokenId) constant returns(address)
+func (_ERC721MinterBurnerPauser *ERC721MinterBurnerPauserCallerSession) GetApproved(tokenId *big.Int) (common.Address, error) {
+	return _ERC721MinterBurnerPauser.Contract.GetApproved(&_ERC721MinterBurnerPauser.CallOpts, tokenId)
+}
+
+// GetRoleAdmin is a free data retrieval call binding the contract method 0x248a9ca3.
+//
+// Solidity: function getRoleAdmin(bytes32 role) constant returns(bytes32)
+func (_ERC721MinterBurnerPauser *ERC721MinterBurnerPauserCaller) GetRoleAdmin(opts *bind.CallOpts, role [32]byte) ([32]byte, error) {
+	var (
+		ret0 = new([32]byte)
+	)
+	out := ret0
+	err := _ERC721MinterBurnerPauser.contract.Call(opts, out, "getRoleAdmin", role)
+	return *ret0, err
+}
+
+// GetRoleAdmin is a free data retrieval call binding the contract method 0x248a9ca3.
+//
+// Solidity: function getRoleAdmin(bytes32 role) constant returns(bytes32)
+func (_ERC721MinterBurnerPauser *ERC721MinterBurnerPauserSession) GetRoleAdmin(role [32]byte) ([32]byte, error) {
+	return _ERC721MinterBurnerPauser.Contract.GetRoleAdmin(&_ERC721MinterBurnerPauser.CallOpts, role)
+}
+
+// GetRoleAdmin is a free data retrieval call binding the contract method 0x248a9ca3.
+//
+// Solidity: function getRoleAdmin(bytes32 role) constant returns(bytes32)
+func (_ERC721MinterBurnerPauser *ERC721MinterBurnerPauserCallerSession) GetRoleAdmin(role [32]byte) ([32]byte, error) {
+	return _ERC721MinterBurnerPauser.Contract.GetRoleAdmin(&_ERC721MinterBurnerPauser.CallOpts, role)
+}
+
+// GetRoleMember is a free data retrieval call binding the contract method 0x9010d07c.
+//
+// Solidity: function getRoleMember(bytes32 role, uint256 index) constant returns(address)
+func (_ERC721MinterBurnerPauser *ERC721MinterBurnerPauserCaller) GetRoleMember(opts *bind.CallOpts, role [32]byte, index *big.Int) (common.Address, error) {
+	var (
+		ret0 = new(common.Address)
+	)
+	out := ret0
+	err := _ERC721MinterBurnerPauser.contract.Call(opts, out, "getRoleMember", role, index)
+	return *ret0, err
+}
+
+// GetRoleMember is a free data retrieval call binding the contract method 0x9010d07c.
+//
+// Solidity: function getRoleMember(bytes32 role, uint256 index) constant returns(address)
+func (_ERC721MinterBurnerPauser *ERC721MinterBurnerPauserSession) GetRoleMember(role [32]byte, index *big.Int) (common.Address, error) {
+	return _ERC721MinterBurnerPauser.Contract.GetRoleMember(&_ERC721MinterBurnerPauser.CallOpts, role, index)
+}
+
+// GetRoleMember is a free data retrieval call binding the contract method 0x9010d07c.
+//
+// Solidity: function getRoleMember(bytes32 role, uint256 index) constant returns(address)
+func (_ERC721MinterBurnerPauser *ERC721MinterBurnerPauserCallerSession) GetRoleMember(role [32]byte, index *big.Int) (common.Address, error) {
+	return _ERC721MinterBurnerPauser.Contract.GetRoleMember(&_ERC721MinterBurnerPauser.CallOpts, role, index)
+}
+
+// GetRoleMemberCount is a free data retrieval call binding the contract method 0xca15c873.
+//
+// Solidity: function getRoleMemberCount(bytes32 role) constant returns(uint256)
+func (_ERC721MinterBurnerPauser *ERC721MinterBurnerPauserCaller) GetRoleMemberCount(opts *bind.CallOpts, role [32]byte) (*big.Int, error) {
+	var (
+		ret0 = new(*big.Int)
+	)
+	out := ret0
+	err := _ERC721MinterBurnerPauser.contract.Call(opts, out, "getRoleMemberCount", role)
+	return *ret0, err
+}
+
+// GetRoleMemberCount is a free data retrieval call binding the contract method 0xca15c873.
+//
+// Solidity: function getRoleMemberCount(bytes32 role) constant returns(uint256)
+func (_ERC721MinterBurnerPauser *ERC721MinterBurnerPauserSession) GetRoleMemberCount(role [32]byte) (*big.Int, error) {
+	return _ERC721MinterBurnerPauser.Contract.GetRoleMemberCount(&_ERC721MinterBurnerPauser.CallOpts, role)
+}
+
+// GetRoleMemberCount is a free data retrieval call binding the contract method 0xca15c873.
+//
+// Solidity: function getRoleMemberCount(bytes32 role) constant returns(uint256)
+func (_ERC721MinterBurnerPauser *ERC721MinterBurnerPauserCallerSession) GetRoleMemberCount(role [32]byte) (*big.Int, error) {
+	return _ERC721MinterBurnerPauser.Contract.GetRoleMemberCount(&_ERC721MinterBurnerPauser.CallOpts, role)
+}
+
+// HasRole is a free data retrieval call binding the contract method 0x91d14854.
+//
+// Solidity: function hasRole(bytes32 role, address account) constant returns(bool)
+func (_ERC721MinterBurnerPauser *ERC721MinterBurnerPauserCaller) HasRole(opts *bind.CallOpts, role [32]byte, account common.Address) (bool, error) {
+	var (
+		ret0 = new(bool)
+	)
+	out := ret0
+	err := _ERC721MinterBurnerPauser.contract.Call(opts, out, "hasRole", role, account)
+	return *ret0, err
+}
+
+// HasRole is a free data retrieval call binding the contract method 0x91d14854.
+//
+// Solidity: function hasRole(bytes32 role, address account) constant returns(bool)
+func (_ERC721MinterBurnerPauser *ERC721MinterBurnerPauserSession) HasRole(role [32]byte, account common.Address) (bool, error) {
+	return _ERC721MinterBurnerPauser.Contract.HasRole(&_ERC721MinterBurnerPauser.CallOpts, role, account)
+}
+
+// HasRole is a free data retrieval call binding the contract method 0x91d14854.
+//
+// Solidity: function hasRole(bytes32 role, address account) constant returns(bool)
+func (_ERC721MinterBurnerPauser *ERC721MinterBurnerPauserCallerSession) HasRole(role [32]byte, account common.Address) (bool, error) {
+	return _ERC721MinterBurnerPauser.Contract.HasRole(&_ERC721MinterBurnerPauser.CallOpts, role, account)
+}
+
+// IsApprovedForAll is a free data retrieval call binding the contract method 0xe985e9c5.
+//
+// Solidity: function isApprovedForAll(address owner, address operator) constant returns(bool)
+func (_ERC721MinterBurnerPauser *ERC721MinterBurnerPauserCaller) IsApprovedForAll(opts *bind.CallOpts, owner common.Address, operator common.Address) (bool, error) {
+	var (
+		ret0 = new(bool)
+	)
+	out := ret0
+	err := _ERC721MinterBurnerPauser.contract.Call(opts, out, "isApprovedForAll", owner, operator)
+	return *ret0, err
+}
+
+// IsApprovedForAll is a free data retrieval call binding the contract method 0xe985e9c5.
+//
+// Solidity: function isApprovedForAll(address owner, address operator) constant returns(bool)
+func (_ERC721MinterBurnerPauser *ERC721MinterBurnerPauserSession) IsApprovedForAll(owner common.Address, operator common.Address) (bool, error) {
+	return _ERC721MinterBurnerPauser.Contract.IsApprovedForAll(&_ERC721MinterBurnerPauser.CallOpts, owner, operator)
+}
+
+// IsApprovedForAll is a free data retrieval call binding the contract method 0xe985e9c5.
+//
+// Solidity: function isApprovedForAll(address owner, address operator) constant returns(bool)
+func (_ERC721MinterBurnerPauser *ERC721MinterBurnerPauserCallerSession) IsApprovedForAll(owner common.Address, operator common.Address) (bool, error) {
+	return _ERC721MinterBurnerPauser.Contract.IsApprovedForAll(&_ERC721MinterBurnerPauser.CallOpts, owner, operator)
+}
+
+// Name is a free data retrieval call binding the contract method 0x06fdde03.
+//
+// Solidity: function name() constant returns(string)
+func (_ERC721MinterBurnerPauser *ERC721MinterBurnerPauserCaller) Name(opts *bind.CallOpts) (string, error) {
+	var (
+		ret0 = new(string)
+	)
+	out := ret0
+	err := _ERC721MinterBurnerPauser.contract.Call(opts, out, "name")
+	return *ret0, err
+}
+
+// Name is a free data retrieval call binding the contract method 0x06fdde03.
+//
+// Solidity: function name() constant returns(string)
+func (_ERC721MinterBurnerPauser *ERC721MinterBurnerPauserSession) Name() (string, error) {
+	return _ERC721MinterBurnerPauser.Contract.Name(&_ERC721MinterBurnerPauser.CallOpts)
+}
+
+// Name is a free data retrieval call binding the contract method 0x06fdde03.
+//
+// Solidity: function name() constant returns(string)
+func (_ERC721MinterBurnerPauser *ERC721MinterBurnerPauserCallerSession) Name() (string, error) {
+	return _ERC721MinterBurnerPauser.Contract.Name(&_ERC721MinterBurnerPauser.CallOpts)
+}
+
+// OwnerOf is a free data retrieval call binding the contract method 0x6352211e.
+//
+// Solidity: function ownerOf(uint256 tokenId) constant returns(address)
+func (_ERC721MinterBurnerPauser *ERC721MinterBurnerPauserCaller) OwnerOf(opts *bind.CallOpts, tokenId *big.Int) (common.Address, error) {
+	var (
+		ret0 = new(common.Address)
+	)
+	out := ret0
+	err := _ERC721MinterBurnerPauser.contract.Call(opts, out, "ownerOf", tokenId)
+	return *ret0, err
+}
+
+// OwnerOf is a free data retrieval call binding the contract method 0x6352211e.
+//
+// Solidity: function ownerOf(uint256 tokenId) constant returns(address)
+func (_ERC721MinterBurnerPauser *ERC721MinterBurnerPauserSession) OwnerOf(tokenId *big.Int) (common.Address, error) {
+	return _ERC721MinterBurnerPauser.Contract.OwnerOf(&_ERC721MinterBurnerPauser.CallOpts, tokenId)
+}
+
+// OwnerOf is a free data retrieval call binding the contract method 0x6352211e.
+//
+// Solidity: function ownerOf(uint256 tokenId) constant returns(address)
+func (_ERC721MinterBurnerPauser *ERC721MinterBurnerPauserCallerSession) OwnerOf(tokenId *big.Int) (common.Address, error) {
+	return _ERC721MinterBurnerPauser.Contract.OwnerOf(&_ERC721MinterBurnerPauser.CallOpts, tokenId)
+}
+
+// Paused is a free data retrieval call binding the contract method 0x5c975abb.
+//
+// Solidity: function paused() constant returns(bool)
+func (_ERC721MinterBurnerPauser *ERC721MinterBurnerPauserCaller) Paused(opts *bind.CallOpts) (bool, error) {
+	var (
+		ret0 = new(bool)
+	)
+	out := ret0
+	err := _ERC721MinterBurnerPauser.contract.Call(opts, out, "paused")
+	return *ret0, err
+}
+
+// Paused is a free data retrieval call binding the contract method 0x5c975abb.
+//
+// Solidity: function paused() constant returns(bool)
+func (_ERC721MinterBurnerPauser *ERC721MinterBurnerPauserSession) Paused() (bool, error) {
+	return _ERC721MinterBurnerPauser.Contract.Paused(&_ERC721MinterBurnerPauser.CallOpts)
+}
+
+// Paused is a free data retrieval call binding the contract method 0x5c975abb.
+//
+// Solidity: function paused() constant returns(bool)
+func (_ERC721MinterBurnerPauser *ERC721MinterBurnerPauserCallerSession) Paused() (bool, error) {
+	return _ERC721MinterBurnerPauser.Contract.Paused(&_ERC721MinterBurnerPauser.CallOpts)
+}
+
+// SupportsInterface is a free data retrieval call binding the contract method 0x01ffc9a7.
+//
+// Solidity: function supportsInterface(bytes4 interfaceId) constant returns(bool)
+func (_ERC721MinterBurnerPauser *ERC721MinterBurnerPauserCaller) SupportsInterface(opts *bind.CallOpts, interfaceId [4]byte) (bool, error) {
+	var (
+		ret0 = new(bool)
+	)
+	out := ret0
+	err := _ERC721MinterBurnerPauser.contract.Call(opts, out, "supportsInterface", interfaceId)
+	return *ret0, err
+}
+
+// SupportsInterface is a free data retrieval call binding the contract method 0x01ffc9a7.
+//
+// Solidity: function supportsInterface(bytes4 interfaceId) constant returns(bool)
+func (_ERC721MinterBurnerPauser *ERC721MinterBurnerPauserSession) SupportsInterface(interfaceId [4]byte) (bool, error) {
+	return _ERC721MinterBurnerPauser.Contract.SupportsInterface(&_ERC721MinterBurnerPauser.CallOpts, interfaceId)
+}
+
+// SupportsInterface is a free data retrieval call binding the contract method 0x01ffc9a7.
+//
+// Solidity: function supportsInterface(bytes4 interfaceId) constant returns(bool)
+func (_ERC721MinterBurnerPauser *ERC721MinterBurnerPauserCallerSession) SupportsInterface(interfaceId [4]byte) (bool, error) {
+	return _ERC721MinterBurnerPauser.Contract.SupportsInterface(&_ERC721MinterBurnerPauser.CallOpts, interfaceId)
+}
+
+// Symbol is a free data retrieval call binding the contract method 0x95d89b41.
+//
+// Solidity: function symbol() constant returns(string)
+func (_ERC721MinterBurnerPauser *ERC721MinterBurnerPauserCaller) Symbol(opts *bind.CallOpts) (string, error) {
+	var (
+		ret0 = new(string)
+	)
+	out := ret0
+	err := _ERC721MinterBurnerPauser.contract.Call(opts, out, "symbol")
+	return *ret0, err
+}
+
+// Symbol is a free data retrieval call binding the contract method 0x95d89b41.
+//
+// Solidity: function symbol() constant returns(string)
+func (_ERC721MinterBurnerPauser *ERC721MinterBurnerPauserSession) Symbol() (string, error) {
+	return _ERC721MinterBurnerPauser.Contract.Symbol(&_ERC721MinterBurnerPauser.CallOpts)
+}
+
+// Symbol is a free data retrieval call binding the contract method 0x95d89b41.
+//
+// Solidity: function symbol() constant returns(string)
+func (_ERC721MinterBurnerPauser *ERC721MinterBurnerPauserCallerSession) Symbol() (string, error) {
+	return _ERC721MinterBurnerPauser.Contract.Symbol(&_ERC721MinterBurnerPauser.CallOpts)
+}
+
+// TokenByIndex is a free data retrieval call binding the contract method 0x4f6ccce7.
+//
+// Solidity: function tokenByIndex(uint256 index) constant returns(uint256)
+func (_ERC721MinterBurnerPauser *ERC721MinterBurnerPauserCaller) TokenByIndex(opts *bind.CallOpts, index *big.Int) (*big.Int, error) {
+	var (
+		ret0 = new(*big.Int)
+	)
+	out := ret0
+	err := _ERC721MinterBurnerPauser.contract.Call(opts, out, "tokenByIndex", index)
+	return *ret0, err
+}
+
+// TokenByIndex is a free data retrieval call binding the contract method 0x4f6ccce7.
+//
+// Solidity: function tokenByIndex(uint256 index) constant returns(uint256)
+func (_ERC721MinterBurnerPauser *ERC721MinterBurnerPauserSession) TokenByIndex(index *big.Int) (*big.Int, error) {
+	return _ERC721MinterBurnerPauser.Contract.TokenByIndex(&_ERC721MinterBurnerPauser.CallOpts, index)
+}
+
+// TokenByIndex is a free data retrieval call binding the contract method 0x4f6ccce7.
+//
+// Solidity: function tokenByIndex(uint256 index) constant returns(uint256)
+func (_ERC721MinterBurnerPauser *ERC721MinterBurnerPauserCallerSession) TokenByIndex(index *big.Int) (*big.Int, error) {
+	return _ERC721MinterBurnerPauser.Contract.TokenByIndex(&_ERC721MinterBurnerPauser.CallOpts, index)
+}
+
+// TokenOfOwnerByIndex is a free data retrieval call binding the contract method 0x2f745c59.
+//
+// Solidity: function tokenOfOwnerByIndex(address owner, uint256 index) constant returns(uint256)
+func (_ERC721MinterBurnerPauser *ERC721MinterBurnerPauserCaller) TokenOfOwnerByIndex(opts *bind.CallOpts, owner common.Address, index *big.Int) (*big.Int, error) {
+	var (
+		ret0 = new(*big.Int)
+	)
+	out := ret0
+	err := _ERC721MinterBurnerPauser.contract.Call(opts, out, "tokenOfOwnerByIndex", owner, index)
+	return *ret0, err
+}
+
+// TokenOfOwnerByIndex is a free data retrieval call binding the contract method 0x2f745c59.
+//
+// Solidity: function tokenOfOwnerByIndex(address owner, uint256 index) constant returns(uint256)
+func (_ERC721MinterBurnerPauser *ERC721MinterBurnerPauserSession) TokenOfOwnerByIndex(owner common.Address, index *big.Int) (*big.Int, error) {
+	return _ERC721MinterBurnerPauser.Contract.TokenOfOwnerByIndex(&_ERC721MinterBurnerPauser.CallOpts, owner, index)
+}
+
+// TokenOfOwnerByIndex is a free data retrieval call binding the contract method 0x2f745c59.
+//
+// Solidity: function tokenOfOwnerByIndex(address owner, uint256 index) constant returns(uint256)
+func (_ERC721MinterBurnerPauser *ERC721MinterBurnerPauserCallerSession) TokenOfOwnerByIndex(owner common.Address, index *big.Int) (*big.Int, error) {
+	return _ERC721MinterBurnerPauser.Contract.TokenOfOwnerByIndex(&_ERC721MinterBurnerPauser.CallOpts, owner, index)
+}
+
+// TokenURI is a free data retrieval call binding the contract method 0xc87b56dd.
+//
+// Solidity: function tokenURI(uint256 tokenId) constant returns(string)
+func (_ERC721MinterBurnerPauser *ERC721MinterBurnerPauserCaller) TokenURI(opts *bind.CallOpts, tokenId *big.Int) (string, error) {
+	var (
+		ret0 = new(string)
+	)
+	out := ret0
+	err := _ERC721MinterBurnerPauser.contract.Call(opts, out, "tokenURI", tokenId)
+	return *ret0, err
+}
+
+// TokenURI is a free data retrieval call binding the contract method 0xc87b56dd.
+//
+// Solidity: function tokenURI(uint256 tokenId) constant returns(string)
+func (_ERC721MinterBurnerPauser *ERC721MinterBurnerPauserSession) TokenURI(tokenId *big.Int) (string, error) {
+	return _ERC721MinterBurnerPauser.Contract.TokenURI(&_ERC721MinterBurnerPauser.CallOpts, tokenId)
+}
+
+// TokenURI is a free data retrieval call binding the contract method 0xc87b56dd.
+//
+// Solidity: function tokenURI(uint256 tokenId) constant returns(string)
+func (_ERC721MinterBurnerPauser *ERC721MinterBurnerPauserCallerSession) TokenURI(tokenId *big.Int) (string, error) {
+	return _ERC721MinterBurnerPauser.Contract.TokenURI(&_ERC721MinterBurnerPauser.CallOpts, tokenId)
+}
+
+// TotalSupply is a free data retrieval call binding the contract method 0x18160ddd.
+//
+// Solidity: function totalSupply() constant returns(uint256)
+func (_ERC721MinterBurnerPauser *ERC721MinterBurnerPauserCaller) TotalSupply(opts *bind.CallOpts) (*big.Int, error) {
+	var (
+		ret0 = new(*big.Int)
+	)
+	out := ret0
+	err := _ERC721MinterBurnerPauser.contract.Call(opts, out, "totalSupply")
+	return *ret0, err
+}
+
+// TotalSupply is a free data retrieval call binding the contract method 0x18160ddd.
+//
+// Solidity: function totalSupply() constant returns(uint256)
+func (_ERC721MinterBurnerPauser *ERC721MinterBurnerPauserSession) TotalSupply() (*big.Int, error) {
+	return _ERC721MinterBurnerPauser.Contract.TotalSupply(&_ERC721MinterBurnerPauser.CallOpts)
+}
+
+// TotalSupply is a free data retrieval call binding the contract method 0x18160ddd.
+//
+// Solidity: function totalSupply() constant returns(uint256)
+func (_ERC721MinterBurnerPauser *ERC721MinterBurnerPauserCallerSession) TotalSupply() (*big.Int, error) {
+	return _ERC721MinterBurnerPauser.Contract.TotalSupply(&_ERC721MinterBurnerPauser.CallOpts)
 }
 
 // Approve is a paid mutator transaction binding the contract method 0x095ea7b3.
@@ -282,48 +739,6 @@ func (_ERC721MinterBurnerPauser *ERC721MinterBurnerPauserTransactorSession) Appr
 	return _ERC721MinterBurnerPauser.Contract.Approve(&_ERC721MinterBurnerPauser.TransactOpts, to, tokenId)
 }
 
-// BalanceOf is a paid mutator transaction binding the contract method 0x70a08231.
-//
-// Solidity: function balanceOf(address owner) returns(uint256)
-func (_ERC721MinterBurnerPauser *ERC721MinterBurnerPauserTransactor) BalanceOf(opts *bind.TransactOpts, owner common.Address) (*types.Transaction, error) {
-	return _ERC721MinterBurnerPauser.contract.Transact(opts, "balanceOf", owner)
-}
-
-// BalanceOf is a paid mutator transaction binding the contract method 0x70a08231.
-//
-// Solidity: function balanceOf(address owner) returns(uint256)
-func (_ERC721MinterBurnerPauser *ERC721MinterBurnerPauserSession) BalanceOf(owner common.Address) (*types.Transaction, error) {
-	return _ERC721MinterBurnerPauser.Contract.BalanceOf(&_ERC721MinterBurnerPauser.TransactOpts, owner)
-}
-
-// BalanceOf is a paid mutator transaction binding the contract method 0x70a08231.
-//
-// Solidity: function balanceOf(address owner) returns(uint256)
-func (_ERC721MinterBurnerPauser *ERC721MinterBurnerPauserTransactorSession) BalanceOf(owner common.Address) (*types.Transaction, error) {
-	return _ERC721MinterBurnerPauser.Contract.BalanceOf(&_ERC721MinterBurnerPauser.TransactOpts, owner)
-}
-
-// BaseURI is a paid mutator transaction binding the contract method 0x6c0360eb.
-//
-// Solidity: function baseURI() returns(string)
-func (_ERC721MinterBurnerPauser *ERC721MinterBurnerPauserTransactor) BaseURI(opts *bind.TransactOpts) (*types.Transaction, error) {
-	return _ERC721MinterBurnerPauser.contract.Transact(opts, "baseURI")
-}
-
-// BaseURI is a paid mutator transaction binding the contract method 0x6c0360eb.
-//
-// Solidity: function baseURI() returns(string)
-func (_ERC721MinterBurnerPauser *ERC721MinterBurnerPauserSession) BaseURI() (*types.Transaction, error) {
-	return _ERC721MinterBurnerPauser.Contract.BaseURI(&_ERC721MinterBurnerPauser.TransactOpts)
-}
-
-// BaseURI is a paid mutator transaction binding the contract method 0x6c0360eb.
-//
-// Solidity: function baseURI() returns(string)
-func (_ERC721MinterBurnerPauser *ERC721MinterBurnerPauserTransactorSession) BaseURI() (*types.Transaction, error) {
-	return _ERC721MinterBurnerPauser.Contract.BaseURI(&_ERC721MinterBurnerPauser.TransactOpts)
-}
-
 // Burn is a paid mutator transaction binding the contract method 0x42966c68.
 //
 // Solidity: function burn(uint256 tokenId) returns()
@@ -343,90 +758,6 @@ func (_ERC721MinterBurnerPauser *ERC721MinterBurnerPauserSession) Burn(tokenId *
 // Solidity: function burn(uint256 tokenId) returns()
 func (_ERC721MinterBurnerPauser *ERC721MinterBurnerPauserTransactorSession) Burn(tokenId *big.Int) (*types.Transaction, error) {
 	return _ERC721MinterBurnerPauser.Contract.Burn(&_ERC721MinterBurnerPauser.TransactOpts, tokenId)
-}
-
-// GetApproved is a paid mutator transaction binding the contract method 0x081812fc.
-//
-// Solidity: function getApproved(uint256 tokenId) returns(address)
-func (_ERC721MinterBurnerPauser *ERC721MinterBurnerPauserTransactor) GetApproved(opts *bind.TransactOpts, tokenId *big.Int) (*types.Transaction, error) {
-	return _ERC721MinterBurnerPauser.contract.Transact(opts, "getApproved", tokenId)
-}
-
-// GetApproved is a paid mutator transaction binding the contract method 0x081812fc.
-//
-// Solidity: function getApproved(uint256 tokenId) returns(address)
-func (_ERC721MinterBurnerPauser *ERC721MinterBurnerPauserSession) GetApproved(tokenId *big.Int) (*types.Transaction, error) {
-	return _ERC721MinterBurnerPauser.Contract.GetApproved(&_ERC721MinterBurnerPauser.TransactOpts, tokenId)
-}
-
-// GetApproved is a paid mutator transaction binding the contract method 0x081812fc.
-//
-// Solidity: function getApproved(uint256 tokenId) returns(address)
-func (_ERC721MinterBurnerPauser *ERC721MinterBurnerPauserTransactorSession) GetApproved(tokenId *big.Int) (*types.Transaction, error) {
-	return _ERC721MinterBurnerPauser.Contract.GetApproved(&_ERC721MinterBurnerPauser.TransactOpts, tokenId)
-}
-
-// GetRoleAdmin is a paid mutator transaction binding the contract method 0x248a9ca3.
-//
-// Solidity: function getRoleAdmin(bytes32 role) returns(bytes32)
-func (_ERC721MinterBurnerPauser *ERC721MinterBurnerPauserTransactor) GetRoleAdmin(opts *bind.TransactOpts, role [32]byte) (*types.Transaction, error) {
-	return _ERC721MinterBurnerPauser.contract.Transact(opts, "getRoleAdmin", role)
-}
-
-// GetRoleAdmin is a paid mutator transaction binding the contract method 0x248a9ca3.
-//
-// Solidity: function getRoleAdmin(bytes32 role) returns(bytes32)
-func (_ERC721MinterBurnerPauser *ERC721MinterBurnerPauserSession) GetRoleAdmin(role [32]byte) (*types.Transaction, error) {
-	return _ERC721MinterBurnerPauser.Contract.GetRoleAdmin(&_ERC721MinterBurnerPauser.TransactOpts, role)
-}
-
-// GetRoleAdmin is a paid mutator transaction binding the contract method 0x248a9ca3.
-//
-// Solidity: function getRoleAdmin(bytes32 role) returns(bytes32)
-func (_ERC721MinterBurnerPauser *ERC721MinterBurnerPauserTransactorSession) GetRoleAdmin(role [32]byte) (*types.Transaction, error) {
-	return _ERC721MinterBurnerPauser.Contract.GetRoleAdmin(&_ERC721MinterBurnerPauser.TransactOpts, role)
-}
-
-// GetRoleMember is a paid mutator transaction binding the contract method 0x9010d07c.
-//
-// Solidity: function getRoleMember(bytes32 role, uint256 index) returns(address)
-func (_ERC721MinterBurnerPauser *ERC721MinterBurnerPauserTransactor) GetRoleMember(opts *bind.TransactOpts, role [32]byte, index *big.Int) (*types.Transaction, error) {
-	return _ERC721MinterBurnerPauser.contract.Transact(opts, "getRoleMember", role, index)
-}
-
-// GetRoleMember is a paid mutator transaction binding the contract method 0x9010d07c.
-//
-// Solidity: function getRoleMember(bytes32 role, uint256 index) returns(address)
-func (_ERC721MinterBurnerPauser *ERC721MinterBurnerPauserSession) GetRoleMember(role [32]byte, index *big.Int) (*types.Transaction, error) {
-	return _ERC721MinterBurnerPauser.Contract.GetRoleMember(&_ERC721MinterBurnerPauser.TransactOpts, role, index)
-}
-
-// GetRoleMember is a paid mutator transaction binding the contract method 0x9010d07c.
-//
-// Solidity: function getRoleMember(bytes32 role, uint256 index) returns(address)
-func (_ERC721MinterBurnerPauser *ERC721MinterBurnerPauserTransactorSession) GetRoleMember(role [32]byte, index *big.Int) (*types.Transaction, error) {
-	return _ERC721MinterBurnerPauser.Contract.GetRoleMember(&_ERC721MinterBurnerPauser.TransactOpts, role, index)
-}
-
-// GetRoleMemberCount is a paid mutator transaction binding the contract method 0xca15c873.
-//
-// Solidity: function getRoleMemberCount(bytes32 role) returns(uint256)
-func (_ERC721MinterBurnerPauser *ERC721MinterBurnerPauserTransactor) GetRoleMemberCount(opts *bind.TransactOpts, role [32]byte) (*types.Transaction, error) {
-	return _ERC721MinterBurnerPauser.contract.Transact(opts, "getRoleMemberCount", role)
-}
-
-// GetRoleMemberCount is a paid mutator transaction binding the contract method 0xca15c873.
-//
-// Solidity: function getRoleMemberCount(bytes32 role) returns(uint256)
-func (_ERC721MinterBurnerPauser *ERC721MinterBurnerPauserSession) GetRoleMemberCount(role [32]byte) (*types.Transaction, error) {
-	return _ERC721MinterBurnerPauser.Contract.GetRoleMemberCount(&_ERC721MinterBurnerPauser.TransactOpts, role)
-}
-
-// GetRoleMemberCount is a paid mutator transaction binding the contract method 0xca15c873.
-//
-// Solidity: function getRoleMemberCount(bytes32 role) returns(uint256)
-func (_ERC721MinterBurnerPauser *ERC721MinterBurnerPauserTransactorSession) GetRoleMemberCount(role [32]byte) (*types.Transaction, error) {
-	return _ERC721MinterBurnerPauser.Contract.GetRoleMemberCount(&_ERC721MinterBurnerPauser.TransactOpts, role)
 }
 
 // GrantRole is a paid mutator transaction binding the contract method 0x2f2ff15d.
@@ -450,48 +781,6 @@ func (_ERC721MinterBurnerPauser *ERC721MinterBurnerPauserTransactorSession) Gran
 	return _ERC721MinterBurnerPauser.Contract.GrantRole(&_ERC721MinterBurnerPauser.TransactOpts, role, account)
 }
 
-// HasRole is a paid mutator transaction binding the contract method 0x91d14854.
-//
-// Solidity: function hasRole(bytes32 role, address account) returns(bool)
-func (_ERC721MinterBurnerPauser *ERC721MinterBurnerPauserTransactor) HasRole(opts *bind.TransactOpts, role [32]byte, account common.Address) (*types.Transaction, error) {
-	return _ERC721MinterBurnerPauser.contract.Transact(opts, "hasRole", role, account)
-}
-
-// HasRole is a paid mutator transaction binding the contract method 0x91d14854.
-//
-// Solidity: function hasRole(bytes32 role, address account) returns(bool)
-func (_ERC721MinterBurnerPauser *ERC721MinterBurnerPauserSession) HasRole(role [32]byte, account common.Address) (*types.Transaction, error) {
-	return _ERC721MinterBurnerPauser.Contract.HasRole(&_ERC721MinterBurnerPauser.TransactOpts, role, account)
-}
-
-// HasRole is a paid mutator transaction binding the contract method 0x91d14854.
-//
-// Solidity: function hasRole(bytes32 role, address account) returns(bool)
-func (_ERC721MinterBurnerPauser *ERC721MinterBurnerPauserTransactorSession) HasRole(role [32]byte, account common.Address) (*types.Transaction, error) {
-	return _ERC721MinterBurnerPauser.Contract.HasRole(&_ERC721MinterBurnerPauser.TransactOpts, role, account)
-}
-
-// IsApprovedForAll is a paid mutator transaction binding the contract method 0xe985e9c5.
-//
-// Solidity: function isApprovedForAll(address owner, address operator) returns(bool)
-func (_ERC721MinterBurnerPauser *ERC721MinterBurnerPauserTransactor) IsApprovedForAll(opts *bind.TransactOpts, owner common.Address, operator common.Address) (*types.Transaction, error) {
-	return _ERC721MinterBurnerPauser.contract.Transact(opts, "isApprovedForAll", owner, operator)
-}
-
-// IsApprovedForAll is a paid mutator transaction binding the contract method 0xe985e9c5.
-//
-// Solidity: function isApprovedForAll(address owner, address operator) returns(bool)
-func (_ERC721MinterBurnerPauser *ERC721MinterBurnerPauserSession) IsApprovedForAll(owner common.Address, operator common.Address) (*types.Transaction, error) {
-	return _ERC721MinterBurnerPauser.Contract.IsApprovedForAll(&_ERC721MinterBurnerPauser.TransactOpts, owner, operator)
-}
-
-// IsApprovedForAll is a paid mutator transaction binding the contract method 0xe985e9c5.
-//
-// Solidity: function isApprovedForAll(address owner, address operator) returns(bool)
-func (_ERC721MinterBurnerPauser *ERC721MinterBurnerPauserTransactorSession) IsApprovedForAll(owner common.Address, operator common.Address) (*types.Transaction, error) {
-	return _ERC721MinterBurnerPauser.Contract.IsApprovedForAll(&_ERC721MinterBurnerPauser.TransactOpts, owner, operator)
-}
-
 // Mint is a paid mutator transaction binding the contract method 0xd3fc9864.
 //
 // Solidity: function mint(address to, uint256 tokenId, string _data) returns()
@@ -513,48 +802,6 @@ func (_ERC721MinterBurnerPauser *ERC721MinterBurnerPauserTransactorSession) Mint
 	return _ERC721MinterBurnerPauser.Contract.Mint(&_ERC721MinterBurnerPauser.TransactOpts, to, tokenId, _data)
 }
 
-// Name is a paid mutator transaction binding the contract method 0x06fdde03.
-//
-// Solidity: function name() returns(string)
-func (_ERC721MinterBurnerPauser *ERC721MinterBurnerPauserTransactor) Name(opts *bind.TransactOpts) (*types.Transaction, error) {
-	return _ERC721MinterBurnerPauser.contract.Transact(opts, "name")
-}
-
-// Name is a paid mutator transaction binding the contract method 0x06fdde03.
-//
-// Solidity: function name() returns(string)
-func (_ERC721MinterBurnerPauser *ERC721MinterBurnerPauserSession) Name() (*types.Transaction, error) {
-	return _ERC721MinterBurnerPauser.Contract.Name(&_ERC721MinterBurnerPauser.TransactOpts)
-}
-
-// Name is a paid mutator transaction binding the contract method 0x06fdde03.
-//
-// Solidity: function name() returns(string)
-func (_ERC721MinterBurnerPauser *ERC721MinterBurnerPauserTransactorSession) Name() (*types.Transaction, error) {
-	return _ERC721MinterBurnerPauser.Contract.Name(&_ERC721MinterBurnerPauser.TransactOpts)
-}
-
-// OwnerOf is a paid mutator transaction binding the contract method 0x6352211e.
-//
-// Solidity: function ownerOf(uint256 tokenId) returns(address)
-func (_ERC721MinterBurnerPauser *ERC721MinterBurnerPauserTransactor) OwnerOf(opts *bind.TransactOpts, tokenId *big.Int) (*types.Transaction, error) {
-	return _ERC721MinterBurnerPauser.contract.Transact(opts, "ownerOf", tokenId)
-}
-
-// OwnerOf is a paid mutator transaction binding the contract method 0x6352211e.
-//
-// Solidity: function ownerOf(uint256 tokenId) returns(address)
-func (_ERC721MinterBurnerPauser *ERC721MinterBurnerPauserSession) OwnerOf(tokenId *big.Int) (*types.Transaction, error) {
-	return _ERC721MinterBurnerPauser.Contract.OwnerOf(&_ERC721MinterBurnerPauser.TransactOpts, tokenId)
-}
-
-// OwnerOf is a paid mutator transaction binding the contract method 0x6352211e.
-//
-// Solidity: function ownerOf(uint256 tokenId) returns(address)
-func (_ERC721MinterBurnerPauser *ERC721MinterBurnerPauserTransactorSession) OwnerOf(tokenId *big.Int) (*types.Transaction, error) {
-	return _ERC721MinterBurnerPauser.Contract.OwnerOf(&_ERC721MinterBurnerPauser.TransactOpts, tokenId)
-}
-
 // Pause is a paid mutator transaction binding the contract method 0x8456cb59.
 //
 // Solidity: function pause() returns()
@@ -574,27 +821,6 @@ func (_ERC721MinterBurnerPauser *ERC721MinterBurnerPauserSession) Pause() (*type
 // Solidity: function pause() returns()
 func (_ERC721MinterBurnerPauser *ERC721MinterBurnerPauserTransactorSession) Pause() (*types.Transaction, error) {
 	return _ERC721MinterBurnerPauser.Contract.Pause(&_ERC721MinterBurnerPauser.TransactOpts)
-}
-
-// Paused is a paid mutator transaction binding the contract method 0x5c975abb.
-//
-// Solidity: function paused() returns(bool)
-func (_ERC721MinterBurnerPauser *ERC721MinterBurnerPauserTransactor) Paused(opts *bind.TransactOpts) (*types.Transaction, error) {
-	return _ERC721MinterBurnerPauser.contract.Transact(opts, "paused")
-}
-
-// Paused is a paid mutator transaction binding the contract method 0x5c975abb.
-//
-// Solidity: function paused() returns(bool)
-func (_ERC721MinterBurnerPauser *ERC721MinterBurnerPauserSession) Paused() (*types.Transaction, error) {
-	return _ERC721MinterBurnerPauser.Contract.Paused(&_ERC721MinterBurnerPauser.TransactOpts)
-}
-
-// Paused is a paid mutator transaction binding the contract method 0x5c975abb.
-//
-// Solidity: function paused() returns(bool)
-func (_ERC721MinterBurnerPauser *ERC721MinterBurnerPauserTransactorSession) Paused() (*types.Transaction, error) {
-	return _ERC721MinterBurnerPauser.Contract.Paused(&_ERC721MinterBurnerPauser.TransactOpts)
 }
 
 // RenounceRole is a paid mutator transaction binding the contract method 0x36568abe.
@@ -700,132 +926,6 @@ func (_ERC721MinterBurnerPauser *ERC721MinterBurnerPauserSession) SetApprovalFor
 // Solidity: function setApprovalForAll(address operator, bool approved) returns()
 func (_ERC721MinterBurnerPauser *ERC721MinterBurnerPauserTransactorSession) SetApprovalForAll(operator common.Address, approved bool) (*types.Transaction, error) {
 	return _ERC721MinterBurnerPauser.Contract.SetApprovalForAll(&_ERC721MinterBurnerPauser.TransactOpts, operator, approved)
-}
-
-// SupportsInterface is a paid mutator transaction binding the contract method 0x01ffc9a7.
-//
-// Solidity: function supportsInterface(bytes4 interfaceId) returns(bool)
-func (_ERC721MinterBurnerPauser *ERC721MinterBurnerPauserTransactor) SupportsInterface(opts *bind.TransactOpts, interfaceId [4]byte) (*types.Transaction, error) {
-	return _ERC721MinterBurnerPauser.contract.Transact(opts, "supportsInterface", interfaceId)
-}
-
-// SupportsInterface is a paid mutator transaction binding the contract method 0x01ffc9a7.
-//
-// Solidity: function supportsInterface(bytes4 interfaceId) returns(bool)
-func (_ERC721MinterBurnerPauser *ERC721MinterBurnerPauserSession) SupportsInterface(interfaceId [4]byte) (*types.Transaction, error) {
-	return _ERC721MinterBurnerPauser.Contract.SupportsInterface(&_ERC721MinterBurnerPauser.TransactOpts, interfaceId)
-}
-
-// SupportsInterface is a paid mutator transaction binding the contract method 0x01ffc9a7.
-//
-// Solidity: function supportsInterface(bytes4 interfaceId) returns(bool)
-func (_ERC721MinterBurnerPauser *ERC721MinterBurnerPauserTransactorSession) SupportsInterface(interfaceId [4]byte) (*types.Transaction, error) {
-	return _ERC721MinterBurnerPauser.Contract.SupportsInterface(&_ERC721MinterBurnerPauser.TransactOpts, interfaceId)
-}
-
-// Symbol is a paid mutator transaction binding the contract method 0x95d89b41.
-//
-// Solidity: function symbol() returns(string)
-func (_ERC721MinterBurnerPauser *ERC721MinterBurnerPauserTransactor) Symbol(opts *bind.TransactOpts) (*types.Transaction, error) {
-	return _ERC721MinterBurnerPauser.contract.Transact(opts, "symbol")
-}
-
-// Symbol is a paid mutator transaction binding the contract method 0x95d89b41.
-//
-// Solidity: function symbol() returns(string)
-func (_ERC721MinterBurnerPauser *ERC721MinterBurnerPauserSession) Symbol() (*types.Transaction, error) {
-	return _ERC721MinterBurnerPauser.Contract.Symbol(&_ERC721MinterBurnerPauser.TransactOpts)
-}
-
-// Symbol is a paid mutator transaction binding the contract method 0x95d89b41.
-//
-// Solidity: function symbol() returns(string)
-func (_ERC721MinterBurnerPauser *ERC721MinterBurnerPauserTransactorSession) Symbol() (*types.Transaction, error) {
-	return _ERC721MinterBurnerPauser.Contract.Symbol(&_ERC721MinterBurnerPauser.TransactOpts)
-}
-
-// TokenByIndex is a paid mutator transaction binding the contract method 0x4f6ccce7.
-//
-// Solidity: function tokenByIndex(uint256 index) returns(uint256)
-func (_ERC721MinterBurnerPauser *ERC721MinterBurnerPauserTransactor) TokenByIndex(opts *bind.TransactOpts, index *big.Int) (*types.Transaction, error) {
-	return _ERC721MinterBurnerPauser.contract.Transact(opts, "tokenByIndex", index)
-}
-
-// TokenByIndex is a paid mutator transaction binding the contract method 0x4f6ccce7.
-//
-// Solidity: function tokenByIndex(uint256 index) returns(uint256)
-func (_ERC721MinterBurnerPauser *ERC721MinterBurnerPauserSession) TokenByIndex(index *big.Int) (*types.Transaction, error) {
-	return _ERC721MinterBurnerPauser.Contract.TokenByIndex(&_ERC721MinterBurnerPauser.TransactOpts, index)
-}
-
-// TokenByIndex is a paid mutator transaction binding the contract method 0x4f6ccce7.
-//
-// Solidity: function tokenByIndex(uint256 index) returns(uint256)
-func (_ERC721MinterBurnerPauser *ERC721MinterBurnerPauserTransactorSession) TokenByIndex(index *big.Int) (*types.Transaction, error) {
-	return _ERC721MinterBurnerPauser.Contract.TokenByIndex(&_ERC721MinterBurnerPauser.TransactOpts, index)
-}
-
-// TokenOfOwnerByIndex is a paid mutator transaction binding the contract method 0x2f745c59.
-//
-// Solidity: function tokenOfOwnerByIndex(address owner, uint256 index) returns(uint256)
-func (_ERC721MinterBurnerPauser *ERC721MinterBurnerPauserTransactor) TokenOfOwnerByIndex(opts *bind.TransactOpts, owner common.Address, index *big.Int) (*types.Transaction, error) {
-	return _ERC721MinterBurnerPauser.contract.Transact(opts, "tokenOfOwnerByIndex", owner, index)
-}
-
-// TokenOfOwnerByIndex is a paid mutator transaction binding the contract method 0x2f745c59.
-//
-// Solidity: function tokenOfOwnerByIndex(address owner, uint256 index) returns(uint256)
-func (_ERC721MinterBurnerPauser *ERC721MinterBurnerPauserSession) TokenOfOwnerByIndex(owner common.Address, index *big.Int) (*types.Transaction, error) {
-	return _ERC721MinterBurnerPauser.Contract.TokenOfOwnerByIndex(&_ERC721MinterBurnerPauser.TransactOpts, owner, index)
-}
-
-// TokenOfOwnerByIndex is a paid mutator transaction binding the contract method 0x2f745c59.
-//
-// Solidity: function tokenOfOwnerByIndex(address owner, uint256 index) returns(uint256)
-func (_ERC721MinterBurnerPauser *ERC721MinterBurnerPauserTransactorSession) TokenOfOwnerByIndex(owner common.Address, index *big.Int) (*types.Transaction, error) {
-	return _ERC721MinterBurnerPauser.Contract.TokenOfOwnerByIndex(&_ERC721MinterBurnerPauser.TransactOpts, owner, index)
-}
-
-// TokenURI is a paid mutator transaction binding the contract method 0xc87b56dd.
-//
-// Solidity: function tokenURI(uint256 tokenId) returns(string)
-func (_ERC721MinterBurnerPauser *ERC721MinterBurnerPauserTransactor) TokenURI(opts *bind.TransactOpts, tokenId *big.Int) (*types.Transaction, error) {
-	return _ERC721MinterBurnerPauser.contract.Transact(opts, "tokenURI", tokenId)
-}
-
-// TokenURI is a paid mutator transaction binding the contract method 0xc87b56dd.
-//
-// Solidity: function tokenURI(uint256 tokenId) returns(string)
-func (_ERC721MinterBurnerPauser *ERC721MinterBurnerPauserSession) TokenURI(tokenId *big.Int) (*types.Transaction, error) {
-	return _ERC721MinterBurnerPauser.Contract.TokenURI(&_ERC721MinterBurnerPauser.TransactOpts, tokenId)
-}
-
-// TokenURI is a paid mutator transaction binding the contract method 0xc87b56dd.
-//
-// Solidity: function tokenURI(uint256 tokenId) returns(string)
-func (_ERC721MinterBurnerPauser *ERC721MinterBurnerPauserTransactorSession) TokenURI(tokenId *big.Int) (*types.Transaction, error) {
-	return _ERC721MinterBurnerPauser.Contract.TokenURI(&_ERC721MinterBurnerPauser.TransactOpts, tokenId)
-}
-
-// TotalSupply is a paid mutator transaction binding the contract method 0x18160ddd.
-//
-// Solidity: function totalSupply() returns(uint256)
-func (_ERC721MinterBurnerPauser *ERC721MinterBurnerPauserTransactor) TotalSupply(opts *bind.TransactOpts) (*types.Transaction, error) {
-	return _ERC721MinterBurnerPauser.contract.Transact(opts, "totalSupply")
-}
-
-// TotalSupply is a paid mutator transaction binding the contract method 0x18160ddd.
-//
-// Solidity: function totalSupply() returns(uint256)
-func (_ERC721MinterBurnerPauser *ERC721MinterBurnerPauserSession) TotalSupply() (*types.Transaction, error) {
-	return _ERC721MinterBurnerPauser.Contract.TotalSupply(&_ERC721MinterBurnerPauser.TransactOpts)
-}
-
-// TotalSupply is a paid mutator transaction binding the contract method 0x18160ddd.
-//
-// Solidity: function totalSupply() returns(uint256)
-func (_ERC721MinterBurnerPauser *ERC721MinterBurnerPauserTransactorSession) TotalSupply() (*types.Transaction, error) {
-	return _ERC721MinterBurnerPauser.Contract.TotalSupply(&_ERC721MinterBurnerPauser.TransactOpts)
 }
 
 // TransferFrom is a paid mutator transaction binding the contract method 0x23b872dd.

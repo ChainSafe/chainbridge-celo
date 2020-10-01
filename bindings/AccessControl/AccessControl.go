@@ -28,7 +28,7 @@ var (
 )
 
 // AccessControlABI is the input ABI used to generate the binding from.
-const AccessControlABI = "[{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"},{\"indexed\":true,\"internalType\":\"bytes32\",\"name\":\"previousAdminRole\",\"type\":\"bytes32\"},{\"indexed\":true,\"internalType\":\"bytes32\",\"name\":\"newAdminRole\",\"type\":\"bytes32\"}],\"name\":\"RoleAdminChanged\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"sender\",\"type\":\"address\"}],\"name\":\"RoleGranted\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"sender\",\"type\":\"address\"}],\"name\":\"RoleRevoked\",\"type\":\"event\"},{\"inputs\":[],\"name\":\"DEFAULT_ADMIN_ROLE\",\"outputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"}],\"name\":\"hasRole\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"}],\"name\":\"getRoleMemberCount\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"},{\"internalType\":\"uint256\",\"name\":\"index\",\"type\":\"uint256\"}],\"name\":\"getRoleMember\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"}],\"name\":\"getRoleAdmin\",\"outputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"}],\"name\":\"grantRole\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"}],\"name\":\"revokeRole\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"}],\"name\":\"renounceRole\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}]"
+const AccessControlABI = "[{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"},{\"indexed\":true,\"internalType\":\"bytes32\",\"name\":\"previousAdminRole\",\"type\":\"bytes32\"},{\"indexed\":true,\"internalType\":\"bytes32\",\"name\":\"newAdminRole\",\"type\":\"bytes32\"}],\"name\":\"RoleAdminChanged\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"sender\",\"type\":\"address\"}],\"name\":\"RoleGranted\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"sender\",\"type\":\"address\"}],\"name\":\"RoleRevoked\",\"type\":\"event\"},{\"inputs\":[],\"name\":\"DEFAULT_ADMIN_ROLE\",\"outputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"stateMutability\":\"view\",\"type\":\"function\",\"constant\":true},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"}],\"name\":\"hasRole\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\",\"constant\":true},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"}],\"name\":\"getRoleMemberCount\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\",\"constant\":true},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"},{\"internalType\":\"uint256\",\"name\":\"index\",\"type\":\"uint256\"}],\"name\":\"getRoleMember\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\",\"constant\":true},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"}],\"name\":\"getRoleAdmin\",\"outputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"stateMutability\":\"view\",\"type\":\"function\",\"constant\":true},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"}],\"name\":\"grantRole\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\",\"constant\":false},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"}],\"name\":\"revokeRole\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\",\"constant\":false},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"}],\"name\":\"renounceRole\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\",\"constant\":false}]"
 
 // AccessControl is an auto generated Go binding around an Ethereum contract.
 type AccessControl struct {
@@ -181,88 +181,134 @@ func (_AccessControl *AccessControlTransactorRaw) Transact(opts *bind.TransactOp
 	return _AccessControl.Contract.contract.Transact(opts, method, params...)
 }
 
-// DEFAULTADMINROLE is a paid mutator transaction binding the contract method 0xa217fddf.
+// DEFAULTADMINROLE is a free data retrieval call binding the contract method 0xa217fddf.
 //
-// Solidity: function DEFAULT_ADMIN_ROLE() returns(bytes32)
-func (_AccessControl *AccessControlTransactor) DEFAULTADMINROLE(opts *bind.TransactOpts) (*types.Transaction, error) {
-	return _AccessControl.contract.Transact(opts, "DEFAULT_ADMIN_ROLE")
+// Solidity: function DEFAULT_ADMIN_ROLE() constant returns(bytes32)
+func (_AccessControl *AccessControlCaller) DEFAULTADMINROLE(opts *bind.CallOpts) ([32]byte, error) {
+	var (
+		ret0 = new([32]byte)
+	)
+	out := ret0
+	err := _AccessControl.contract.Call(opts, out, "DEFAULT_ADMIN_ROLE")
+	return *ret0, err
 }
 
-// DEFAULTADMINROLE is a paid mutator transaction binding the contract method 0xa217fddf.
+// DEFAULTADMINROLE is a free data retrieval call binding the contract method 0xa217fddf.
 //
-// Solidity: function DEFAULT_ADMIN_ROLE() returns(bytes32)
-func (_AccessControl *AccessControlSession) DEFAULTADMINROLE() (*types.Transaction, error) {
-	return _AccessControl.Contract.DEFAULTADMINROLE(&_AccessControl.TransactOpts)
+// Solidity: function DEFAULT_ADMIN_ROLE() constant returns(bytes32)
+func (_AccessControl *AccessControlSession) DEFAULTADMINROLE() ([32]byte, error) {
+	return _AccessControl.Contract.DEFAULTADMINROLE(&_AccessControl.CallOpts)
 }
 
-// DEFAULTADMINROLE is a paid mutator transaction binding the contract method 0xa217fddf.
+// DEFAULTADMINROLE is a free data retrieval call binding the contract method 0xa217fddf.
 //
-// Solidity: function DEFAULT_ADMIN_ROLE() returns(bytes32)
-func (_AccessControl *AccessControlTransactorSession) DEFAULTADMINROLE() (*types.Transaction, error) {
-	return _AccessControl.Contract.DEFAULTADMINROLE(&_AccessControl.TransactOpts)
+// Solidity: function DEFAULT_ADMIN_ROLE() constant returns(bytes32)
+func (_AccessControl *AccessControlCallerSession) DEFAULTADMINROLE() ([32]byte, error) {
+	return _AccessControl.Contract.DEFAULTADMINROLE(&_AccessControl.CallOpts)
 }
 
-// GetRoleAdmin is a paid mutator transaction binding the contract method 0x248a9ca3.
+// GetRoleAdmin is a free data retrieval call binding the contract method 0x248a9ca3.
 //
-// Solidity: function getRoleAdmin(bytes32 role) returns(bytes32)
-func (_AccessControl *AccessControlTransactor) GetRoleAdmin(opts *bind.TransactOpts, role [32]byte) (*types.Transaction, error) {
-	return _AccessControl.contract.Transact(opts, "getRoleAdmin", role)
+// Solidity: function getRoleAdmin(bytes32 role) constant returns(bytes32)
+func (_AccessControl *AccessControlCaller) GetRoleAdmin(opts *bind.CallOpts, role [32]byte) ([32]byte, error) {
+	var (
+		ret0 = new([32]byte)
+	)
+	out := ret0
+	err := _AccessControl.contract.Call(opts, out, "getRoleAdmin", role)
+	return *ret0, err
 }
 
-// GetRoleAdmin is a paid mutator transaction binding the contract method 0x248a9ca3.
+// GetRoleAdmin is a free data retrieval call binding the contract method 0x248a9ca3.
 //
-// Solidity: function getRoleAdmin(bytes32 role) returns(bytes32)
-func (_AccessControl *AccessControlSession) GetRoleAdmin(role [32]byte) (*types.Transaction, error) {
-	return _AccessControl.Contract.GetRoleAdmin(&_AccessControl.TransactOpts, role)
+// Solidity: function getRoleAdmin(bytes32 role) constant returns(bytes32)
+func (_AccessControl *AccessControlSession) GetRoleAdmin(role [32]byte) ([32]byte, error) {
+	return _AccessControl.Contract.GetRoleAdmin(&_AccessControl.CallOpts, role)
 }
 
-// GetRoleAdmin is a paid mutator transaction binding the contract method 0x248a9ca3.
+// GetRoleAdmin is a free data retrieval call binding the contract method 0x248a9ca3.
 //
-// Solidity: function getRoleAdmin(bytes32 role) returns(bytes32)
-func (_AccessControl *AccessControlTransactorSession) GetRoleAdmin(role [32]byte) (*types.Transaction, error) {
-	return _AccessControl.Contract.GetRoleAdmin(&_AccessControl.TransactOpts, role)
+// Solidity: function getRoleAdmin(bytes32 role) constant returns(bytes32)
+func (_AccessControl *AccessControlCallerSession) GetRoleAdmin(role [32]byte) ([32]byte, error) {
+	return _AccessControl.Contract.GetRoleAdmin(&_AccessControl.CallOpts, role)
 }
 
-// GetRoleMember is a paid mutator transaction binding the contract method 0x9010d07c.
+// GetRoleMember is a free data retrieval call binding the contract method 0x9010d07c.
 //
-// Solidity: function getRoleMember(bytes32 role, uint256 index) returns(address)
-func (_AccessControl *AccessControlTransactor) GetRoleMember(opts *bind.TransactOpts, role [32]byte, index *big.Int) (*types.Transaction, error) {
-	return _AccessControl.contract.Transact(opts, "getRoleMember", role, index)
+// Solidity: function getRoleMember(bytes32 role, uint256 index) constant returns(address)
+func (_AccessControl *AccessControlCaller) GetRoleMember(opts *bind.CallOpts, role [32]byte, index *big.Int) (common.Address, error) {
+	var (
+		ret0 = new(common.Address)
+	)
+	out := ret0
+	err := _AccessControl.contract.Call(opts, out, "getRoleMember", role, index)
+	return *ret0, err
 }
 
-// GetRoleMember is a paid mutator transaction binding the contract method 0x9010d07c.
+// GetRoleMember is a free data retrieval call binding the contract method 0x9010d07c.
 //
-// Solidity: function getRoleMember(bytes32 role, uint256 index) returns(address)
-func (_AccessControl *AccessControlSession) GetRoleMember(role [32]byte, index *big.Int) (*types.Transaction, error) {
-	return _AccessControl.Contract.GetRoleMember(&_AccessControl.TransactOpts, role, index)
+// Solidity: function getRoleMember(bytes32 role, uint256 index) constant returns(address)
+func (_AccessControl *AccessControlSession) GetRoleMember(role [32]byte, index *big.Int) (common.Address, error) {
+	return _AccessControl.Contract.GetRoleMember(&_AccessControl.CallOpts, role, index)
 }
 
-// GetRoleMember is a paid mutator transaction binding the contract method 0x9010d07c.
+// GetRoleMember is a free data retrieval call binding the contract method 0x9010d07c.
 //
-// Solidity: function getRoleMember(bytes32 role, uint256 index) returns(address)
-func (_AccessControl *AccessControlTransactorSession) GetRoleMember(role [32]byte, index *big.Int) (*types.Transaction, error) {
-	return _AccessControl.Contract.GetRoleMember(&_AccessControl.TransactOpts, role, index)
+// Solidity: function getRoleMember(bytes32 role, uint256 index) constant returns(address)
+func (_AccessControl *AccessControlCallerSession) GetRoleMember(role [32]byte, index *big.Int) (common.Address, error) {
+	return _AccessControl.Contract.GetRoleMember(&_AccessControl.CallOpts, role, index)
 }
 
-// GetRoleMemberCount is a paid mutator transaction binding the contract method 0xca15c873.
+// GetRoleMemberCount is a free data retrieval call binding the contract method 0xca15c873.
 //
-// Solidity: function getRoleMemberCount(bytes32 role) returns(uint256)
-func (_AccessControl *AccessControlTransactor) GetRoleMemberCount(opts *bind.TransactOpts, role [32]byte) (*types.Transaction, error) {
-	return _AccessControl.contract.Transact(opts, "getRoleMemberCount", role)
+// Solidity: function getRoleMemberCount(bytes32 role) constant returns(uint256)
+func (_AccessControl *AccessControlCaller) GetRoleMemberCount(opts *bind.CallOpts, role [32]byte) (*big.Int, error) {
+	var (
+		ret0 = new(*big.Int)
+	)
+	out := ret0
+	err := _AccessControl.contract.Call(opts, out, "getRoleMemberCount", role)
+	return *ret0, err
 }
 
-// GetRoleMemberCount is a paid mutator transaction binding the contract method 0xca15c873.
+// GetRoleMemberCount is a free data retrieval call binding the contract method 0xca15c873.
 //
-// Solidity: function getRoleMemberCount(bytes32 role) returns(uint256)
-func (_AccessControl *AccessControlSession) GetRoleMemberCount(role [32]byte) (*types.Transaction, error) {
-	return _AccessControl.Contract.GetRoleMemberCount(&_AccessControl.TransactOpts, role)
+// Solidity: function getRoleMemberCount(bytes32 role) constant returns(uint256)
+func (_AccessControl *AccessControlSession) GetRoleMemberCount(role [32]byte) (*big.Int, error) {
+	return _AccessControl.Contract.GetRoleMemberCount(&_AccessControl.CallOpts, role)
 }
 
-// GetRoleMemberCount is a paid mutator transaction binding the contract method 0xca15c873.
+// GetRoleMemberCount is a free data retrieval call binding the contract method 0xca15c873.
 //
-// Solidity: function getRoleMemberCount(bytes32 role) returns(uint256)
-func (_AccessControl *AccessControlTransactorSession) GetRoleMemberCount(role [32]byte) (*types.Transaction, error) {
-	return _AccessControl.Contract.GetRoleMemberCount(&_AccessControl.TransactOpts, role)
+// Solidity: function getRoleMemberCount(bytes32 role) constant returns(uint256)
+func (_AccessControl *AccessControlCallerSession) GetRoleMemberCount(role [32]byte) (*big.Int, error) {
+	return _AccessControl.Contract.GetRoleMemberCount(&_AccessControl.CallOpts, role)
+}
+
+// HasRole is a free data retrieval call binding the contract method 0x91d14854.
+//
+// Solidity: function hasRole(bytes32 role, address account) constant returns(bool)
+func (_AccessControl *AccessControlCaller) HasRole(opts *bind.CallOpts, role [32]byte, account common.Address) (bool, error) {
+	var (
+		ret0 = new(bool)
+	)
+	out := ret0
+	err := _AccessControl.contract.Call(opts, out, "hasRole", role, account)
+	return *ret0, err
+}
+
+// HasRole is a free data retrieval call binding the contract method 0x91d14854.
+//
+// Solidity: function hasRole(bytes32 role, address account) constant returns(bool)
+func (_AccessControl *AccessControlSession) HasRole(role [32]byte, account common.Address) (bool, error) {
+	return _AccessControl.Contract.HasRole(&_AccessControl.CallOpts, role, account)
+}
+
+// HasRole is a free data retrieval call binding the contract method 0x91d14854.
+//
+// Solidity: function hasRole(bytes32 role, address account) constant returns(bool)
+func (_AccessControl *AccessControlCallerSession) HasRole(role [32]byte, account common.Address) (bool, error) {
+	return _AccessControl.Contract.HasRole(&_AccessControl.CallOpts, role, account)
 }
 
 // GrantRole is a paid mutator transaction binding the contract method 0x2f2ff15d.
@@ -284,27 +330,6 @@ func (_AccessControl *AccessControlSession) GrantRole(role [32]byte, account com
 // Solidity: function grantRole(bytes32 role, address account) returns()
 func (_AccessControl *AccessControlTransactorSession) GrantRole(role [32]byte, account common.Address) (*types.Transaction, error) {
 	return _AccessControl.Contract.GrantRole(&_AccessControl.TransactOpts, role, account)
-}
-
-// HasRole is a paid mutator transaction binding the contract method 0x91d14854.
-//
-// Solidity: function hasRole(bytes32 role, address account) returns(bool)
-func (_AccessControl *AccessControlTransactor) HasRole(opts *bind.TransactOpts, role [32]byte, account common.Address) (*types.Transaction, error) {
-	return _AccessControl.contract.Transact(opts, "hasRole", role, account)
-}
-
-// HasRole is a paid mutator transaction binding the contract method 0x91d14854.
-//
-// Solidity: function hasRole(bytes32 role, address account) returns(bool)
-func (_AccessControl *AccessControlSession) HasRole(role [32]byte, account common.Address) (*types.Transaction, error) {
-	return _AccessControl.Contract.HasRole(&_AccessControl.TransactOpts, role, account)
-}
-
-// HasRole is a paid mutator transaction binding the contract method 0x91d14854.
-//
-// Solidity: function hasRole(bytes32 role, address account) returns(bool)
-func (_AccessControl *AccessControlTransactorSession) HasRole(role [32]byte, account common.Address) (*types.Transaction, error) {
-	return _AccessControl.Contract.HasRole(&_AccessControl.TransactOpts, role, account)
 }
 
 // RenounceRole is a paid mutator transaction binding the contract method 0x36568abe.

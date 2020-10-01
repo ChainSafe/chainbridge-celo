@@ -38,7 +38,7 @@ type BridgeProposal struct {
 }
 
 // BridgeABI is the input ABI used to generate the binding from.
-const BridgeABI = "[{\"inputs\":[{\"internalType\":\"uint8\",\"name\":\"chainID\",\"type\":\"uint8\"},{\"internalType\":\"address[]\",\"name\":\"initialRelayers\",\"type\":\"address[]\"},{\"internalType\":\"uint256\",\"name\":\"initialRelayerThreshold\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"fee\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"expiry\",\"type\":\"uint256\"}],\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"uint8\",\"name\":\"destinationChainID\",\"type\":\"uint8\"},{\"indexed\":true,\"internalType\":\"bytes32\",\"name\":\"resourceID\",\"type\":\"bytes32\"},{\"indexed\":true,\"internalType\":\"uint64\",\"name\":\"depositNonce\",\"type\":\"uint64\"}],\"name\":\"Deposit\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"}],\"name\":\"Paused\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"uint8\",\"name\":\"originChainID\",\"type\":\"uint8\"},{\"indexed\":true,\"internalType\":\"uint64\",\"name\":\"depositNonce\",\"type\":\"uint64\"},{\"indexed\":true,\"internalType\":\"enumBridge.ProposalStatus\",\"name\":\"status\",\"type\":\"uint8\"},{\"indexed\":false,\"internalType\":\"bytes32\",\"name\":\"resourceID\",\"type\":\"bytes32\"},{\"indexed\":false,\"internalType\":\"bytes32\",\"name\":\"dataHash\",\"type\":\"bytes32\"}],\"name\":\"ProposalEvent\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"uint8\",\"name\":\"originChainID\",\"type\":\"uint8\"},{\"indexed\":true,\"internalType\":\"uint64\",\"name\":\"depositNonce\",\"type\":\"uint64\"},{\"indexed\":true,\"internalType\":\"enumBridge.ProposalStatus\",\"name\":\"status\",\"type\":\"uint8\"},{\"indexed\":false,\"internalType\":\"bytes32\",\"name\":\"resourceID\",\"type\":\"bytes32\"}],\"name\":\"ProposalVote\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"relayer\",\"type\":\"address\"}],\"name\":\"RelayerAdded\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"relayer\",\"type\":\"address\"}],\"name\":\"RelayerRemoved\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"uint256\",\"name\":\"newThreshold\",\"type\":\"uint256\"}],\"name\":\"RelayerThresholdChanged\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"},{\"indexed\":true,\"internalType\":\"bytes32\",\"name\":\"previousAdminRole\",\"type\":\"bytes32\"},{\"indexed\":true,\"internalType\":\"bytes32\",\"name\":\"newAdminRole\",\"type\":\"bytes32\"}],\"name\":\"RoleAdminChanged\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"sender\",\"type\":\"address\"}],\"name\":\"RoleGranted\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"sender\",\"type\":\"address\"}],\"name\":\"RoleRevoked\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"}],\"name\":\"Unpaused\",\"type\":\"event\"},{\"inputs\":[],\"name\":\"DEFAULT_ADMIN_ROLE\",\"outputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"RELAYER_ROLE\",\"outputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"_chainID\",\"outputs\":[{\"internalType\":\"uint8\",\"name\":\"\",\"type\":\"uint8\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint8\",\"name\":\"\",\"type\":\"uint8\"}],\"name\":\"_depositCounts\",\"outputs\":[{\"internalType\":\"uint64\",\"name\":\"\",\"type\":\"uint64\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint64\",\"name\":\"\",\"type\":\"uint64\"},{\"internalType\":\"uint8\",\"name\":\"\",\"type\":\"uint8\"}],\"name\":\"_depositRecords\",\"outputs\":[{\"internalType\":\"bytes\",\"name\":\"\",\"type\":\"bytes\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"_expiry\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"_fee\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint72\",\"name\":\"\",\"type\":\"uint72\"},{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"_hasVotedOnProposal\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint72\",\"name\":\"\",\"type\":\"uint72\"},{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"name\":\"_proposals\",\"outputs\":[{\"internalType\":\"bytes32\",\"name\":\"_resourceID\",\"type\":\"bytes32\"},{\"internalType\":\"bytes32\",\"name\":\"_dataHash\",\"type\":\"bytes32\"},{\"internalType\":\"enumBridge.ProposalStatus\",\"name\":\"_status\",\"type\":\"uint8\"},{\"internalType\":\"uint256\",\"name\":\"_proposedBlock\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"_relayerThreshold\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"name\":\"_resourceIDToHandlerAddress\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"_totalProposals\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"}],\"name\":\"getRoleAdmin\",\"outputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"},{\"internalType\":\"uint256\",\"name\":\"index\",\"type\":\"uint256\"}],\"name\":\"getRoleMember\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"}],\"name\":\"getRoleMemberCount\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"}],\"name\":\"grantRole\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"}],\"name\":\"hasRole\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"paused\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"}],\"name\":\"renounceRole\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"}],\"name\":\"revokeRole\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"rootHash\",\"type\":\"bytes32\"},{\"internalType\":\"bytes\",\"name\":\"mptPath\",\"type\":\"bytes\"},{\"internalType\":\"bytes\",\"name\":\"rlpStack\",\"type\":\"bytes\"}],\"name\":\"validateMPTProof\",\"outputs\":[{\"internalType\":\"bytes\",\"name\":\"value\",\"type\":\"bytes\"}],\"stateMutability\":\"pure\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"rootHash\",\"type\":\"bytes32\"},{\"internalType\":\"bytes\",\"name\":\"mptPath\",\"type\":\"bytes\"},{\"internalType\":\"bytes\",\"name\":\"rlpStack\",\"type\":\"bytes\"},{\"internalType\":\"bytes32\",\"name\":\"valueHash\",\"type\":\"bytes32\"}],\"name\":\"validateMPTValueInclusion\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"isIncluded\",\"type\":\"bool\"}],\"stateMutability\":\"pure\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"relayer\",\"type\":\"address\"}],\"name\":\"isRelayer\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"newAdmin\",\"type\":\"address\"}],\"name\":\"renounceAdmin\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"adminPauseTransfers\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"adminUnpauseTransfers\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"newThreshold\",\"type\":\"uint256\"}],\"name\":\"adminChangeRelayerThreshold\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"relayerAddress\",\"type\":\"address\"}],\"name\":\"adminAddRelayer\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"relayerAddress\",\"type\":\"address\"}],\"name\":\"adminRemoveRelayer\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"handlerAddress\",\"type\":\"address\"},{\"internalType\":\"bytes32\",\"name\":\"resourceID\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"tokenAddress\",\"type\":\"address\"}],\"name\":\"adminSetResource\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"handlerAddress\",\"type\":\"address\"},{\"internalType\":\"bytes32\",\"name\":\"resourceID\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"contractAddress\",\"type\":\"address\"},{\"internalType\":\"bytes4\",\"name\":\"depositFunctionSig\",\"type\":\"bytes4\"},{\"internalType\":\"bytes4\",\"name\":\"executeFunctionSig\",\"type\":\"bytes4\"}],\"name\":\"adminSetGenericResource\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"handlerAddress\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"tokenAddress\",\"type\":\"address\"}],\"name\":\"adminSetBurnable\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint8\",\"name\":\"originChainID\",\"type\":\"uint8\"},{\"internalType\":\"uint64\",\"name\":\"depositNonce\",\"type\":\"uint64\"},{\"internalType\":\"bytes32\",\"name\":\"dataHash\",\"type\":\"bytes32\"}],\"name\":\"getProposal\",\"outputs\":[{\"components\":[{\"internalType\":\"bytes32\",\"name\":\"_resourceID\",\"type\":\"bytes32\"},{\"internalType\":\"bytes32\",\"name\":\"_dataHash\",\"type\":\"bytes32\"},{\"internalType\":\"address[]\",\"name\":\"_yesVotes\",\"type\":\"address[]\"},{\"internalType\":\"address[]\",\"name\":\"_noVotes\",\"type\":\"address[]\"},{\"internalType\":\"enumBridge.ProposalStatus\",\"name\":\"_status\",\"type\":\"uint8\"},{\"internalType\":\"uint256\",\"name\":\"_proposedBlock\",\"type\":\"uint256\"}],\"internalType\":\"structBridge.Proposal\",\"name\":\"\",\"type\":\"tuple\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"_totalRelayers\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"newFee\",\"type\":\"uint256\"}],\"name\":\"adminChangeFee\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"handlerAddress\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"tokenAddress\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"recipient\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"amountOrTokenID\",\"type\":\"uint256\"}],\"name\":\"adminWithdraw\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint8\",\"name\":\"destinationChainID\",\"type\":\"uint8\"},{\"internalType\":\"bytes32\",\"name\":\"resourceID\",\"type\":\"bytes32\"},{\"internalType\":\"bytes\",\"name\":\"data\",\"type\":\"bytes\"}],\"name\":\"deposit\",\"outputs\":[],\"stateMutability\":\"payable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint8\",\"name\":\"chainID\",\"type\":\"uint8\"},{\"internalType\":\"uint64\",\"name\":\"depositNonce\",\"type\":\"uint64\"},{\"internalType\":\"bytes32\",\"name\":\"resourceID\",\"type\":\"bytes32\"},{\"internalType\":\"bytes32\",\"name\":\"dataHash\",\"type\":\"bytes32\"}],\"name\":\"voteProposal\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint8\",\"name\":\"chainID\",\"type\":\"uint8\"},{\"internalType\":\"uint64\",\"name\":\"depositNonce\",\"type\":\"uint64\"},{\"internalType\":\"bytes32\",\"name\":\"dataHash\",\"type\":\"bytes32\"}],\"name\":\"cancelProposal\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint8\",\"name\":\"chainID\",\"type\":\"uint8\"},{\"internalType\":\"uint64\",\"name\":\"depositNonce\",\"type\":\"uint64\"},{\"internalType\":\"bytes\",\"name\":\"data\",\"type\":\"bytes\"},{\"internalType\":\"bytes32\",\"name\":\"resourceID\",\"type\":\"bytes32\"},{\"internalType\":\"bytes\",\"name\":\"signatureHeader\",\"type\":\"bytes\"},{\"internalType\":\"bytes\",\"name\":\"aggregatePublicKey\",\"type\":\"bytes\"},{\"internalType\":\"bytes\",\"name\":\"g1\",\"type\":\"bytes\"},{\"internalType\":\"bytes\",\"name\":\"hashedMessage\",\"type\":\"bytes\"},{\"internalType\":\"bytes32\",\"name\":\"rootHash\",\"type\":\"bytes32\"},{\"internalType\":\"bytes\",\"name\":\"key\",\"type\":\"bytes\"},{\"internalType\":\"bytes\",\"name\":\"nodes\",\"type\":\"bytes\"}],\"name\":\"executeProposal\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"addresspayable[]\",\"name\":\"addrs\",\"type\":\"address[]\"},{\"internalType\":\"uint256[]\",\"name\":\"amounts\",\"type\":\"uint256[]\"}],\"name\":\"transferFunds\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}]"
+const BridgeABI = "[{\"inputs\":[{\"internalType\":\"uint8\",\"name\":\"chainID\",\"type\":\"uint8\"},{\"internalType\":\"address[]\",\"name\":\"initialRelayers\",\"type\":\"address[]\"},{\"internalType\":\"uint256\",\"name\":\"initialRelayerThreshold\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"fee\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"expiry\",\"type\":\"uint256\"}],\"stateMutability\":\"nonpayable\",\"type\":\"constructor\",\"constant\":false},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"uint8\",\"name\":\"destinationChainID\",\"type\":\"uint8\"},{\"indexed\":true,\"internalType\":\"bytes32\",\"name\":\"resourceID\",\"type\":\"bytes32\"},{\"indexed\":true,\"internalType\":\"uint64\",\"name\":\"depositNonce\",\"type\":\"uint64\"}],\"name\":\"Deposit\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"}],\"name\":\"Paused\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"uint8\",\"name\":\"originChainID\",\"type\":\"uint8\"},{\"indexed\":true,\"internalType\":\"uint64\",\"name\":\"depositNonce\",\"type\":\"uint64\"},{\"indexed\":true,\"internalType\":\"enumBridge.ProposalStatus\",\"name\":\"status\",\"type\":\"uint8\"},{\"indexed\":false,\"internalType\":\"bytes32\",\"name\":\"resourceID\",\"type\":\"bytes32\"},{\"indexed\":false,\"internalType\":\"bytes32\",\"name\":\"dataHash\",\"type\":\"bytes32\"}],\"name\":\"ProposalEvent\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"uint8\",\"name\":\"originChainID\",\"type\":\"uint8\"},{\"indexed\":true,\"internalType\":\"uint64\",\"name\":\"depositNonce\",\"type\":\"uint64\"},{\"indexed\":true,\"internalType\":\"enumBridge.ProposalStatus\",\"name\":\"status\",\"type\":\"uint8\"},{\"indexed\":false,\"internalType\":\"bytes32\",\"name\":\"resourceID\",\"type\":\"bytes32\"}],\"name\":\"ProposalVote\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"relayer\",\"type\":\"address\"}],\"name\":\"RelayerAdded\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"relayer\",\"type\":\"address\"}],\"name\":\"RelayerRemoved\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"uint256\",\"name\":\"newThreshold\",\"type\":\"uint256\"}],\"name\":\"RelayerThresholdChanged\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"},{\"indexed\":true,\"internalType\":\"bytes32\",\"name\":\"previousAdminRole\",\"type\":\"bytes32\"},{\"indexed\":true,\"internalType\":\"bytes32\",\"name\":\"newAdminRole\",\"type\":\"bytes32\"}],\"name\":\"RoleAdminChanged\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"sender\",\"type\":\"address\"}],\"name\":\"RoleGranted\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"sender\",\"type\":\"address\"}],\"name\":\"RoleRevoked\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"}],\"name\":\"Unpaused\",\"type\":\"event\"},{\"inputs\":[],\"name\":\"DEFAULT_ADMIN_ROLE\",\"outputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"stateMutability\":\"view\",\"type\":\"function\",\"constant\":true},{\"inputs\":[],\"name\":\"RELAYER_ROLE\",\"outputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"stateMutability\":\"view\",\"type\":\"function\",\"constant\":true},{\"inputs\":[],\"name\":\"_chainID\",\"outputs\":[{\"internalType\":\"uint8\",\"name\":\"\",\"type\":\"uint8\"}],\"stateMutability\":\"view\",\"type\":\"function\",\"constant\":true},{\"inputs\":[{\"internalType\":\"uint8\",\"name\":\"\",\"type\":\"uint8\"}],\"name\":\"_depositCounts\",\"outputs\":[{\"internalType\":\"uint64\",\"name\":\"\",\"type\":\"uint64\"}],\"stateMutability\":\"view\",\"type\":\"function\",\"constant\":true},{\"inputs\":[{\"internalType\":\"uint64\",\"name\":\"\",\"type\":\"uint64\"},{\"internalType\":\"uint8\",\"name\":\"\",\"type\":\"uint8\"}],\"name\":\"_depositRecords\",\"outputs\":[{\"internalType\":\"bytes\",\"name\":\"\",\"type\":\"bytes\"}],\"stateMutability\":\"view\",\"type\":\"function\",\"constant\":true},{\"inputs\":[],\"name\":\"_expiry\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\",\"constant\":true},{\"inputs\":[],\"name\":\"_fee\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\",\"constant\":true},{\"inputs\":[{\"internalType\":\"uint72\",\"name\":\"\",\"type\":\"uint72\"},{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"_hasVotedOnProposal\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\",\"constant\":true},{\"inputs\":[{\"internalType\":\"uint72\",\"name\":\"\",\"type\":\"uint72\"},{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"name\":\"_proposals\",\"outputs\":[{\"internalType\":\"bytes32\",\"name\":\"_resourceID\",\"type\":\"bytes32\"},{\"internalType\":\"bytes32\",\"name\":\"_dataHash\",\"type\":\"bytes32\"},{\"internalType\":\"enumBridge.ProposalStatus\",\"name\":\"_status\",\"type\":\"uint8\"},{\"internalType\":\"uint256\",\"name\":\"_proposedBlock\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\",\"constant\":true},{\"inputs\":[],\"name\":\"_relayerThreshold\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\",\"constant\":true},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"name\":\"_resourceIDToHandlerAddress\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\",\"constant\":true},{\"inputs\":[],\"name\":\"_totalProposals\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\",\"constant\":true},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"}],\"name\":\"getRoleAdmin\",\"outputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"stateMutability\":\"view\",\"type\":\"function\",\"constant\":true},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"},{\"internalType\":\"uint256\",\"name\":\"index\",\"type\":\"uint256\"}],\"name\":\"getRoleMember\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\",\"constant\":true},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"}],\"name\":\"getRoleMemberCount\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\",\"constant\":true},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"}],\"name\":\"grantRole\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\",\"constant\":false},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"}],\"name\":\"hasRole\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\",\"constant\":true},{\"inputs\":[],\"name\":\"paused\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\",\"constant\":true},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"}],\"name\":\"renounceRole\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\",\"constant\":false},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"}],\"name\":\"revokeRole\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\",\"constant\":false},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"rootHash\",\"type\":\"bytes32\"},{\"internalType\":\"bytes\",\"name\":\"mptPath\",\"type\":\"bytes\"},{\"internalType\":\"bytes\",\"name\":\"rlpStack\",\"type\":\"bytes\"}],\"name\":\"validateMPTProof\",\"outputs\":[{\"internalType\":\"bytes\",\"name\":\"value\",\"type\":\"bytes\"}],\"stateMutability\":\"pure\",\"type\":\"function\",\"constant\":true},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"rootHash\",\"type\":\"bytes32\"},{\"internalType\":\"bytes\",\"name\":\"mptPath\",\"type\":\"bytes\"},{\"internalType\":\"bytes\",\"name\":\"rlpStack\",\"type\":\"bytes\"},{\"internalType\":\"bytes32\",\"name\":\"valueHash\",\"type\":\"bytes32\"}],\"name\":\"validateMPTValueInclusion\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"isIncluded\",\"type\":\"bool\"}],\"stateMutability\":\"pure\",\"type\":\"function\",\"constant\":true},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"relayer\",\"type\":\"address\"}],\"name\":\"isRelayer\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\",\"constant\":true},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"newAdmin\",\"type\":\"address\"}],\"name\":\"renounceAdmin\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\",\"constant\":false},{\"inputs\":[],\"name\":\"adminPauseTransfers\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\",\"constant\":false},{\"inputs\":[],\"name\":\"adminUnpauseTransfers\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\",\"constant\":false},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"newThreshold\",\"type\":\"uint256\"}],\"name\":\"adminChangeRelayerThreshold\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\",\"constant\":false},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"relayerAddress\",\"type\":\"address\"}],\"name\":\"adminAddRelayer\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\",\"constant\":false},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"relayerAddress\",\"type\":\"address\"}],\"name\":\"adminRemoveRelayer\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\",\"constant\":false},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"handlerAddress\",\"type\":\"address\"},{\"internalType\":\"bytes32\",\"name\":\"resourceID\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"tokenAddress\",\"type\":\"address\"}],\"name\":\"adminSetResource\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\",\"constant\":false},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"handlerAddress\",\"type\":\"address\"},{\"internalType\":\"bytes32\",\"name\":\"resourceID\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"contractAddress\",\"type\":\"address\"},{\"internalType\":\"bytes4\",\"name\":\"depositFunctionSig\",\"type\":\"bytes4\"},{\"internalType\":\"bytes4\",\"name\":\"executeFunctionSig\",\"type\":\"bytes4\"}],\"name\":\"adminSetGenericResource\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\",\"constant\":false},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"handlerAddress\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"tokenAddress\",\"type\":\"address\"}],\"name\":\"adminSetBurnable\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\",\"constant\":false},{\"inputs\":[{\"internalType\":\"uint8\",\"name\":\"originChainID\",\"type\":\"uint8\"},{\"internalType\":\"uint64\",\"name\":\"depositNonce\",\"type\":\"uint64\"},{\"internalType\":\"bytes32\",\"name\":\"dataHash\",\"type\":\"bytes32\"}],\"name\":\"getProposal\",\"outputs\":[{\"components\":[{\"internalType\":\"bytes32\",\"name\":\"_resourceID\",\"type\":\"bytes32\"},{\"internalType\":\"bytes32\",\"name\":\"_dataHash\",\"type\":\"bytes32\"},{\"internalType\":\"address[]\",\"name\":\"_yesVotes\",\"type\":\"address[]\"},{\"internalType\":\"address[]\",\"name\":\"_noVotes\",\"type\":\"address[]\"},{\"internalType\":\"enumBridge.ProposalStatus\",\"name\":\"_status\",\"type\":\"uint8\"},{\"internalType\":\"uint256\",\"name\":\"_proposedBlock\",\"type\":\"uint256\"}],\"internalType\":\"structBridge.Proposal\",\"name\":\"\",\"type\":\"tuple\"}],\"stateMutability\":\"view\",\"type\":\"function\",\"constant\":true},{\"inputs\":[],\"name\":\"_totalRelayers\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\",\"constant\":true},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"newFee\",\"type\":\"uint256\"}],\"name\":\"adminChangeFee\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\",\"constant\":false},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"handlerAddress\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"tokenAddress\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"recipient\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"amountOrTokenID\",\"type\":\"uint256\"}],\"name\":\"adminWithdraw\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\",\"constant\":false},{\"inputs\":[{\"internalType\":\"uint8\",\"name\":\"destinationChainID\",\"type\":\"uint8\"},{\"internalType\":\"bytes32\",\"name\":\"resourceID\",\"type\":\"bytes32\"},{\"internalType\":\"bytes\",\"name\":\"data\",\"type\":\"bytes\"}],\"name\":\"deposit\",\"outputs\":[],\"stateMutability\":\"payable\",\"type\":\"function\",\"constant\":false},{\"inputs\":[{\"internalType\":\"uint8\",\"name\":\"chainID\",\"type\":\"uint8\"},{\"internalType\":\"uint64\",\"name\":\"depositNonce\",\"type\":\"uint64\"},{\"internalType\":\"bytes32\",\"name\":\"resourceID\",\"type\":\"bytes32\"},{\"internalType\":\"bytes32\",\"name\":\"dataHash\",\"type\":\"bytes32\"}],\"name\":\"voteProposal\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\",\"constant\":false},{\"inputs\":[{\"internalType\":\"uint8\",\"name\":\"chainID\",\"type\":\"uint8\"},{\"internalType\":\"uint64\",\"name\":\"depositNonce\",\"type\":\"uint64\"},{\"internalType\":\"bytes32\",\"name\":\"dataHash\",\"type\":\"bytes32\"}],\"name\":\"cancelProposal\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\",\"constant\":false},{\"inputs\":[{\"internalType\":\"uint8\",\"name\":\"chainID\",\"type\":\"uint8\"},{\"internalType\":\"uint64\",\"name\":\"depositNonce\",\"type\":\"uint64\"},{\"internalType\":\"bytes\",\"name\":\"data\",\"type\":\"bytes\"},{\"internalType\":\"bytes32\",\"name\":\"resourceID\",\"type\":\"bytes32\"},{\"internalType\":\"bytes\",\"name\":\"signatureHeader\",\"type\":\"bytes\"},{\"internalType\":\"bytes\",\"name\":\"aggregatePublicKey\",\"type\":\"bytes\"},{\"internalType\":\"bytes\",\"name\":\"g1\",\"type\":\"bytes\"},{\"internalType\":\"bytes\",\"name\":\"hashedMessage\",\"type\":\"bytes\"},{\"internalType\":\"bytes32\",\"name\":\"rootHash\",\"type\":\"bytes32\"},{\"internalType\":\"bytes\",\"name\":\"key\",\"type\":\"bytes\"},{\"internalType\":\"bytes\",\"name\":\"nodes\",\"type\":\"bytes\"}],\"name\":\"executeProposal\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\",\"constant\":false},{\"inputs\":[{\"internalType\":\"addresspayable[]\",\"name\":\"addrs\",\"type\":\"address[]\"},{\"internalType\":\"uint256[]\",\"name\":\"amounts\",\"type\":\"uint256[]\"}],\"name\":\"transferFunds\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\",\"constant\":false}]"
 
 // BridgeBin is the compiled bytecode used for deploying new contracts.
 var BridgeBin = "0x60806040523480156200001157600080fd5b50604051620042cc380380620042cc8339810160408190526200003491620002bf565b6000805460ff1990811682556002805490911660ff8816179055600384905560058390556006829055620000699033620000c6565b60005b8451811015620000ba57620000b160405162000088906200039c565b60405180910390208683815181106200009d57fe5b6020026020010151620000df60201b60201c565b6001016200006c565b5050505050506200045d565b620000db82826001600160e01b036200014016565b5050565b6000828152600160205260409020600201546200011890620001096001600160e01b03620001c416565b6001600160e01b03620001c816565b620000c65760405162461bcd60e51b81526004016200013790620003b4565b60405180910390fd5b60008281526001602090815260409091206200016791839062001d8e620001f7821b17901c565b15620000db57620001806001600160e01b03620001c416565b6001600160a01b0316816001600160a01b0316837f2f8788117e7eff1d82e926ec794901d17c78024a50270940304540a733656f0d60405160405180910390a45050565b3390565b60008281526001602090815260408220620001ee91849062001d0062000217821b17901c565b90505b92915050565b6000620001ee836001600160a01b0384166001600160e01b036200023716565b6000620001ee836001600160a01b0384166001600160e01b036200028f16565b60006200024e83836001600160e01b036200028f16565b6200028657508154600181810184556000848152602080822090930184905584548482528286019093526040902091909155620001f1565b506000620001f1565b60009081526001919091016020526040902054151590565b80516001600160a01b0381168114620001f157600080fd5b600080600080600060a08688031215620002d7578081fd5b8551620002e4816200044a565b602087810151919650906001600160401b0381111562000302578283fd5b80880189601f82011262000314578384fd5b805191506200032d62000327836200042a565b62000403565b82815283810190828501858502840186018d10156200034a578687fd5b8693505b848410156200037857620003638d82620002a7565b8352600193909301929185019185016200034e565b5060408b015160608c01516080909c01519a9d919c509a9998509650505050505050565b6b52454c415945525f524f4c4560a01b8152600c0190565b6020808252602f908201527f416363657373436f6e74726f6c3a2073656e646572206d75737420626520616e60408201526e0818591b5a5b881d1bc819dc985b9d608a1b606082015260800190565b6040518181016001600160401b03811182821017156200042257600080fd5b604052919050565b60006001600160401b0382111562000440578081fd5b5060209081020190565b60ff811681146200045a57600080fd5b50565b613e5f806200046d6000396000f3fe6080604052600436106102465760003560e01c80638c0c263111610139578063b941472d116100b6578063cb10f2151161007a578063cb10f215146106b1578063cdb0f73a146106d1578063d547741f146106f1578063d7a9cd7914610711578063e8437ee714610726578063ffaac0eb1461074657610246565b8063b941472d14610625578063beab713114610645578063c5b37c2214610667578063c5ec89701461067c578063ca15c8731461069157610246565b806393d70bf0116100fd57806393d70bf01461058e5780639d5773e0146105ae5780639d82dd63146105c3578063a217fddf146105e3578063a9cf69fa146105f857610246565b80638c0c2631146104f95780639010d07c1461051957806391c404ac1461053957806391d1485414610559578063926d7d7f1461057957610246565b806350598719116101c7578063780cf0041161018b578063780cf004146104625780637febe63f14610482578063802aabe8146104a257806380ae1c28146104b757806384db809f146104cc57610246565b806350598719146103b0578063541d5548146103e05780635c975abb1461040d5780635e1fab0f14610422578063706914f81461044257610246565b806336568abe1161020e57806336568abe146102f65780633ee7094a146103165780634603ae38146103435780634b0b919d146103635780634e0560051461039057610246565b806305e2ca171461024b57806317f03ce5146102605780631ff013f114610280578063248a9ca3146102a05780632f2ff15d146102d6575b600080fd5b61025e6102593660046130b7565b61075b565b005b34801561026c57600080fd5b5061025e61027b366004613103565b6108c8565b34801561028c57600080fd5b5061025e61029b366004613140565b6109d0565b3480156102ac57600080fd5b506102c06102bb366004612ecd565b610dcb565b6040516102cd9190613402565b60405180910390f35b3480156102e257600080fd5b5061025e6102f1366004612ee5565b610de3565b34801561030257600080fd5b5061025e610311366004612ee5565b610e2b565b34801561032257600080fd5b5061033661033136600461301e565b610e6d565b6040516102cd919061357d565b34801561034f57600080fd5b5061025e61035e366004612e65565b610f11565b34801561036f57600080fd5b5061038361037e36600461309c565b610f9f565b6040516102cd9190613d6c565b34801561039c57600080fd5b5061025e6103ab366004612ecd565b610fba565b3480156103bc57600080fd5b506103d06103cb366004613052565b610ff5565b6040516102cd94939291906134d8565b3480156103ec57600080fd5b506104006103fb366004612d19565b61102d565b6040516102cd9190613477565b34801561041957600080fd5b50610400611052565b34801561042e57600080fd5b5061025e61043d366004612d19565b61105c565b34801561044e57600080fd5b5061025e61045d36600461318f565b6110a6565b34801561046e57600080fd5b5061025e61047d366004612d6d565b611398565b34801561048e57600080fd5b5061040061049d36600461307d565b61140b565b3480156104ae57600080fd5b506102c0611431565b3480156104c357600080fd5b5061025e611454565b3480156104d857600080fd5b506104ec6104e7366004612ecd565b611466565b6040516102cd919061343f565b34801561050557600080fd5b5061025e610514366004612d35565b611481565b34801561052557600080fd5b506104ec610534366004612ffd565b6114ee565b34801561054557600080fd5b5061025e610554366004612ecd565b611513565b34801561056557600080fd5b50610400610574366004612ee5565b611542565b34801561058557600080fd5b506102c0611560565b34801561059a57600080fd5b506103366105a9366004612f09565b611577565b3480156105ba57600080fd5b506102c06115f7565b3480156105cf57600080fd5b5061025e6105de366004612d19565b6115fd565b3480156105ef57600080fd5b506102c061168a565b34801561060457600080fd5b50610618610613366004613103565b61168f565b6040516102cd9190613cf7565b34801561063157600080fd5b50610400610640366004612f7f565b6117e0565b34801561065157600080fd5b5061065a61186f565b6040516102cd9190613d80565b34801561067357600080fd5b506102c0611878565b34801561068857600080fd5b506102c061187e565b34801561069d57600080fd5b506102c06106ac366004612ecd565b611884565b3480156106bd57600080fd5b5061025e6106cc366004612dbd565b61189b565b3480156106dd57600080fd5b5061025e6106ec366004612d19565b61192c565b3480156106fd57600080fd5b5061025e61070c366004612ee5565b6119ac565b34801561071d57600080fd5b506102c06119e6565b34801561073257600080fd5b5061025e610741366004612dfe565b6119ec565b34801561075257600080fd5b5061025e611a83565b610763611a93565b600554341461078d5760405162461bcd60e51b815260040161078490613718565b60405180910390fd5b6000838152600860205260409020546001600160a01b0316806107c25760405162461bcd60e51b815260040161078490613847565b60ff8516600081815260076020908152604080832080546001600160401b0380821660010190811667ffffffffffffffff199092168217909255845260098352818420948452939091529020610819908585612a42565b506040516338995da960e01b815282906001600160a01b038216906338995da9906108529089908b90879033908c908c9060040161351c565b600060405180830381600087803b15801561086c57600080fd5b505af1158015610880573d6000803e3d6000fd5b50505050816001600160401b0316868860ff167fdbb69440df8433824a026ef190652f29929eb64b4d1d5d2a69be8afe3e6eaed860405160405180910390a450505050505050565b6108d0611ab6565b6001600160481b0360ff848116600885901b68ffffffffffffffff0016179182166000908152600a6020908152604080832086845290915290206004810154909116600181600481111561092057fe5b14806109375750600281600481111561093557fe5b145b6109535760405162461bcd60e51b81526004016107849061377f565b600654610964438460050154611b00565b116109815760405162461bcd60e51b815260040161078490613938565b6004828101805460ff19168217905582546040516001600160401b0388169160ff8a1691600080516020613e0a833981519152916109c0918a906134ca565b60405180910390a4505050505050565b6109d8611b42565b6109e0611a93565b6001600160481b0360ff8516600885811b68ffffffffffffffff0016919091179182166000908152600a602090815260408083208684528252808320878452939091529020546001600160a01b0316610a4b5760405162461bcd60e51b815260040161078490613c71565b60048082015460019160ff90911690811115610a6357fe5b1115610a815760405162461bcd60e51b815260040161078490613ac9565b6001600160481b0382166000908152600b60209081526040808320868452825280832033845290915290205460ff1615610acd5760405162461bcd60e51b815260040161078490613658565b60048082015460ff1690811115610ae057fe5b610c58576004805460019081019091556040805160c0810182528681526020810186905281518381528083018352909291830191816020016020820280368337505050815260408051600080825260208083018452808501929092526001838501819052436060909501949094526001600160481b0387168152600a82528281208882528252829020845181558482015193810193909355908301518051610b8e9260028501920190612ac0565b5060608201518051610baa916003840191602090910190612ac0565b5060808201518160040160006101000a81548160ff02191690836004811115610bcf57fe5b021790555060a082015181600501559050503381600201600081548110610bf257fe5b600091825260209091200180546001600160a01b0319166001600160a01b039290921691909117905560015b856001600160401b03168760ff16600080516020613e0a8339815191528787604051610c4b9291906134ca565b60405180910390a4610cce565b600654610c69438360050154611b00565b1115610c83576004818101805460ff191682179055610c1e565b80600101548314610ca65760405162461bcd60e51b815260040161078490613c46565b600281018054600181018255600091825260209091200180546001600160a01b031916331790555b60048181015460ff1681811115610ce157fe5b14610dc3576001600160481b0382166000908152600b6020908152604080832086845282528083203384529091529020805460ff1916600117905560048082015460ff1690811115610d2f57fe5b856001600160401b03168760ff167f25f8daaa4635a7729927ba3f5b3d59cc3320aca7c32c9db4e7ca7b957434364087604051610d6c9190613402565b60405180910390a4600354600282015410610dc35760048101805460ff191660029081179091556040516001600160401b0387169060ff891690600080516020613e0a833981519152906109c090899089906134ca565b505050505050565b6000818152600160205260409020600201545b919050565b600082815260016020526040902060020154610e0190610574611b6d565b610e1d5760405162461bcd60e51b815260040161078490613609565b610e278282611b71565b5050565b610e33611b6d565b6001600160a01b0316816001600160a01b031614610e635760405162461bcd60e51b815260040161078490613ca8565b610e278282611be0565b60096020908152600092835260408084208252918352918190208054825160026001831615610100026000190190921691909104601f810185900485028201850190935282815292909190830182828015610f095780601f10610ede57610100808354040283529160200191610f09565b820191906000526020600020905b815481529060010190602001808311610eec57829003601f168201915b505050505081565b610f19611c4f565b60005b83811015610f9857848482818110610f3057fe5b9050602002016020810190610f459190612d19565b6001600160a01b03166108fc848484818110610f5d57fe5b905060200201359081150290604051600060405180830381858888f19350505050158015610f8f573d6000803e3d6000fd5b50600101610f1c565b5050505050565b6007602052600090815260409020546001600160401b031681565b610fc2611c4f565b600381905560405181907fa20d6b84cd798a24038be305eff8a45ca82ef54a2aa2082005d8e14c0a4746c890600090a250565b600a60209081526000928352604080842090915290825290208054600182015460048301546005909301549192909160ff9091169084565b600061104c60405161103e90613427565b604051809103902083611542565b92915050565b60005460ff165b90565b611064611c4f565b336001600160a01b038216141561108d5760405162461bcd60e51b815260040161078490613a6a565b611098600082610de3565b6110a3600033610e2b565b50565b6110ae611b42565b6110b6611a93565b6110be612b21565b6040518060e001604052808d60ff1681526020018c6001600160401b031681526020018a815260200185815260200160006001600160a01b0316815260200160006001600160481b031681526020016000801b8152509050600860008260400151815260200190815260200160002060009054906101000a90046001600160a01b031681608001906001600160a01b031690816001600160a01b031681525050806000015160ff16600882602001516001600160401b03166001600160481b0316901b178160a001906001600160481b031690816001600160481b03168152505080608001518a826060015185858b8a8e6040516020016111c6989796959493929190613354565b60408051601f19818403018152918152815160209283012060c0840190815260a08401516001600160481b03166000908152600a84528281209151815292529020600260048083015460ff169081111561121c57fe5b146112395760405162461bcd60e51b815260040161078490613903565b80600101548260c00151146112605760405162461bcd60e51b815260040161078490613997565b61126c89898989611c76565b6112885760405162461bcd60e51b815260040161078490613b7f565b600061129983606001518686611c80565b51116112b75760405162461bcd60e51b815260040161078490613a33565b6004810180546003919060ff19166001830217905550600082608001519050806001600160a01b031663e248cff283600001548e6040518363ffffffff1660e01b8152600401611308929190613503565b600060405180830381600087803b15801561132257600080fd5b505af1158015611336573d6000803e3d6000fd5b5060039250611343915050565b83602001516001600160401b0316846000015160ff16600080516020613e0a83398151915286604001518760c001516040516113809291906134ca565b60405180910390a45050505050505050505050505050565b6113a0611c4f565b604051636ce5768960e11b815284906001600160a01b0382169063d9caed12906113d290879087908790600401613453565b600060405180830381600087803b1580156113ec57600080fd5b505af1158015611400573d6000803e3d6000fd5b505050505050505050565b600b60209081526000938452604080852082529284528284209052825290205460ff1681565b600061144f60405161144290613427565b6040518091039020611884565b905090565b61145c611c4f565b611464611ca5565b565b6008602052600090815260409020546001600160a01b031681565b611489611c4f565b6040516307b7ed9960e01b815282906001600160a01b038216906307b7ed99906114b790859060040161343f565b600060405180830381600087803b1580156114d157600080fd5b505af11580156114e5573d6000803e3d6000fd5b50505050505050565b600082815260016020526040812061150c908363ffffffff611cf416565b9392505050565b61151b611c4f565b80600554141561153d5760405162461bcd60e51b815260040161078490613be3565b600555565b600082815260016020526040812061150c908363ffffffff611d0016565b60405161156c90613427565b604051809103902081565b60606115ed8686868080601f01602080910402602001604051908101604052809392919081815260200183838082843760009201919091525050604080516020601f8a018190048102820181019092528881529250889150879081908401838280828437600092019190915250611c8092505050565b9695505050505050565b60045481565b61161a60405161160c90613427565b604051809103902082611542565b6116365760405162461bcd60e51b8152600401610784906136b5565b61165360405161164590613427565b6040518091039020826119ac565b6040516001600160a01b038216907f10e1f7ce9fd7d1b90a66d13a2ab3cb8dd7f29f3f8d520b143b063ccfbab6906b90600090a250565b600081565b611697612b5d565b68ffffffffffffffff00600884901b1660ff8516176001600160481b0381166000908152600a60209081526040808320868452825291829020825160c081018452815481526001820154818401526002820180548551818602810186018752818152929593949386019383018282801561173a57602002820191906000526020600020905b81546001600160a01b0316815260019091019060200180831161171c575b505050505081526020016003820180548060200260200160405190810160405280929190818152602001828054801561179c57602002820191906000526020600020905b81546001600160a01b0316815260019091019060200180831161177e575b505050918352505060048281015460209092019160ff16908111156117bd57fe5b60048111156117c857fe5b81526020016005820154815250509150509392505050565b600060606118588888888080601f01602080910402602001604051908101604052809392919081815260200183838082843760009201919091525050604080516020601f8c018190048102820181019092528a815292508a9150899081908401838280828437600092019190915250611c8092505050565b805160209091012083149150509695505050505050565b60025460ff1681565b60055481565b60065481565b600081815260016020526040812061104c90611d15565b6118a3611c4f565b6000828152600860205260409081902080546001600160a01b0319166001600160a01b0386169081179091559051635c7d1b9b60e11b815284919063b8fa3736906118f49086908690600401613482565b600060405180830381600087803b15801561190e57600080fd5b505af1158015611922573d6000803e3d6000fd5b5050505050505050565b61193b60405161160c90613427565b156119585760405162461bcd60e51b8152600401610784906139ce565b61197560405161196790613427565b604051809103902082610de3565b6040516001600160a01b038216907f03580ee9f53a62b7cb409a2cb56f9be87747dd15017afc5cef6eef321e4fb2c590600090a250565b6000828152600160205260409020600201546119ca90610574611b6d565b610e635760405162461bcd60e51b8152600401610784906138b3565b60035481565b6119f4611c4f565b6000848152600860205260409081902080546001600160a01b0319166001600160a01b0388169081179091559051635dd40c2d60e11b815286919063bba8185a90611a49908890889088908890600401613499565b600060405180830381600087803b158015611a6357600080fd5b505af1158015611a77573d6000803e3d6000fd5b50505050505050505050565b611a8b611c4f565b611464611d20565b60005460ff16156114645760405162461bcd60e51b81526004016107849061396d565b611ac1600033611542565b80611ae45750611ae4604051611ad690613427565b604051809103902033611542565b6114645760405162461bcd60e51b8152600401610784906135d2565b600061150c83836040518060400160405280601e81526020017f536166654d6174683a207375627472616374696f6e206f766572666c6f770000815250611d62565b611b51604051611ad690613427565b6114645760405162461bcd60e51b815260040161078490613b13565b3390565b6000828152600160205260409020611b8f908263ffffffff611d8e16565b15610e2757611b9c611b6d565b6001600160a01b0316816001600160a01b0316837f2f8788117e7eff1d82e926ec794901d17c78024a50270940304540a733656f0d60405160405180910390a45050565b6000828152600160205260409020611bfe908263ffffffff611da316565b15610e2757611c0b611b6d565b6001600160a01b0316816001600160a01b0316837ff6391f5c32d9c69d2a47ea670b442974b53935d1edc7fd64eb21e047a839171b60405160405180910390a45050565b611c5a600033611542565b6114645760405162461bcd60e51b815260040161078490613b48565b6001949350505050565b6060611c9d8484611c98611c9386611db8565b611ddd565b611eae565b949350505050565b611cad611a93565b6000805460ff191660011790556040517f62e78cea01bee320cd4e420270b5ea74000d11b0c9f74754ebdbfc544b05a25890611cea90339061343f565b60405180910390a1565b600061150c838361231f565b600061150c836001600160a01b038416612364565b600061104c8261237c565b611d28612380565b6000805460ff191690556040517f5db9ee0a495bf2e6ff9c91a7834c1ba4fdd244a5e8aa4e537bd38aeae4b073aa90611cea90339061343f565b60008184841115611d865760405162461bcd60e51b8152600401610784919061357d565b505050900390565b600061150c836001600160a01b0384166123a2565b600061150c836001600160a01b0384166123ec565b611dc0612b95565b506040805180820190915281518152602082810190820152919050565b6060611de8826124b2565b611df157600080fd5b6000611dfc836124ec565b9050606081604051908082528060200260200182016040528015611e3a57816020015b611e27612b95565b815260200190600190039081611e1f5790505b5090506000611e4c8560200151612548565b60208601510190506000805b84811015611ea357611e69836125ab565b9150604051806040016040528083815260200184815250848281518110611e8c57fe5b602090810291909101015291810191600101611e58565b509195945050505050565b606060006010818380611ebf612b95565b8751611f0e577f56e81f171bcc55a6ff8345e692c0f86e5b48e01b996cadc001622fb5e363b4218a14611ef157600080fd5b5050604080516000815260208101909152945061150c9350505050565b60005b88518110156123115785601014611f4557611f3e838781518110611f3157fe5b6020026020010151611ddd565b9250611fda565b611f61898281518110611f5457fe5b6020026020010151612644565b935080158015611f775750835160208501208b14155b15611f945760405162461bcd60e51b815260040161078490613c1a565b8015801590611fab5750611fa7846126a5565b8514155b15611fc85760405162461bcd60e51b8152600401610784906137b6565b611fd7898281518110611f3157fe5b92505b82516002141561218e576000606061200d61200886600081518110611ffb57fe5b6020026020010151612712565b61278b565b9092509050600061201f8a8e8461283d565b9050808a01995081518110156120775760018c51038410156120535760405162461bcd60e51b815260040161078490613810565b60408051600080825260208201909252905b509a505050505050505050505061150c565b82156120f15760018c51038410156120a15760405162461bcd60e51b8152600401610784906136ec565b8c518a10156120c0576040805160008082526020820190925290612065565b856001815181106120cd57fe5b602002602001015194506120e085612712565b9a505050505050505050505061150c565b886010148015612104575060018c510384145b156121215760405162461bcd60e51b815260040161078490613a05565b61213e8660018151811061213157fe5b60200260200101516124b2565b6121605761215286600181518110611ffb57fe5b805190602001209750612186565b61217086600181518110611f5457fe5b8051602090910120600199509750600019909301925b505050612309565b8251601114156122f157895187146122ab5760008a88815181106121ae57fe5b01602001516001989098019760f81c9050601081106121df5760405162461bcd60e51b815260040161078490613aa1565b6121fe848260ff16815181106121f157fe5b60200260200101516128aa565b156122455760018a510382146122265760405162461bcd60e51b815260040161078490613748565b5050604080516000815260208101909152965061150c95505050505050565b612257848260ff168151811061213157fe5b61227b5761226d848260ff1681518110611ffb57fe5b8051906020012095506122a5565b61228d848260ff1681518110611f5457fe5b805160209091012060ff821697509550600019909101905b506122ec565b600189510381146122ce5760405162461bcd60e51b81526004016107849061387c565b6122de83601081518110611ffb57fe5b97505050505050505061150c565b612309565b60405162461bcd60e51b815260040161078490613bb6565b600101611f11565b505050505050509392505050565b815460009082106123425760405162461bcd60e51b815260040161078490613590565b82600001828154811061235157fe5b9060005260206000200154905092915050565b60009081526001919091016020526040902054151590565b5490565b60005460ff166114645760405162461bcd60e51b815260040161078490613687565b60006123ae8383612364565b6123e45750815460018181018455600084815260208082209093018490558454848252828601909352604090209190915561104c565b50600061104c565b600081815260018301602052604081205480156124a8578354600019808301919081019060009087908390811061241f57fe5b906000526020600020015490508087600001848154811061243c57fe5b60009182526020808320909101929092558281526001898101909252604090209084019055865487908061246c57fe5b6001900381819060005260206000200160009055905586600101600087815260200190815260200160002060009055600194505050505061104c565b600091505061104c565b80516000906124c357506000610dde565b6020820151805160001a9060c08210156124e257600092505050610dde565b5060019392505050565b80516000906124fd57506000610dde565b600080905060006125118460200151612548565b602085015185519181019250015b8082101561253f57612530826125ab565b6001909301929091019061251f565b50909392505050565b8051600090811a6080811015612562576000915050610dde565b60b881108061257d575060c0811080159061257d575060f881105b1561258c576001915050610dde565b60c08110156125a05760b519019050610dde565b60f519019050610dde565b80516000908190811a60808110156125c6576001915061263d565b60b88110156125db57607e198101915061263d565b60c08110156126085760b78103600185019450806020036101000a8551046001820181019350505061263d565b60f881101561261d5760be198101915061263d565b60f78103600185019450806020036101000a855104600182018101935050505b5092915050565b60608082600001516040519080825280601f01601f191660200182016040528015612676576020820181803683370190505b50905080516000141561268a579050610dde565b600081602001905061263d84602001518286600001516128cd565b60006020825110156126be575080516020820120610dde565b816040516020016126cf919061340b565b604051602081830303815290604052805190602001206040516020016126f59190613402565b604051602081830303815290604052805190602001209050610dde565b805160609061272057600080fd5b600061272f8360200151612548565b83516040805191839003808352601f19601f8201168301602001909152919250606090828015612766576020820181803683370190505b50905060008160200190506127828487602001510182856128cd565b50949350505050565b60006060600083511161279d57600080fd5b60006004846000815181106127ae57fe5b60209101015160f81c901c600f1690506000816127d15750600092506002612827565b81600114156127e65750600092506001612827565b81600214156127fb5750600192506002612827565b816003141561280f57506001925082612827565b60405162461bcd60e51b8152600401610784906137e2565b836128328683612918565b935093505050915091565b6000805b83518582011080156128535750825181105b15611c9d5782818151811061286457fe5b602001015160f81c60f81b6001600160f81b031916848683018151811061288757fe5b01602001516001600160f81b031916146128a257905061150c565b600101612841565b80516000906001146128be57506000610dde565b50602001515160001a60801490565b806128d757612913565b5b602081106128f7578251825260209283019290910190601f19016128d8565b8251825160208390036101000a60001901801990921691161782525b505050565b6060600083511161292857600080fd5b82516002028083111561293a57600080fd5b8281039050806040519080825280601f01601f19166020018201604052801561296a576020820181803683370190505b5091506000835b828501811015612a2f57600281066129d557600486600283048151811061299457fe5b602001015160f81c60f81b60f81c60ff16901c600f1660f81b8483815181106129b957fe5b60200101906001600160f81b031916908160001a905350612a23565b60008660028304815181106129e657fe5b602001015160f81c60f81b60f81c60ff16901c600f1660f81b848381518110612a0b57fe5b60200101906001600160f81b031916908160001a9053505b60019182019101612971565b5082518114612a3a57fe5b505092915050565b828054600181600116156101000203166002900490600052602060002090601f016020900481019282601f10612a835782800160ff19823516178555612ab0565b82800160010185558215612ab0579182015b82811115612ab0578235825591602001919060010190612a95565b50612abc929150612baf565b5090565b828054828255906000526020600020908101928215612b15579160200282015b82811115612b1557825182546001600160a01b0319166001600160a01b03909116178255602090920191600190910190612ae0565b50612abc929150612bc9565b6040805160e081018252600080825260208201819052918101829052606081018290526080810182905260a0810182905260c081019190915290565b6040805160c0810182526000808252602082018190526060928201839052828201929092529060808201908152602001600081525090565b604051806040016040528060008152602001600081525090565b61105991905b80821115612abc5760008155600101612bb5565b61105991905b80821115612abc5780546001600160a01b0319168155600101612bcf565b60008083601f840112612bfe578182fd5b5081356001600160401b03811115612c14578182fd5b6020830191508360208083028501011115612c2e57600080fd5b9250929050565b60008083601f840112612c46578182fd5b5081356001600160401b03811115612c5c578182fd5b602083019150836020828501011115612c2e57600080fd5b600082601f830112612c84578081fd5b81356001600160401b0380821115612c9a578283fd5b604051601f8301601f191681016020018281118282101715612cba578485fd5b604052828152925082848301602001861015612cd557600080fd5b8260208601602083013760006020848301015250505092915050565b80356001600160401b038116811461104c57600080fd5b803560ff8116811461104c57600080fd5b600060208284031215612d2a578081fd5b813561150c81613dc9565b60008060408385031215612d47578081fd5b8235612d5281613dc9565b91506020830135612d6281613dc9565b809150509250929050565b60008060008060808587031215612d82578182fd5b8435612d8d81613dc9565b93506020850135612d9d81613dc9565b92506040850135612dad81613dc9565b9396929550929360600135925050565b600080600060608486031215612dd1578283fd5b8335612ddc81613dc9565b9250602084013591506040840135612df381613dc9565b809150509250925092565b600080600080600060a08688031215612e15578081fd5b8535612e2081613dc9565b9450602086013593506040860135612e3781613dc9565b92506060860135612e4781613dde565b91506080860135612e5781613dde565b809150509295509295909350565b60008060008060408587031215612e7a578384fd5b84356001600160401b0380821115612e90578586fd5b612e9c88838901612bed565b90965094506020870135915080821115612eb4578384fd5b50612ec187828801612bed565b95989497509550505050565b600060208284031215612ede578081fd5b5035919050565b60008060408385031215612ef7578182fd5b823591506020830135612d6281613dc9565b600080600080600060608688031215612f20578081fd5b8535945060208601356001600160401b0380821115612f3d578283fd5b612f4989838a01612c35565b90965094506040880135915080821115612f61578283fd5b50612f6e88828901612c35565b969995985093965092949392505050565b60008060008060008060808789031215612f97578384fd5b8635955060208701356001600160401b0380821115612fb4578586fd5b612fc08a838b01612c35565b90975095506040890135915080821115612fd8578283fd5b50612fe589828a01612c35565b979a9699509497949695606090950135949350505050565b6000806040838503121561300f578182fd5b50508035926020909101359150565b60008060408385031215613030578182fd5b61303a8484612cf1565b91506130498460208501612d08565b90509250929050565b60008060408385031215613064578182fd5b823561306f81613df4565b946020939093013593505050565b600080600060608486031215613091578081fd5b8335612ddc81613df4565b6000602082840312156130ad578081fd5b61150c8383612d08565b600080600080606085870312156130cc578182fd5b6130d68686612d08565b93506020850135925060408501356001600160401b038111156130f7578283fd5b612ec187828801612c35565b600080600060608486031215613117578081fd5b6131218585612d08565b92506131308560208601612cf1565b9150604084013590509250925092565b60008060008060808587031215613155578182fd5b61315f8686612d08565b935060208501356001600160401b038116811461317a578283fd5b93969395505050506040820135916060013590565b60008060008060008060008060008060006101608c8e0312156131b0578889fd5b6131ba8d8d612d08565b9a506131c98d60208e01612cf1565b99506001600160401b038060408e013511156131e357898afd5b6131f38e60408f01358f01612c74565b995060608d013598508060808e0135111561320c578586fd5b61321c8e60808f01358f01612c74565b97508060a08e0135111561322e578586fd5b61323e8e60a08f01358f01612c74565b96508060c08e01351115613250578586fd5b6132608e60c08f01358f01612c74565b95508060e08e01351115613272578485fd5b6132828e60e08f01358f01612c74565b94506101008d01359350806101208e0135111561329d578283fd5b6132ae8e6101208f01358f01612c74565b9250806101408e013511156132c1578182fd5b506132d38d6101408e01358e01612c74565b90509295989b509295989b9093969950565b6000815180845260208085019450808401835b8381101561331d5781516001600160a01b0316875295820195908201906001016132f8565b509495945050505050565b60008151808452613340816020860160208601613d99565b601f01601f19169290920160200192915050565b60006bffffffffffffffffffffffff198a60601b1682528851602061337f8260148601838e01613d99565b8184018a601482015260349250895161339d81858401858e01613d99565b89519181016133b183868301868e01613d99565b8951920190506133c682858301858c01613d99565b87519181016133da83868301868c01613d99565b8751920190506133ef82858301858a01613d99565b019091019b9a5050505050505050505050565b90815260200190565b6000825161341d818460208701613d99565b9190910192915050565b6b52454c415945525f524f4c4560a01b8152600c0190565b6001600160a01b0391909116815260200190565b6001600160a01b039384168152919092166020820152604081019190915260600190565b901515815260200190565b9182526001600160a01b0316602082015260400190565b9384526001600160a01b039290921660208401526001600160e01b0319908116604084015216606082015260800190565b918252602082015260400190565b84815260208101849052608081016134ef84613d8e565b604083015282606083015295945050505050565b600083825260406020830152611c9d6040830184613328565b86815260ff861660208201526001600160401b03851660408201526001600160a01b038416606082015260a06080820181905281018290526000828460c084013781830160c090810191909152601f909201601f1916010195945050505050565b60006020825261150c6020830184613328565b60208082526022908201527f456e756d657261626c655365743a20696e646578206f7574206f6620626f756e604082015261647360f01b606082015260800190565b6020808252601e908201527f73656e646572206973206e6f742072656c61796572206f722061646d696e0000604082015260600190565b6020808252602f908201527f416363657373436f6e74726f6c3a2073656e646572206d75737420626520616e60408201526e0818591b5a5b881d1bc819dc985b9d608a1b606082015260800190565b6020808252601590820152741c995b185e595c88185b1c9958591e481d9bdd1959605a1b604082015260600190565b60208082526014908201527314185d5cd8589b194e881b9bdd081c185d5cd95960621b604082015260600190565b6020808252601f908201527f6164647220646f65736e277420686176652072656c6179657220726f6c652100604082015260600190565b6020808252601290820152714c65616620696e20746865206d6964646c6560701b604082015260600190565b602080825260169082015275125b98dbdc9c9958dd08199959481cdd5c1c1b1a595960521b604082015260600190565b60208082526018908201527f456d707479206c65616620696e20746865206d6964646c650000000000000000604082015260600190565b6020808252601c908201527f50726f706f73616c2063616e6e6f742062652063616e63656c6c656400000000604082015260600190565b60208082526012908201527109cdec8ca40d0c2e6d040dad2e6dac2e8c6d60731b604082015260600190565b602080825260149082015273496e76616c6964206669727374206e6962626c6560601b604082015260600190565b60208082526018908201527f446976657267656e636520696e20746865206d6964646c650000000000000000604082015260600190565b6020808252818101527f7265736f757263654944206e6f74206d617070656420746f2068616e646c6572604082015260600190565b6020808252601a908201527f4b657920636f6e73756d656420696e20746865206d6964646c65000000000000604082015260600190565b60208082526030908201527f416363657373436f6e74726f6c3a2073656e646572206d75737420626520616e60408201526f2061646d696e20746f207265766f6b6560801b606082015260800190565b6020808252818101527f50726f706f73616c206d75737420686176652050617373656420737461747573604082015260600190565b6020808252818101527f50726f706f73616c206e6f7420617420657870697279207468726573686f6c64604082015260600190565b60208082526010908201526f14185d5cd8589b194e881c185d5cd95960821b604082015260600190565b6020808252601b908201527f4461746120646f65736e2774206d617463682064617461686173680000000000604082015260600190565b6020808252601e908201527f6164647220616c7265616479206861732072656c6179657220726f6c65210000604082015260600190565b602080825260149082015273115e1d195b9cda5bdb881a5b881d1a1948195b9960621b604082015260600190565b6020808252601d908201527f556e61626c6520746f20566572696679204d65726b6c652050726f6f66000000604082015260600190565b60208082526017908201527f43616e6e6f742072656e6f756e6365206f6e6573656c66000000000000000000604082015260600190565b6020808252600e908201526d496e76616c6964206e6962626c6560901b604082015260600190565b6020808252602a908201527f70726f706f73616c20616c7265616479207061737365642f65786563757465646040820152690bd8d85b98d95b1b195960b21b606082015260800190565b6020808252818101527f73656e64657220646f65736e277420686176652072656c6179657220726f6c65604082015260600190565b6020808252601e908201527f73656e64657220646f65736e277420686176652061646d696e20726f6c650000604082015260600190565b6020808252601e908201527f556e61626c6520746f20766572696679207369676e6564206865616465720000604082015260600190565b602080825260139082015272092dcecc2d8d2c840dcdec8ca40d8cadccee8d606b1b604082015260600190565b6020808252601f908201527f43757272656e742066656520697320657175616c20746f206e65772066656500604082015260600190565b6020808252601290820152710a4dedee840d0c2e6d040dad2e6dac2e8c6d60731b604082015260600190565b6020808252601190820152700c8c2e8c2d0c2e6d040dad2e6dac2e8c6d607b1b604082015260600190565b60208082526019908201527f6e6f2068616e646c657220666f72207265736f75726365494400000000000000604082015260600190565b6020808252602f908201527f416363657373436f6e74726f6c3a2063616e206f6e6c792072656e6f756e636560408201526e103937b632b9903337b91039b2b63360891b606082015260800190565b6000602082528251602083015260208301516040830152604083015160c06060840152613d2760e08401826132e5565b6060850151848203601f190160808601529150613d4481836132e5565b613d516080870151613d8e565b60a086015260a086015160c086015280935050505092915050565b6001600160401b0391909116815260200190565b60ff91909116815260200190565b8060058110610dde57fe5b60005b83811015613db4578181015183820152602001613d9c565b83811115613dc3576000848401525b50505050565b6001600160a01b03811681146110a357600080fd5b6001600160e01b0319811681146110a357600080fd5b6001600160481b03811681146110a357600080fdfe803c5a12f6bde629cea32e63d4b92d1b560816a6fb72e939d3c89e1cab650417a2646970667358221220482b81cb8323e0875b441af1090823c142015c7252e991b1a647cbbeb333479164736f6c63430006040033"
@@ -208,277 +208,594 @@ func (_Bridge *BridgeTransactorRaw) Transact(opts *bind.TransactOpts, method str
 	return _Bridge.Contract.contract.Transact(opts, method, params...)
 }
 
-// DEFAULTADMINROLE is a paid mutator transaction binding the contract method 0xa217fddf.
+// DEFAULTADMINROLE is a free data retrieval call binding the contract method 0xa217fddf.
 //
-// Solidity: function DEFAULT_ADMIN_ROLE() returns(bytes32)
-func (_Bridge *BridgeTransactor) DEFAULTADMINROLE(opts *bind.TransactOpts) (*types.Transaction, error) {
-	return _Bridge.contract.Transact(opts, "DEFAULT_ADMIN_ROLE")
+// Solidity: function DEFAULT_ADMIN_ROLE() constant returns(bytes32)
+func (_Bridge *BridgeCaller) DEFAULTADMINROLE(opts *bind.CallOpts) ([32]byte, error) {
+	var (
+		ret0 = new([32]byte)
+	)
+	out := ret0
+	err := _Bridge.contract.Call(opts, out, "DEFAULT_ADMIN_ROLE")
+	return *ret0, err
 }
 
-// DEFAULTADMINROLE is a paid mutator transaction binding the contract method 0xa217fddf.
+// DEFAULTADMINROLE is a free data retrieval call binding the contract method 0xa217fddf.
 //
-// Solidity: function DEFAULT_ADMIN_ROLE() returns(bytes32)
-func (_Bridge *BridgeSession) DEFAULTADMINROLE() (*types.Transaction, error) {
-	return _Bridge.Contract.DEFAULTADMINROLE(&_Bridge.TransactOpts)
+// Solidity: function DEFAULT_ADMIN_ROLE() constant returns(bytes32)
+func (_Bridge *BridgeSession) DEFAULTADMINROLE() ([32]byte, error) {
+	return _Bridge.Contract.DEFAULTADMINROLE(&_Bridge.CallOpts)
 }
 
-// DEFAULTADMINROLE is a paid mutator transaction binding the contract method 0xa217fddf.
+// DEFAULTADMINROLE is a free data retrieval call binding the contract method 0xa217fddf.
 //
-// Solidity: function DEFAULT_ADMIN_ROLE() returns(bytes32)
-func (_Bridge *BridgeTransactorSession) DEFAULTADMINROLE() (*types.Transaction, error) {
-	return _Bridge.Contract.DEFAULTADMINROLE(&_Bridge.TransactOpts)
+// Solidity: function DEFAULT_ADMIN_ROLE() constant returns(bytes32)
+func (_Bridge *BridgeCallerSession) DEFAULTADMINROLE() ([32]byte, error) {
+	return _Bridge.Contract.DEFAULTADMINROLE(&_Bridge.CallOpts)
 }
 
-// RELAYERROLE is a paid mutator transaction binding the contract method 0x926d7d7f.
+// RELAYERROLE is a free data retrieval call binding the contract method 0x926d7d7f.
 //
-// Solidity: function RELAYER_ROLE() returns(bytes32)
-func (_Bridge *BridgeTransactor) RELAYERROLE(opts *bind.TransactOpts) (*types.Transaction, error) {
-	return _Bridge.contract.Transact(opts, "RELAYER_ROLE")
+// Solidity: function RELAYER_ROLE() constant returns(bytes32)
+func (_Bridge *BridgeCaller) RELAYERROLE(opts *bind.CallOpts) ([32]byte, error) {
+	var (
+		ret0 = new([32]byte)
+	)
+	out := ret0
+	err := _Bridge.contract.Call(opts, out, "RELAYER_ROLE")
+	return *ret0, err
 }
 
-// RELAYERROLE is a paid mutator transaction binding the contract method 0x926d7d7f.
+// RELAYERROLE is a free data retrieval call binding the contract method 0x926d7d7f.
 //
-// Solidity: function RELAYER_ROLE() returns(bytes32)
-func (_Bridge *BridgeSession) RELAYERROLE() (*types.Transaction, error) {
-	return _Bridge.Contract.RELAYERROLE(&_Bridge.TransactOpts)
+// Solidity: function RELAYER_ROLE() constant returns(bytes32)
+func (_Bridge *BridgeSession) RELAYERROLE() ([32]byte, error) {
+	return _Bridge.Contract.RELAYERROLE(&_Bridge.CallOpts)
 }
 
-// RELAYERROLE is a paid mutator transaction binding the contract method 0x926d7d7f.
+// RELAYERROLE is a free data retrieval call binding the contract method 0x926d7d7f.
 //
-// Solidity: function RELAYER_ROLE() returns(bytes32)
-func (_Bridge *BridgeTransactorSession) RELAYERROLE() (*types.Transaction, error) {
-	return _Bridge.Contract.RELAYERROLE(&_Bridge.TransactOpts)
+// Solidity: function RELAYER_ROLE() constant returns(bytes32)
+func (_Bridge *BridgeCallerSession) RELAYERROLE() ([32]byte, error) {
+	return _Bridge.Contract.RELAYERROLE(&_Bridge.CallOpts)
 }
 
-// ChainID is a paid mutator transaction binding the contract method 0xbeab7131.
+// ChainID is a free data retrieval call binding the contract method 0xbeab7131.
 //
-// Solidity: function _chainID() returns(uint8)
-func (_Bridge *BridgeTransactor) ChainID(opts *bind.TransactOpts) (*types.Transaction, error) {
-	return _Bridge.contract.Transact(opts, "_chainID")
+// Solidity: function _chainID() constant returns(uint8)
+func (_Bridge *BridgeCaller) ChainID(opts *bind.CallOpts) (uint8, error) {
+	var (
+		ret0 = new(uint8)
+	)
+	out := ret0
+	err := _Bridge.contract.Call(opts, out, "_chainID")
+	return *ret0, err
 }
 
-// ChainID is a paid mutator transaction binding the contract method 0xbeab7131.
+// ChainID is a free data retrieval call binding the contract method 0xbeab7131.
 //
-// Solidity: function _chainID() returns(uint8)
-func (_Bridge *BridgeSession) ChainID() (*types.Transaction, error) {
-	return _Bridge.Contract.ChainID(&_Bridge.TransactOpts)
+// Solidity: function _chainID() constant returns(uint8)
+func (_Bridge *BridgeSession) ChainID() (uint8, error) {
+	return _Bridge.Contract.ChainID(&_Bridge.CallOpts)
 }
 
-// ChainID is a paid mutator transaction binding the contract method 0xbeab7131.
+// ChainID is a free data retrieval call binding the contract method 0xbeab7131.
 //
-// Solidity: function _chainID() returns(uint8)
-func (_Bridge *BridgeTransactorSession) ChainID() (*types.Transaction, error) {
-	return _Bridge.Contract.ChainID(&_Bridge.TransactOpts)
+// Solidity: function _chainID() constant returns(uint8)
+func (_Bridge *BridgeCallerSession) ChainID() (uint8, error) {
+	return _Bridge.Contract.ChainID(&_Bridge.CallOpts)
 }
 
-// DepositCounts is a paid mutator transaction binding the contract method 0x4b0b919d.
+// DepositCounts is a free data retrieval call binding the contract method 0x4b0b919d.
 //
-// Solidity: function _depositCounts(uint8 ) returns(uint64)
-func (_Bridge *BridgeTransactor) DepositCounts(opts *bind.TransactOpts, arg0 uint8) (*types.Transaction, error) {
-	return _Bridge.contract.Transact(opts, "_depositCounts", arg0)
+// Solidity: function _depositCounts(uint8 ) constant returns(uint64)
+func (_Bridge *BridgeCaller) DepositCounts(opts *bind.CallOpts, arg0 uint8) (uint64, error) {
+	var (
+		ret0 = new(uint64)
+	)
+	out := ret0
+	err := _Bridge.contract.Call(opts, out, "_depositCounts", arg0)
+	return *ret0, err
 }
 
-// DepositCounts is a paid mutator transaction binding the contract method 0x4b0b919d.
+// DepositCounts is a free data retrieval call binding the contract method 0x4b0b919d.
 //
-// Solidity: function _depositCounts(uint8 ) returns(uint64)
-func (_Bridge *BridgeSession) DepositCounts(arg0 uint8) (*types.Transaction, error) {
-	return _Bridge.Contract.DepositCounts(&_Bridge.TransactOpts, arg0)
+// Solidity: function _depositCounts(uint8 ) constant returns(uint64)
+func (_Bridge *BridgeSession) DepositCounts(arg0 uint8) (uint64, error) {
+	return _Bridge.Contract.DepositCounts(&_Bridge.CallOpts, arg0)
 }
 
-// DepositCounts is a paid mutator transaction binding the contract method 0x4b0b919d.
+// DepositCounts is a free data retrieval call binding the contract method 0x4b0b919d.
 //
-// Solidity: function _depositCounts(uint8 ) returns(uint64)
-func (_Bridge *BridgeTransactorSession) DepositCounts(arg0 uint8) (*types.Transaction, error) {
-	return _Bridge.Contract.DepositCounts(&_Bridge.TransactOpts, arg0)
+// Solidity: function _depositCounts(uint8 ) constant returns(uint64)
+func (_Bridge *BridgeCallerSession) DepositCounts(arg0 uint8) (uint64, error) {
+	return _Bridge.Contract.DepositCounts(&_Bridge.CallOpts, arg0)
 }
 
-// DepositRecords is a paid mutator transaction binding the contract method 0x3ee7094a.
+// DepositRecords is a free data retrieval call binding the contract method 0x3ee7094a.
 //
-// Solidity: function _depositRecords(uint64 , uint8 ) returns(bytes)
-func (_Bridge *BridgeTransactor) DepositRecords(opts *bind.TransactOpts, arg0 uint64, arg1 uint8) (*types.Transaction, error) {
-	return _Bridge.contract.Transact(opts, "_depositRecords", arg0, arg1)
+// Solidity: function _depositRecords(uint64 , uint8 ) constant returns(bytes)
+func (_Bridge *BridgeCaller) DepositRecords(opts *bind.CallOpts, arg0 uint64, arg1 uint8) ([]byte, error) {
+	var (
+		ret0 = new([]byte)
+	)
+	out := ret0
+	err := _Bridge.contract.Call(opts, out, "_depositRecords", arg0, arg1)
+	return *ret0, err
 }
 
-// DepositRecords is a paid mutator transaction binding the contract method 0x3ee7094a.
+// DepositRecords is a free data retrieval call binding the contract method 0x3ee7094a.
 //
-// Solidity: function _depositRecords(uint64 , uint8 ) returns(bytes)
-func (_Bridge *BridgeSession) DepositRecords(arg0 uint64, arg1 uint8) (*types.Transaction, error) {
-	return _Bridge.Contract.DepositRecords(&_Bridge.TransactOpts, arg0, arg1)
+// Solidity: function _depositRecords(uint64 , uint8 ) constant returns(bytes)
+func (_Bridge *BridgeSession) DepositRecords(arg0 uint64, arg1 uint8) ([]byte, error) {
+	return _Bridge.Contract.DepositRecords(&_Bridge.CallOpts, arg0, arg1)
 }
 
-// DepositRecords is a paid mutator transaction binding the contract method 0x3ee7094a.
+// DepositRecords is a free data retrieval call binding the contract method 0x3ee7094a.
 //
-// Solidity: function _depositRecords(uint64 , uint8 ) returns(bytes)
-func (_Bridge *BridgeTransactorSession) DepositRecords(arg0 uint64, arg1 uint8) (*types.Transaction, error) {
-	return _Bridge.Contract.DepositRecords(&_Bridge.TransactOpts, arg0, arg1)
+// Solidity: function _depositRecords(uint64 , uint8 ) constant returns(bytes)
+func (_Bridge *BridgeCallerSession) DepositRecords(arg0 uint64, arg1 uint8) ([]byte, error) {
+	return _Bridge.Contract.DepositRecords(&_Bridge.CallOpts, arg0, arg1)
 }
 
-// Expiry is a paid mutator transaction binding the contract method 0xc5ec8970.
+// Expiry is a free data retrieval call binding the contract method 0xc5ec8970.
 //
-// Solidity: function _expiry() returns(uint256)
-func (_Bridge *BridgeTransactor) Expiry(opts *bind.TransactOpts) (*types.Transaction, error) {
-	return _Bridge.contract.Transact(opts, "_expiry")
+// Solidity: function _expiry() constant returns(uint256)
+func (_Bridge *BridgeCaller) Expiry(opts *bind.CallOpts) (*big.Int, error) {
+	var (
+		ret0 = new(*big.Int)
+	)
+	out := ret0
+	err := _Bridge.contract.Call(opts, out, "_expiry")
+	return *ret0, err
 }
 
-// Expiry is a paid mutator transaction binding the contract method 0xc5ec8970.
+// Expiry is a free data retrieval call binding the contract method 0xc5ec8970.
 //
-// Solidity: function _expiry() returns(uint256)
-func (_Bridge *BridgeSession) Expiry() (*types.Transaction, error) {
-	return _Bridge.Contract.Expiry(&_Bridge.TransactOpts)
+// Solidity: function _expiry() constant returns(uint256)
+func (_Bridge *BridgeSession) Expiry() (*big.Int, error) {
+	return _Bridge.Contract.Expiry(&_Bridge.CallOpts)
 }
 
-// Expiry is a paid mutator transaction binding the contract method 0xc5ec8970.
+// Expiry is a free data retrieval call binding the contract method 0xc5ec8970.
 //
-// Solidity: function _expiry() returns(uint256)
-func (_Bridge *BridgeTransactorSession) Expiry() (*types.Transaction, error) {
-	return _Bridge.Contract.Expiry(&_Bridge.TransactOpts)
+// Solidity: function _expiry() constant returns(uint256)
+func (_Bridge *BridgeCallerSession) Expiry() (*big.Int, error) {
+	return _Bridge.Contract.Expiry(&_Bridge.CallOpts)
 }
 
-// Fee is a paid mutator transaction binding the contract method 0xc5b37c22.
+// Fee is a free data retrieval call binding the contract method 0xc5b37c22.
 //
-// Solidity: function _fee() returns(uint256)
-func (_Bridge *BridgeTransactor) Fee(opts *bind.TransactOpts) (*types.Transaction, error) {
-	return _Bridge.contract.Transact(opts, "_fee")
+// Solidity: function _fee() constant returns(uint256)
+func (_Bridge *BridgeCaller) Fee(opts *bind.CallOpts) (*big.Int, error) {
+	var (
+		ret0 = new(*big.Int)
+	)
+	out := ret0
+	err := _Bridge.contract.Call(opts, out, "_fee")
+	return *ret0, err
 }
 
-// Fee is a paid mutator transaction binding the contract method 0xc5b37c22.
+// Fee is a free data retrieval call binding the contract method 0xc5b37c22.
 //
-// Solidity: function _fee() returns(uint256)
-func (_Bridge *BridgeSession) Fee() (*types.Transaction, error) {
-	return _Bridge.Contract.Fee(&_Bridge.TransactOpts)
+// Solidity: function _fee() constant returns(uint256)
+func (_Bridge *BridgeSession) Fee() (*big.Int, error) {
+	return _Bridge.Contract.Fee(&_Bridge.CallOpts)
 }
 
-// Fee is a paid mutator transaction binding the contract method 0xc5b37c22.
+// Fee is a free data retrieval call binding the contract method 0xc5b37c22.
 //
-// Solidity: function _fee() returns(uint256)
-func (_Bridge *BridgeTransactorSession) Fee() (*types.Transaction, error) {
-	return _Bridge.Contract.Fee(&_Bridge.TransactOpts)
+// Solidity: function _fee() constant returns(uint256)
+func (_Bridge *BridgeCallerSession) Fee() (*big.Int, error) {
+	return _Bridge.Contract.Fee(&_Bridge.CallOpts)
 }
 
-// HasVotedOnProposal is a paid mutator transaction binding the contract method 0x7febe63f.
+// HasVotedOnProposal is a free data retrieval call binding the contract method 0x7febe63f.
 //
-// Solidity: function _hasVotedOnProposal(uint72 , bytes32 , address ) returns(bool)
-func (_Bridge *BridgeTransactor) HasVotedOnProposal(opts *bind.TransactOpts, arg0 *big.Int, arg1 [32]byte, arg2 common.Address) (*types.Transaction, error) {
-	return _Bridge.contract.Transact(opts, "_hasVotedOnProposal", arg0, arg1, arg2)
+// Solidity: function _hasVotedOnProposal(uint72 , bytes32 , address ) constant returns(bool)
+func (_Bridge *BridgeCaller) HasVotedOnProposal(opts *bind.CallOpts, arg0 *big.Int, arg1 [32]byte, arg2 common.Address) (bool, error) {
+	var (
+		ret0 = new(bool)
+	)
+	out := ret0
+	err := _Bridge.contract.Call(opts, out, "_hasVotedOnProposal", arg0, arg1, arg2)
+	return *ret0, err
 }
 
-// HasVotedOnProposal is a paid mutator transaction binding the contract method 0x7febe63f.
+// HasVotedOnProposal is a free data retrieval call binding the contract method 0x7febe63f.
 //
-// Solidity: function _hasVotedOnProposal(uint72 , bytes32 , address ) returns(bool)
-func (_Bridge *BridgeSession) HasVotedOnProposal(arg0 *big.Int, arg1 [32]byte, arg2 common.Address) (*types.Transaction, error) {
-	return _Bridge.Contract.HasVotedOnProposal(&_Bridge.TransactOpts, arg0, arg1, arg2)
+// Solidity: function _hasVotedOnProposal(uint72 , bytes32 , address ) constant returns(bool)
+func (_Bridge *BridgeSession) HasVotedOnProposal(arg0 *big.Int, arg1 [32]byte, arg2 common.Address) (bool, error) {
+	return _Bridge.Contract.HasVotedOnProposal(&_Bridge.CallOpts, arg0, arg1, arg2)
 }
 
-// HasVotedOnProposal is a paid mutator transaction binding the contract method 0x7febe63f.
+// HasVotedOnProposal is a free data retrieval call binding the contract method 0x7febe63f.
 //
-// Solidity: function _hasVotedOnProposal(uint72 , bytes32 , address ) returns(bool)
-func (_Bridge *BridgeTransactorSession) HasVotedOnProposal(arg0 *big.Int, arg1 [32]byte, arg2 common.Address) (*types.Transaction, error) {
-	return _Bridge.Contract.HasVotedOnProposal(&_Bridge.TransactOpts, arg0, arg1, arg2)
+// Solidity: function _hasVotedOnProposal(uint72 , bytes32 , address ) constant returns(bool)
+func (_Bridge *BridgeCallerSession) HasVotedOnProposal(arg0 *big.Int, arg1 [32]byte, arg2 common.Address) (bool, error) {
+	return _Bridge.Contract.HasVotedOnProposal(&_Bridge.CallOpts, arg0, arg1, arg2)
 }
 
-// Proposals is a paid mutator transaction binding the contract method 0x50598719.
+// Proposals is a free data retrieval call binding the contract method 0x50598719.
 //
-// Solidity: function _proposals(uint72 , bytes32 ) returns(bytes32 _resourceID, bytes32 _dataHash, uint8 _status, uint256 _proposedBlock)
-func (_Bridge *BridgeTransactor) Proposals(opts *bind.TransactOpts, arg0 *big.Int, arg1 [32]byte) (*types.Transaction, error) {
-	return _Bridge.contract.Transact(opts, "_proposals", arg0, arg1)
+// Solidity: function _proposals(uint72 , bytes32 ) constant returns(bytes32 _resourceID, bytes32 _dataHash, uint8 _status, uint256 _proposedBlock)
+func (_Bridge *BridgeCaller) Proposals(opts *bind.CallOpts, arg0 *big.Int, arg1 [32]byte) (struct {
+	ResourceID    [32]byte
+	DataHash      [32]byte
+	Status        uint8
+	ProposedBlock *big.Int
+}, error) {
+	ret := new(struct {
+		ResourceID    [32]byte
+		DataHash      [32]byte
+		Status        uint8
+		ProposedBlock *big.Int
+	})
+	out := ret
+	err := _Bridge.contract.Call(opts, out, "_proposals", arg0, arg1)
+	return *ret, err
 }
 
-// Proposals is a paid mutator transaction binding the contract method 0x50598719.
+// Proposals is a free data retrieval call binding the contract method 0x50598719.
 //
-// Solidity: function _proposals(uint72 , bytes32 ) returns(bytes32 _resourceID, bytes32 _dataHash, uint8 _status, uint256 _proposedBlock)
-func (_Bridge *BridgeSession) Proposals(arg0 *big.Int, arg1 [32]byte) (*types.Transaction, error) {
-	return _Bridge.Contract.Proposals(&_Bridge.TransactOpts, arg0, arg1)
+// Solidity: function _proposals(uint72 , bytes32 ) constant returns(bytes32 _resourceID, bytes32 _dataHash, uint8 _status, uint256 _proposedBlock)
+func (_Bridge *BridgeSession) Proposals(arg0 *big.Int, arg1 [32]byte) (struct {
+	ResourceID    [32]byte
+	DataHash      [32]byte
+	Status        uint8
+	ProposedBlock *big.Int
+}, error) {
+	return _Bridge.Contract.Proposals(&_Bridge.CallOpts, arg0, arg1)
 }
 
-// Proposals is a paid mutator transaction binding the contract method 0x50598719.
+// Proposals is a free data retrieval call binding the contract method 0x50598719.
 //
-// Solidity: function _proposals(uint72 , bytes32 ) returns(bytes32 _resourceID, bytes32 _dataHash, uint8 _status, uint256 _proposedBlock)
-func (_Bridge *BridgeTransactorSession) Proposals(arg0 *big.Int, arg1 [32]byte) (*types.Transaction, error) {
-	return _Bridge.Contract.Proposals(&_Bridge.TransactOpts, arg0, arg1)
+// Solidity: function _proposals(uint72 , bytes32 ) constant returns(bytes32 _resourceID, bytes32 _dataHash, uint8 _status, uint256 _proposedBlock)
+func (_Bridge *BridgeCallerSession) Proposals(arg0 *big.Int, arg1 [32]byte) (struct {
+	ResourceID    [32]byte
+	DataHash      [32]byte
+	Status        uint8
+	ProposedBlock *big.Int
+}, error) {
+	return _Bridge.Contract.Proposals(&_Bridge.CallOpts, arg0, arg1)
 }
 
-// RelayerThreshold is a paid mutator transaction binding the contract method 0xd7a9cd79.
+// RelayerThreshold is a free data retrieval call binding the contract method 0xd7a9cd79.
 //
-// Solidity: function _relayerThreshold() returns(uint256)
-func (_Bridge *BridgeTransactor) RelayerThreshold(opts *bind.TransactOpts) (*types.Transaction, error) {
-	return _Bridge.contract.Transact(opts, "_relayerThreshold")
+// Solidity: function _relayerThreshold() constant returns(uint256)
+func (_Bridge *BridgeCaller) RelayerThreshold(opts *bind.CallOpts) (*big.Int, error) {
+	var (
+		ret0 = new(*big.Int)
+	)
+	out := ret0
+	err := _Bridge.contract.Call(opts, out, "_relayerThreshold")
+	return *ret0, err
 }
 
-// RelayerThreshold is a paid mutator transaction binding the contract method 0xd7a9cd79.
+// RelayerThreshold is a free data retrieval call binding the contract method 0xd7a9cd79.
 //
-// Solidity: function _relayerThreshold() returns(uint256)
-func (_Bridge *BridgeSession) RelayerThreshold() (*types.Transaction, error) {
-	return _Bridge.Contract.RelayerThreshold(&_Bridge.TransactOpts)
+// Solidity: function _relayerThreshold() constant returns(uint256)
+func (_Bridge *BridgeSession) RelayerThreshold() (*big.Int, error) {
+	return _Bridge.Contract.RelayerThreshold(&_Bridge.CallOpts)
 }
 
-// RelayerThreshold is a paid mutator transaction binding the contract method 0xd7a9cd79.
+// RelayerThreshold is a free data retrieval call binding the contract method 0xd7a9cd79.
 //
-// Solidity: function _relayerThreshold() returns(uint256)
-func (_Bridge *BridgeTransactorSession) RelayerThreshold() (*types.Transaction, error) {
-	return _Bridge.Contract.RelayerThreshold(&_Bridge.TransactOpts)
+// Solidity: function _relayerThreshold() constant returns(uint256)
+func (_Bridge *BridgeCallerSession) RelayerThreshold() (*big.Int, error) {
+	return _Bridge.Contract.RelayerThreshold(&_Bridge.CallOpts)
 }
 
-// ResourceIDToHandlerAddress is a paid mutator transaction binding the contract method 0x84db809f.
+// ResourceIDToHandlerAddress is a free data retrieval call binding the contract method 0x84db809f.
 //
-// Solidity: function _resourceIDToHandlerAddress(bytes32 ) returns(address)
-func (_Bridge *BridgeTransactor) ResourceIDToHandlerAddress(opts *bind.TransactOpts, arg0 [32]byte) (*types.Transaction, error) {
-	return _Bridge.contract.Transact(opts, "_resourceIDToHandlerAddress", arg0)
+// Solidity: function _resourceIDToHandlerAddress(bytes32 ) constant returns(address)
+func (_Bridge *BridgeCaller) ResourceIDToHandlerAddress(opts *bind.CallOpts, arg0 [32]byte) (common.Address, error) {
+	var (
+		ret0 = new(common.Address)
+	)
+	out := ret0
+	err := _Bridge.contract.Call(opts, out, "_resourceIDToHandlerAddress", arg0)
+	return *ret0, err
 }
 
-// ResourceIDToHandlerAddress is a paid mutator transaction binding the contract method 0x84db809f.
+// ResourceIDToHandlerAddress is a free data retrieval call binding the contract method 0x84db809f.
 //
-// Solidity: function _resourceIDToHandlerAddress(bytes32 ) returns(address)
-func (_Bridge *BridgeSession) ResourceIDToHandlerAddress(arg0 [32]byte) (*types.Transaction, error) {
-	return _Bridge.Contract.ResourceIDToHandlerAddress(&_Bridge.TransactOpts, arg0)
+// Solidity: function _resourceIDToHandlerAddress(bytes32 ) constant returns(address)
+func (_Bridge *BridgeSession) ResourceIDToHandlerAddress(arg0 [32]byte) (common.Address, error) {
+	return _Bridge.Contract.ResourceIDToHandlerAddress(&_Bridge.CallOpts, arg0)
 }
 
-// ResourceIDToHandlerAddress is a paid mutator transaction binding the contract method 0x84db809f.
+// ResourceIDToHandlerAddress is a free data retrieval call binding the contract method 0x84db809f.
 //
-// Solidity: function _resourceIDToHandlerAddress(bytes32 ) returns(address)
-func (_Bridge *BridgeTransactorSession) ResourceIDToHandlerAddress(arg0 [32]byte) (*types.Transaction, error) {
-	return _Bridge.Contract.ResourceIDToHandlerAddress(&_Bridge.TransactOpts, arg0)
+// Solidity: function _resourceIDToHandlerAddress(bytes32 ) constant returns(address)
+func (_Bridge *BridgeCallerSession) ResourceIDToHandlerAddress(arg0 [32]byte) (common.Address, error) {
+	return _Bridge.Contract.ResourceIDToHandlerAddress(&_Bridge.CallOpts, arg0)
 }
 
-// TotalProposals is a paid mutator transaction binding the contract method 0x9d5773e0.
+// TotalProposals is a free data retrieval call binding the contract method 0x9d5773e0.
 //
-// Solidity: function _totalProposals() returns(uint256)
-func (_Bridge *BridgeTransactor) TotalProposals(opts *bind.TransactOpts) (*types.Transaction, error) {
-	return _Bridge.contract.Transact(opts, "_totalProposals")
+// Solidity: function _totalProposals() constant returns(uint256)
+func (_Bridge *BridgeCaller) TotalProposals(opts *bind.CallOpts) (*big.Int, error) {
+	var (
+		ret0 = new(*big.Int)
+	)
+	out := ret0
+	err := _Bridge.contract.Call(opts, out, "_totalProposals")
+	return *ret0, err
 }
 
-// TotalProposals is a paid mutator transaction binding the contract method 0x9d5773e0.
+// TotalProposals is a free data retrieval call binding the contract method 0x9d5773e0.
 //
-// Solidity: function _totalProposals() returns(uint256)
-func (_Bridge *BridgeSession) TotalProposals() (*types.Transaction, error) {
-	return _Bridge.Contract.TotalProposals(&_Bridge.TransactOpts)
+// Solidity: function _totalProposals() constant returns(uint256)
+func (_Bridge *BridgeSession) TotalProposals() (*big.Int, error) {
+	return _Bridge.Contract.TotalProposals(&_Bridge.CallOpts)
 }
 
-// TotalProposals is a paid mutator transaction binding the contract method 0x9d5773e0.
+// TotalProposals is a free data retrieval call binding the contract method 0x9d5773e0.
 //
-// Solidity: function _totalProposals() returns(uint256)
-func (_Bridge *BridgeTransactorSession) TotalProposals() (*types.Transaction, error) {
-	return _Bridge.Contract.TotalProposals(&_Bridge.TransactOpts)
+// Solidity: function _totalProposals() constant returns(uint256)
+func (_Bridge *BridgeCallerSession) TotalProposals() (*big.Int, error) {
+	return _Bridge.Contract.TotalProposals(&_Bridge.CallOpts)
 }
 
-// TotalRelayers is a paid mutator transaction binding the contract method 0x802aabe8.
+// TotalRelayers is a free data retrieval call binding the contract method 0x802aabe8.
 //
-// Solidity: function _totalRelayers() returns(uint256)
-func (_Bridge *BridgeTransactor) TotalRelayers(opts *bind.TransactOpts) (*types.Transaction, error) {
-	return _Bridge.contract.Transact(opts, "_totalRelayers")
+// Solidity: function _totalRelayers() constant returns(uint256)
+func (_Bridge *BridgeCaller) TotalRelayers(opts *bind.CallOpts) (*big.Int, error) {
+	var (
+		ret0 = new(*big.Int)
+	)
+	out := ret0
+	err := _Bridge.contract.Call(opts, out, "_totalRelayers")
+	return *ret0, err
 }
 
-// TotalRelayers is a paid mutator transaction binding the contract method 0x802aabe8.
+// TotalRelayers is a free data retrieval call binding the contract method 0x802aabe8.
 //
-// Solidity: function _totalRelayers() returns(uint256)
-func (_Bridge *BridgeSession) TotalRelayers() (*types.Transaction, error) {
-	return _Bridge.Contract.TotalRelayers(&_Bridge.TransactOpts)
+// Solidity: function _totalRelayers() constant returns(uint256)
+func (_Bridge *BridgeSession) TotalRelayers() (*big.Int, error) {
+	return _Bridge.Contract.TotalRelayers(&_Bridge.CallOpts)
 }
 
-// TotalRelayers is a paid mutator transaction binding the contract method 0x802aabe8.
+// TotalRelayers is a free data retrieval call binding the contract method 0x802aabe8.
 //
-// Solidity: function _totalRelayers() returns(uint256)
-func (_Bridge *BridgeTransactorSession) TotalRelayers() (*types.Transaction, error) {
-	return _Bridge.Contract.TotalRelayers(&_Bridge.TransactOpts)
+// Solidity: function _totalRelayers() constant returns(uint256)
+func (_Bridge *BridgeCallerSession) TotalRelayers() (*big.Int, error) {
+	return _Bridge.Contract.TotalRelayers(&_Bridge.CallOpts)
+}
+
+// GetProposal is a free data retrieval call binding the contract method 0xa9cf69fa.
+//
+// Solidity: function getProposal(uint8 originChainID, uint64 depositNonce, bytes32 dataHash) constant returns(BridgeProposal)
+func (_Bridge *BridgeCaller) GetProposal(opts *bind.CallOpts, originChainID uint8, depositNonce uint64, dataHash [32]byte) (BridgeProposal, error) {
+	var (
+		ret0 = new(BridgeProposal)
+	)
+	out := ret0
+	err := _Bridge.contract.Call(opts, out, "getProposal", originChainID, depositNonce, dataHash)
+	return *ret0, err
+}
+
+// GetProposal is a free data retrieval call binding the contract method 0xa9cf69fa.
+//
+// Solidity: function getProposal(uint8 originChainID, uint64 depositNonce, bytes32 dataHash) constant returns(BridgeProposal)
+func (_Bridge *BridgeSession) GetProposal(originChainID uint8, depositNonce uint64, dataHash [32]byte) (BridgeProposal, error) {
+	return _Bridge.Contract.GetProposal(&_Bridge.CallOpts, originChainID, depositNonce, dataHash)
+}
+
+// GetProposal is a free data retrieval call binding the contract method 0xa9cf69fa.
+//
+// Solidity: function getProposal(uint8 originChainID, uint64 depositNonce, bytes32 dataHash) constant returns(BridgeProposal)
+func (_Bridge *BridgeCallerSession) GetProposal(originChainID uint8, depositNonce uint64, dataHash [32]byte) (BridgeProposal, error) {
+	return _Bridge.Contract.GetProposal(&_Bridge.CallOpts, originChainID, depositNonce, dataHash)
+}
+
+// GetRoleAdmin is a free data retrieval call binding the contract method 0x248a9ca3.
+//
+// Solidity: function getRoleAdmin(bytes32 role) constant returns(bytes32)
+func (_Bridge *BridgeCaller) GetRoleAdmin(opts *bind.CallOpts, role [32]byte) ([32]byte, error) {
+	var (
+		ret0 = new([32]byte)
+	)
+	out := ret0
+	err := _Bridge.contract.Call(opts, out, "getRoleAdmin", role)
+	return *ret0, err
+}
+
+// GetRoleAdmin is a free data retrieval call binding the contract method 0x248a9ca3.
+//
+// Solidity: function getRoleAdmin(bytes32 role) constant returns(bytes32)
+func (_Bridge *BridgeSession) GetRoleAdmin(role [32]byte) ([32]byte, error) {
+	return _Bridge.Contract.GetRoleAdmin(&_Bridge.CallOpts, role)
+}
+
+// GetRoleAdmin is a free data retrieval call binding the contract method 0x248a9ca3.
+//
+// Solidity: function getRoleAdmin(bytes32 role) constant returns(bytes32)
+func (_Bridge *BridgeCallerSession) GetRoleAdmin(role [32]byte) ([32]byte, error) {
+	return _Bridge.Contract.GetRoleAdmin(&_Bridge.CallOpts, role)
+}
+
+// GetRoleMember is a free data retrieval call binding the contract method 0x9010d07c.
+//
+// Solidity: function getRoleMember(bytes32 role, uint256 index) constant returns(address)
+func (_Bridge *BridgeCaller) GetRoleMember(opts *bind.CallOpts, role [32]byte, index *big.Int) (common.Address, error) {
+	var (
+		ret0 = new(common.Address)
+	)
+	out := ret0
+	err := _Bridge.contract.Call(opts, out, "getRoleMember", role, index)
+	return *ret0, err
+}
+
+// GetRoleMember is a free data retrieval call binding the contract method 0x9010d07c.
+//
+// Solidity: function getRoleMember(bytes32 role, uint256 index) constant returns(address)
+func (_Bridge *BridgeSession) GetRoleMember(role [32]byte, index *big.Int) (common.Address, error) {
+	return _Bridge.Contract.GetRoleMember(&_Bridge.CallOpts, role, index)
+}
+
+// GetRoleMember is a free data retrieval call binding the contract method 0x9010d07c.
+//
+// Solidity: function getRoleMember(bytes32 role, uint256 index) constant returns(address)
+func (_Bridge *BridgeCallerSession) GetRoleMember(role [32]byte, index *big.Int) (common.Address, error) {
+	return _Bridge.Contract.GetRoleMember(&_Bridge.CallOpts, role, index)
+}
+
+// GetRoleMemberCount is a free data retrieval call binding the contract method 0xca15c873.
+//
+// Solidity: function getRoleMemberCount(bytes32 role) constant returns(uint256)
+func (_Bridge *BridgeCaller) GetRoleMemberCount(opts *bind.CallOpts, role [32]byte) (*big.Int, error) {
+	var (
+		ret0 = new(*big.Int)
+	)
+	out := ret0
+	err := _Bridge.contract.Call(opts, out, "getRoleMemberCount", role)
+	return *ret0, err
+}
+
+// GetRoleMemberCount is a free data retrieval call binding the contract method 0xca15c873.
+//
+// Solidity: function getRoleMemberCount(bytes32 role) constant returns(uint256)
+func (_Bridge *BridgeSession) GetRoleMemberCount(role [32]byte) (*big.Int, error) {
+	return _Bridge.Contract.GetRoleMemberCount(&_Bridge.CallOpts, role)
+}
+
+// GetRoleMemberCount is a free data retrieval call binding the contract method 0xca15c873.
+//
+// Solidity: function getRoleMemberCount(bytes32 role) constant returns(uint256)
+func (_Bridge *BridgeCallerSession) GetRoleMemberCount(role [32]byte) (*big.Int, error) {
+	return _Bridge.Contract.GetRoleMemberCount(&_Bridge.CallOpts, role)
+}
+
+// HasRole is a free data retrieval call binding the contract method 0x91d14854.
+//
+// Solidity: function hasRole(bytes32 role, address account) constant returns(bool)
+func (_Bridge *BridgeCaller) HasRole(opts *bind.CallOpts, role [32]byte, account common.Address) (bool, error) {
+	var (
+		ret0 = new(bool)
+	)
+	out := ret0
+	err := _Bridge.contract.Call(opts, out, "hasRole", role, account)
+	return *ret0, err
+}
+
+// HasRole is a free data retrieval call binding the contract method 0x91d14854.
+//
+// Solidity: function hasRole(bytes32 role, address account) constant returns(bool)
+func (_Bridge *BridgeSession) HasRole(role [32]byte, account common.Address) (bool, error) {
+	return _Bridge.Contract.HasRole(&_Bridge.CallOpts, role, account)
+}
+
+// HasRole is a free data retrieval call binding the contract method 0x91d14854.
+//
+// Solidity: function hasRole(bytes32 role, address account) constant returns(bool)
+func (_Bridge *BridgeCallerSession) HasRole(role [32]byte, account common.Address) (bool, error) {
+	return _Bridge.Contract.HasRole(&_Bridge.CallOpts, role, account)
+}
+
+// IsRelayer is a free data retrieval call binding the contract method 0x541d5548.
+//
+// Solidity: function isRelayer(address relayer) constant returns(bool)
+func (_Bridge *BridgeCaller) IsRelayer(opts *bind.CallOpts, relayer common.Address) (bool, error) {
+	var (
+		ret0 = new(bool)
+	)
+	out := ret0
+	err := _Bridge.contract.Call(opts, out, "isRelayer", relayer)
+	return *ret0, err
+}
+
+// IsRelayer is a free data retrieval call binding the contract method 0x541d5548.
+//
+// Solidity: function isRelayer(address relayer) constant returns(bool)
+func (_Bridge *BridgeSession) IsRelayer(relayer common.Address) (bool, error) {
+	return _Bridge.Contract.IsRelayer(&_Bridge.CallOpts, relayer)
+}
+
+// IsRelayer is a free data retrieval call binding the contract method 0x541d5548.
+//
+// Solidity: function isRelayer(address relayer) constant returns(bool)
+func (_Bridge *BridgeCallerSession) IsRelayer(relayer common.Address) (bool, error) {
+	return _Bridge.Contract.IsRelayer(&_Bridge.CallOpts, relayer)
+}
+
+// Paused is a free data retrieval call binding the contract method 0x5c975abb.
+//
+// Solidity: function paused() constant returns(bool)
+func (_Bridge *BridgeCaller) Paused(opts *bind.CallOpts) (bool, error) {
+	var (
+		ret0 = new(bool)
+	)
+	out := ret0
+	err := _Bridge.contract.Call(opts, out, "paused")
+	return *ret0, err
+}
+
+// Paused is a free data retrieval call binding the contract method 0x5c975abb.
+//
+// Solidity: function paused() constant returns(bool)
+func (_Bridge *BridgeSession) Paused() (bool, error) {
+	return _Bridge.Contract.Paused(&_Bridge.CallOpts)
+}
+
+// Paused is a free data retrieval call binding the contract method 0x5c975abb.
+//
+// Solidity: function paused() constant returns(bool)
+func (_Bridge *BridgeCallerSession) Paused() (bool, error) {
+	return _Bridge.Contract.Paused(&_Bridge.CallOpts)
+}
+
+// ValidateMPTProof is a free data retrieval call binding the contract method 0x93d70bf0.
+//
+// Solidity: function validateMPTProof(bytes32 rootHash, bytes mptPath, bytes rlpStack) constant returns(bytes value)
+func (_Bridge *BridgeCaller) ValidateMPTProof(opts *bind.CallOpts, rootHash [32]byte, mptPath []byte, rlpStack []byte) ([]byte, error) {
+	var (
+		ret0 = new([]byte)
+	)
+	out := ret0
+	err := _Bridge.contract.Call(opts, out, "validateMPTProof", rootHash, mptPath, rlpStack)
+	return *ret0, err
+}
+
+// ValidateMPTProof is a free data retrieval call binding the contract method 0x93d70bf0.
+//
+// Solidity: function validateMPTProof(bytes32 rootHash, bytes mptPath, bytes rlpStack) constant returns(bytes value)
+func (_Bridge *BridgeSession) ValidateMPTProof(rootHash [32]byte, mptPath []byte, rlpStack []byte) ([]byte, error) {
+	return _Bridge.Contract.ValidateMPTProof(&_Bridge.CallOpts, rootHash, mptPath, rlpStack)
+}
+
+// ValidateMPTProof is a free data retrieval call binding the contract method 0x93d70bf0.
+//
+// Solidity: function validateMPTProof(bytes32 rootHash, bytes mptPath, bytes rlpStack) constant returns(bytes value)
+func (_Bridge *BridgeCallerSession) ValidateMPTProof(rootHash [32]byte, mptPath []byte, rlpStack []byte) ([]byte, error) {
+	return _Bridge.Contract.ValidateMPTProof(&_Bridge.CallOpts, rootHash, mptPath, rlpStack)
+}
+
+// ValidateMPTValueInclusion is a free data retrieval call binding the contract method 0xb941472d.
+//
+// Solidity: function validateMPTValueInclusion(bytes32 rootHash, bytes mptPath, bytes rlpStack, bytes32 valueHash) constant returns(bool isIncluded)
+func (_Bridge *BridgeCaller) ValidateMPTValueInclusion(opts *bind.CallOpts, rootHash [32]byte, mptPath []byte, rlpStack []byte, valueHash [32]byte) (bool, error) {
+	var (
+		ret0 = new(bool)
+	)
+	out := ret0
+	err := _Bridge.contract.Call(opts, out, "validateMPTValueInclusion", rootHash, mptPath, rlpStack, valueHash)
+	return *ret0, err
+}
+
+// ValidateMPTValueInclusion is a free data retrieval call binding the contract method 0xb941472d.
+//
+// Solidity: function validateMPTValueInclusion(bytes32 rootHash, bytes mptPath, bytes rlpStack, bytes32 valueHash) constant returns(bool isIncluded)
+func (_Bridge *BridgeSession) ValidateMPTValueInclusion(rootHash [32]byte, mptPath []byte, rlpStack []byte, valueHash [32]byte) (bool, error) {
+	return _Bridge.Contract.ValidateMPTValueInclusion(&_Bridge.CallOpts, rootHash, mptPath, rlpStack, valueHash)
+}
+
+// ValidateMPTValueInclusion is a free data retrieval call binding the contract method 0xb941472d.
+//
+// Solidity: function validateMPTValueInclusion(bytes32 rootHash, bytes mptPath, bytes rlpStack, bytes32 valueHash) constant returns(bool isIncluded)
+func (_Bridge *BridgeCallerSession) ValidateMPTValueInclusion(rootHash [32]byte, mptPath []byte, rlpStack []byte, valueHash [32]byte) (bool, error) {
+	return _Bridge.Contract.ValidateMPTValueInclusion(&_Bridge.CallOpts, rootHash, mptPath, rlpStack, valueHash)
 }
 
 // AdminAddRelayer is a paid mutator transaction binding the contract method 0xcdb0f73a.
@@ -754,90 +1071,6 @@ func (_Bridge *BridgeTransactorSession) ExecuteProposal(chainID uint8, depositNo
 	return _Bridge.Contract.ExecuteProposal(&_Bridge.TransactOpts, chainID, depositNonce, data, resourceID, signatureHeader, aggregatePublicKey, g1, hashedMessage, rootHash, key, nodes)
 }
 
-// GetProposal is a paid mutator transaction binding the contract method 0xa9cf69fa.
-//
-// Solidity: function getProposal(uint8 originChainID, uint64 depositNonce, bytes32 dataHash) returns(BridgeProposal)
-func (_Bridge *BridgeTransactor) GetProposal(opts *bind.TransactOpts, originChainID uint8, depositNonce uint64, dataHash [32]byte) (*types.Transaction, error) {
-	return _Bridge.contract.Transact(opts, "getProposal", originChainID, depositNonce, dataHash)
-}
-
-// GetProposal is a paid mutator transaction binding the contract method 0xa9cf69fa.
-//
-// Solidity: function getProposal(uint8 originChainID, uint64 depositNonce, bytes32 dataHash) returns(BridgeProposal)
-func (_Bridge *BridgeSession) GetProposal(originChainID uint8, depositNonce uint64, dataHash [32]byte) (*types.Transaction, error) {
-	return _Bridge.Contract.GetProposal(&_Bridge.TransactOpts, originChainID, depositNonce, dataHash)
-}
-
-// GetProposal is a paid mutator transaction binding the contract method 0xa9cf69fa.
-//
-// Solidity: function getProposal(uint8 originChainID, uint64 depositNonce, bytes32 dataHash) returns(BridgeProposal)
-func (_Bridge *BridgeTransactorSession) GetProposal(originChainID uint8, depositNonce uint64, dataHash [32]byte) (*types.Transaction, error) {
-	return _Bridge.Contract.GetProposal(&_Bridge.TransactOpts, originChainID, depositNonce, dataHash)
-}
-
-// GetRoleAdmin is a paid mutator transaction binding the contract method 0x248a9ca3.
-//
-// Solidity: function getRoleAdmin(bytes32 role) returns(bytes32)
-func (_Bridge *BridgeTransactor) GetRoleAdmin(opts *bind.TransactOpts, role [32]byte) (*types.Transaction, error) {
-	return _Bridge.contract.Transact(opts, "getRoleAdmin", role)
-}
-
-// GetRoleAdmin is a paid mutator transaction binding the contract method 0x248a9ca3.
-//
-// Solidity: function getRoleAdmin(bytes32 role) returns(bytes32)
-func (_Bridge *BridgeSession) GetRoleAdmin(role [32]byte) (*types.Transaction, error) {
-	return _Bridge.Contract.GetRoleAdmin(&_Bridge.TransactOpts, role)
-}
-
-// GetRoleAdmin is a paid mutator transaction binding the contract method 0x248a9ca3.
-//
-// Solidity: function getRoleAdmin(bytes32 role) returns(bytes32)
-func (_Bridge *BridgeTransactorSession) GetRoleAdmin(role [32]byte) (*types.Transaction, error) {
-	return _Bridge.Contract.GetRoleAdmin(&_Bridge.TransactOpts, role)
-}
-
-// GetRoleMember is a paid mutator transaction binding the contract method 0x9010d07c.
-//
-// Solidity: function getRoleMember(bytes32 role, uint256 index) returns(address)
-func (_Bridge *BridgeTransactor) GetRoleMember(opts *bind.TransactOpts, role [32]byte, index *big.Int) (*types.Transaction, error) {
-	return _Bridge.contract.Transact(opts, "getRoleMember", role, index)
-}
-
-// GetRoleMember is a paid mutator transaction binding the contract method 0x9010d07c.
-//
-// Solidity: function getRoleMember(bytes32 role, uint256 index) returns(address)
-func (_Bridge *BridgeSession) GetRoleMember(role [32]byte, index *big.Int) (*types.Transaction, error) {
-	return _Bridge.Contract.GetRoleMember(&_Bridge.TransactOpts, role, index)
-}
-
-// GetRoleMember is a paid mutator transaction binding the contract method 0x9010d07c.
-//
-// Solidity: function getRoleMember(bytes32 role, uint256 index) returns(address)
-func (_Bridge *BridgeTransactorSession) GetRoleMember(role [32]byte, index *big.Int) (*types.Transaction, error) {
-	return _Bridge.Contract.GetRoleMember(&_Bridge.TransactOpts, role, index)
-}
-
-// GetRoleMemberCount is a paid mutator transaction binding the contract method 0xca15c873.
-//
-// Solidity: function getRoleMemberCount(bytes32 role) returns(uint256)
-func (_Bridge *BridgeTransactor) GetRoleMemberCount(opts *bind.TransactOpts, role [32]byte) (*types.Transaction, error) {
-	return _Bridge.contract.Transact(opts, "getRoleMemberCount", role)
-}
-
-// GetRoleMemberCount is a paid mutator transaction binding the contract method 0xca15c873.
-//
-// Solidity: function getRoleMemberCount(bytes32 role) returns(uint256)
-func (_Bridge *BridgeSession) GetRoleMemberCount(role [32]byte) (*types.Transaction, error) {
-	return _Bridge.Contract.GetRoleMemberCount(&_Bridge.TransactOpts, role)
-}
-
-// GetRoleMemberCount is a paid mutator transaction binding the contract method 0xca15c873.
-//
-// Solidity: function getRoleMemberCount(bytes32 role) returns(uint256)
-func (_Bridge *BridgeTransactorSession) GetRoleMemberCount(role [32]byte) (*types.Transaction, error) {
-	return _Bridge.Contract.GetRoleMemberCount(&_Bridge.TransactOpts, role)
-}
-
 // GrantRole is a paid mutator transaction binding the contract method 0x2f2ff15d.
 //
 // Solidity: function grantRole(bytes32 role, address account) returns()
@@ -857,69 +1090,6 @@ func (_Bridge *BridgeSession) GrantRole(role [32]byte, account common.Address) (
 // Solidity: function grantRole(bytes32 role, address account) returns()
 func (_Bridge *BridgeTransactorSession) GrantRole(role [32]byte, account common.Address) (*types.Transaction, error) {
 	return _Bridge.Contract.GrantRole(&_Bridge.TransactOpts, role, account)
-}
-
-// HasRole is a paid mutator transaction binding the contract method 0x91d14854.
-//
-// Solidity: function hasRole(bytes32 role, address account) returns(bool)
-func (_Bridge *BridgeTransactor) HasRole(opts *bind.TransactOpts, role [32]byte, account common.Address) (*types.Transaction, error) {
-	return _Bridge.contract.Transact(opts, "hasRole", role, account)
-}
-
-// HasRole is a paid mutator transaction binding the contract method 0x91d14854.
-//
-// Solidity: function hasRole(bytes32 role, address account) returns(bool)
-func (_Bridge *BridgeSession) HasRole(role [32]byte, account common.Address) (*types.Transaction, error) {
-	return _Bridge.Contract.HasRole(&_Bridge.TransactOpts, role, account)
-}
-
-// HasRole is a paid mutator transaction binding the contract method 0x91d14854.
-//
-// Solidity: function hasRole(bytes32 role, address account) returns(bool)
-func (_Bridge *BridgeTransactorSession) HasRole(role [32]byte, account common.Address) (*types.Transaction, error) {
-	return _Bridge.Contract.HasRole(&_Bridge.TransactOpts, role, account)
-}
-
-// IsRelayer is a paid mutator transaction binding the contract method 0x541d5548.
-//
-// Solidity: function isRelayer(address relayer) returns(bool)
-func (_Bridge *BridgeTransactor) IsRelayer(opts *bind.TransactOpts, relayer common.Address) (*types.Transaction, error) {
-	return _Bridge.contract.Transact(opts, "isRelayer", relayer)
-}
-
-// IsRelayer is a paid mutator transaction binding the contract method 0x541d5548.
-//
-// Solidity: function isRelayer(address relayer) returns(bool)
-func (_Bridge *BridgeSession) IsRelayer(relayer common.Address) (*types.Transaction, error) {
-	return _Bridge.Contract.IsRelayer(&_Bridge.TransactOpts, relayer)
-}
-
-// IsRelayer is a paid mutator transaction binding the contract method 0x541d5548.
-//
-// Solidity: function isRelayer(address relayer) returns(bool)
-func (_Bridge *BridgeTransactorSession) IsRelayer(relayer common.Address) (*types.Transaction, error) {
-	return _Bridge.Contract.IsRelayer(&_Bridge.TransactOpts, relayer)
-}
-
-// Paused is a paid mutator transaction binding the contract method 0x5c975abb.
-//
-// Solidity: function paused() returns(bool)
-func (_Bridge *BridgeTransactor) Paused(opts *bind.TransactOpts) (*types.Transaction, error) {
-	return _Bridge.contract.Transact(opts, "paused")
-}
-
-// Paused is a paid mutator transaction binding the contract method 0x5c975abb.
-//
-// Solidity: function paused() returns(bool)
-func (_Bridge *BridgeSession) Paused() (*types.Transaction, error) {
-	return _Bridge.Contract.Paused(&_Bridge.TransactOpts)
-}
-
-// Paused is a paid mutator transaction binding the contract method 0x5c975abb.
-//
-// Solidity: function paused() returns(bool)
-func (_Bridge *BridgeTransactorSession) Paused() (*types.Transaction, error) {
-	return _Bridge.Contract.Paused(&_Bridge.TransactOpts)
 }
 
 // RenounceAdmin is a paid mutator transaction binding the contract method 0x5e1fab0f.
@@ -1004,48 +1174,6 @@ func (_Bridge *BridgeSession) TransferFunds(addrs []common.Address, amounts []*b
 // Solidity: function transferFunds(address[] addrs, uint256[] amounts) returns()
 func (_Bridge *BridgeTransactorSession) TransferFunds(addrs []common.Address, amounts []*big.Int) (*types.Transaction, error) {
 	return _Bridge.Contract.TransferFunds(&_Bridge.TransactOpts, addrs, amounts)
-}
-
-// ValidateMPTProof is a paid mutator transaction binding the contract method 0x93d70bf0.
-//
-// Solidity: function validateMPTProof(bytes32 rootHash, bytes mptPath, bytes rlpStack) returns(bytes value)
-func (_Bridge *BridgeTransactor) ValidateMPTProof(opts *bind.TransactOpts, rootHash [32]byte, mptPath []byte, rlpStack []byte) (*types.Transaction, error) {
-	return _Bridge.contract.Transact(opts, "validateMPTProof", rootHash, mptPath, rlpStack)
-}
-
-// ValidateMPTProof is a paid mutator transaction binding the contract method 0x93d70bf0.
-//
-// Solidity: function validateMPTProof(bytes32 rootHash, bytes mptPath, bytes rlpStack) returns(bytes value)
-func (_Bridge *BridgeSession) ValidateMPTProof(rootHash [32]byte, mptPath []byte, rlpStack []byte) (*types.Transaction, error) {
-	return _Bridge.Contract.ValidateMPTProof(&_Bridge.TransactOpts, rootHash, mptPath, rlpStack)
-}
-
-// ValidateMPTProof is a paid mutator transaction binding the contract method 0x93d70bf0.
-//
-// Solidity: function validateMPTProof(bytes32 rootHash, bytes mptPath, bytes rlpStack) returns(bytes value)
-func (_Bridge *BridgeTransactorSession) ValidateMPTProof(rootHash [32]byte, mptPath []byte, rlpStack []byte) (*types.Transaction, error) {
-	return _Bridge.Contract.ValidateMPTProof(&_Bridge.TransactOpts, rootHash, mptPath, rlpStack)
-}
-
-// ValidateMPTValueInclusion is a paid mutator transaction binding the contract method 0xb941472d.
-//
-// Solidity: function validateMPTValueInclusion(bytes32 rootHash, bytes mptPath, bytes rlpStack, bytes32 valueHash) returns(bool isIncluded)
-func (_Bridge *BridgeTransactor) ValidateMPTValueInclusion(opts *bind.TransactOpts, rootHash [32]byte, mptPath []byte, rlpStack []byte, valueHash [32]byte) (*types.Transaction, error) {
-	return _Bridge.contract.Transact(opts, "validateMPTValueInclusion", rootHash, mptPath, rlpStack, valueHash)
-}
-
-// ValidateMPTValueInclusion is a paid mutator transaction binding the contract method 0xb941472d.
-//
-// Solidity: function validateMPTValueInclusion(bytes32 rootHash, bytes mptPath, bytes rlpStack, bytes32 valueHash) returns(bool isIncluded)
-func (_Bridge *BridgeSession) ValidateMPTValueInclusion(rootHash [32]byte, mptPath []byte, rlpStack []byte, valueHash [32]byte) (*types.Transaction, error) {
-	return _Bridge.Contract.ValidateMPTValueInclusion(&_Bridge.TransactOpts, rootHash, mptPath, rlpStack, valueHash)
-}
-
-// ValidateMPTValueInclusion is a paid mutator transaction binding the contract method 0xb941472d.
-//
-// Solidity: function validateMPTValueInclusion(bytes32 rootHash, bytes mptPath, bytes rlpStack, bytes32 valueHash) returns(bool isIncluded)
-func (_Bridge *BridgeTransactorSession) ValidateMPTValueInclusion(rootHash [32]byte, mptPath []byte, rlpStack []byte, valueHash [32]byte) (*types.Transaction, error) {
-	return _Bridge.Contract.ValidateMPTValueInclusion(&_Bridge.TransactOpts, rootHash, mptPath, rlpStack, valueHash)
 }
 
 // VoteProposal is a paid mutator transaction binding the contract method 0x1ff013f1.
