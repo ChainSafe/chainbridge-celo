@@ -10,8 +10,16 @@ import (
 	"testing"
 	"time"
 
+	"github.com/ChainSafe/chainbridge-celo/bindings/Bridge"
+	"github.com/ChainSafe/chainbridge-celo/bindings/ERC20Handler"
+	"github.com/ChainSafe/chainbridge-celo/bindings/ERC721Handler"
+	"github.com/ChainSafe/chainbridge-celo/bindings/GenericHandler"
 	"github.com/ChainSafe/chainbridge-celo/connection"
-	"github.com/ChainSafe/log15"
+	"github.com/ChainSafe/chainbridge-celo/shared/ethereum"
+
+	log "github.com/ChainSafe/log15"
+	"github.com/ChainSafe/chainbridge-utils/blockstore"
+	"github.com/ChainSafe/chainbridge-utils/core"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/ethclient"
@@ -19,10 +27,51 @@ import (
 
 var GasLimitUint64 = uint64(connection.DefaultGasLimit)
 var ZeroAddress = common.HexToAddress("0x0000000000000000000000000000000000000000")
+var TestChainID = uint8(0)
+var TestRelayerThreshold = big.NewInt(2)
 
 func createTestListener(t *testing.T) *listener {
-	conn := connection.NewConnection(TestEndpoint, false, AliceKp, log15.Root(), GasLimit, GasPrice)
-	l := NewListener(conn)
+	newConfig := Config{}
+	conn := connection.NewConnection(TestEndpoint, false, AliceKp, log.Root(), GasLimit, GasPrice)
+	vsyncer := ValidatorSyncer{conn: conn}
+	stop := make(chan int)
+	errs := make(chan error)
+
+	l := NewListener(conn, &newConfig, log.Root(), &blockstore.EmptyStore{}, stop, errs, vsyncer)
+
+	client, err := utils.NewClient(TestEndpoint, AliceKp)
+	if err != nil {
+		t.Fatal(err)
+	}
+	contracts, err := utils.DeployContracts(
+		client,
+		TestChainID,
+		TestRelayerThreshold,
+	)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	bridgeContract, err := Bridge.NewBridge(contracts.BridgeAddress, conn.Client())
+	if err != nil {
+		t.Fatal(err)
+	}
+	erc20HandlerContract, err := ERC20Handler.NewERC20Handler(contracts.ERC20HandlerAddress, conn.Client())
+	if err != nil {
+		t.Fatal(err)
+	}
+	erc721HandlerContract, err := ERC721Handler.NewERC721Handler(contracts.ERC721HandlerAddress, conn.Client())
+	if err != nil {
+		t.Fatal(err)
+	}
+	genericHandlerContract, err := GenericHandler.NewGenericHandler(contracts.GenericHandlerAddress, conn.Client())
+	if err != nil {
+		t.Fatal(err)
+	}
+	l.setContracts(bridgeContract, erc20HandlerContract, erc721HandlerContract, genericHandlerContract)
+
+	router := core.NewRouter(log.Root())
+	l.setRouter(router)
 
 	return l
 }

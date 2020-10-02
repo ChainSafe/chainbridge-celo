@@ -9,6 +9,13 @@ import (
 	"time"
 
 	"github.com/ChainSafe/chainbridge-celo/connection"
+	"github.com/ChainSafe/chainbridge-celo/bindings/Bridge"
+	"github.com/ChainSafe/chainbridge-celo/bindings/ERC20Handler"
+	"github.com/ChainSafe/chainbridge-celo/bindings/ERC721Handler"
+	"github.com/ChainSafe/chainbridge-celo/bindings/GenericHandler"
+	"github.com/ChainSafe/chainbridge-utils/blockstore"
+	"github.com/ChainSafe/chainbridge-utils/core"
+	log "github.com/ChainSafe/log15"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethclient"
@@ -26,14 +33,46 @@ type Connection interface {
 var ExpectedBlockTime = time.Second
 
 type listener struct {
-	conn Connection
+	cfg                    Config
+	conn                   Connection
+	router                 *core.Router
+	bridgeContract         *Bridge.Bridge // instance of bound bridge contract
+	erc20HandlerContract   *ERC20Handler.ERC20Handler
+	erc721HandlerContract  *ERC721Handler.ERC721Handler
+	genericHandlerContract *GenericHandler.GenericHandler
+	log                    log.Logger
+	blockstore             blockstore.Blockstorer
+	stop                   <-chan int
+	sysErr                 chan<- error // Reports fatal error to core
+	syncer                 ValidatorSyncer
 }
 
-func NewListener(conn Connection) *listener {
-	return &listener{conn: conn}
+func NewListener(conn Connection, cfg *Config, log log.Logger, bs blockstore.Blockstorer, stop <-chan int, sysErr chan<- error, s ValidatorSyncer) *listener {
+	return &listener{
+		cfg:         *cfg,
+		conn:        conn,
+		log:         log,
+		blockstore:  bs,
+		stop:        stop,
+		sysErr:      sysErr,
+		syncer:      s,
+	}
+}
+
+func (l *listener) setContracts(bridge *Bridge.Bridge, erc20Handler *ERC20Handler.ERC20Handler, erc721Handler *ERC721Handler.ERC721Handler, genericHandler *GenericHandler.GenericHandler) {
+	l.bridgeContract = bridge
+	l.erc20HandlerContract = erc20Handler
+	l.erc721HandlerContract = erc721Handler
+	l.genericHandlerContract = genericHandler
+}
+
+func (l *listener) setRouter(r *core.Router) {
+	l.router = r
 }
 
 func (l *listener) start() error {
+	l.log.Debug("Starting listener...")
+
 	err := l.conn.Connect()
 	if err != nil {
 		return err
