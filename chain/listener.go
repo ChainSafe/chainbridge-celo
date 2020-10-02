@@ -66,11 +66,7 @@ func (l *listener) setContracts(bridge *Bridge.Bridge, erc20Handler *ERC20Handle
 	l.genericHandlerContract = genericHandler
 }
 
-<<<<<<< HEAD
-func (l *listener) setRouter(r core.Router) {
-=======
 func (l *listener) setRouter(r *core.Router) {
->>>>>>> oleksii/bindings
 	l.router = r
 }
 
