@@ -20,6 +20,7 @@ var (
 	_ = big.NewInt
 	_ = strings.NewReader
 	_ = ethereum.NotFound
+	_ = abi.U256
 	_ = bind.Bind
 	_ = common.Big1
 	_ = types.BloomLookup
@@ -27,7 +28,7 @@ var (
 )
 
 // IERC20ABI is the input ABI used to generate the binding from.
-const IERC20ABI = "[{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"owner\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"spender\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"value\",\"type\":\"uint256\"}],\"name\":\"Approval\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"from\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"to\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"value\",\"type\":\"uint256\"}],\"name\":\"Transfer\",\"type\":\"event\"},{\"inputs\":[],\"name\":\"totalSupply\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"}],\"name\":\"balanceOf\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"recipient\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"}],\"name\":\"transfer\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"owner\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"spender\",\"type\":\"address\"}],\"name\":\"allowance\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"spender\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"}],\"name\":\"approve\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"sender\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"recipient\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"}],\"name\":\"transferFrom\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}]"
+const IERC20ABI = "[{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"owner\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"spender\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"value\",\"type\":\"uint256\"}],\"name\":\"Approval\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"from\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"to\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"value\",\"type\":\"uint256\"}],\"name\":\"Transfer\",\"type\":\"event\"},{\"inputs\":[],\"name\":\"totalSupply\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\",\"constant\":true},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"}],\"name\":\"balanceOf\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\",\"constant\":true},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"recipient\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"}],\"name\":\"transfer\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\",\"constant\":false},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"owner\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"spender\",\"type\":\"address\"}],\"name\":\"allowance\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\",\"constant\":true},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"spender\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"}],\"name\":\"approve\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\",\"constant\":false},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"sender\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"recipient\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"}],\"name\":\"transferFrom\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\",\"constant\":false}]"
 
 // IERC20 is an auto generated Go binding around an Ethereum contract.
 type IERC20 struct {
@@ -133,6 +134,15 @@ func bindIERC20(address common.Address, caller bind.ContractCaller, transactor b
 	return bind.NewBoundContract(address, parsed, caller, transactor, filterer), nil
 }
 
+// ParseIERC20ABI parses the ABI
+func ParseIERC20ABI() (*abi.ABI, error) {
+	parsed, err := abi.JSON(strings.NewReader(IERC20ABI))
+	if err != nil {
+		return nil, err
+	}
+	return &parsed, nil
+}
+
 // Call invokes the (constant) contract method with params as input values and
 // sets the output to result. The result type might be a single field for simple
 // returns, a slice of interfaces for anonymous returns and a struct for named
@@ -173,7 +183,7 @@ func (_IERC20 *IERC20TransactorRaw) Transact(opts *bind.TransactOpts, method str
 
 // Allowance is a free data retrieval call binding the contract method 0xdd62ed3e.
 //
-// Solidity: function allowance(address owner, address spender) view returns(uint256)
+// Solidity: function allowance(address owner, address spender) constant returns(uint256)
 func (_IERC20 *IERC20Caller) Allowance(opts *bind.CallOpts, owner common.Address, spender common.Address) (*big.Int, error) {
 	var (
 		ret0 = new(*big.Int)
@@ -185,21 +195,21 @@ func (_IERC20 *IERC20Caller) Allowance(opts *bind.CallOpts, owner common.Address
 
 // Allowance is a free data retrieval call binding the contract method 0xdd62ed3e.
 //
-// Solidity: function allowance(address owner, address spender) view returns(uint256)
+// Solidity: function allowance(address owner, address spender) constant returns(uint256)
 func (_IERC20 *IERC20Session) Allowance(owner common.Address, spender common.Address) (*big.Int, error) {
 	return _IERC20.Contract.Allowance(&_IERC20.CallOpts, owner, spender)
 }
 
 // Allowance is a free data retrieval call binding the contract method 0xdd62ed3e.
 //
-// Solidity: function allowance(address owner, address spender) view returns(uint256)
+// Solidity: function allowance(address owner, address spender) constant returns(uint256)
 func (_IERC20 *IERC20CallerSession) Allowance(owner common.Address, spender common.Address) (*big.Int, error) {
 	return _IERC20.Contract.Allowance(&_IERC20.CallOpts, owner, spender)
 }
 
 // BalanceOf is a free data retrieval call binding the contract method 0x70a08231.
 //
-// Solidity: function balanceOf(address account) view returns(uint256)
+// Solidity: function balanceOf(address account) constant returns(uint256)
 func (_IERC20 *IERC20Caller) BalanceOf(opts *bind.CallOpts, account common.Address) (*big.Int, error) {
 	var (
 		ret0 = new(*big.Int)
@@ -211,21 +221,21 @@ func (_IERC20 *IERC20Caller) BalanceOf(opts *bind.CallOpts, account common.Addre
 
 // BalanceOf is a free data retrieval call binding the contract method 0x70a08231.
 //
-// Solidity: function balanceOf(address account) view returns(uint256)
+// Solidity: function balanceOf(address account) constant returns(uint256)
 func (_IERC20 *IERC20Session) BalanceOf(account common.Address) (*big.Int, error) {
 	return _IERC20.Contract.BalanceOf(&_IERC20.CallOpts, account)
 }
 
 // BalanceOf is a free data retrieval call binding the contract method 0x70a08231.
 //
-// Solidity: function balanceOf(address account) view returns(uint256)
+// Solidity: function balanceOf(address account) constant returns(uint256)
 func (_IERC20 *IERC20CallerSession) BalanceOf(account common.Address) (*big.Int, error) {
 	return _IERC20.Contract.BalanceOf(&_IERC20.CallOpts, account)
 }
 
 // TotalSupply is a free data retrieval call binding the contract method 0x18160ddd.
 //
-// Solidity: function totalSupply() view returns(uint256)
+// Solidity: function totalSupply() constant returns(uint256)
 func (_IERC20 *IERC20Caller) TotalSupply(opts *bind.CallOpts) (*big.Int, error) {
 	var (
 		ret0 = new(*big.Int)
@@ -237,14 +247,14 @@ func (_IERC20 *IERC20Caller) TotalSupply(opts *bind.CallOpts) (*big.Int, error) 
 
 // TotalSupply is a free data retrieval call binding the contract method 0x18160ddd.
 //
-// Solidity: function totalSupply() view returns(uint256)
+// Solidity: function totalSupply() constant returns(uint256)
 func (_IERC20 *IERC20Session) TotalSupply() (*big.Int, error) {
 	return _IERC20.Contract.TotalSupply(&_IERC20.CallOpts)
 }
 
 // TotalSupply is a free data retrieval call binding the contract method 0x18160ddd.
 //
-// Solidity: function totalSupply() view returns(uint256)
+// Solidity: function totalSupply() constant returns(uint256)
 func (_IERC20 *IERC20CallerSession) TotalSupply() (*big.Int, error) {
 	return _IERC20.Contract.TotalSupply(&_IERC20.CallOpts)
 }
@@ -310,6 +320,26 @@ func (_IERC20 *IERC20Session) TransferFrom(sender common.Address, recipient comm
 // Solidity: function transferFrom(address sender, address recipient, uint256 amount) returns(bool)
 func (_IERC20 *IERC20TransactorSession) TransferFrom(sender common.Address, recipient common.Address, amount *big.Int) (*types.Transaction, error) {
 	return _IERC20.Contract.TransferFrom(&_IERC20.TransactOpts, sender, recipient, amount)
+}
+
+// TryParseLog attempts to parse a log. Returns the parsed log, evenName and whether it was succesfull
+func (_IERC20 *IERC20Filterer) TryParseLog(log types.Log) (eventName string, event interface{}, ok bool, err error) {
+	eventName, ok, err = _IERC20.contract.LogEventName(log)
+	if err != nil || !ok {
+		return "", nil, false, err
+	}
+
+	switch eventName {
+	case "Approval":
+		event, err = _IERC20.ParseApproval(log)
+	case "Transfer":
+		event, err = _IERC20.ParseTransfer(log)
+	}
+	if err != nil {
+		return "", nil, false, err
+	}
+
+	return eventName, event, ok, nil
 }
 
 // IERC20ApprovalIterator is returned from FilterApproval and is used to iterate over the raw logs and unpacked data for Approval events raised by the IERC20 contract.

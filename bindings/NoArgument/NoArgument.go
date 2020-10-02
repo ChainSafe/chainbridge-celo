@@ -20,6 +20,7 @@ var (
 	_ = big.NewInt
 	_ = strings.NewReader
 	_ = ethereum.NotFound
+	_ = abi.U256
 	_ = bind.Bind
 	_ = common.Big1
 	_ = types.BloomLookup
@@ -27,10 +28,10 @@ var (
 )
 
 // NoArgumentABI is the input ABI used to generate the binding from.
-const NoArgumentABI = "[{\"anonymous\":false,\"inputs\":[],\"name\":\"NoArgumentCalled\",\"type\":\"event\"},{\"inputs\":[],\"name\":\"noArgument\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}]"
+const NoArgumentABI = "[{\"anonymous\":false,\"inputs\":[],\"name\":\"NoArgumentCalled\",\"type\":\"event\"},{\"inputs\":[],\"name\":\"noArgument\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\",\"constant\":false}]"
 
 // NoArgumentBin is the compiled bytecode used for deploying new contracts.
-var NoArgumentBin = "0x6080604052348015600f57600080fd5b5060998061001e6000396000f3fe6080604052348015600f57600080fd5b506004361060285760003560e01c8063568959ca14602d575b600080fd5b60336035565b005b7fc582abe1670c5a7f7cad8f171e4af03c793dd9f59fee6714179f56b6e9aea26f60405160405180910390a156fea2646970667358221220bc6f61956509bdf929bcdab4379c5ed7d1deacbe16477f76be71343b7c29bd7664736f6c63430006040033"
+var NoArgumentBin = "0x6080604052348015600f57600080fd5b5060968061001e6000396000f3fe6080604052348015600f57600080fd5b506004361060285760003560e01c8063568959ca14602d575b600080fd5b60336035565b005b6040517fc582abe1670c5a7f7cad8f171e4af03c793dd9f59fee6714179f56b6e9aea26f90600090a156fea2646970667358221220ceadec9bf7a4960ba3d748a36866472771ba1179c9087a042b3e8382dc830a8664736f6c63430006040033"
 
 // DeployNoArgument deploys a new Ethereum contract, binding an instance of NoArgument to it.
 func DeployNoArgument(auth *bind.TransactOpts, backend bind.ContractBackend) (common.Address, *types.Transaction, *NoArgument, error) {
@@ -150,6 +151,15 @@ func bindNoArgument(address common.Address, caller bind.ContractCaller, transact
 	return bind.NewBoundContract(address, parsed, caller, transactor, filterer), nil
 }
 
+// ParseNoArgumentABI parses the ABI
+func ParseNoArgumentABI() (*abi.ABI, error) {
+	parsed, err := abi.JSON(strings.NewReader(NoArgumentABI))
+	if err != nil {
+		return nil, err
+	}
+	return &parsed, nil
+}
+
 // Call invokes the (constant) contract method with params as input values and
 // sets the output to result. The result type might be a single field for simple
 // returns, a slice of interfaces for anonymous returns and a struct for named
@@ -207,6 +217,24 @@ func (_NoArgument *NoArgumentSession) NoArgument() (*types.Transaction, error) {
 // Solidity: function noArgument() returns()
 func (_NoArgument *NoArgumentTransactorSession) NoArgument() (*types.Transaction, error) {
 	return _NoArgument.Contract.NoArgument(&_NoArgument.TransactOpts)
+}
+
+// TryParseLog attempts to parse a log. Returns the parsed log, evenName and whether it was succesfull
+func (_NoArgument *NoArgumentFilterer) TryParseLog(log types.Log) (eventName string, event interface{}, ok bool, err error) {
+	eventName, ok, err = _NoArgument.contract.LogEventName(log)
+	if err != nil || !ok {
+		return "", nil, false, err
+	}
+
+	switch eventName {
+	case "NoArgumentCalled":
+		event, err = _NoArgument.ParseNoArgumentCalled(log)
+	}
+	if err != nil {
+		return "", nil, false, err
+	}
+
+	return eventName, event, ok, nil
 }
 
 // NoArgumentNoArgumentCalledIterator is returned from FilterNoArgumentCalled and is used to iterate over the raw logs and unpacked data for NoArgumentCalled events raised by the NoArgument contract.

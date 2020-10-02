@@ -20,6 +20,7 @@ var (
 	_ = big.NewInt
 	_ = strings.NewReader
 	_ = ethereum.NotFound
+	_ = abi.U256
 	_ = bind.Bind
 	_ = common.Big1
 	_ = types.BloomLookup
@@ -27,7 +28,7 @@ var (
 )
 
 // IERC721MetadataABI is the input ABI used to generate the binding from.
-const IERC721MetadataABI = "[{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"owner\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"approved\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"uint256\",\"name\":\"tokenId\",\"type\":\"uint256\"}],\"name\":\"Approval\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"owner\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"operator\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"bool\",\"name\":\"approved\",\"type\":\"bool\"}],\"name\":\"ApprovalForAll\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"from\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"to\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"uint256\",\"name\":\"tokenId\",\"type\":\"uint256\"}],\"name\":\"Transfer\",\"type\":\"event\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"to\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"tokenId\",\"type\":\"uint256\"}],\"name\":\"approve\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"owner\",\"type\":\"address\"}],\"name\":\"balanceOf\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"balance\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"tokenId\",\"type\":\"uint256\"}],\"name\":\"getApproved\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"operator\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"owner\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"operator\",\"type\":\"address\"}],\"name\":\"isApprovedForAll\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"tokenId\",\"type\":\"uint256\"}],\"name\":\"ownerOf\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"owner\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"from\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"to\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"tokenId\",\"type\":\"uint256\"}],\"name\":\"safeTransferFrom\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"from\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"to\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"tokenId\",\"type\":\"uint256\"},{\"internalType\":\"bytes\",\"name\":\"data\",\"type\":\"bytes\"}],\"name\":\"safeTransferFrom\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"operator\",\"type\":\"address\"},{\"internalType\":\"bool\",\"name\":\"_approved\",\"type\":\"bool\"}],\"name\":\"setApprovalForAll\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes4\",\"name\":\"interfaceId\",\"type\":\"bytes4\"}],\"name\":\"supportsInterface\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"from\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"to\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"tokenId\",\"type\":\"uint256\"}],\"name\":\"transferFrom\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"name\",\"outputs\":[{\"internalType\":\"string\",\"name\":\"\",\"type\":\"string\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"symbol\",\"outputs\":[{\"internalType\":\"string\",\"name\":\"\",\"type\":\"string\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"tokenId\",\"type\":\"uint256\"}],\"name\":\"tokenURI\",\"outputs\":[{\"internalType\":\"string\",\"name\":\"\",\"type\":\"string\"}],\"stateMutability\":\"view\",\"type\":\"function\"}]"
+const IERC721MetadataABI = "[{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"owner\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"approved\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"uint256\",\"name\":\"tokenId\",\"type\":\"uint256\"}],\"name\":\"Approval\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"owner\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"operator\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"bool\",\"name\":\"approved\",\"type\":\"bool\"}],\"name\":\"ApprovalForAll\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"from\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"to\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"uint256\",\"name\":\"tokenId\",\"type\":\"uint256\"}],\"name\":\"Transfer\",\"type\":\"event\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"to\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"tokenId\",\"type\":\"uint256\"}],\"name\":\"approve\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\",\"constant\":false},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"owner\",\"type\":\"address\"}],\"name\":\"balanceOf\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"balance\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\",\"constant\":true},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"tokenId\",\"type\":\"uint256\"}],\"name\":\"getApproved\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"operator\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\",\"constant\":true},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"owner\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"operator\",\"type\":\"address\"}],\"name\":\"isApprovedForAll\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\",\"constant\":true},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"tokenId\",\"type\":\"uint256\"}],\"name\":\"ownerOf\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"owner\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\",\"constant\":true},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"from\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"to\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"tokenId\",\"type\":\"uint256\"}],\"name\":\"safeTransferFrom\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\",\"constant\":false},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"from\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"to\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"tokenId\",\"type\":\"uint256\"},{\"internalType\":\"bytes\",\"name\":\"data\",\"type\":\"bytes\"}],\"name\":\"safeTransferFrom\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\",\"constant\":false},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"operator\",\"type\":\"address\"},{\"internalType\":\"bool\",\"name\":\"_approved\",\"type\":\"bool\"}],\"name\":\"setApprovalForAll\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\",\"constant\":false},{\"inputs\":[{\"internalType\":\"bytes4\",\"name\":\"interfaceId\",\"type\":\"bytes4\"}],\"name\":\"supportsInterface\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\",\"constant\":true},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"from\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"to\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"tokenId\",\"type\":\"uint256\"}],\"name\":\"transferFrom\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\",\"constant\":false},{\"inputs\":[],\"name\":\"name\",\"outputs\":[{\"internalType\":\"string\",\"name\":\"\",\"type\":\"string\"}],\"stateMutability\":\"view\",\"type\":\"function\",\"constant\":true},{\"inputs\":[],\"name\":\"symbol\",\"outputs\":[{\"internalType\":\"string\",\"name\":\"\",\"type\":\"string\"}],\"stateMutability\":\"view\",\"type\":\"function\",\"constant\":true},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"tokenId\",\"type\":\"uint256\"}],\"name\":\"tokenURI\",\"outputs\":[{\"internalType\":\"string\",\"name\":\"\",\"type\":\"string\"}],\"stateMutability\":\"view\",\"type\":\"function\",\"constant\":true}]"
 
 // IERC721Metadata is an auto generated Go binding around an Ethereum contract.
 type IERC721Metadata struct {
@@ -133,6 +134,15 @@ func bindIERC721Metadata(address common.Address, caller bind.ContractCaller, tra
 	return bind.NewBoundContract(address, parsed, caller, transactor, filterer), nil
 }
 
+// ParseIERC721MetadataABI parses the ABI
+func ParseIERC721MetadataABI() (*abi.ABI, error) {
+	parsed, err := abi.JSON(strings.NewReader(IERC721MetadataABI))
+	if err != nil {
+		return nil, err
+	}
+	return &parsed, nil
+}
+
 // Call invokes the (constant) contract method with params as input values and
 // sets the output to result. The result type might be a single field for simple
 // returns, a slice of interfaces for anonymous returns and a struct for named
@@ -173,7 +183,7 @@ func (_IERC721Metadata *IERC721MetadataTransactorRaw) Transact(opts *bind.Transa
 
 // BalanceOf is a free data retrieval call binding the contract method 0x70a08231.
 //
-// Solidity: function balanceOf(address owner) view returns(uint256 balance)
+// Solidity: function balanceOf(address owner) constant returns(uint256 balance)
 func (_IERC721Metadata *IERC721MetadataCaller) BalanceOf(opts *bind.CallOpts, owner common.Address) (*big.Int, error) {
 	var (
 		ret0 = new(*big.Int)
@@ -185,21 +195,21 @@ func (_IERC721Metadata *IERC721MetadataCaller) BalanceOf(opts *bind.CallOpts, ow
 
 // BalanceOf is a free data retrieval call binding the contract method 0x70a08231.
 //
-// Solidity: function balanceOf(address owner) view returns(uint256 balance)
+// Solidity: function balanceOf(address owner) constant returns(uint256 balance)
 func (_IERC721Metadata *IERC721MetadataSession) BalanceOf(owner common.Address) (*big.Int, error) {
 	return _IERC721Metadata.Contract.BalanceOf(&_IERC721Metadata.CallOpts, owner)
 }
 
 // BalanceOf is a free data retrieval call binding the contract method 0x70a08231.
 //
-// Solidity: function balanceOf(address owner) view returns(uint256 balance)
+// Solidity: function balanceOf(address owner) constant returns(uint256 balance)
 func (_IERC721Metadata *IERC721MetadataCallerSession) BalanceOf(owner common.Address) (*big.Int, error) {
 	return _IERC721Metadata.Contract.BalanceOf(&_IERC721Metadata.CallOpts, owner)
 }
 
 // GetApproved is a free data retrieval call binding the contract method 0x081812fc.
 //
-// Solidity: function getApproved(uint256 tokenId) view returns(address operator)
+// Solidity: function getApproved(uint256 tokenId) constant returns(address operator)
 func (_IERC721Metadata *IERC721MetadataCaller) GetApproved(opts *bind.CallOpts, tokenId *big.Int) (common.Address, error) {
 	var (
 		ret0 = new(common.Address)
@@ -211,21 +221,21 @@ func (_IERC721Metadata *IERC721MetadataCaller) GetApproved(opts *bind.CallOpts, 
 
 // GetApproved is a free data retrieval call binding the contract method 0x081812fc.
 //
-// Solidity: function getApproved(uint256 tokenId) view returns(address operator)
+// Solidity: function getApproved(uint256 tokenId) constant returns(address operator)
 func (_IERC721Metadata *IERC721MetadataSession) GetApproved(tokenId *big.Int) (common.Address, error) {
 	return _IERC721Metadata.Contract.GetApproved(&_IERC721Metadata.CallOpts, tokenId)
 }
 
 // GetApproved is a free data retrieval call binding the contract method 0x081812fc.
 //
-// Solidity: function getApproved(uint256 tokenId) view returns(address operator)
+// Solidity: function getApproved(uint256 tokenId) constant returns(address operator)
 func (_IERC721Metadata *IERC721MetadataCallerSession) GetApproved(tokenId *big.Int) (common.Address, error) {
 	return _IERC721Metadata.Contract.GetApproved(&_IERC721Metadata.CallOpts, tokenId)
 }
 
 // IsApprovedForAll is a free data retrieval call binding the contract method 0xe985e9c5.
 //
-// Solidity: function isApprovedForAll(address owner, address operator) view returns(bool)
+// Solidity: function isApprovedForAll(address owner, address operator) constant returns(bool)
 func (_IERC721Metadata *IERC721MetadataCaller) IsApprovedForAll(opts *bind.CallOpts, owner common.Address, operator common.Address) (bool, error) {
 	var (
 		ret0 = new(bool)
@@ -237,21 +247,21 @@ func (_IERC721Metadata *IERC721MetadataCaller) IsApprovedForAll(opts *bind.CallO
 
 // IsApprovedForAll is a free data retrieval call binding the contract method 0xe985e9c5.
 //
-// Solidity: function isApprovedForAll(address owner, address operator) view returns(bool)
+// Solidity: function isApprovedForAll(address owner, address operator) constant returns(bool)
 func (_IERC721Metadata *IERC721MetadataSession) IsApprovedForAll(owner common.Address, operator common.Address) (bool, error) {
 	return _IERC721Metadata.Contract.IsApprovedForAll(&_IERC721Metadata.CallOpts, owner, operator)
 }
 
 // IsApprovedForAll is a free data retrieval call binding the contract method 0xe985e9c5.
 //
-// Solidity: function isApprovedForAll(address owner, address operator) view returns(bool)
+// Solidity: function isApprovedForAll(address owner, address operator) constant returns(bool)
 func (_IERC721Metadata *IERC721MetadataCallerSession) IsApprovedForAll(owner common.Address, operator common.Address) (bool, error) {
 	return _IERC721Metadata.Contract.IsApprovedForAll(&_IERC721Metadata.CallOpts, owner, operator)
 }
 
 // Name is a free data retrieval call binding the contract method 0x06fdde03.
 //
-// Solidity: function name() view returns(string)
+// Solidity: function name() constant returns(string)
 func (_IERC721Metadata *IERC721MetadataCaller) Name(opts *bind.CallOpts) (string, error) {
 	var (
 		ret0 = new(string)
@@ -263,21 +273,21 @@ func (_IERC721Metadata *IERC721MetadataCaller) Name(opts *bind.CallOpts) (string
 
 // Name is a free data retrieval call binding the contract method 0x06fdde03.
 //
-// Solidity: function name() view returns(string)
+// Solidity: function name() constant returns(string)
 func (_IERC721Metadata *IERC721MetadataSession) Name() (string, error) {
 	return _IERC721Metadata.Contract.Name(&_IERC721Metadata.CallOpts)
 }
 
 // Name is a free data retrieval call binding the contract method 0x06fdde03.
 //
-// Solidity: function name() view returns(string)
+// Solidity: function name() constant returns(string)
 func (_IERC721Metadata *IERC721MetadataCallerSession) Name() (string, error) {
 	return _IERC721Metadata.Contract.Name(&_IERC721Metadata.CallOpts)
 }
 
 // OwnerOf is a free data retrieval call binding the contract method 0x6352211e.
 //
-// Solidity: function ownerOf(uint256 tokenId) view returns(address owner)
+// Solidity: function ownerOf(uint256 tokenId) constant returns(address owner)
 func (_IERC721Metadata *IERC721MetadataCaller) OwnerOf(opts *bind.CallOpts, tokenId *big.Int) (common.Address, error) {
 	var (
 		ret0 = new(common.Address)
@@ -289,21 +299,21 @@ func (_IERC721Metadata *IERC721MetadataCaller) OwnerOf(opts *bind.CallOpts, toke
 
 // OwnerOf is a free data retrieval call binding the contract method 0x6352211e.
 //
-// Solidity: function ownerOf(uint256 tokenId) view returns(address owner)
+// Solidity: function ownerOf(uint256 tokenId) constant returns(address owner)
 func (_IERC721Metadata *IERC721MetadataSession) OwnerOf(tokenId *big.Int) (common.Address, error) {
 	return _IERC721Metadata.Contract.OwnerOf(&_IERC721Metadata.CallOpts, tokenId)
 }
 
 // OwnerOf is a free data retrieval call binding the contract method 0x6352211e.
 //
-// Solidity: function ownerOf(uint256 tokenId) view returns(address owner)
+// Solidity: function ownerOf(uint256 tokenId) constant returns(address owner)
 func (_IERC721Metadata *IERC721MetadataCallerSession) OwnerOf(tokenId *big.Int) (common.Address, error) {
 	return _IERC721Metadata.Contract.OwnerOf(&_IERC721Metadata.CallOpts, tokenId)
 }
 
 // SupportsInterface is a free data retrieval call binding the contract method 0x01ffc9a7.
 //
-// Solidity: function supportsInterface(bytes4 interfaceId) view returns(bool)
+// Solidity: function supportsInterface(bytes4 interfaceId) constant returns(bool)
 func (_IERC721Metadata *IERC721MetadataCaller) SupportsInterface(opts *bind.CallOpts, interfaceId [4]byte) (bool, error) {
 	var (
 		ret0 = new(bool)
@@ -315,21 +325,21 @@ func (_IERC721Metadata *IERC721MetadataCaller) SupportsInterface(opts *bind.Call
 
 // SupportsInterface is a free data retrieval call binding the contract method 0x01ffc9a7.
 //
-// Solidity: function supportsInterface(bytes4 interfaceId) view returns(bool)
+// Solidity: function supportsInterface(bytes4 interfaceId) constant returns(bool)
 func (_IERC721Metadata *IERC721MetadataSession) SupportsInterface(interfaceId [4]byte) (bool, error) {
 	return _IERC721Metadata.Contract.SupportsInterface(&_IERC721Metadata.CallOpts, interfaceId)
 }
 
 // SupportsInterface is a free data retrieval call binding the contract method 0x01ffc9a7.
 //
-// Solidity: function supportsInterface(bytes4 interfaceId) view returns(bool)
+// Solidity: function supportsInterface(bytes4 interfaceId) constant returns(bool)
 func (_IERC721Metadata *IERC721MetadataCallerSession) SupportsInterface(interfaceId [4]byte) (bool, error) {
 	return _IERC721Metadata.Contract.SupportsInterface(&_IERC721Metadata.CallOpts, interfaceId)
 }
 
 // Symbol is a free data retrieval call binding the contract method 0x95d89b41.
 //
-// Solidity: function symbol() view returns(string)
+// Solidity: function symbol() constant returns(string)
 func (_IERC721Metadata *IERC721MetadataCaller) Symbol(opts *bind.CallOpts) (string, error) {
 	var (
 		ret0 = new(string)
@@ -341,21 +351,21 @@ func (_IERC721Metadata *IERC721MetadataCaller) Symbol(opts *bind.CallOpts) (stri
 
 // Symbol is a free data retrieval call binding the contract method 0x95d89b41.
 //
-// Solidity: function symbol() view returns(string)
+// Solidity: function symbol() constant returns(string)
 func (_IERC721Metadata *IERC721MetadataSession) Symbol() (string, error) {
 	return _IERC721Metadata.Contract.Symbol(&_IERC721Metadata.CallOpts)
 }
 
 // Symbol is a free data retrieval call binding the contract method 0x95d89b41.
 //
-// Solidity: function symbol() view returns(string)
+// Solidity: function symbol() constant returns(string)
 func (_IERC721Metadata *IERC721MetadataCallerSession) Symbol() (string, error) {
 	return _IERC721Metadata.Contract.Symbol(&_IERC721Metadata.CallOpts)
 }
 
 // TokenURI is a free data retrieval call binding the contract method 0xc87b56dd.
 //
-// Solidity: function tokenURI(uint256 tokenId) view returns(string)
+// Solidity: function tokenURI(uint256 tokenId) constant returns(string)
 func (_IERC721Metadata *IERC721MetadataCaller) TokenURI(opts *bind.CallOpts, tokenId *big.Int) (string, error) {
 	var (
 		ret0 = new(string)
@@ -367,14 +377,14 @@ func (_IERC721Metadata *IERC721MetadataCaller) TokenURI(opts *bind.CallOpts, tok
 
 // TokenURI is a free data retrieval call binding the contract method 0xc87b56dd.
 //
-// Solidity: function tokenURI(uint256 tokenId) view returns(string)
+// Solidity: function tokenURI(uint256 tokenId) constant returns(string)
 func (_IERC721Metadata *IERC721MetadataSession) TokenURI(tokenId *big.Int) (string, error) {
 	return _IERC721Metadata.Contract.TokenURI(&_IERC721Metadata.CallOpts, tokenId)
 }
 
 // TokenURI is a free data retrieval call binding the contract method 0xc87b56dd.
 //
-// Solidity: function tokenURI(uint256 tokenId) view returns(string)
+// Solidity: function tokenURI(uint256 tokenId) constant returns(string)
 func (_IERC721Metadata *IERC721MetadataCallerSession) TokenURI(tokenId *big.Int) (string, error) {
 	return _IERC721Metadata.Contract.TokenURI(&_IERC721Metadata.CallOpts, tokenId)
 }
@@ -482,6 +492,28 @@ func (_IERC721Metadata *IERC721MetadataSession) TransferFrom(from common.Address
 // Solidity: function transferFrom(address from, address to, uint256 tokenId) returns()
 func (_IERC721Metadata *IERC721MetadataTransactorSession) TransferFrom(from common.Address, to common.Address, tokenId *big.Int) (*types.Transaction, error) {
 	return _IERC721Metadata.Contract.TransferFrom(&_IERC721Metadata.TransactOpts, from, to, tokenId)
+}
+
+// TryParseLog attempts to parse a log. Returns the parsed log, evenName and whether it was succesfull
+func (_IERC721Metadata *IERC721MetadataFilterer) TryParseLog(log types.Log) (eventName string, event interface{}, ok bool, err error) {
+	eventName, ok, err = _IERC721Metadata.contract.LogEventName(log)
+	if err != nil || !ok {
+		return "", nil, false, err
+	}
+
+	switch eventName {
+	case "Approval":
+		event, err = _IERC721Metadata.ParseApproval(log)
+	case "ApprovalForAll":
+		event, err = _IERC721Metadata.ParseApprovalForAll(log)
+	case "Transfer":
+		event, err = _IERC721Metadata.ParseTransfer(log)
+	}
+	if err != nil {
+		return "", nil, false, err
+	}
+
+	return eventName, event, ok, nil
 }
 
 // IERC721MetadataApprovalIterator is returned from FilterApproval and is used to iterate over the raw logs and unpacked data for Approval events raised by the IERC721Metadata contract.

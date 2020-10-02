@@ -20,6 +20,7 @@ var (
 	_ = big.NewInt
 	_ = strings.NewReader
 	_ = ethereum.NotFound
+	_ = abi.U256
 	_ = bind.Bind
 	_ = common.Big1
 	_ = types.BloomLookup
@@ -27,10 +28,10 @@ var (
 )
 
 // ERC721SafeABI is the input ABI used to generate the binding from.
-const ERC721SafeABI = "[{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"_balances\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"_burnedTokens\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"tokenAddress\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"owner\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"tokenID\",\"type\":\"uint256\"}],\"name\":\"fundERC721\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}]"
+const ERC721SafeABI = "[{\"inputs\":[{\"internalType\":\"address\",\"name\":\"tokenAddress\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"owner\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"tokenID\",\"type\":\"uint256\"}],\"name\":\"fundERC721\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\",\"constant\":false}]"
 
 // ERC721SafeBin is the compiled bytecode used for deploying new contracts.
-var ERC721SafeBin = "0x608060405234801561001057600080fd5b506105bb806100206000396000f3fe608060405234801561001057600080fd5b50600436106100415760003560e01c806345274738146100465780636ebcf6071461009e57806373542980146100f6575b600080fd5b6100886004803603602081101561005c57600080fd5b81019080803573ffffffffffffffffffffffffffffffffffffffff169060200190929190505050610164565b6040518082815260200191505060405180910390f35b6100e0600480360360208110156100b457600080fd5b81019080803573ffffffffffffffffffffffffffffffffffffffff16906020019092919050505061017c565b6040518082815260200191505060405180910390f35b6101626004803603606081101561010c57600080fd5b81019080803573ffffffffffffffffffffffffffffffffffffffff169060200190929190803573ffffffffffffffffffffffffffffffffffffffff16906020019092919080359060200190929190505050610194565b005b60016020528060005260406000206000915090505481565b60006020528060005260406000206000915090505481565b60008390506101a58184308561023f565b6101f760016000808773ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff168152602001908152602001600020546104d890919063ffffffff16565b6000808673ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1681526020019081526020016000208190555050505050565b600060608573ffffffffffffffffffffffffffffffffffffffff166323b872dd60e01b868686604051602401808473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1681526020018373ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1681526020018281526020019350505050604051602081830303815290604052907bffffffffffffffffffffffffffffffffffffffffffffffffffffffff19166020820180517bffffffffffffffffffffffffffffffffffffffffffffffffffffffff83818316178352505050506040518082805190602001908083835b6020831061036b5780518252602082019150602081019050602083039250610348565b6001836020036101000a0380198251168184511680821785525050505050509050019150506000604051808303816000865af19150503d80600081146103cd576040519150601f19603f3d011682016040523d82523d6000602084013e6103d2565b606091505b50915091508161044a576040517f08c379a000000000000000000000000000000000000000000000000000000000815260040180806020018281038252601c8152602001807f4552433732313a207472616e736665722066726f6d206661696c65640000000081525060200191505060405180910390fd5b6000815111156104d05780806020019051602081101561046957600080fd5b81019080805190602001909291905050506104cf576040517f08c379a00000000000000000000000000000000000000000000000000000000081526004018080602001828103825260258152602001806105616025913960400191505060405180910390fd5b5b505050505050565b600080828401905083811015610556576040517f08c379a000000000000000000000000000000000000000000000000000000000815260040180806020018281038252601b8152602001807f536166654d6174683a206164646974696f6e206f766572666c6f77000000000081525060200191505060405180910390fd5b809150509291505056fe4552433732313a207472616e736665722066726f6d20646964206e6f742073756363656564a26469706673582212204d0904865a8744c3f857842201afc513e838fbef87c4e21ebd18e4f54ab9dec664736f6c63430006040033"
+var ERC721SafeBin = "0x608060405234801561001057600080fd5b5061010c806100206000396000f3fe6080604052348015600f57600080fd5b506004361060285760003560e01c80637354298014602d575b600080fd5b606060048036036060811015604157600080fd5b506001600160a01b038135811691602081013590911690604001356062565b005b604080516323b872dd60e01b81526001600160a01b03848116600483015230602483015260448201849052915185928316916323b872dd91606480830192600092919082900301818387803b15801560b957600080fd5b505af115801560cc573d6000803e3d6000fd5b505050505050505056fea26469706673582212205b1be1ab12c25bb7f48d3a5d588765d7eabe5fb1764e6de2268bf3f2981d732f64736f6c63430006040033"
 
 // DeployERC721Safe deploys a new Ethereum contract, binding an instance of ERC721Safe to it.
 func DeployERC721Safe(auth *bind.TransactOpts, backend bind.ContractBackend) (common.Address, *types.Transaction, *ERC721Safe, error) {
@@ -150,6 +151,15 @@ func bindERC721Safe(address common.Address, caller bind.ContractCaller, transact
 	return bind.NewBoundContract(address, parsed, caller, transactor, filterer), nil
 }
 
+// ParseERC721SafeABI parses the ABI
+func ParseERC721SafeABI() (*abi.ABI, error) {
+	parsed, err := abi.JSON(strings.NewReader(ERC721SafeABI))
+	if err != nil {
+		return nil, err
+	}
+	return &parsed, nil
+}
+
 // Call invokes the (constant) contract method with params as input values and
 // sets the output to result. The result type might be a single field for simple
 // returns, a slice of interfaces for anonymous returns and a struct for named
@@ -188,58 +198,6 @@ func (_ERC721Safe *ERC721SafeTransactorRaw) Transact(opts *bind.TransactOpts, me
 	return _ERC721Safe.Contract.contract.Transact(opts, method, params...)
 }
 
-// Balances is a free data retrieval call binding the contract method 0x6ebcf607.
-//
-// Solidity: function _balances(address ) view returns(uint256)
-func (_ERC721Safe *ERC721SafeCaller) Balances(opts *bind.CallOpts, arg0 common.Address) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _ERC721Safe.contract.Call(opts, out, "_balances", arg0)
-	return *ret0, err
-}
-
-// Balances is a free data retrieval call binding the contract method 0x6ebcf607.
-//
-// Solidity: function _balances(address ) view returns(uint256)
-func (_ERC721Safe *ERC721SafeSession) Balances(arg0 common.Address) (*big.Int, error) {
-	return _ERC721Safe.Contract.Balances(&_ERC721Safe.CallOpts, arg0)
-}
-
-// Balances is a free data retrieval call binding the contract method 0x6ebcf607.
-//
-// Solidity: function _balances(address ) view returns(uint256)
-func (_ERC721Safe *ERC721SafeCallerSession) Balances(arg0 common.Address) (*big.Int, error) {
-	return _ERC721Safe.Contract.Balances(&_ERC721Safe.CallOpts, arg0)
-}
-
-// BurnedTokens is a free data retrieval call binding the contract method 0x45274738.
-//
-// Solidity: function _burnedTokens(address ) view returns(uint256)
-func (_ERC721Safe *ERC721SafeCaller) BurnedTokens(opts *bind.CallOpts, arg0 common.Address) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _ERC721Safe.contract.Call(opts, out, "_burnedTokens", arg0)
-	return *ret0, err
-}
-
-// BurnedTokens is a free data retrieval call binding the contract method 0x45274738.
-//
-// Solidity: function _burnedTokens(address ) view returns(uint256)
-func (_ERC721Safe *ERC721SafeSession) BurnedTokens(arg0 common.Address) (*big.Int, error) {
-	return _ERC721Safe.Contract.BurnedTokens(&_ERC721Safe.CallOpts, arg0)
-}
-
-// BurnedTokens is a free data retrieval call binding the contract method 0x45274738.
-//
-// Solidity: function _burnedTokens(address ) view returns(uint256)
-func (_ERC721Safe *ERC721SafeCallerSession) BurnedTokens(arg0 common.Address) (*big.Int, error) {
-	return _ERC721Safe.Contract.BurnedTokens(&_ERC721Safe.CallOpts, arg0)
-}
-
 // FundERC721 is a paid mutator transaction binding the contract method 0x73542980.
 //
 // Solidity: function fundERC721(address tokenAddress, address owner, uint256 tokenID) returns()
@@ -259,4 +217,20 @@ func (_ERC721Safe *ERC721SafeSession) FundERC721(tokenAddress common.Address, ow
 // Solidity: function fundERC721(address tokenAddress, address owner, uint256 tokenID) returns()
 func (_ERC721Safe *ERC721SafeTransactorSession) FundERC721(tokenAddress common.Address, owner common.Address, tokenID *big.Int) (*types.Transaction, error) {
 	return _ERC721Safe.Contract.FundERC721(&_ERC721Safe.TransactOpts, tokenAddress, owner, tokenID)
+}
+
+// TryParseLog attempts to parse a log. Returns the parsed log, evenName and whether it was succesfull
+func (_ERC721Safe *ERC721SafeFilterer) TryParseLog(log types.Log) (eventName string, event interface{}, ok bool, err error) {
+	eventName, ok, err = _ERC721Safe.contract.LogEventName(log)
+	if err != nil || !ok {
+		return "", nil, false, err
+	}
+
+	switch eventName {
+	}
+	if err != nil {
+		return "", nil, false, err
+	}
+
+	return eventName, event, ok, nil
 }

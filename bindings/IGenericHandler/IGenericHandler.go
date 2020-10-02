@@ -20,6 +20,7 @@ var (
 	_ = big.NewInt
 	_ = strings.NewReader
 	_ = ethereum.NotFound
+	_ = abi.U256
 	_ = bind.Bind
 	_ = common.Big1
 	_ = types.BloomLookup
@@ -27,7 +28,7 @@ var (
 )
 
 // IGenericHandlerABI is the input ABI used to generate the binding from.
-const IGenericHandlerABI = "[{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"resourceID\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"contractAddress\",\"type\":\"address\"},{\"internalType\":\"bytes4\",\"name\":\"depositFunctionSig\",\"type\":\"bytes4\"},{\"internalType\":\"bytes4\",\"name\":\"executeFunctionSig\",\"type\":\"bytes4\"}],\"name\":\"setResource\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}]"
+const IGenericHandlerABI = "[{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"resourceID\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"contractAddress\",\"type\":\"address\"},{\"internalType\":\"bytes4\",\"name\":\"depositFunctionSig\",\"type\":\"bytes4\"},{\"internalType\":\"bytes4\",\"name\":\"executeFunctionSig\",\"type\":\"bytes4\"}],\"name\":\"setResource\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\",\"constant\":false}]"
 
 // IGenericHandler is an auto generated Go binding around an Ethereum contract.
 type IGenericHandler struct {
@@ -133,6 +134,15 @@ func bindIGenericHandler(address common.Address, caller bind.ContractCaller, tra
 	return bind.NewBoundContract(address, parsed, caller, transactor, filterer), nil
 }
 
+// ParseIGenericHandlerABI parses the ABI
+func ParseIGenericHandlerABI() (*abi.ABI, error) {
+	parsed, err := abi.JSON(strings.NewReader(IGenericHandlerABI))
+	if err != nil {
+		return nil, err
+	}
+	return &parsed, nil
+}
+
 // Call invokes the (constant) contract method with params as input values and
 // sets the output to result. The result type might be a single field for simple
 // returns, a slice of interfaces for anonymous returns and a struct for named
@@ -190,4 +200,20 @@ func (_IGenericHandler *IGenericHandlerSession) SetResource(resourceID [32]byte,
 // Solidity: function setResource(bytes32 resourceID, address contractAddress, bytes4 depositFunctionSig, bytes4 executeFunctionSig) returns()
 func (_IGenericHandler *IGenericHandlerTransactorSession) SetResource(resourceID [32]byte, contractAddress common.Address, depositFunctionSig [4]byte, executeFunctionSig [4]byte) (*types.Transaction, error) {
 	return _IGenericHandler.Contract.SetResource(&_IGenericHandler.TransactOpts, resourceID, contractAddress, depositFunctionSig, executeFunctionSig)
+}
+
+// TryParseLog attempts to parse a log. Returns the parsed log, evenName and whether it was succesfull
+func (_IGenericHandler *IGenericHandlerFilterer) TryParseLog(log types.Log) (eventName string, event interface{}, ok bool, err error) {
+	eventName, ok, err = _IGenericHandler.contract.LogEventName(log)
+	if err != nil || !ok {
+		return "", nil, false, err
+	}
+
+	switch eventName {
+	}
+	if err != nil {
+		return "", nil, false, err
+	}
+
+	return eventName, event, ok, nil
 }
