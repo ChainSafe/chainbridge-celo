@@ -35,7 +35,7 @@ var ExpectedBlockTime = time.Second
 type listener struct {
 	cfg                    Config
 	conn                   Connection
-	router                 core.Router
+	router                 *core.Router
 	bridgeContract         *Bridge.Bridge // instance of bound bridge contract
 	erc20HandlerContract   *ERC20Handler.ERC20Handler
 	erc721HandlerContract  *ERC721Handler.ERC721Handler
@@ -66,7 +66,11 @@ func (l *listener) setContracts(bridge *Bridge.Bridge, erc20Handler *ERC20Handle
 	l.genericHandlerContract = genericHandler
 }
 
+<<<<<<< HEAD
 func (l *listener) setRouter(r core.Router) {
+=======
+func (l *listener) setRouter(r *core.Router) {
+>>>>>>> oleksii/bindings
 	l.router = r
 }
 

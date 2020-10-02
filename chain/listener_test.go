@@ -70,7 +70,7 @@ func createTestListener(t *testing.T) *listener {
 	}
 	l.setContracts(bridgeContract, erc20HandlerContract, erc721HandlerContract, genericHandlerContract)
 
-	router := *core.NewRouter(log.Root())
+	router := core.NewRouter(log.Root())
 	l.setRouter(router)
 
 	return l
