@@ -15,7 +15,7 @@ import (
 	"github.com/ChainSafe/chainbridge-celo/bindings/GenericHandler"
 	"github.com/ChainSafe/chainbridge-utils/blockstore"
 	"github.com/ChainSafe/chainbridge-utils/core"
-	"github.com/ChainSafe/log15"
+	log "github.com/ChainSafe/log15"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethclient"
@@ -40,14 +40,14 @@ type listener struct {
 	erc20HandlerContract   *ERC20Handler.ERC20Handler
 	erc721HandlerContract  *ERC721Handler.ERC721Handler
 	genericHandlerContract *GenericHandler.GenericHandler
-	log                    log15.Logger
+	log                    log.Logger
 	blockstore             blockstore.Blockstorer
 	stop                   <-chan int
 	sysErr                 chan<- error // Reports fatal error to core
 	syncer                 ValidatorSyncer
 }
 
-func NewListener(conn Connection, cfg *Config, log log15.Logger, bs blockstore.Blockstorer, stop <-chan int, sysErr chan<- error, s ValidatorSyncer) *listener {
+func NewListener(conn Connection, cfg *Config, log log.Logger, bs blockstore.Blockstorer, stop <-chan int, sysErr chan<- error, s ValidatorSyncer) *listener {
 	return &listener{
 		cfg:         *cfg,
 		conn:        conn,
