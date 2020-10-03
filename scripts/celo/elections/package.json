@@ -1,0 +1,30 @@
+{
+  "name": "elections",
+  "version": "1.0.0",
+  "description": "Perpetual elections for Celo",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ChainSafe/chainbridge-celo.git"
+  },
+  "keywords": [
+    "celo",
+    "ethereum",
+    "elections"
+  ],
+  "author": "Oleksii Matiiasevych <oleksii@chainsafe.io>",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ChainSafe/chainbridge-celo/issues"
+  },
+  "homepage": "https://github.com/ChainSafe/chainbridge-celo#readme",
+  "dependencies": {
+    "@celo/contractkit": "^0.4.13",
+    "@celo/utils": "^0.1.19",
+    "bluebird": "^3.7.2",
+    "web3": "^1.2.11"
+  }
+}

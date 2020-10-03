@@ -42,3 +42,6 @@ rebuild-contracts:
 
 clean:
 	rm -rf build/ solidity/
+
+start-elections:
+	docker-compose -f ./docker-compose-elections.yml up -V
