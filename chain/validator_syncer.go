@@ -111,3 +111,7 @@ func (v *ValidatorSyncer) start() error {
 func (v *ValidatorSyncer) close() {
 	v.conn.Close()
 }
+
+func (v *ValidatorSyncer) Sync(latestBlock *big.Int) error {
+	return nil
+}
