@@ -3,4 +3,10 @@
 
 package chain
 
-type Config struct {}
+import (
+	"math/big"
+)
+
+type Config struct {
+	startBlock *big.Int
+}
