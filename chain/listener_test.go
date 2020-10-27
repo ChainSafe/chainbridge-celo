@@ -33,9 +33,19 @@ var TestRelayerThreshold = big.NewInt(2)
 func createTestListener(t *testing.T) *listener {
 	newConfig := Config{}
 	conn := connection.NewConnection(TestEndpoint, false, AliceKp, log.Root(), GasLimit, GasPrice)
+	err := conn.Connect()
+	if err != nil {
+		t.Fatal(err)
+	}
 	vsyncer := ValidatorSyncer{conn: conn}
 	stop := make(chan int)
 	errs := make(chan error)
+
+	latestBlock, err := conn.LatestBlock()
+	if err != nil {
+		t.Fatal(err)
+	}
+	newConfig.startBlock = latestBlock
 
 	l := NewListener(conn, &newConfig, log.Root(), &blockstore.EmptyStore{}, stop, errs, vsyncer)
 
