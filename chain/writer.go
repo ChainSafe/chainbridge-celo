@@ -1,34 +1,35 @@
-package chain 
+package chain
 
-import(
-	"github.com/chainsafe/chainbridge-celo/bindings/Bridge"
+import (
 	"github.com/ChainSafe/chainbridge-utils/core"
 	metrics "github.com/ChainSafe/chainbridge-utils/metrics/types"
 	"github.com/ChainSafe/chainbridge-utils/msg"
 	"github.com/ChainSafe/log15"
+	"github.com/chainsafe/chainbridge-celo/bindings/Bridge"
 )
 
-var _ core.Writer = &writer;
+var _ core.Writer = &writer
 
 type writer struct {
-	cfg            Config
-	conn           Connection 
-	bridgeContact  *Bridge.Bridge
-	log            log15.Logger 
-	stop           <-chan int 
-	sysErr         chan<- error 
-	metrics        *metrics.ChainMetrics          
+	cfg           Config
+	conn          Connection
+	bridgeContact *Bridge.Bridge
+	log           log15.Logger
+	stop          <-chan int
+	sysErr        chan<- error
+	metrics       *metrics.ChainMetrics
 }
+
 // NewWriter creates and returns writer
 func NewWriter(conn Connection, cfg *Config, log log15.Logger, stop <-chan int, sysErr chan<- error, m *metrics.ChainMetrics) *writer {
-     return &writer{
-		 cfg:   *cfg,
-		 conn:  conn, 
-		 log:   log,
-		 stop:  stop, 
-		 sysErr: sysErr,
-		 metrics: m,
-	 }
+	return &writer{
+		cfg:     *cfg,
+		conn:    conn,
+		log:     log,
+		stop:    stop,
+		sysErr:  sysErr,
+		metrics: m,
+	}
 }
 
 func (w *writer) start() error {
@@ -42,7 +43,7 @@ func (w *writer) setContract(bridge *Bridge.Bridge) {
 }
 
 // ResolveMessage handles any given message based on type
-// A bool is returned to indicate failure/success 
+// A bool is returned to indicate failure/success
 // this should be ignored except for within tests.
 func (w *writer) ResolveMessage(m msg.Message) bool {
 	w.log.Info("Attempting to resolve message", "type", m.Type, "src", m.Source, "dst", m.Destination, "nonce", m.DepositNonce, "rId", m.ResourceId.Hex())
@@ -59,5 +60,3 @@ func (w *writer) ResolveMessage(m msg.Message) bool {
 		return false
 	}
 }
-
-
