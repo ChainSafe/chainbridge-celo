@@ -28,13 +28,12 @@ var GenericTransfer TransferType = "GenericTransfer"
 
 // Message is used as a generic format to communicate between chains
 type Message struct {
-	Source       ChainId // Source where message was initiated
-	Destination  ChainId // Destination chain of message
-	ResourceId   ResourceId
-	Type         TransferType  // type of bridge transfer
-	DepositNonce Nonce         // Nonce for the deposit
-	Payload      []interface{} // data associated with event sequence
-
+	Source             ChainId // Source where message was initiated
+	Destination        ChainId // Destination chain of message
+	ResourceId         ResourceId
+	Type               TransferType  // type of bridge transfer
+	DepositNonce       Nonce         // Nonce for the deposit
+	Payload            []interface{} // data associated with event sequence
 	RootHash           [32]byte
 	AggregatePublicKey []byte
 	HashedMessage      []byte
