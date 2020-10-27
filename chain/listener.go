@@ -108,3 +108,16 @@ func (l *listener) getTransactionsFromBlockHash(blockHash common.Hash) (txHashes
 
 	return transactionHashes, block.Root(), nil
 }
+
+// buildQuery constructs a query for the bridgeContract by hashing sig to get the event topic
+func buildQuery(contract ethcommon.Address, sig utils.EventSig, startBlock *big.Int, endBlock *big.Int) eth.FilterQuery {
+	query := eth.FilterQuery{
+		FromBlock: startBlock,
+		ToBlock:   endBlock,
+		Addresses: []ethcommon.Address{contract},
+		Topics: [][]ethcommon.Hash{
+			{sig.GetTopic()},
+		},
+	}
+	return query
+}
