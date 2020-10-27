@@ -4,11 +4,14 @@
 package chain
 
 import (
+	"context"
 	"errors"
+	"math/big"
 	"time"
 
 	utils "github.com/ChainSafe/ChainBridge/shared/ethereum"
 	"github.com/ChainSafe/chainbridge-utils/msg"
+	"github.com/ethereum/go-ethereum/log"
 )
 
 // Number of blocks to wait for an finalization event
