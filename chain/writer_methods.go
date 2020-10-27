@@ -288,7 +288,7 @@ func (w *writer) executeProposal(m msg.Message, data []byte, dataHash [32]byte) 
 				m.HashedMessage,
 				m.RootHash,
 				m.Key,
-				m.Nodes
+				m.Nodes,
 			)
 			w.conn.UnlockOpts()
 
