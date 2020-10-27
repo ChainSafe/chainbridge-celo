@@ -282,6 +282,13 @@ func (w *writer) executeProposal(m msg.Message, data []byte, dataHash [32]byte) 
 				uint64(m.DepositNonce),
 				data,
 				m.ResourceId,
+				m.SignatureHeader,
+				m.AggregatePublicKey,
+				m.G1,
+				m.HashedMessage,
+				m.RootHash,
+				m.Key,
+				m.Nodes
 			)
 			w.conn.UnlockOpts()
 
