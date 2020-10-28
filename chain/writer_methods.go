@@ -8,8 +8,7 @@ import (
 	"errors"
 	"math/big"
 	"time"
-
-	utils "github.com/ChainSafe/ChainBridge/shared/ethereum"
+	utils "github.com/ChainSafe/chainbridge-celo/shared/ethereum"
 	"github.com/ChainSafe/chainbridge-utils/msg"
 	"github.com/ethereum/go-ethereum/log"
 )
@@ -82,7 +81,7 @@ func (w *writer) createErc20Proposal(m msg.Message) bool {
 	w.log.Info("Creating erc20 proposal", "src", m.Source, "nonce", m.DepositNonce)
 
 	data := ConstructErc20ProposalData(m.Payload[0].([]byte), m.Payload[1].([]byte))
-	dataHash := utils.Hash(append(w.cfg.erc20HandlerConstract.Bytes(), data...))
+	dataHash := utils.Hash(append(w.cfg.erc20HandlerContract.Bytes(), data...))
 
 	if !w.shouldVote(m, dataHash) {
 		return false
