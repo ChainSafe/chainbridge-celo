@@ -13,7 +13,7 @@ var _ core.Writer = &writer{}
 type writer struct {
 	cfg           Config
 	conn          Connection
-	bridgeContact *Bridge.Bridge
+	bridgeContract *Bridge.Bridge
 	log           log15.Logger
 	stop          <-chan int
 	sysErr        chan<- error
