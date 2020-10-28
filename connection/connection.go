@@ -177,6 +177,27 @@ func (c *Connection) WaitForBlock(block *big.Int) error {
 	}
 }
 
+// LockAndUpdateOpts acquires a lock on the opts before updating the nonce
+// and gas price.
+func (c *Connection) LockAndUpdateOpts() error {
+	c.optsLock.Lock()
+
+	gasPrice, err := c.SafeEstimateGas(context.TODO())
+	if err != nil {
+		return err
+	}
+	c.opts.GasPrice = gasPrice
+
+	nonce, err := c.conn.PendingNonceAt(context.Background(), c.opts.From)
+	if err != nil {
+		c.optsLock.Unlock()
+		return err
+	}
+	c.opts.Nonce.SetUint64(nonce)
+	return nil
+}
+
+
 // Close terminates the client connection and stops any running routines
 func (c *Connection) Close() {
 	if c.conn != nil {
