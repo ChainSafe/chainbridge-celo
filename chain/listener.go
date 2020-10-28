@@ -36,11 +36,14 @@ var _ Connection = &connection.Connection{}
 
 type Connection interface {
 	Connect() error
-	LatestBlock() (*big.Int, error)
-	Close()
-	Client() *ethclient.Client
+	Keypair() *secp256k1.Keypair
 	Opts() *bind.TransactOpts
 	CallOpts() *bind.CallOpts
+	LockAndUpdateOpts() error
+	UnlockOpts()
+	Client() *ethclient.Client
+	EnsureHasBytecode(address common.Address) error
+	LatestBlock() (*big.Int, error)
 	WaitForBlock(block *big.Int) error
 	Close()
 }
