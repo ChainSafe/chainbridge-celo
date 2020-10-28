@@ -5,8 +5,13 @@ package chain
 
 import (
 	"math/big"
+	"github.com/ethereum/go-ethereum/common"
 )
 
 type Config struct {
+	bridgeContract         common.Address
+	erc20HandlerContract   common.Address
+	erc721HandlerContract  common.Address
+	genericHandlerContract common.Address
 	startBlock *big.Int
 }
