@@ -41,6 +41,8 @@ type Connection interface {
 	Client() *ethclient.Client
 	Opts() *bind.TransactOpts
 	CallOpts() *bind.CallOpts
+	WaitForBlock(block *big.Int) error
+	Close()
 }
 
 var ExpectedBlockTime = time.Second
