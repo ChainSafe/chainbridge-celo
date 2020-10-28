@@ -43,7 +43,7 @@ func (w *writer) start() error {
 
 // setContract adds the bound receiver bridgeContract to the writer
 func (w *writer) setContract(bridge *Bridge.Bridge) {
-	w.bridgeContact = bridge
+	w.bridgeContract = bridge
 }
 
 // ResolveMessage handles any given message based on type
