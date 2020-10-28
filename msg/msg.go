@@ -26,6 +26,25 @@ var FungibleTransfer TransferType = "FungibleTransfer"
 var NonFungibleTransfer TransferType = "NonFungibleTransfer"
 var GenericTransfer TransferType = "GenericTransfer"
 
+type MsgProofOpts struct {
+	source ChainId
+	dest ChainId
+	nonce Nonce
+	amount *big.Int
+	resourceId ResourceId
+	recipient []byte
+	rootHash [32]byte
+	aggregatePublicKey []byte
+	hashedMessage []byte
+	key []byte
+	data []interface{}
+	signatureHeader []byte
+	nodes []byte
+	g1 []byte
+	tokenId *big.Int
+	metadata []byte
+}
+
 // Message is used as a generic format to communicate between chains
 type Message struct {
 	Source             ChainId // Source where message was initiated
@@ -44,76 +63,70 @@ type Message struct {
 	G1                 []byte
 }
 
-func NewFungibleTransfer(source, dest ChainId, nonce Nonce, amount *big.Int, resourceId ResourceId, recipient []byte,
-	rootHash [32]byte, aggregatePublicKey []byte, hashedMessage []byte, key []byte,
-	data []interface{}, signatureHeader []byte, nodes []byte, g1 []byte) Message {
+func NewFungibleTransfer(param MsgProofOpts) Message {
 	return Message{
-		Source:       source,
-		Destination:  dest,
+		Source:       param.source,
+		Destination:  param.dest,
 		Type:         FungibleTransfer,
-		DepositNonce: nonce,
-		ResourceId:   resourceId,
+		DepositNonce: param.nonce,
+		ResourceId:   param.resourceId,
 		Payload: []interface{}{
-			amount.Bytes(),
-			recipient,
+			param.amount.Bytes(),
+			param.recipient,
 		},
-		RootHash:           rootHash,
-		AggregatePublicKey: aggregatePublicKey,
-		HashedMessage:      hashedMessage,
-		Key:                key,
-		Data:               data,
-		SignatureHeader:    signatureHeader,
-		Nodes:              nodes,
-		G1:                 g1,
+		RootHash:           param.rootHash,
+		AggregatePublicKey: param.aggregatePublicKey,
+		HashedMessage:      param.hashedMessage,
+		Key:                param.key,
+		Data:               param.data,
+		SignatureHeader:    param.signatureHeader,
+		Nodes:              param.nodes,
+		G1:                 param.g1,
 	}
 }
 
-func NewNonFungibleTransfer(source, dest ChainId, nonce Nonce, resourceId ResourceId, tokenId *big.Int, recipient, metadata []byte,
-	rootHash [32]byte, aggregatePublicKey []byte, hashedMessage []byte, key []byte,
-	data []interface{}, signatureHeader []byte, nodes []byte, g1 []byte) Message {
+func NewNonFungibleTransfer(param MsgProofOpts) Message {
 
 	return Message{
-		Source:       source,
-		Destination:  dest,
+		Source:       param.source,
+		Destination:  param.dest,
 		Type:         NonFungibleTransfer,
-		DepositNonce: nonce,
-		ResourceId:   resourceId,
+		DepositNonce: param.nonce,
+		ResourceId:   param.resourceId,
 		Payload: []interface{}{
-			tokenId.Bytes(),
-			recipient,
-			metadata,
+			param.tokenId.Bytes(),
+			param.recipient,
+			param.metadata,
 		},
-		RootHash:           rootHash,
-		AggregatePublicKey: aggregatePublicKey,
-		HashedMessage:      hashedMessage,
-		Key:                key,
-		Data:               data,
-		SignatureHeader:    signatureHeader,
-		Nodes:              nodes,
-		G1:                 g1,
+		RootHash:           param.rootHash,
+		AggregatePublicKey: param.aggregatePublicKey,
+		HashedMessage:      param.hashedMessage,
+		Key:                param.key,
+		Data:               param.data,
+		SignatureHeader:    param.signatureHeader,
+		Nodes:              param.nodes,
+		G1:                 param.g1,
 	}
 }
 
-func NewGenericTransfer(source, dest ChainId, nonce Nonce, resourceId ResourceId, metadata []byte,
-	rootHash [32]byte, aggregatePublicKey []byte, hashedMessage []byte, key []byte,
-	data []interface{}, signatureHeader []byte, nodes []byte, g1 []byte) Message {
+func NewGenericTransfer(param MsgProofOpts) Message {
 	return Message{
-		Source:       source,
-		Destination:  dest,
+		Source:       param.source,
+		Destination:  param.dest,
 		Type:         GenericTransfer,
-		DepositNonce: nonce,
-		ResourceId:   resourceId,
+		DepositNonce: param.nonce,
+		ResourceId:   param.resourceId,
 		Payload: []interface{}{
-			metadata,
+			param.metadata,
 		},
-		RootHash:           rootHash,
-		AggregatePublicKey: aggregatePublicKey,
-		HashedMessage:      hashedMessage,
-		Key:                key,
-		Data:               data,
-		SignatureHeader:    signatureHeader,
-		Nodes:              nodes,
-		G1:                 g1,
+		RootHash:           param.rootHash,
+		AggregatePublicKey: param.aggregatePublicKey,
+		HashedMessage:      param.hashedMessage,
+		Key:                param.key,
+		Data:               param.data,
+		SignatureHeader:    param.signatureHeader,
+		Nodes:              param.nodes,
+		G1:                 param.g1,
 	}
 }
 
