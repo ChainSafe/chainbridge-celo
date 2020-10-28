@@ -18,6 +18,7 @@ import (
 	utils "github.com/ChainSafe/chainbridge-celo/shared/ethereum"
 	"github.com/ChainSafe/chainbridge-utils/blockstore"
 	"github.com/ChainSafe/chainbridge-utils/core"
+	"github.com/ChainSafe/chainbridge-utils/crypto/secp256k1"
 	log "github.com/ChainSafe/log15"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
