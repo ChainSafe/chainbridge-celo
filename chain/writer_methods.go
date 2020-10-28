@@ -30,7 +30,7 @@ var ErrFatalQuery = errors.New("query of chain state failed")
 
 // proposalIsComplete returns true if the proposal state is either Passed, Transferred or Cancelled
 func (w *writer) proposalIsComplete(srcId msg.ChainId, nonce msg.Nonce, dataHash [32]byte) bool {
-	prop, err := w.bridgeContract.GetProposal(w.conn.CallOpts(), uint(srcId), uint64(nonce), dataHash)
+	prop, err := w.bridgeContract.GetProposal(w.conn.CallOpts(), uint8(srcId), uint64(nonce), dataHash)
 	if err != nil {
 		w.log.Error("Failed to check proposal existence", "err", err)
 		return false
@@ -51,7 +51,7 @@ func (w *writer) proposalIsFinalized(srcId msg.ChainId, nonce msg.Nonce, dataHas
 
 // hasVoted checks if this relayer has already voted
 func (w *writer) hasVoted(srcId msg.ChainId, nonce msg.Nonce, dataHash [32]byte) bool {
-	hasVoted, err := w.bridgeContract.HasVotedOnProposal(w.conn.CallOpts(), utils.IDAndNonce(srcId, nonce), dashHash, w.conn.Opts().From)
+	hasVoted, err := w.bridgeContract.HasVotedOnProposal(w.conn.CallOpts(), utils.IDAndNonce(srcId, nonce), dataHash, w.conn.Opts().From)
 
 	if err != nil {
 		w.log.Error("Failed to check proposal existance", "err", err)
@@ -88,7 +88,7 @@ func (w *writer) createErc20Proposal(m msg.Message) bool {
 		return false
 	}
 	// Capture latest block so when know where to watch from
-	latestBlock, err := w.conn.latestBlock()
+	latestBlock, err := w.conn.LatestBlock()
 	if err != nil {
 		w.log.Error("unable to fetch latest block", "err", err)
 		return false
@@ -133,7 +133,7 @@ func (w *writer) createErc721Proposal(m msg.Message) bool {
 // createGenericDepositProposal creates a generic proposal
 // returns true if the proposal is complete or is succesfully created
 func (w *writer) createGenericDepositProposal(m msg.Message) bool {
-	w.log.Info("Creating generic proposal", "src", m.Source, "nonce", m.DefaultNonce)
+	w.log.Info("Creating generic proposal", "src", m.Source, "nonce", m.DepositNonce)
 
 	metadata := m.Payload[0].([]byte)
 	data := ConstructGenericProposalData(metadata)
