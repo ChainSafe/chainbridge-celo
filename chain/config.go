@@ -5,8 +5,16 @@ package chain
 
 import (
 	"math/big"
+
+	"github.com/ChainSafe/chainbridge-utils/msg"
+	"github.com/ethereum/go-ethereum/common"
 )
 
 type Config struct {
-	startBlock *big.Int
+	id						msg.ChainId
+	bridgeContract			common.Address
+	erc20HandlerContract	common.Address
+	erc721HandlerContract	common.Address
+	genericHandlerContract	common.Address
+	startBlock				*big.Int
 }
