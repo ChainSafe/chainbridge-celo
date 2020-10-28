@@ -40,6 +40,7 @@ type Connection interface {
 	Close()
 	Client() *ethclient.Client
 	Opts() *bind.TransactOpts
+	CallOpts() *bind.CallOpts
 }
 
 var ExpectedBlockTime = time.Second
