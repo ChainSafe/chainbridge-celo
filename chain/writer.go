@@ -52,7 +52,7 @@ func (w *writer) ResolveMessage(m msg.Message) bool {
 	case msg.FungibleTransfer:
 		return w.createErc20Proposal(m)
 	case msg.NonFungibleTransfer:
-		return w.createErc21Proposal(m)
+		return w.createErc721Proposal(m)
 	case msg.GenericTransfer:
 		return w.createGenericDepositProposal(m)
 	default:
