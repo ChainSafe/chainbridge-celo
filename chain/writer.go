@@ -8,7 +8,7 @@ import (
 	"github.com/ChainSafe/chainbridge-celo/bindings/Bridge"
 )
 
-var _ core.Writer = &writer
+var _ core.Writer = &writer{}
 
 type writer struct {
 	cfg           Config
