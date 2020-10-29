@@ -163,7 +163,13 @@ func (w *writer) createErc721Proposal(m msg.Message) bool {
 func (w *writer) createGenericDepositProposal(m msg.Message) bool {
 	w.log.Info("Creating generic proposal", "src", m.Source, "nonce", m.DepositNonce)
 
-	metadata := m.Payload[0].([]byte)
+	metadata, ok := m.Payload[0].([]byte)
+
+	if !ok {
+		w.log.Error("Unable to convert metadata to []byte")
+		return false
+	}
+
 	data := ConstructGenericProposalData(metadata)
 	toHash := append(w.cfg.genericHandlerContract.Bytes(), data...)
 	dataHash := utils.Hash(toHash)
