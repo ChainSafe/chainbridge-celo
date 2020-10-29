@@ -9,7 +9,8 @@ import (
 	"math/big"
 	"time"
 	utils "github.com/ChainSafe/chainbridge-celo/shared/ethereum"
-	"github.com/ChainSafe/chainbridge-celo/msg"
+	"github.com/ChainSafe/chainbridge-utils/msg"
+	celoMsg "github.com/ChainSafe/chainbridge-celo/msg"
 	"github.com/ethereum/go-ethereum/log"
 )
 
@@ -93,8 +94,22 @@ func (w *writer) createErc20Proposal(m msg.Message) bool {
 		return false
 	}
 
+	messageExtraDataInterface := m.Payload[2]
+
+	if messageExtraDataInterface == nil {
+		w.log.Error("messageExtraDataInterface nil")
+		return false
+	}
+
+	messageExtraData, ok:= messageExtraDataInterface.(*celoMsg.MessageExtraData)
+
+	if !ok {
+		w.log.Error("unable to convert messageExtraDataInterface to *MessageExtraData")
+		return false
+	}
+
 	// watch for execution event
-	go w.watchThenExecute(m, data, dataHash, latestBlock)
+	go w.watchThenExecute(m, data, dataHash, latestBlock, messageExtraData)
 
 	w.voteProposal(m, dataHash)
 
@@ -120,8 +135,22 @@ func (w *writer) createErc721Proposal(m msg.Message) bool {
 		return false
 	}
 
+	messageExtraDataInterface := m.Payload[3]
+
+	if messageExtraDataInterface == nil {
+		w.log.Error("messageExtraDataInterface nil")
+		return false
+	}
+
+	messageExtraData, ok:= messageExtraDataInterface.(*celoMsg.MessageExtraData)
+
+	if !ok {
+		w.log.Error("unable to convert messageExtraDataInterface to *MessageExtraData")
+		return false
+	}
+
 	// watch for execution event
-	go w.watchThenExecute(m, data, dataHash, latestBlock)
+	go w.watchThenExecute(m, data, dataHash, latestBlock, messageExtraData)
 
 	w.voteProposal(m, dataHash)
 
@@ -150,8 +179,22 @@ func (w *writer) createGenericDepositProposal(m msg.Message) bool {
 		return false
 	}
 
+	messageExtraDataInterface := m.Payload[1]
+
+	if messageExtraDataInterface == nil {
+		w.log.Error("messageExtraDataInterface nil")
+		return false
+	}
+
+	messageExtraData, ok:= messageExtraDataInterface.(*celoMsg.MessageExtraData)
+
+	if !ok {
+		w.log.Error("unable to convert messageExtraDataInterface to *MessageExtraData")
+		return false
+	}
+
 	// watch for execution event
-	go w.watchThenExecute(m, data, dataHash, latestBlock)
+	go w.watchThenExecute(m, data, dataHash, latestBlock, messageExtraData)
 
 	w.voteProposal(m, dataHash)
 
@@ -159,7 +202,7 @@ func (w *writer) createGenericDepositProposal(m msg.Message) bool {
 }
 
 // watchThenExecute watches for the latest block and executes once the matching finalized event is found
-func (w *writer) watchThenExecute(m msg.Message, data []byte, dataHash [32]byte, latestBlock *big.Int) {
+func (w *writer) watchThenExecute(m msg.Message, data []byte, dataHash [32]byte, latestBlock *big.Int, messageExtraData *celoMsg.MessageExtraData) {
 	w.log.Info("Watching for finalization event", "src", m.Source, "nonce", m.DepositNonce)
 
 	// watching for the latest block, querying and matching the finalized event will be retried up to ExecuteBlockWatchLimit times
@@ -201,7 +244,7 @@ func (w *writer) watchThenExecute(m msg.Message, data []byte, dataHash [32]byte,
 				if m.Source == msg.ChainId(sourceId) &&
 					m.DepositNonce.Big().Uint64() == depositNonce &&
 					utils.IsFinalized(uint8(status)) {
-					w.executeProposal(m, data, dataHash)
+					w.executeProposal(m, data, dataHash, messageExtraData)
 					return
 				} else {
 					w.log.Trace("Ignoring event", "src", sourceId, "nonce", depositNonce)
@@ -263,7 +306,7 @@ func (w *writer) voteProposal(m msg.Message, dataHash [32]byte) {
 }
 
 // executeProposal executes the proposal
-func (w *writer) executeProposal(m msg.Message, data []byte, dataHash [32]byte) {
+func (w *writer) executeProposal(m msg.Message, data []byte, dataHash [32]byte, messageExtraData *celoMsg.MessageExtraData) {
 	for i := 0; i < TxRetryLimit; i++ {
 		select {
 		case <-w.stop:
@@ -281,13 +324,14 @@ func (w *writer) executeProposal(m msg.Message, data []byte, dataHash [32]byte) 
 				uint64(m.DepositNonce),
 				data,
 				m.ResourceId,
-				m.SignatureHeader,
-				m.AggregatePublicKey,
-				m.G1,
-				m.HashedMessage,
-				m.RootHash,
-				m.Key,
-				m.Nodes,
+				//
+				messageExtraData.SignatureHeader,
+				messageExtraData.AggregatePublicKey,
+				messageExtraData.G1,
+				messageExtraData.HashedMessage,
+				messageExtraData.RootHash,
+				messageExtraData.Key,
+				messageExtraData.Nodes,
 			)
 			w.conn.UnlockOpts()
 
