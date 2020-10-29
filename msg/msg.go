@@ -4,134 +4,118 @@
 package msg
 
 import (
-	"fmt"
 	"math/big"
+	"github.com/ChainSafe/chainbridge-utils/msg"
 )
-
-type ChainId uint8
-type TransferType string
-type ResourceId [32]byte
-
-func (r ResourceId) Hex() string {
-	return fmt.Sprintf("%x", r)
-}
-
-type Nonce uint64
-
-func (n Nonce) Big() *big.Int {
-	return big.NewInt(int64(n))
-}
-
-var FungibleTransfer TransferType = "FungibleTransfer"
-var NonFungibleTransfer TransferType = "NonFungibleTransfer"
-var GenericTransfer TransferType = "GenericTransfer"
-
+ 
 type MsgProofOpts struct {
-	source ChainId
-	dest ChainId
-	nonce Nonce
-	amount *big.Int
-	resourceId ResourceId
-	recipient []byte
-	rootHash [32]byte
-	aggregatePublicKey []byte
-	hashedMessage []byte
-	key []byte
-	data []interface{}
-	signatureHeader []byte
-	nodes []byte
-	g1 []byte
-	tokenId *big.Int
-	metadata []byte
-}
-
-// Message is used as a generic format to communicate between chains
-type Message struct {
-	Source             ChainId // Source where message was initiated
-	Destination        ChainId // Destination chain of message
-	ResourceId         ResourceId
-	Type               TransferType  // type of bridge transfer
-	DepositNonce       Nonce         // Nonce for the deposit
-	Payload            []interface{} // data associated with event sequence
-	RootHash           [32]byte
+	Source msg.ChainId
+	Dest msg.ChainId
+	Nonce msg.Nonce
+	Amount *big.Int
+	ResourceId msg.ResourceId
+	Recipient []byte
+	TokenId *big.Int
+	Metadata []byte
+	//
+	RootHash [32]byte
 	AggregatePublicKey []byte
-	HashedMessage      []byte
-	Key                []byte
-	Data               []interface{}
-	SignatureHeader    []byte
-	Nodes              []byte
-	G1                 []byte
+	HashedMessage []byte
+	Key []byte
+	Data []interface{}
+	SignatureHeader []byte
+	Nodes []byte
+	G1 []byte
 }
 
-func NewFungibleTransfer(param MsgProofOpts) Message {
-	return Message{
-		Source:       param.source,
-		Destination:  param.dest,
-		Type:         FungibleTransfer,
-		DepositNonce: param.nonce,
-		ResourceId:   param.resourceId,
+type MessageExtraData struct {
+	RootHash [32]byte
+	AggregatePublicKey []byte
+	HashedMessage []byte
+	Key []byte
+	Data []interface{}
+	SignatureHeader []byte
+	Nodes []byte
+	G1 []byte
+}
+
+ 
+
+func NewFungibleTransfer(param MsgProofOpts) msg.Message {
+	return msg.Message{
+		Source:       param.Source,
+		Destination:  param.Dest,
+		Type:         msg.FungibleTransfer,
+		DepositNonce: param.Nonce,
+		ResourceId:   param.ResourceId,
 		Payload: []interface{}{
-			param.amount.Bytes(),
-			param.recipient,
+			param.Amount.Bytes(),
+			param.Recipient,
+			
+			&MessageExtraData{
+                RootHash: param.RootHash,
+				AggregatePublicKey: param.AggregatePublicKey,
+				HashedMessage: param.HashedMessage,
+				Key: param.Key,
+				Data: param.Data,
+				SignatureHeader: param.SignatureHeader,
+				Nodes: param.Nodes,
+				G1: param.G1,
+			},
 		},
-		RootHash:           param.rootHash,
-		AggregatePublicKey: param.aggregatePublicKey,
-		HashedMessage:      param.hashedMessage,
-		Key:                param.key,
-		Data:               param.data,
-		SignatureHeader:    param.signatureHeader,
-		Nodes:              param.nodes,
-		G1:                 param.g1,
 	}
 }
 
-func NewNonFungibleTransfer(param MsgProofOpts) Message {
+func NewNonFungibleTransfer(param MsgProofOpts) msg.Message {
 
-	return Message{
-		Source:       param.source,
-		Destination:  param.dest,
-		Type:         NonFungibleTransfer,
-		DepositNonce: param.nonce,
-		ResourceId:   param.resourceId,
+	return msg.Message{
+		Source:       param.Source,
+		Destination:  param.Dest,
+		Type:         msg.NonFungibleTransfer,
+		DepositNonce: param.Nonce,
+		ResourceId:   param.ResourceId,
 		Payload: []interface{}{
-			param.tokenId.Bytes(),
-			param.recipient,
-			param.metadata,
+			param.TokenId.Bytes(),
+			param.Recipient,
+			param.Metadata,  
+			//
+			&MessageExtraData{
+                RootHash: param.RootHash,
+				AggregatePublicKey: param.AggregatePublicKey,
+				HashedMessage: param.HashedMessage,
+				Key: param.Key,
+				Data: param.Data,
+				SignatureHeader: param.SignatureHeader,
+				Nodes: param.Nodes,
+				G1: param.G1,
+			},
 		},
-		RootHash:           param.rootHash,
-		AggregatePublicKey: param.aggregatePublicKey,
-		HashedMessage:      param.hashedMessage,
-		Key:                param.key,
-		Data:               param.data,
-		SignatureHeader:    param.signatureHeader,
-		Nodes:              param.nodes,
-		G1:                 param.g1,
 	}
 }
 
-func NewGenericTransfer(param MsgProofOpts) Message {
-	return Message{
-		Source:       param.source,
-		Destination:  param.dest,
-		Type:         GenericTransfer,
-		DepositNonce: param.nonce,
-		ResourceId:   param.resourceId,
+func NewGenericTransfer(param MsgProofOpts) msg.Message {
+	return msg.Message{
+		Source:       param.Source,
+		Destination:  param.Dest,
+		Type:         msg.GenericTransfer,
+		DepositNonce: param.Nonce,
+		ResourceId:   param.ResourceId,
 		Payload: []interface{}{
-			param.metadata,
+			param.Metadata,
+
+			&MessageExtraData{
+				RootHash: param.RootHash,
+				AggregatePublicKey: param.AggregatePublicKey,
+				HashedMessage: param.HashedMessage,
+				Key: param.Key,
+				Data: param.Data,
+				SignatureHeader: param.SignatureHeader,
+				Nodes: param.Nodes,
+				G1: param.G1,
+		  },
+
 		},
-		RootHash:           param.rootHash,
-		AggregatePublicKey: param.aggregatePublicKey,
-		HashedMessage:      param.hashedMessage,
-		Key:                param.key,
-		Data:               param.data,
-		SignatureHeader:    param.signatureHeader,
-		Nodes:              param.nodes,
-		G1:                 param.g1,
 	}
 }
 
-func ResourceIdFromSlice(in []byte) ResourceId {
-	var res ResourceId
-	copy(res[:], in)
-	return res
-}
+
