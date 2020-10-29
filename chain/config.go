@@ -11,10 +11,10 @@ import (
 )
 
 type Config struct {
-	id						msg.ChainId
-	bridgeContract			common.Address
-	erc20HandlerContract	common.Address
-	erc721HandlerContract	common.Address
-	genericHandlerContract	common.Address
-	startBlock				*big.Int
+	id                     msg.ChainId
+	bridgeContract         common.Address
+	erc20HandlerContract   common.Address
+	erc721HandlerContract  common.Address
+	genericHandlerContract common.Address
+	startBlock             *big.Int
 }
