@@ -31,6 +31,7 @@ type Connection struct {
 	kp       *secp256k1.Keypair
 	gasLimit *big.Int
 	gasPrice *big.Int
+	maxGasPrice *big.Int
 	conn     *ethclient.Client
 	// signer    ethtypes.Signer
 	opts      *bind.TransactOpts
@@ -38,6 +39,7 @@ type Connection struct {
 	nonce     uint64
 	nonceLock sync.Mutex
 	log       log15.Logger
+	optsLock sync.Mutex
 	stop      chan int // All routines should exit when this channel is closed
 }
 
@@ -132,6 +134,10 @@ func (c *Connection) UnlockNonce() {
 	c.nonceLock.Unlock()
 }
 
+func (c *Connection) UnlockOpts() {
+	c.optsLock.Unlock()
+}
+
 // LatestBlock returns the latest block from the current chain
 func (c *Connection) LatestBlock() (*big.Int, error) {
 	header, err := c.conn.HeaderByNumber(context.Background(), nil)
@@ -195,6 +201,20 @@ func (c *Connection) LockAndUpdateOpts() error {
 	}
 	c.opts.Nonce.SetUint64(nonce)
 	return nil
+}
+
+func (c *Connection) SafeEstimateGas(ctx context.Context) (*big.Int, error) {
+	gasPrice, err := c.conn.SuggestGasPrice(context.TODO())
+	if err != nil {
+		return nil, err
+	}
+
+	// Check we aren't exceeding our limit
+	if gasPrice.Cmp(c.maxGasPrice) == 1 {
+		return c.maxGasPrice, nil
+	} else {
+		return gasPrice, nil
+	}
 }
 
 
