@@ -97,7 +97,7 @@ func (w *writer) createErc20Proposal(m msg.Message) bool {
 	messageExtraDataInterface := m.Payload[2]
 
 	if messageExtraDataInterface == nil {
-		w.log.Error("messageExtraDataInterface nil")
+		w.log.Error("messageExtraData cannot be nil")
 		return false
 	}
 
@@ -138,7 +138,7 @@ func (w *writer) createErc721Proposal(m msg.Message) bool {
 	messageExtraDataInterface := m.Payload[3]
 
 	if messageExtraDataInterface == nil {
-		w.log.Error("messageExtraDataInterface nil")
+		w.log.Error("messageExtraData cannot be nil")
 		return false
 	}
 
@@ -182,7 +182,7 @@ func (w *writer) createGenericDepositProposal(m msg.Message) bool {
 	messageExtraDataInterface := m.Payload[1]
 
 	if messageExtraDataInterface == nil {
-		w.log.Error("messageExtraDataInterface nil")
+		w.log.Error("messageExtraData cannot be nil")
 		return false
 	}
 
