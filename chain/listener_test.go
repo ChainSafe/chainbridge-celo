@@ -95,6 +95,11 @@ func createTestListener(t *testing.T, client *utils.Client, stop <-chan int, err
 // creating and sending a new transaction
 func newTransaction(t *testing.T, l *listener) common.Hash {
 	// Creating a new transaction
+	err := l.conn.LockAndUpdateNonce()
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer l.conn.UnlockNonce()
 	nonce := l.conn.Opts().Nonce
 	tx := types.NewTransaction(nonce.Uint64(), ZeroAddress, big.NewInt(0), GasLimitUint64, GasPrice, nil, nil, nil, nil)
 

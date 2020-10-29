@@ -36,6 +36,8 @@ var _ Connection = &connection.Connection{}
 type Connection interface {
 	Connect() error
 	LatestBlock() (*big.Int, error)
+	LockAndUpdateNonce() error
+	UnlockNonce()
 	Close()
 	Client() *ethclient.Client
 	Opts() *bind.TransactOpts
