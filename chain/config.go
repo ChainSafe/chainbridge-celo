@@ -9,6 +9,7 @@ import (
 )
 
 type Config struct {
+	name                   string      // Human-readable chain name
 	bridgeContract         common.Address
 	erc20HandlerContract   common.Address
 	erc721HandlerContract  common.Address
