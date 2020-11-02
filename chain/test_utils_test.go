@@ -10,7 +10,7 @@ import (
 	"time"
 
 	"github.com/ChainSafe/chainbridge-celo/bindings/Bridge"
-	connection "github.com/ChainSafe/chainbridge-celo/connections/ethereum"
+	connection "github.com/ChainSafe/chainbridge-celo/connection"
 	utils "github.com/ChainSafe/chainbridge-celo/shared/ethereum"
 	"github.com/ChainSafe/chainbridge-utils/keystore"
 	"github.com/ChainSafe/chainbridge-utils/msg"
@@ -18,7 +18,10 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 )
 
-const TestEndpoint = "ws://localhost:8545"
+const DefaultGasLimit = 6721975
+const DefaultGasPrice = 20000000000
+
+const TestEndpoint = "ws://localhost:8546"
 
 var TestLogger = newTestLogger("test")
 var TestTimeout = time.Second * 30
@@ -26,7 +29,6 @@ var TestTimeout = time.Second * 30
 var AliceKp = keystore.TestKeyRing.EthereumKeys[keystore.AliceKey]
 var BobKp = keystore.TestKeyRing.EthereumKeys[keystore.BobKey]
 
-var TestRelayerThreshold = big.NewInt(2)
 var TestChainId = msg.ChainId(0)
 
 var aliceTestConfig = createConfig("alice", nil, nil)
@@ -107,7 +109,7 @@ func createErc20Deposit(
 	amount *big.Int,
 ) {
 
-	data := utils.ConstructErc20DepositData(destRecipient.Bytes(), amount)
+	data := utils.ConstructErc20DepositData(rId, destRecipient.Bytes(), amount)
 
 	// Incrememnt Nonce by one
 	client.Opts.Nonce = client.Opts.Nonce.Add(client.Opts.Nonce, big.NewInt(1))
@@ -131,7 +133,7 @@ func createErc721Deposit(
 	tokenId *big.Int,
 ) {
 
-	data := utils.ConstructErc721DepositData(tokenId, destRecipient.Bytes())
+	data := utils.ConstructErc721DepositData(rId, tokenId, destRecipient.Bytes()) 
 
 	// Incrememnt Nonce by one
 	client.Opts.Nonce = client.Opts.Nonce.Add(client.Opts.Nonce, big.NewInt(1))
@@ -153,7 +155,7 @@ func createGenericDeposit(
 	destId msg.ChainId,
 	hash []byte) {
 
-	data := utils.ConstructGenericDepositData(hash)
+	data := utils.ConstructGenericDepositData(rId, hash)
 
 	// Incrememnt Nonce by one
 	client.Opts.Nonce = client.Opts.Nonce.Add(client.Opts.Nonce, big.NewInt(1))
