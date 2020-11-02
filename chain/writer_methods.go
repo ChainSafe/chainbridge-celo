@@ -8,9 +8,10 @@ import (
 	"errors"
 	"math/big"
 	"time"
+
+	celoMsg "github.com/ChainSafe/chainbridge-celo/msg"
 	utils "github.com/ChainSafe/chainbridge-celo/shared/ethereum"
 	"github.com/ChainSafe/chainbridge-utils/msg"
-	celoMsg "github.com/ChainSafe/chainbridge-celo/msg"
 	"github.com/ethereum/go-ethereum/log"
 )
 
@@ -101,7 +102,7 @@ func (w *writer) createErc20Proposal(m msg.Message) bool {
 		return false
 	}
 
-	messageExtraData, ok:= messageExtraDataInterface.(*celoMsg.MessageExtraData)
+	messageExtraData, ok := messageExtraDataInterface.(*celoMsg.MessageExtraData)
 
 	if !ok {
 		w.log.Error("unable to convert messageExtraDataInterface to *MessageExtraData")
@@ -142,7 +143,7 @@ func (w *writer) createErc721Proposal(m msg.Message) bool {
 		return false
 	}
 
-	messageExtraData, ok:= messageExtraDataInterface.(*celoMsg.MessageExtraData)
+	messageExtraData, ok := messageExtraDataInterface.(*celoMsg.MessageExtraData)
 
 	if !ok {
 		w.log.Error("unable to convert messageExtraDataInterface to *MessageExtraData")
@@ -192,7 +193,7 @@ func (w *writer) createGenericDepositProposal(m msg.Message) bool {
 		return false
 	}
 
-	messageExtraData, ok:= messageExtraDataInterface.(*celoMsg.MessageExtraData)
+	messageExtraData, ok := messageExtraDataInterface.(*celoMsg.MessageExtraData)
 
 	if !ok {
 		w.log.Error("unable to convert messageExtraDataInterface to *MessageExtraData")
