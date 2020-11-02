@@ -9,16 +9,13 @@ import (
 	"testing"
 
 	"github.com/ChainSafe/chainbridge-celo/connection"
-	"github.com/ChainSafe/chainbridge-utils/keystore"
 	"github.com/ChainSafe/log15"
 	"github.com/ethereum/go-ethereum/common"
 )
 
-var TestEndpoint = "ws://localhost:8545"
 var GasLimit = big.NewInt(connection.DefaultGasLimit)
 var GasPrice = big.NewInt(connection.DefaultGasPrice)
 
-var AliceKp = keystore.TestKeyRing.EthereumKeys[keystore.AliceKey]
 
 var expectedAddresses = []common.Address{
 	// expectedAddresses are packed into our extra data
