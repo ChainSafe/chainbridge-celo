@@ -5,11 +5,13 @@ package chain
 
 import (
 	"context"
+	"bytes"
 	"math/big"
 	"testing"
 	"time"
 	"github.com/ChainSafe/log15"
 	"github.com/ChainSafe/chainbridge-utils/msg"
+	celoMsg "github.com/ChainSafe/chainbridge-celo/msg"
 	ethtest "github.com/ChainSafe/chainbridge-celo/shared/ethereum/testing"
 	utils "github.com/ChainSafe/chainbridge-celo/shared/ethereum"
 	"github.com/ChainSafe/chainbridge-celo/bindings/Bridge"
@@ -17,8 +19,60 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	ethtypes "github.com/ethereum/go-ethereum/core/types"
 	ethcrypto "github.com/ethereum/go-ethereum/crypto"
+	rlp "github.com/ethereum/go-ethereum/rlp"
 )
 
+var (
+	signatureHeader []byte 
+	aggregatePublicKey []byte 
+	g1 []byte 
+	hashedMessage []byte
+	nodes []byte
+    key []byte
+	tokenId *big.Int
+	recipient common.Address
+	amount *big.Int
+	msgProofOpts celoMsg.MsgProofOpts
+)
+
+func init() {
+
+	hash := "0xff5c6287761305d7d8ae76ca96f6cb48e48aa04cf3c9280619c8993f21e335caff5c6287761305d7d8ae76ca96f6cb48e48aa04cf3c9280619c8993f21e335ca"
+	hashByte := []byte(hash)
+	signatureHeader = hashByte
+    aggregatePublicKey = hashByte
+    g1 = signatureHeader
+	hashedMessage = signatureHeader
+	var rootHash [32]byte 
+	copy(rootHash[:], hash)
+	key = []byte("0x")
+	branchRoot := []string{"", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "*" };
+	nodesBytes := bytes.Buffer{}
+	rlp.Encode(&nodesBytes, branchRoot)
+	nodes = nodesBytes.Bytes()
+	tokenId := big.NewInt(1)
+	recipient = ethcrypto.PubkeyToAddress(BobKp.PrivateKey().PublicKey)
+	amount = big.NewInt(2)
+	msgProofOpts = celoMsg.MsgProofOpts{
+		Source: 1, 
+		Dest: 0,
+		Nonce: 0,
+		Amount: amount,
+		// ResourceId: resourceId, 
+		Recipient: recipient.Bytes(),
+		TokenId: tokenId, 
+		Metadata: []byte{},
+		//
+		RootHash: rootHash,
+		AggregatePublicKey: aggregatePublicKey,
+		HashedMessage: hashedMessage,
+		Key: key,
+
+		SignatureHeader: signatureHeader,
+		Nodes: nodes,
+		G1: g1,
+	}
+}
 func createWriters(t *testing.T, client *utils.Client, contracts *utils.DeployedContracts) (*writer, *writer, func(), func(), chan error, chan error) {
 	latestBlock := ethtest.GetLatestBlock(t, client)
 	errA := make(chan error)
@@ -134,15 +188,47 @@ func TestCreateAndExecuteErc721Proposal(t *testing.T) {
 	defer writerB.conn.Close()
 
 	// We'll use alice to setup the erc721
-	tokenId := big.NewInt(1)
 	erc721Contract := ethtest.Erc721Deploy(t, client)
 	ethtest.Erc721Mint(t, client, erc721Contract, tokenId, []byte{})
 	ethtest.Erc721FundHandler(t, client, contracts.ERC721HandlerAddress, erc721Contract, tokenId)
 
 	// Create initial transfer message
 	resourceId := msg.ResourceIdFromSlice(append(common.LeftPadBytes(erc721Contract.Bytes(), 31), 0))
-	recipient := ethcrypto.PubkeyToAddress(BobKp.PrivateKey().PublicKey)
-	m := msg.NewNonFungibleTransfer(1, 0, 0, resourceId, tokenId, recipient.Bytes(), []byte{})
+	msgProofOpts.ResourceId = resourceId
+	
+	// hash := "0xff5c6287761305d7d8ae76ca96f6cb48e48aa04cf3c9280619c8993f21e335caff5c6287761305d7d8ae76ca96f6cb48e48aa04cf3c9280619c8993f21e335ca"
+	// hashByte := []byte(hash)
+	// signatureHeader := hashByte
+    // aggregatePublicKey := hashByte
+    // g1 := signatureHeader
+	// hashedMessage := signatureHeader
+	// var rootHash [32]byte 
+	// copy(rootHash[:], hash)
+	// key := []byte("0x")
+	// branchRoot := []string{"", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "*" };
+	// nodes := bytes.Buffer{}
+	// rlp.Encode(&nodes, branchRoot)
+	
+	// msgProofOpts := celoMsg.MsgProofOpts{
+	// 	Source: 1, 
+	// 	Dest: 0,
+	// 	Nonce: 0,
+	// 	Amount: big.NewInt(2),
+	// 	ResourceId: resourceId, 
+	// 	Recipient: recipient.Bytes(),
+	// 	TokenId: tokenId, 
+	// 	Metadata: []byte{},
+	// 	//
+	// 	RootHash: rootHash,
+	// 	AggregatePublicKey: aggregatePublicKey,
+	// 	HashedMessage: hashedMessage,
+	// 	Key: key,
+	// 	// Data []interface{}
+	// 	SignatureHeader: signatureHeader,
+	// 	Nodes: nodes.Bytes(),
+	// 	G1: g1,
+	// }
+	m := celoMsg.NewNonFungibleTransfer(msgProofOpts)
 	ethtest.RegisterResource(t, client, contracts.BridgeAddress, contracts.ERC721HandlerAddress, resourceId, erc721Contract)
 	// Helpful for debugging
 	go ethtest.WatchEvent(client, contracts.BridgeAddress, utils.ProposalEvent)
@@ -183,6 +269,15 @@ func TestCreateAndExecuteGenericProposal(t *testing.T) {
 		ResourceId:   rId,
 		Payload: []interface{}{
 			hash.Bytes(),
+			&celoMsg.MessageExtraData{
+				RootHash: hash,
+				AggregatePublicKey: aggregatePublicKey,
+				HashedMessage: hashedMessage,
+				Key: key,
+				SignatureHeader: signatureHeader,
+				Nodes: nodes,
+				G1: g1,
+			},
 		},
 	}
 
@@ -209,9 +304,9 @@ func TestDuplicateMessage(t *testing.T) {
 
 	// Create initial transfer message
 	resourceId := msg.ResourceIdFromSlice(append(common.LeftPadBytes(erc20Address.Bytes(), 31), 0))
-	recipient := ethcrypto.PubkeyToAddress(BobKp.PrivateKey().PublicKey)
-	amount := big.NewInt(10)
-	m := msg.NewFungibleTransfer(1, 0, 10, amount, resourceId, recipient.Bytes())
+    msgProofOpts.ResourceId = resourceId
+
+	m := celoMsg.NewFungibleTransfer(msgProofOpts)
 	ethtest.RegisterResource(t, client, contracts.BridgeAddress, contracts.ERC20HandlerAddress, resourceId, erc20Address)
 
 	data := ConstructErc20ProposalData(m.Payload[0].([]byte), m.Payload[1].([]byte))
