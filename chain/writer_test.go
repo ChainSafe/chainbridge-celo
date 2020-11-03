@@ -34,6 +34,7 @@ var (
 	amount *big.Int
 	msgProofOpts celoMsg.MsgProofOpts
 )
+var rootHash [32]byte 
 
 func init() {
 
@@ -43,16 +44,16 @@ func init() {
     aggregatePublicKey = hashByte
     g1 = signatureHeader
 	hashedMessage = signatureHeader
-	var rootHash [32]byte 
-	copy(rootHash[:], hash)
 	key = []byte("0x")
-	branchRoot := []string{"", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "*" };
+	branchRoot := []string{"", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "*" }
 	nodesBytes := bytes.Buffer{}
-	rlp.Encode(&nodesBytes, branchRoot)
+
 	nodes = nodesBytes.Bytes()
-	tokenId := big.NewInt(1)
+	tokenId = big.NewInt(1)
 	recipient = ethcrypto.PubkeyToAddress(BobKp.PrivateKey().PublicKey)
 	amount = big.NewInt(2)
+	copy(rootHash[:], hash)
+	rlp.Encode(&nodesBytes, branchRoot)
 	msgProofOpts = celoMsg.MsgProofOpts{
 		Source: 1, 
 		Dest: 0,
@@ -73,6 +74,9 @@ func init() {
 		G1: g1,
 	}
 }
+
+
+
 func createWriters(t *testing.T, client *utils.Client, contracts *utils.DeployedContracts) (*writer, *writer, func(), func(), chan error, chan error) {
 	latestBlock := ethtest.GetLatestBlock(t, client)
 	errA := make(chan error)
@@ -149,7 +153,7 @@ func routeMessageAndWait(t *testing.T, client *utils.Client, alice, bob *writer,
 
 		case err = <-sub.Err():
 			if err != nil {
-				t.Fatal(err)
+				 t.Fatal(err)
 			}
 		case err = <-aliceErr:
 			t.Fatalf("Fatal error: %s", err)
@@ -178,6 +182,7 @@ func TestWriter_start_stop(t *testing.T) {
 }
 
 func TestCreateAndExecuteErc721Proposal(t *testing.T) {
+
 	client := ethtest.NewClient(t, TestEndpoint, AliceKp)
 	contracts := deployTestContracts(t, client, TestChainId)
 	writerA, writerB, stopA, stopB, errA, errB := createWriters(t, client, contracts)
@@ -186,7 +191,6 @@ func TestCreateAndExecuteErc721Proposal(t *testing.T) {
 	defer stopB()
 	defer writerA.conn.Close()
 	defer writerB.conn.Close()
-
 	// We'll use alice to setup the erc721
 	erc721Contract := ethtest.Erc721Deploy(t, client)
 	ethtest.Erc721Mint(t, client, erc721Contract, tokenId, []byte{})
@@ -202,9 +206,10 @@ func TestCreateAndExecuteErc721Proposal(t *testing.T) {
 	go ethtest.WatchEvent(client, contracts.BridgeAddress, utils.ProposalEvent)
 	go ethtest.WatchEvent(client, contracts.BridgeAddress, utils.ProposalVote)
 
+	//fmt.Println("--msgProofOpts ", msgProofOpts.)
 	routeMessageAndWait(t, client, writerA, writerB, m, errA, errB)
 
-	ethtest.Erc721AssertOwner(t, client, erc721Contract, tokenId, recipient)
+	//ethtest.Erc721AssertOwner(t, client, erc721Contract, tokenId, recipient)
 }
 
 func TestCreateAndExecuteGenericProposal(t *testing.T) {
