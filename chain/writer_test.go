@@ -5,6 +5,7 @@ package chain
 
 import (
 	"context"
+	"fmt"
 	"bytes"
 	"math/big"
 	"testing"
@@ -195,39 +196,7 @@ func TestCreateAndExecuteErc721Proposal(t *testing.T) {
 	// Create initial transfer message
 	resourceId := msg.ResourceIdFromSlice(append(common.LeftPadBytes(erc721Contract.Bytes(), 31), 0))
 	msgProofOpts.ResourceId = resourceId
-	
-	// hash := "0xff5c6287761305d7d8ae76ca96f6cb48e48aa04cf3c9280619c8993f21e335caff5c6287761305d7d8ae76ca96f6cb48e48aa04cf3c9280619c8993f21e335ca"
-	// hashByte := []byte(hash)
-	// signatureHeader := hashByte
-    // aggregatePublicKey := hashByte
-    // g1 := signatureHeader
-	// hashedMessage := signatureHeader
-	// var rootHash [32]byte 
-	// copy(rootHash[:], hash)
-	// key := []byte("0x")
-	// branchRoot := []string{"", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "*" };
-	// nodes := bytes.Buffer{}
-	// rlp.Encode(&nodes, branchRoot)
-	
-	// msgProofOpts := celoMsg.MsgProofOpts{
-	// 	Source: 1, 
-	// 	Dest: 0,
-	// 	Nonce: 0,
-	// 	Amount: big.NewInt(2),
-	// 	ResourceId: resourceId, 
-	// 	Recipient: recipient.Bytes(),
-	// 	TokenId: tokenId, 
-	// 	Metadata: []byte{},
-	// 	//
-	// 	RootHash: rootHash,
-	// 	AggregatePublicKey: aggregatePublicKey,
-	// 	HashedMessage: hashedMessage,
-	// 	Key: key,
-	// 	// Data []interface{}
-	// 	SignatureHeader: signatureHeader,
-	// 	Nodes: nodes.Bytes(),
-	// 	G1: g1,
-	// }
+
 	m := celoMsg.NewNonFungibleTransfer(msgProofOpts)
 	ethtest.RegisterResource(t, client, contracts.BridgeAddress, contracts.ERC721HandlerAddress, resourceId, erc721Contract)
 	// Helpful for debugging
