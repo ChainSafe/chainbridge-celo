@@ -48,12 +48,12 @@ func init() {
 	branchRoot := []string{"", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "*" }
 	nodesBytes := bytes.Buffer{}
 
-	nodes = nodesBytes.Bytes()
 	tokenId = big.NewInt(1)
 	recipient = ethcrypto.PubkeyToAddress(BobKp.PrivateKey().PublicKey)
 	amount = big.NewInt(2)
 	copy(rootHash[:], hash)
 	rlp.Encode(&nodesBytes, branchRoot)
+	nodes = nodesBytes.Bytes()
 	msgProofOpts = celoMsg.MsgProofOpts{
 		Source: 1, 
 		Dest: 0,
@@ -186,7 +186,7 @@ func TestCreateAndExecuteErc721Proposal(t *testing.T) {
 	client := ethtest.NewClient(t, TestEndpoint, AliceKp)
 	contracts := deployTestContracts(t, client, TestChainId)
 	writerA, writerB, stopA, stopB, errA, errB := createWriters(t, client, contracts)
-
+	
 	defer stopA()
 	defer stopB()
 	defer writerA.conn.Close()
@@ -197,19 +197,20 @@ func TestCreateAndExecuteErc721Proposal(t *testing.T) {
 	ethtest.Erc721FundHandler(t, client, contracts.ERC721HandlerAddress, erc721Contract, tokenId)
 
 	// Create initial transfer message
-	resourceId := msg.ResourceIdFromSlice(append(common.LeftPadBytes(erc721Contract.Bytes(), 31), 0))
-	msgProofOpts.ResourceId = resourceId
+	 resourceId := msg.ResourceIdFromSlice(append(common.LeftPadBytes(erc721Contract.Bytes(), 31), 0))
+	 msgProofOpts.ResourceId = resourceId
 
 	m := celoMsg.NewNonFungibleTransfer(msgProofOpts)
+
 	ethtest.RegisterResource(t, client, contracts.BridgeAddress, contracts.ERC721HandlerAddress, resourceId, erc721Contract)
+
 	// Helpful for debugging
 	go ethtest.WatchEvent(client, contracts.BridgeAddress, utils.ProposalEvent)
 	go ethtest.WatchEvent(client, contracts.BridgeAddress, utils.ProposalVote)
 
-	//fmt.Println("--msgProofOpts ", msgProofOpts.)
 	routeMessageAndWait(t, client, writerA, writerB, m, errA, errB)
 
-	//ethtest.Erc721AssertOwner(t, client, erc721Contract, tokenId, recipient)
+	ethtest.Erc721AssertOwner(t, client, erc721Contract, tokenId, recipient)
 }
 
 func TestCreateAndExecuteGenericProposal(t *testing.T) {
