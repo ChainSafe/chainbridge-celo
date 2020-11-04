@@ -1,25 +1,24 @@
 // Copyright 2020 ChainSafe Systems
 // SPDX-License-Identifier: LGPL-3.0-only
 
-package chain  
+package chain
 
 import (
 	"context"
-	"bytes"
+	"github.com/ChainSafe/chainbridge-celo/bindings/Bridge"
+	celoMsg "github.com/ChainSafe/chainbridge-celo/msg"
+	utils "github.com/ChainSafe/chainbridge-celo/shared/ethereum"
+	ethtest "github.com/ChainSafe/chainbridge-celo/shared/ethereum/testing"
+	"github.com/ChainSafe/chainbridge-utils/msg"
+	"github.com/ChainSafe/log15"
+	eth "github.com/ethereum/go-ethereum"
+	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/common/hexutil"
+	ethtypes "github.com/ethereum/go-ethereum/core/types"
+	ethcrypto "github.com/ethereum/go-ethereum/crypto"
 	"math/big"
 	"testing"
 	"time"
-	"github.com/ChainSafe/log15"
-	"github.com/ChainSafe/chainbridge-utils/msg"
-	celoMsg "github.com/ChainSafe/chainbridge-celo/msg"
-	ethtest "github.com/ChainSafe/chainbridge-celo/shared/ethereum/testing"
-	utils "github.com/ChainSafe/chainbridge-celo/shared/ethereum"
-	"github.com/ChainSafe/chainbridge-celo/bindings/Bridge"
-	eth "github.com/ethereum/go-ethereum"
-	"github.com/ethereum/go-ethereum/common"
-	ethtypes "github.com/ethereum/go-ethereum/core/types"
-	ethcrypto "github.com/ethereum/go-ethereum/crypto"
-	rlp "github.com/ethereum/go-ethereum/rlp"
 )
 
 var (
@@ -38,22 +37,22 @@ var rootHash [32]byte
 
 func init() {
 
-	hash := "0xff5c6287761305d7d8ae76ca96f6cb48e48aa04cf3c9280619c8993f21e335caff5c6287761305d7d8ae76ca96f6cb48e48aa04cf3c9280619c8993f21e335ca"
-	hashByte := []byte(hash)
-	signatureHeader = hashByte
-    aggregatePublicKey = hashByte
-    g1 = signatureHeader
-	hashedMessage = signatureHeader
-	key = []byte("0x")
-	branchRoot := []string{"", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "*" }
-	nodesBytes := bytes.Buffer{}
-
-	nodes = nodesBytes.Bytes()
+	data, err := hexutil.Decode("0xff5c6287761305d7d8ae76ca96f6cb48e48aa04cf3c9280619c8993f21e335caff5c6287761305d7d8ae76ca96f6cb48e48aa04cf3c9280619c8993f21e335ca")
+	if err != nil {
+		panic(err)
+	}
+	signatureHeader = data
+    aggregatePublicKey = data
+    g1 = data
+	hashedMessage = data
+	nodes, err = hexutil.Decode("0xd2d1808080808080808080808080808080802a")
+	if err != nil {
+		panic(err)
+	}
 	tokenId = big.NewInt(1)
 	recipient = ethcrypto.PubkeyToAddress(BobKp.PrivateKey().PublicKey)
 	amount = big.NewInt(2)
-	copy(rootHash[:], hash)
-	rlp.Encode(&nodesBytes, branchRoot)
+	rootHash = common.HexToHash("0x46c51deeabb4a526d21f9344993c8b812de4b37896680da7c4db7ac902563e00")
 	msgProofOpts = celoMsg.MsgProofOpts{
 		Source: 1, 
 		Dest: 0,
@@ -73,9 +72,8 @@ func init() {
 		Nodes: nodes,
 		G1: g1,
 	}
+
 }
-
-
 
 func createWriters(t *testing.T, client *utils.Client, contracts *utils.DeployedContracts) (*writer, *writer, func(), func(), chan error, chan error) {
 	latestBlock := ethtest.GetLatestBlock(t, client)
@@ -182,7 +180,6 @@ func TestWriter_start_stop(t *testing.T) {
 }
 
 func TestCreateAndExecuteErc721Proposal(t *testing.T) {
-
 	client := ethtest.NewClient(t, TestEndpoint, AliceKp)
 	contracts := deployTestContracts(t, client, TestChainId)
 	writerA, writerB, stopA, stopB, errA, errB := createWriters(t, client, contracts)
@@ -206,10 +203,9 @@ func TestCreateAndExecuteErc721Proposal(t *testing.T) {
 	go ethtest.WatchEvent(client, contracts.BridgeAddress, utils.ProposalEvent)
 	go ethtest.WatchEvent(client, contracts.BridgeAddress, utils.ProposalVote)
 
-	//fmt.Println("--msgProofOpts ", msgProofOpts.)
 	routeMessageAndWait(t, client, writerA, writerB, m, errA, errB)
 
-	//ethtest.Erc721AssertOwner(t, client, erc721Contract, tokenId, recipient)
+	ethtest.Erc721AssertOwner(t, client, erc721Contract, tokenId, recipient)
 }
 
 func TestCreateAndExecuteGenericProposal(t *testing.T) {
