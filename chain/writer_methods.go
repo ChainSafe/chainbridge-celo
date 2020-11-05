@@ -122,20 +122,6 @@ func (w *writer) createErc20Proposal(m msg.Message) bool {
 func (w *writer) createErc721Proposal(m msg.Message) bool {
 	w.log.Info("Creating erc721 proposal", "src", m.Source, "nonce", m.DepositNonce)
 
-	data := ConstructErc721ProposalData(m.Payload[0].([]byte), m.Payload[1].([]byte), m.Payload[2].([]byte))
-	dataHash := utils.Hash(append(w.cfg.erc721HandlerContract.Bytes(), data...))
-
-	if !w.shouldVote(m, dataHash) {
-		return false
-	}
-
-	// Capture latest block so we know where to watch from
-	latestBlock, err := w.conn.LatestBlock()
-	if err != nil {
-		w.log.Error("Unable to fetch latest block", "err", err)
-		return false
-	}
-
 	messageExtraDataInterface := m.Payload[3]
 
 	if messageExtraDataInterface == nil {
@@ -147,6 +133,20 @@ func (w *writer) createErc721Proposal(m msg.Message) bool {
 
 	if !ok {
 		w.log.Error("unable to convert messageExtraDataInterface to *MessageExtraData")
+		return false
+	}
+
+	data := ConstructErc721ProposalData(m.Payload[0].([]byte), m.Payload[1].([]byte), m.Payload[2].([]byte))
+	dataHash := CreateErc721ProposalDataHash(data, w.cfg.erc721HandlerContract, *messageExtraData)
+
+	if !w.shouldVote(m, dataHash) {
+		return false
+	}
+
+	// Capture latest block so we know where to watch from
+	latestBlock, err := w.conn.LatestBlock()
+	if err != nil {
+		w.log.Error("Unable to fetch latest block", "err", err)
 		return false
 	}
 

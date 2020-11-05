@@ -4,6 +4,8 @@
 package chain
 
 import (
+	"github.com/ChainSafe/chainbridge-celo/msg"
+	utils "github.com/ChainSafe/chainbridge-celo/shared/ethereum"
 	"math/big"
 
 	"github.com/ethereum/go-ethereum/common"
@@ -22,20 +24,16 @@ func ConstructErc20ProposalData(amount []byte, recipient []byte) []byte {
 }
 
 // constructErc721ProposalData returns the bytes to construct a proposal suitable for Erc721
-func ConstructErc721ProposalData(tokenId []byte, recipient []byte, metadata []byte) []byte {
-	var data []byte
-	data = append(data, common.LeftPadBytes(tokenId, 32)...) // tokenId ([]byte)
-
-	recipientLen := big.NewInt(int64(len(recipient))).Bytes()
-	data = append(data, common.LeftPadBytes(recipientLen, 32)...) // length of recipient
-	data = append(data, recipient...)                             // recipient ([]byte)
-
-	metadataLen := big.NewInt(int64(len(metadata))).Bytes()
-	data = append(data, common.LeftPadBytes(metadataLen, 32)...) // length of metadata (uint256)
-	data = append(data, metadata...)                             // metadata ([]byte)
-	return data
+func CreateProposalDataHash(data []byte, handler common.Address, extraData msg.MessageExtraData) [32]byte {
+	data = append(handler.Bytes(), data...)
+	data = append(data, extraData.RootHash[:]...)
+	data = append(data, extraData.Key...)
+	data = append(data, extraData.Nodes...)
+	data = append(data, extraData.AggregatePublicKey...)
+	data = append(data, extraData.HashedMessage...)
+	data = append(data, extraData.SignatureHeader...)
+	return utils.Hash(data)
 }
-
 // constructGenericProposalData returns the bytes to construct a generic proposal
 func ConstructGenericProposalData(metadata []byte) []byte {
 	var data []byte
@@ -44,4 +42,33 @@ func ConstructGenericProposalData(metadata []byte) []byte {
 	data = append(data, math.PaddedBigBytes(metadataLen, 32)...) // length of metadata (uint256)
 	data = append(data, metadata...)                             // metadata ([]byte)
 	return data
+}
+
+func CreateErc721ProposalDataHash(data []byte, handler common.Address, extraData msg.MessageExtraData) [32]byte {
+	data = append(handler.Bytes(), data...)
+
+	// RootHash (bytes32)
+	data = append(data, extraData.RootHash[:]...)
+	// Key (bytes)
+	keyLen := big.NewInt(int64(len(extraData.Key))).Bytes()
+	data = append(data, common.LeftPadBytes(keyLen, 32)...)
+	data = append(data, extraData.Key...)
+	// Nodes (bytes)
+	nodesLen := big.NewInt(int64(len(extraData.Nodes))).Bytes()
+	data = append(data, common.LeftPadBytes(nodesLen, 32)...)
+	data = append(data, extraData.Nodes...)
+	// APK (bytes)
+	apkLen := big.NewInt(int64(len(extraData.AggregatePublicKey))).Bytes()
+	data = append(data, common.LeftPadBytes(apkLen, 32)...)
+	data = append(data, extraData.AggregatePublicKey...)
+	// HashedMsg (bytes)
+	hashedMsgLen := big.NewInt(int64(len(extraData.HashedMessage))).Bytes()
+	data = append(data, common.LeftPadBytes(hashedMsgLen, 32)...)
+	data = append(data, extraData.HashedMessage...)
+	// signatureHeader (bytes)
+	sigHeaderLen := big.NewInt(int64(len(extraData.SignatureHeader))).Bytes()
+	data = append(data, common.LeftPadBytes(sigHeaderLen, 32)...)
+	data = append(data, extraData.SignatureHeader...)
+
+	return utils.Hash(data)
 }

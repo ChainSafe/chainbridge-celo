@@ -21,7 +21,7 @@ import (
 const DefaultGasLimit = 6721975
 const DefaultGasPrice = 20000000000
 
-const TestEndpoint = "ws://localhost:8546"
+const TestEndpoint = "ws://localhost:8545"
 
 var TestLogger = newTestLogger("test")
 var TestTimeout = time.Second * 30
@@ -64,7 +64,7 @@ func createConfig(name string, startBlock *big.Int, contracts *utils.DeployedCon
 
 func newTestLogger(name string) log15.Logger {
 	tLog := log15.New("chain", name)
-	tLog.SetHandler(log15.LvlFilterHandler(log15.LvlError, tLog.GetHandler()))
+	tLog.SetHandler(log15.LvlFilterHandler(log15.LvlInfo, tLog.GetHandler()))
 	return tLog
 }
 

@@ -33,7 +33,6 @@ type MessageExtraData struct {
 	AggregatePublicKey []byte
 	HashedMessage []byte
 	Key []byte
-	Data []interface{}
 	SignatureHeader []byte
 	Nodes []byte
 	G1 []byte
@@ -57,7 +56,6 @@ func NewFungibleTransfer(param MsgProofOpts) msg.Message {
 				AggregatePublicKey: param.AggregatePublicKey,
 				HashedMessage: param.HashedMessage,
 				Key: param.Key,
-				Data: param.Data,
 				SignatureHeader: param.SignatureHeader,
 				Nodes: param.Nodes,
 				G1: param.G1,
@@ -84,7 +82,6 @@ func NewNonFungibleTransfer(param MsgProofOpts) msg.Message {
 				AggregatePublicKey: param.AggregatePublicKey,
 				HashedMessage: param.HashedMessage,
 				Key: param.Key,
-				Data: param.Data,
 				SignatureHeader: param.SignatureHeader,
 				Nodes: param.Nodes,
 				G1: param.G1,
@@ -108,7 +105,6 @@ func NewGenericTransfer(param MsgProofOpts) msg.Message {
 				AggregatePublicKey: param.AggregatePublicKey,
 				HashedMessage: param.HashedMessage,
 				Key: param.Key,
-				Data: param.Data,
 				SignatureHeader: param.SignatureHeader,
 				Nodes: param.Nodes,
 				G1: param.G1,

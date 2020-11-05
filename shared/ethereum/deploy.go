@@ -5,6 +5,7 @@ package utils
 
 import (
 	"context"
+	"github.com/pkg/errors"
 	"math/big"
 
 	"github.com/ChainSafe/chainbridge-celo/bindings/GenericHandler"
@@ -39,22 +40,22 @@ type DeployedContracts struct {
 func DeployContracts(client *Client, chainID uint8, initialRelayerThreshold *big.Int) (*DeployedContracts, error) {
 	bridgeAddr, err := deployBridge(client, chainID, RelayerAddresses, initialRelayerThreshold)
 	if err != nil {
-		return nil, err
+		return nil, errors.Wrap(err, "Bridge contract deployment failed")
 	}
 
 	erc20HandlerAddr, err := deployERC20Handler(client, bridgeAddr)
 	if err != nil {
-		return nil, err
+		return nil, errors.Wrap(err, "Erc20Handler contract deployment failed")
 	}
 
 	erc721HandlerAddr, err := deployERC721Handler(client, bridgeAddr)
 	if err != nil {
-		return nil, err
+		return nil, errors.Wrap(err, "Erc721Handler contract deployment failed")
 	}
 
 	genericHandlerAddr, err := deployGenericHandler(client, bridgeAddr)
 	if err != nil {
-		return nil, err
+		return nil, errors.Wrap(err, "GenericHandler contract deployment failed")
 	}
 
 	deployedContracts := DeployedContracts{bridgeAddr, erc20HandlerAddr, erc721HandlerAddr, genericHandlerAddr}
