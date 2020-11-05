@@ -12,9 +12,6 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 )
 
-var GasLimit = big.NewInt(connection.DefaultGasLimit)
-var GasPrice = big.NewInt(connection.DefaultGasPrice)
-
 
 var expectedAddresses = []common.Address{
 	// expectedAddresses are packed into our extra data

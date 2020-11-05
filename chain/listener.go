@@ -26,7 +26,6 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethclient"
 	ethcommon "github.com/ethereum/go-ethereum/common"
-	eth "github.com/ethereum/go-ethereum"
 	
 )
 
@@ -47,12 +46,9 @@ type Connection interface {
 	Client() *ethclient.Client
 	EnsureHasBytecode(address common.Address) error
 	LatestBlock() (*big.Int, error)
-<<<<<<< HEAD
 	WaitForBlock(block *big.Int) error
-=======
 	LockAndUpdateNonce() error
 	UnlockNonce()
->>>>>>> main
 	Close()
 }
 
@@ -220,18 +216,6 @@ func (l *listener) getDepositEventsAndProofsForBlock(latestBlock *big.Int) error
 	}
 
 	return nil
-}
-
-func buildQuery(contract common.Address, sig utils.EventSig, startBlock *big.Int, endBlock *big.Int) eth.FilterQuery {
-	query := eth.FilterQuery{
-		FromBlock: startBlock,
-		ToBlock:   endBlock,
-		Addresses: []common.Address{contract},
-		Topics: [][]common.Hash{
-			{sig.GetTopic()},
-		},
-	}
-	return query
 }
 
 func (l *listener) getBlockHashFromTransactionHash(txHash common.Hash) (blockHash common.Hash, err error) {
