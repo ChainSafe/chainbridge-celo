@@ -137,7 +137,7 @@ func (w *writer) createErc721Proposal(m msg.Message) bool {
 	}
 
 	data := ConstructErc721ProposalData(m.Payload[0].([]byte), m.Payload[1].([]byte), m.Payload[2].([]byte))
-	dataHash := CreateErc721ProposalDataHash(data, w.cfg.erc721HandlerContract, *messageExtraData)
+	dataHash := CreateProposalDataHash(data, w.cfg.erc721HandlerContract, *messageExtraData)
 
 	if !w.shouldVote(m, dataHash) {
 		return false
@@ -171,21 +171,6 @@ func (w *writer) createGenericDepositProposal(m msg.Message) bool {
 		return false
 	}
 
-	data := ConstructGenericProposalData(metadata)
-	toHash := append(w.cfg.genericHandlerContract.Bytes(), data...)
-	dataHash := utils.Hash(toHash)
-
-	if !w.shouldVote(m, dataHash) {
-		return false
-	}
-
-	// Capture latest block so when know where to watch from
-	latestBlock, err := w.conn.LatestBlock()
-	if err != nil {
-		w.log.Error("Unable to fetch latest block", "err", err)
-		return false
-	}
-
 	messageExtraDataInterface := m.Payload[1]
 
 	if messageExtraDataInterface == nil {
@@ -197,6 +182,22 @@ func (w *writer) createGenericDepositProposal(m msg.Message) bool {
 
 	if !ok {
 		w.log.Error("unable to convert messageExtraDataInterface to *MessageExtraData")
+		return false
+	}
+
+	data := ConstructGenericProposalData(metadata)
+	dataHash := CreateProposalDataHash(data, w.cfg.genericHandlerContract, *messageExtraData)
+	// toHash := append(w.cfg.genericHandlerContract.Bytes(), data...)
+	// dataHash := utils.Hash(toHash)
+
+	if !w.shouldVote(m, dataHash) {
+		return false
+	}
+
+	// Capture latest block so when know where to watch from
+	latestBlock, err := w.conn.LatestBlock()
+	if err != nil {
+		w.log.Error("Unable to fetch latest block", "err", err)
 		return false
 	}
 
