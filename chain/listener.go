@@ -19,7 +19,9 @@ import (
 	"github.com/ChainSafe/chainbridge-utils/blockstore"
 	"github.com/ChainSafe/chainbridge-utils/core"
 	"github.com/ChainSafe/chainbridge-utils/crypto/secp256k1"
+	"github.com/ChainSafe/chainbridge-utils/msg"
 	log "github.com/ChainSafe/log15"
+	eth "github.com/ethereum/go-ethereum"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethclient"
@@ -45,7 +47,12 @@ type Connection interface {
 	Client() *ethclient.Client
 	EnsureHasBytecode(address common.Address) error
 	LatestBlock() (*big.Int, error)
+<<<<<<< HEAD
 	WaitForBlock(block *big.Int) error
+=======
+	LockAndUpdateNonce() error
+	UnlockNonce()
+>>>>>>> main
 	Close()
 }
 
@@ -105,10 +112,6 @@ func (l *listener) start() error {
 	}()
 
 	return nil
-}
-
-func (l *listener) close() {
-	l.conn.Close()
 }
 
 // pollBlocks will poll for the latest block and proceed to parse the associated events as it sees new blocks.
@@ -172,17 +175,70 @@ func (l *listener) pollBlocks() error {
 	}
 }
 
+// TODO: Proof construction.
 func (l *listener) getDepositEventsAndProofsForBlock(latestBlock *big.Int) error {
 	l.log.Debug("Querying block for deposit events", "block", latestBlock)
+	query := buildQuery(l.cfg.bridgeContract, utils.Deposit, latestBlock, latestBlock)
+
+	// querying for logs
+	logs, err := l.conn.Client().FilterLogs(context.Background(), query)
+	if err != nil {
+		return fmt.Errorf("unable to Filter Logs: %w", err)
+	}
+
+	// read through the log events and handle their deposit event if handler is recognized
+	for _, log := range logs {
+		var m msg.Message
+		destId := msg.ChainId(log.Topics[1].Big().Uint64())
+		rId := msg.ResourceIdFromSlice(log.Topics[2].Bytes())
+		nonce := msg.Nonce(log.Topics[3].Big().Uint64())
+
+		addr, err := l.bridgeContract.ResourceIDToHandlerAddress(&bind.CallOpts{}, rId)
+		if err != nil {
+			return fmt.Errorf("failed to get handler from resource ID %x, reason: %w", rId, err)
+		}
+
+		if addr == l.cfg.erc20HandlerContract {
+			m, err = l.handleErc20DepositedEvent(destId, nonce)
+		} else if addr == l.cfg.erc721HandlerContract {
+			m, err = l.handleErc721DepositedEvent(destId, nonce)
+		} else if addr == l.cfg.genericHandlerContract {
+			m, err = l.handleGenericDepositedEvent(destId, nonce)
+		} else {
+			l.log.Error("event has unrecognized handler", "handler", addr.Hex())
+			return nil
+		}
+
+		if err != nil {
+			return err
+		}
+
+		err = l.router.Send(m)
+		if err != nil {
+			l.log.Error("subscription error: failed to route message", "err", err)
+		}
+	}
 
 	return nil
+}
+
+func buildQuery(contract common.Address, sig utils.EventSig, startBlock *big.Int, endBlock *big.Int) eth.FilterQuery {
+	query := eth.FilterQuery{
+		FromBlock: startBlock,
+		ToBlock:   endBlock,
+		Addresses: []common.Address{contract},
+		Topics: [][]common.Hash{
+			{sig.GetTopic()},
+		},
+	}
+	return query
 }
 
 func (l *listener) getBlockHashFromTransactionHash(txHash common.Hash) (blockHash common.Hash, err error) {
 
 	receipt, err := l.conn.Client().TransactionReceipt(context.Background(), txHash)
 	if err != nil {
-		return txHash, fmt.Errorf("unable to get BlockHash: %s", err)
+		return txHash, fmt.Errorf("unable to get BlockHash: %w", err)
 	}
 	return receipt.BlockHash, nil
 }
@@ -190,7 +246,7 @@ func (l *listener) getBlockHashFromTransactionHash(txHash common.Hash) (blockHas
 func (l *listener) getTransactionsFromBlockHash(blockHash common.Hash) (txHashes []common.Hash, txRoot common.Hash, err error) {
 	block, err := l.conn.Client().BlockByHash(context.Background(), blockHash)
 	if err != nil {
-		return nil, common.Hash{}, fmt.Errorf("unable to get BlockHash: %s", err)
+		return nil, common.Hash{}, fmt.Errorf("unable to get BlockHash: %w", err)
 	}
 
 	var transactionHashes []common.Hash
