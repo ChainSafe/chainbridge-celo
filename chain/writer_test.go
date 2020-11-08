@@ -270,7 +270,7 @@ func TestCreateAndExecuteGenericProposal(t *testing.T) {
 		Payload: []interface{}{
 			hash.Bytes(),
 			&celoMsg.MessageExtraData{
-				RootHash: hash,
+				RootHash: rootHash,
 				AggregatePublicKey: aggregatePublicKey,
 				HashedMessage: hashedMessage,
 				Key: key,
