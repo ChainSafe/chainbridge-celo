@@ -95,22 +95,22 @@ func (w *writer) createErc20Proposal(m msg.Message) bool {
 		return false
 	}
 
-	messageExtraDataInterface := m.Payload[2]
+	msgProofOptsInterface := m.Payload[2]
 
-	if messageExtraDataInterface == nil {
+	if msgProofOptsInterface == nil {
 		w.log.Error("messageExtraData cannot be nil")
 		return false
 	}
 
-	messageExtraData, ok := messageExtraDataInterface.(*celoMsg.MessageExtraData)
+	msgProofOpts, ok := msgProofOptsInterface.(*celoMsg.MsgProofOpts)
 
 	if !ok {
-		w.log.Error("unable to convert messageExtraDataInterface to *MessageExtraData")
+		w.log.Error("unable to convert msgProofOptsInterface to *MsgProofOpts")
 		return false
 	}
 
 	// watch for execution event
-	go w.watchThenExecute(m, data, dataHash, latestBlock, messageExtraData)
+	go w.watchThenExecute(m, data, dataHash, latestBlock, msgProofOpts)
 
 	w.voteProposal(m, dataHash)
 
@@ -122,22 +122,22 @@ func (w *writer) createErc20Proposal(m msg.Message) bool {
 func (w *writer) createErc721Proposal(m msg.Message) bool {
 	w.log.Info("Creating erc721 proposal", "src", m.Source, "nonce", m.DepositNonce)
 
-	messageExtraDataInterface := m.Payload[3]
+	msgProofOptsInterface := m.Payload[3]
 
-	if messageExtraDataInterface == nil {
-		w.log.Error("messageExtraData cannot be nil")
+	if msgProofOptsInterface == nil {
+		w.log.Error("msgProofOpts cannot be nil")
 		return false
 	}
 
-	messageExtraData, ok := messageExtraDataInterface.(*celoMsg.MessageExtraData)
+	msgProofOpts, ok := msgProofOptsInterface.(*celoMsg.MsgProofOpts)
 
 	if !ok {
-		w.log.Error("unable to convert messageExtraDataInterface to *MessageExtraData")
+		w.log.Error("unable to convert msgProofOptsInterface to *MsgProofOpts")
 		return false
 	}
 
 	data := ConstructErc721ProposalData(m.Payload[0].([]byte), m.Payload[1].([]byte), m.Payload[2].([]byte))
-	dataHash := CreateProposalDataHash(data, w.cfg.erc721HandlerContract, *messageExtraData)
+	dataHash := CreateProposalDataHash(data, w.cfg.erc721HandlerContract, *msgProofOpts)
 
 	if !w.shouldVote(m, dataHash) {
 		return false
@@ -151,7 +151,7 @@ func (w *writer) createErc721Proposal(m msg.Message) bool {
 	}
 
 	// watch for execution event
-	go w.watchThenExecute(m, data, dataHash, latestBlock, messageExtraData)
+	go w.watchThenExecute(m, data, dataHash, latestBlock, msgProofOpts)
 
 	w.voteProposal(m, dataHash)
 
@@ -171,22 +171,22 @@ func (w *writer) createGenericDepositProposal(m msg.Message) bool {
 		return false
 	}
 
-	messageExtraDataInterface := m.Payload[1]
+	msgProofOptsInterface := m.Payload[1]
 
-	if messageExtraDataInterface == nil {
-		w.log.Error("messageExtraData cannot be nil")
+	if msgProofOptsInterface == nil {
+		w.log.Error("msgProofOpts cannot be nil")
 		return false
 	}
 
-	messageExtraData, ok := messageExtraDataInterface.(*celoMsg.MessageExtraData)
+	msgProofOpts, ok := msgProofOptsInterface.(*celoMsg.MsgProofOpts)
 
 	if !ok {
-		w.log.Error("unable to convert messageExtraDataInterface to *MessageExtraData")
+		w.log.Error("unable to convert msgProofOptsInterface to *msgProofOpts")
 		return false
 	}
 
 	data := ConstructGenericProposalData(metadata)
-	dataHash := CreateProposalDataHash(data, w.cfg.genericHandlerContract, *messageExtraData)
+	dataHash := CreateProposalDataHash(data, w.cfg.genericHandlerContract, *msgProofOpts)
 	// toHash := append(w.cfg.genericHandlerContract.Bytes(), data...)
 	// dataHash := utils.Hash(toHash)
 
@@ -202,7 +202,7 @@ func (w *writer) createGenericDepositProposal(m msg.Message) bool {
 	}
 
 	// watch for execution event
-	go w.watchThenExecute(m, data, dataHash, latestBlock, messageExtraData)
+	go w.watchThenExecute(m, data, dataHash, latestBlock, msgProofOpts)
 
 	w.voteProposal(m, dataHash)
 
@@ -210,7 +210,7 @@ func (w *writer) createGenericDepositProposal(m msg.Message) bool {
 }
 
 // watchThenExecute watches for the latest block and executes once the matching finalized event is found
-func (w *writer) watchThenExecute(m msg.Message, data []byte, dataHash [32]byte, latestBlock *big.Int, messageExtraData *celoMsg.MessageExtraData) {
+func (w *writer) watchThenExecute(m msg.Message, data []byte, dataHash [32]byte, latestBlock *big.Int, msgProofOpts *celoMsg.MsgProofOpts) {
 	w.log.Info("Watching for finalization event", "src", m.Source, "nonce", m.DepositNonce)
 
 	// watching for the latest block, querying and matching the finalized event will be retried up to ExecuteBlockWatchLimit times
@@ -252,7 +252,7 @@ func (w *writer) watchThenExecute(m msg.Message, data []byte, dataHash [32]byte,
 				if m.Source == msg.ChainId(sourceId) &&
 					m.DepositNonce.Big().Uint64() == depositNonce &&
 					utils.IsFinalized(uint8(status)) {
-					w.executeProposal(m, data, dataHash, messageExtraData)
+					w.executeProposal(m, data, dataHash, msgProofOpts)
 					return
 				} else {
 					w.log.Trace("Ignoring event", "src", sourceId, "nonce", depositNonce)
@@ -314,7 +314,7 @@ func (w *writer) voteProposal(m msg.Message, dataHash [32]byte) {
 }
 
 // executeProposal executes the proposal
-func (w *writer) executeProposal(m msg.Message, data []byte, dataHash [32]byte, messageExtraData *celoMsg.MessageExtraData) {
+func (w *writer) executeProposal(m msg.Message, data []byte, dataHash [32]byte, msgProofOpts *celoMsg.MsgProofOpts) {
 	for i := 0; i < TxRetryLimit; i++ {
 		select {
 		case <-w.stop:
@@ -333,13 +333,13 @@ func (w *writer) executeProposal(m msg.Message, data []byte, dataHash [32]byte, 
 				data,
 				m.ResourceId,
 				//
-				messageExtraData.SignatureHeader,
-				messageExtraData.AggregatePublicKey,
-				messageExtraData.G1,
-				messageExtraData.HashedMessage,
-				messageExtraData.RootHash,
-				messageExtraData.Key,
-				messageExtraData.Nodes,
+				msgProofOpts.SignatureHeader,
+				msgProofOpts.AggregatePublicKey,
+				msgProofOpts.G1,
+				msgProofOpts.HashedMessage,
+				msgProofOpts.RootHash,
+				msgProofOpts.Key,
+				msgProofOpts.Nodes,
 			)
 			w.conn.UnlockOpts()
 
