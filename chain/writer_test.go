@@ -257,39 +257,22 @@ func TestCreateAndExecuteGenericProposal(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	rId := msg.ResourceIdFromSlice(common.LeftPadBytes(assetStoreAddr.Bytes(), 32))
+	resourceId := msg.ResourceIdFromSlice(common.LeftPadBytes(assetStoreAddr.Bytes(), 32))
 	depositSig := utils.CreateFunctionSignature("")
 	executeSig := utils.CreateFunctionSignature("store(bytes32)")
 
-	ethtest.RegisterGenericResource(t, client, contracts.BridgeAddress, contracts.GenericHandlerAddress, rId, assetStoreAddr, depositSig, executeSig)
+	ethtest.RegisterGenericResource(t, client, contracts.BridgeAddress, contracts.GenericHandlerAddress, resourceId, assetStoreAddr, depositSig, executeSig)
 	// Create initial transfer message
-	hash := common.HexToHash("0xf0a8748d2b102eb4e0e116047753b9beff0396d81b830693b19a1376ac4b14e8")
-	m := msg.Message{
-		Source:       1,
-		Destination:  0,
-		Type:         msg.GenericTransfer,
-		DepositNonce: 0,
-		ResourceId:   rId,
-		Payload: []interface{}{
-			hash.Bytes(),
-			&celoMsg.MsgProofOpts{
-				RootHash: rootHash,
-				AggregatePublicKey: aggregatePublicKey,
-				HashedMessage: hashedMessage,
-				Key: key,
-				SignatureHeader: signatureHeader,
-				Nodes: nodes,
-				G1: g1,
-			},
-		},
-	}
+	msgProofOpts := getMessageProofOpts(resourceId)
+
+	m := celoMsg.NewGenericTransfer(1, 0, 0, resourceId, []byte{}, &msgProofOpts)
 
 	// Helpful for debugging
 	go ethtest.WatchEvent(client, contracts.BridgeAddress, utils.ProposalEvent)
 	go ethtest.WatchEvent(client, contracts.BridgeAddress, utils.ProposalVote)
 	routeMessageAndWait(t, client, writerA, writerB, m, errA, errB)
 
-	ethtest.AssertHashExistence(t, client, hash, assetStoreAddr)
+	ethtest.AssertHashExistence(t, client, rootHash, assetStoreAddr)
 }
 
 func TestDuplicateMessage(t *testing.T) {
