@@ -28,11 +28,10 @@ var (
 	hashedMessage []byte
 	nodes []byte
     key []byte
-	tokenId *big.Int
 	recipient common.Address
 	amount *big.Int
-	msgProofOpts celoMsg.MsgProofOpts
 )
+
 var rootHash [32]byte 
 
 func init() {
@@ -42,36 +41,36 @@ func init() {
 		panic(err)
 	}
 	signatureHeader = data
-    aggregatePublicKey = data
+	aggregatePublicKey = data
+	key = data
     g1 = data
 	hashedMessage = data
 	nodes, err = hexutil.Decode("0xd2d1808080808080808080808080808080802a")
 	if err != nil {
 		panic(err)
 	}
-	tokenId = big.NewInt(1)
 	recipient = ethcrypto.PubkeyToAddress(BobKp.PrivateKey().PublicKey)
 	amount = big.NewInt(2)
 	rootHash = common.HexToHash("0x46c51deeabb4a526d21f9344993c8b812de4b37896680da7c4db7ac902563e00")
-	msgProofOpts = celoMsg.MsgProofOpts{
-		Source: 1, 
-		Dest: 0,
-		Nonce: 0,
-		Amount: amount,
-		// ResourceId: resourceId, 
-		Recipient: recipient.Bytes(),
-		TokenId: tokenId, 
-		Metadata: []byte{},
-		//
-		RootHash: rootHash,
+ 
+}
+
+
+func getMessageProofOpts(resourceId msg.ResourceId) celoMsg.MsgProofOpts {
+
+
+	msgProofOpts := celoMsg.MsgProofOpts{
+        RootHash: rootHash,
 		AggregatePublicKey: aggregatePublicKey,
 		HashedMessage: hashedMessage,
 		Key: key,
-
 		SignatureHeader: signatureHeader,
 		Nodes: nodes,
 		G1: g1,
 	}
+	
+
+	return msgProofOpts
 
 }
 
@@ -197,7 +196,10 @@ func TestCreateAndExecuteErc20DepositProposal(t *testing.T) {
 	resourceId := msg.ResourceIdFromSlice(append(common.LeftPadBytes(erc20Address.Bytes(), 31), 0))
 	recipient := ethcrypto.PubkeyToAddress(BobKp.PrivateKey().PublicKey)
 	amount := big.NewInt(10)
-	m := celoMsg.NewFungibleTransfer(msgProofOpts)
+	
+	msgProofOpts := getMessageProofOpts(resourceId)
+ 
+	m := celoMsg.NewFungibleTransfer(1,0,0,amount, resourceId, recipient.Bytes(),&msgProofOpts)
 	ethtest.RegisterResource(t, client, contracts.BridgeAddress, contracts.ERC20HandlerAddress, resourceId, erc20Address)
 	// Helpful for debugging
 	go ethtest.WatchEvent(client, contracts.BridgeAddress, utils.ProposalEvent)
@@ -219,14 +221,15 @@ func TestCreateAndExecuteErc721Proposal(t *testing.T) {
 	defer writerB.conn.Close()
 	// We'll use alice to setup the erc721
 	erc721Contract := ethtest.Erc721Deploy(t, client)
+	tokenId := big.NewInt(1)
 	ethtest.Erc721Mint(t, client, erc721Contract, tokenId, []byte{})
 	ethtest.Erc721FundHandler(t, client, contracts.ERC721HandlerAddress, erc721Contract, tokenId)
 
 	// Create initial transfer message
 	 resourceId := msg.ResourceIdFromSlice(append(common.LeftPadBytes(erc721Contract.Bytes(), 31), 0))
-	 msgProofOpts.ResourceId = resourceId
+	 msgProofOpts := getMessageProofOpts(resourceId)
 
-	m := celoMsg.NewNonFungibleTransfer(msgProofOpts)
+	m := celoMsg.NewNonFungibleTransfer(1, 0, 0, resourceId, tokenId,recipient.Bytes(), []byte{}, &msgProofOpts)
 
 	ethtest.RegisterResource(t, client, contracts.BridgeAddress, contracts.ERC721HandlerAddress, resourceId, erc721Contract)
 
@@ -269,7 +272,7 @@ func TestCreateAndExecuteGenericProposal(t *testing.T) {
 		ResourceId:   rId,
 		Payload: []interface{}{
 			hash.Bytes(),
-			&celoMsg.MessageExtraData{
+			&celoMsg.MsgProofOpts{
 				RootHash: rootHash,
 				AggregatePublicKey: aggregatePublicKey,
 				HashedMessage: hashedMessage,
@@ -304,9 +307,10 @@ func TestDuplicateMessage(t *testing.T) {
 
 	// Create initial transfer message
 	resourceId := msg.ResourceIdFromSlice(append(common.LeftPadBytes(erc20Address.Bytes(), 31), 0))
-    msgProofOpts.ResourceId = resourceId
+	msgProofOpts := getMessageProofOpts(resourceId)
 
-	m := celoMsg.NewFungibleTransfer(msgProofOpts)
+	recipient := ethcrypto.PubkeyToAddress(BobKp.PrivateKey().PublicKey)
+	m := celoMsg.NewFungibleTransfer(1,0,0,amount, resourceId, recipient.Bytes(),&msgProofOpts)
 	ethtest.RegisterResource(t, client, contracts.BridgeAddress, contracts.ERC20HandlerAddress, resourceId, erc20Address)
 
 	data := ConstructErc20ProposalData(m.Payload[0].([]byte), m.Payload[1].([]byte))
