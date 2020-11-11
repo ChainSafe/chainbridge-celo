@@ -82,8 +82,22 @@ func (w *writer) shouldVote(m msg.Message, dataHash [32]byte) bool {
 func (w *writer) createErc20Proposal(m msg.Message) bool {
 	w.log.Info("Creating erc20 proposal", "src", m.Source, "nonce", m.DepositNonce)
 
+	msgProofOptsInterface := m.Payload[2]
+
+	if msgProofOptsInterface == nil {
+		w.log.Error("msgProofOpts cannot be nil")
+		return false
+	}
+
+	msgProofOpts, ok := msgProofOptsInterface.(*celoMsg.MsgProofOpts)
+
+	if !ok {
+		w.log.Error("unable to convert msgProofOptsInterface to *MsgProofOpts")
+		return false
+	}
+
 	data := ConstructErc20ProposalData(m.Payload[0].([]byte), m.Payload[1].([]byte))
-	dataHash := utils.Hash(append(w.cfg.erc20HandlerContract.Bytes(), data...))
+	dataHash := CreateProposalDataHash(data, w.cfg.erc20HandlerContract, *msgProofOpts)
 
 	if !w.shouldVote(m, dataHash) {
 		return false
@@ -92,20 +106,6 @@ func (w *writer) createErc20Proposal(m msg.Message) bool {
 	latestBlock, err := w.conn.LatestBlock()
 	if err != nil {
 		w.log.Error("unable to fetch latest block", "err", err)
-		return false
-	}
-
-	msgProofOptsInterface := m.Payload[2]
-
-	if msgProofOptsInterface == nil {
-		w.log.Error("messageExtraData cannot be nil")
-		return false
-	}
-
-	msgProofOpts, ok := msgProofOptsInterface.(*celoMsg.MsgProofOpts)
-
-	if !ok {
-		w.log.Error("unable to convert msgProofOptsInterface to *MsgProofOpts")
 		return false
 	}
 
@@ -187,8 +187,7 @@ func (w *writer) createGenericDepositProposal(m msg.Message) bool {
 
 	data := ConstructGenericProposalData(metadata)
 	dataHash := CreateProposalDataHash(data, w.cfg.genericHandlerContract, *msgProofOpts)
-	// toHash := append(w.cfg.genericHandlerContract.Bytes(), data...)
-	// dataHash := utils.Hash(toHash)
+ 
 
 	if !w.shouldVote(m, dataHash) {
 		return false
