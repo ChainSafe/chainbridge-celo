@@ -265,14 +265,16 @@ func TestCreateAndExecuteGenericProposal(t *testing.T) {
 	// Create initial transfer message
 	msgProofOpts := getMessageProofOpts(resourceId)
 
-	m := celoMsg.NewGenericTransfer(1, 0, 0, resourceId, []byte{}, &msgProofOpts)
+	hash := common.HexToHash("0x46c51deeabb4a526d21f9344993c8b812de4b37896680da7c4db7ac902563e00")
+
+	m := celoMsg.NewGenericTransfer(1, 0, 0, resourceId, hash.Bytes(), &msgProofOpts)
 
 	// Helpful for debugging
 	go ethtest.WatchEvent(client, contracts.BridgeAddress, utils.ProposalEvent)
 	go ethtest.WatchEvent(client, contracts.BridgeAddress, utils.ProposalVote)
 	routeMessageAndWait(t, client, writerA, writerB, m, errA, errB)
 
-	ethtest.AssertHashExistence(t, client, rootHash, assetStoreAddr)
+	ethtest.AssertHashExistence(t, client, hash, assetStoreAddr)
 }
 
 func TestDuplicateMessage(t *testing.T) {
