@@ -5,6 +5,10 @@ package chain
 
 import (
 	"context"
+	"math/big"
+	"testing"
+	"time"
+
 	"github.com/ChainSafe/chainbridge-celo/bindings/Bridge"
 	celoMsg "github.com/ChainSafe/chainbridge-celo/msg"
 	utils "github.com/ChainSafe/chainbridge-celo/shared/ethereum"
@@ -16,23 +20,20 @@ import (
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	ethtypes "github.com/ethereum/go-ethereum/core/types"
 	ethcrypto "github.com/ethereum/go-ethereum/crypto"
-	"math/big"
-	"testing"
-	"time"
 )
 
 var (
-	signatureHeader []byte 
-	aggregatePublicKey []byte 
-	g1 []byte 
-	hashedMessage []byte
-	nodes []byte
-    key []byte
-	recipient common.Address
-	amount *big.Int
+	signatureHeader    []byte
+	aggregatePublicKey []byte
+	g1                 []byte
+	hashedMessage      []byte
+	nodes              []byte
+	key                []byte
+	recipient          common.Address
+	amount             *big.Int
 )
 
-var rootHash [32]byte 
+var rootHash [32]byte
 
 func init() {
 
@@ -43,7 +44,7 @@ func init() {
 	signatureHeader = data
 	aggregatePublicKey = data
 	key = data
-    g1 = data
+	g1 = data
 	hashedMessage = data
 	nodes, err = hexutil.Decode("0xd2d1808080808080808080808080808080802a")
 	if err != nil {
@@ -52,23 +53,20 @@ func init() {
 	recipient = ethcrypto.PubkeyToAddress(BobKp.PrivateKey().PublicKey)
 	amount = big.NewInt(2)
 	rootHash = common.HexToHash("0x46c51deeabb4a526d21f9344993c8b812de4b37896680da7c4db7ac902563e00")
- 
+
 }
 
+func getMessageProofOpts(resourceId msg.ResourceId) *celoMsg.MsgProofOpts {
 
-func getMessageProofOpts(resourceId msg.ResourceId) celoMsg.MsgProofOpts {
-
-
-	msgProofOpts := celoMsg.MsgProofOpts{
-        RootHash: rootHash,
+	msgProofOpts := &celoMsg.MsgProofOpts{
+		RootHash:           rootHash,
 		AggregatePublicKey: aggregatePublicKey,
-		HashedMessage: hashedMessage,
-		Key: key,
-		SignatureHeader: signatureHeader,
-		Nodes: nodes,
-		G1: g1,
+		HashedMessage:      hashedMessage,
+		Key:                key,
+		SignatureHeader:    signatureHeader,
+		Nodes:              nodes,
+		G1:                 g1,
 	}
-	
 
 	return msgProofOpts
 
@@ -84,7 +82,7 @@ func createWriters(t *testing.T, client *utils.Client, contracts *utils.Deployed
 }
 
 func createTestWriter(t *testing.T, cfg *Config, errs chan<- error) (*writer, func()) {
- 
+
 	conn := newLocalConnection(t, cfg)
 	stop := make(chan int)
 	writer := NewWriter(conn, cfg, newTestLogger(cfg.name), stop, errs, nil)
@@ -150,7 +148,7 @@ func routeMessageAndWait(t *testing.T, client *utils.Client, alice, bob *writer,
 
 		case err = <-sub.Err():
 			if err != nil {
-				 t.Fatal(err)
+				t.Fatal(err)
 			}
 		case err = <-aliceErr:
 			t.Fatalf("Fatal error: %s", err)
@@ -178,7 +176,6 @@ func TestWriter_start_stop(t *testing.T) {
 	close(stop)
 }
 
-
 func TestCreateAndExecuteErc20DepositProposal(t *testing.T) {
 	client := ethtest.NewClient(t, TestEndpoint, AliceKp)
 	contracts := deployTestContracts(t, client, TestChainId)
@@ -196,10 +193,10 @@ func TestCreateAndExecuteErc20DepositProposal(t *testing.T) {
 	resourceId := msg.ResourceIdFromSlice(append(common.LeftPadBytes(erc20Address.Bytes(), 31), 0))
 	recipient := ethcrypto.PubkeyToAddress(BobKp.PrivateKey().PublicKey)
 	amount := big.NewInt(10)
-	
+
 	msgProofOpts := getMessageProofOpts(resourceId)
- 
-	m := celoMsg.NewFungibleTransfer(1,0,0,amount, resourceId, recipient.Bytes(),&msgProofOpts)
+
+	m := celoMsg.NewFungibleTransfer(1, 0, 0, amount, resourceId, recipient.Bytes(), msgProofOpts)
 	ethtest.RegisterResource(t, client, contracts.BridgeAddress, contracts.ERC20HandlerAddress, resourceId, erc20Address)
 	// Helpful for debugging
 	go ethtest.WatchEvent(client, contracts.BridgeAddress, utils.ProposalEvent)
@@ -214,7 +211,7 @@ func TestCreateAndExecuteErc721Proposal(t *testing.T) {
 	client := ethtest.NewClient(t, TestEndpoint, AliceKp)
 	contracts := deployTestContracts(t, client, TestChainId)
 	writerA, writerB, stopA, stopB, errA, errB := createWriters(t, client, contracts)
-	
+
 	defer stopA()
 	defer stopB()
 	defer writerA.conn.Close()
@@ -226,10 +223,10 @@ func TestCreateAndExecuteErc721Proposal(t *testing.T) {
 	ethtest.Erc721FundHandler(t, client, contracts.ERC721HandlerAddress, erc721Contract, tokenId)
 
 	// Create initial transfer message
-	 resourceId := msg.ResourceIdFromSlice(append(common.LeftPadBytes(erc721Contract.Bytes(), 31), 0))
-	 msgProofOpts := getMessageProofOpts(resourceId)
+	resourceId := msg.ResourceIdFromSlice(append(common.LeftPadBytes(erc721Contract.Bytes(), 31), 0))
+	msgProofOpts := getMessageProofOpts(resourceId)
 
-	m := celoMsg.NewNonFungibleTransfer(1, 0, 0, resourceId, tokenId,recipient.Bytes(), []byte{}, &msgProofOpts)
+	m := celoMsg.NewNonFungibleTransfer(1, 0, 0, resourceId, tokenId, recipient.Bytes(), []byte{}, msgProofOpts)
 
 	ethtest.RegisterResource(t, client, contracts.BridgeAddress, contracts.ERC721HandlerAddress, resourceId, erc721Contract)
 
@@ -267,7 +264,7 @@ func TestCreateAndExecuteGenericProposal(t *testing.T) {
 
 	hash := common.HexToHash("0x46c51deeabb4a526d21f9344993c8b812de4b37896680da7c4db7ac902563e00")
 
-	m := celoMsg.NewGenericTransfer(1, 0, 0, resourceId, hash.Bytes(), &msgProofOpts)
+	m := celoMsg.NewGenericTransfer(1, 0, 0, resourceId, hash.Bytes(), msgProofOpts)
 
 	// Helpful for debugging
 	go ethtest.WatchEvent(client, contracts.BridgeAddress, utils.ProposalEvent)
@@ -295,11 +292,11 @@ func TestDuplicateMessage(t *testing.T) {
 	msgProofOpts := getMessageProofOpts(resourceId)
 
 	recipient := ethcrypto.PubkeyToAddress(BobKp.PrivateKey().PublicKey)
-	m := celoMsg.NewFungibleTransfer(1,0,0,amount, resourceId, recipient.Bytes(),&msgProofOpts)
+	m := celoMsg.NewFungibleTransfer(1, 0, 0, amount, resourceId, recipient.Bytes(), msgProofOpts)
 	ethtest.RegisterResource(t, client, contracts.BridgeAddress, contracts.ERC20HandlerAddress, resourceId, erc20Address)
 
 	data := ConstructErc20ProposalData(m.Payload[0].([]byte), m.Payload[1].([]byte))
-	dataHash := utils.Hash(append(contracts.ERC20HandlerAddress.Bytes(), data...))
+	dataHash := CreateProposalDataHash(data, contracts.ERC20HandlerAddress, msgProofOpts)
 
 	// Helpful for debugging
 	go ethtest.WatchEvent(client, contracts.BridgeAddress, utils.ProposalEvent)
