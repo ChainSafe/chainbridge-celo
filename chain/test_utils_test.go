@@ -17,7 +17,7 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 )
 
-const DefaultGasLimit = 6721975
+const DefaultGasLimit = 16721975
 const DefaultGasPrice = 20000000000
 
 var TestLogger = newTestLogger("test")
@@ -126,8 +126,7 @@ func createErc721Deposit(
 	tokenId *big.Int,
 ) {
 
-	data := utils.ConstructErc721DepositData(tokenId, destRecipient.Bytes()) 
-
+	data := utils.ConstructErc721DepositData(tokenId, destRecipient.Bytes())
 	// Incrememnt Nonce by one
 	client.Opts.Nonce = client.Opts.Nonce.Add(client.Opts.Nonce, big.NewInt(1))
 	if _, err := bridge.Deposit(
