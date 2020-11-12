@@ -97,7 +97,7 @@ func (w *writer) createErc20Proposal(m msg.Message) bool {
 	}
 
 	data := ConstructErc20ProposalData(m.Payload[0].([]byte), m.Payload[1].([]byte))
-	dataHash := CreateProposalDataHash(data, w.cfg.erc20HandlerContract, *msgProofOpts)
+	dataHash := CreateProposalDataHash(data, w.cfg.erc20HandlerContract, msgProofOpts)
 
 	if !w.shouldVote(m, dataHash) {
 		return false
@@ -137,7 +137,7 @@ func (w *writer) createErc721Proposal(m msg.Message) bool {
 	}
 
 	data := ConstructErc721ProposalData(m.Payload[0].([]byte), m.Payload[1].([]byte), m.Payload[2].([]byte))
-	dataHash := CreateProposalDataHash(data, w.cfg.erc721HandlerContract, *msgProofOpts)
+	dataHash := CreateProposalDataHash(data, w.cfg.erc721HandlerContract, msgProofOpts)
 
 	if !w.shouldVote(m, dataHash) {
 		return false
@@ -186,8 +186,7 @@ func (w *writer) createGenericDepositProposal(m msg.Message) bool {
 	}
 
 	data := ConstructGenericProposalData(metadata)
-	dataHash := CreateProposalDataHash(data, w.cfg.genericHandlerContract, *msgProofOpts)
- 
+	dataHash := CreateProposalDataHash(data, w.cfg.genericHandlerContract, msgProofOpts)
 
 	if !w.shouldVote(m, dataHash) {
 		return false
