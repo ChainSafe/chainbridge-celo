@@ -7,8 +7,8 @@ For configuration and CLI commands see the README: https://github.com/ChainSafe/
 package main
 
 import (
-
 	"os"
+
 	log "github.com/ChainSafe/log15"
 	"github.com/urfave/cli/v2"
 )
@@ -16,23 +16,23 @@ import (
 var app = cli.NewApp()
 
 var cliFlags = []cli.Flag{
-   //TODO
+	//TODO
 }
 
 var generateFlags = []cli.Flag{
-   //TODO
+	//TODO
 }
 
 var devFlags = []cli.Flag{
-		// TODO 
+	// TODO
 }
 
 var importFlags = []cli.Flag{
- //TODO
+	//TODO
 }
 
 var accountCommand = cli.Command{
-    	// TODO 
+	// TODO
 }
 
 // init initializes CLI
@@ -41,7 +41,7 @@ func init() {
 	app.Copyright = "Copyright 2019 ChainSafe Systems Authors"
 	app.Name = "chainbridge-celo"
 	app.Usage = "ChainBridge-celo"
-	app.Authors = []*cli.Author{{Name: "ChainSafe Systems 2019"}}
+	app.Authors = []*cli.Author{{Name: "ChainSafe Systems 2020"}}
 	app.Version = "0.0.1"
 	app.EnableBashCompletion = true
 	app.Commands = []*cli.Command{
@@ -60,7 +60,7 @@ func main() {
 }
 
 func startLogger(ctx *cli.Context) error {
-		// TODO 
+	// TODO
 
 	return nil
 }
