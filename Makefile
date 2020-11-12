@@ -49,8 +49,8 @@ start-elections:
 
 build:
 	@echo "  >  \033[32mBuilding binary...\033[0m "
-	cd cmd && env GOPROXY="direct" GOARCH=amd64 go build -o ../../build/chainbridge-celo
+	cd cmd/chainbridge-celo && env GOPROXY="direct" GOARCH=amd64 go build -o ../../build/chainbridge-celo
 
 install:
 	@echo "  >  \033[32mInstalling bridge...\033[0m "
-	cd cmd/ && go install
+	cd cmd/chainbridge-celo && go install
