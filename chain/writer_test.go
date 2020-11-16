@@ -56,7 +56,7 @@ func init() {
 
 }
 
-func getMessageProofOpts(resourceId msg.ResourceId) *celoMsg.MsgProofOpts {
+func getMessageProofOpts() *celoMsg.MsgProofOpts {
 
 	msgProofOpts := &celoMsg.MsgProofOpts{
 		RootHash:           rootHash,
@@ -194,7 +194,7 @@ func TestCreateAndExecuteErc20DepositProposal(t *testing.T) {
 	recipient := ethcrypto.PubkeyToAddress(BobKp.PrivateKey().PublicKey)
 	amount := big.NewInt(10)
 
-	msgProofOpts := getMessageProofOpts(resourceId)
+	msgProofOpts := getMessageProofOpts()
 
 	m := celoMsg.NewFungibleTransfer(1, 0, 0, amount, resourceId, recipient.Bytes(), msgProofOpts)
 	ethtest.RegisterResource(t, client, contracts.BridgeAddress, contracts.ERC20HandlerAddress, resourceId, erc20Address)
@@ -224,7 +224,7 @@ func TestCreateAndExecuteErc721Proposal(t *testing.T) {
 
 	// Create initial transfer message
 	resourceId := msg.ResourceIdFromSlice(append(common.LeftPadBytes(erc721Contract.Bytes(), 31), 0))
-	msgProofOpts := getMessageProofOpts(resourceId)
+	msgProofOpts := getMessageProofOpts()
 
 	m := celoMsg.NewNonFungibleTransfer(1, 0, 0, resourceId, tokenId, recipient.Bytes(), []byte{}, msgProofOpts)
 
@@ -260,7 +260,7 @@ func TestCreateAndExecuteGenericProposal(t *testing.T) {
 
 	ethtest.RegisterGenericResource(t, client, contracts.BridgeAddress, contracts.GenericHandlerAddress, resourceId, assetStoreAddr, depositSig, executeSig)
 	// Create initial transfer message
-	msgProofOpts := getMessageProofOpts(resourceId)
+	msgProofOpts := getMessageProofOpts()
 
 	hash := common.HexToHash("0x46c51deeabb4a526d21f9344993c8b812de4b37896680da7c4db7ac902563e00")
 
@@ -289,7 +289,7 @@ func TestDuplicateMessage(t *testing.T) {
 
 	// Create initial transfer message
 	resourceId := msg.ResourceIdFromSlice(append(common.LeftPadBytes(erc20Address.Bytes(), 31), 0))
-	msgProofOpts := getMessageProofOpts(resourceId)
+	msgProofOpts := getMessageProofOpts()
 
 	recipient := ethcrypto.PubkeyToAddress(BobKp.PrivateKey().PublicKey)
 	m := celoMsg.NewFungibleTransfer(1, 0, 0, amount, resourceId, recipient.Bytes(), msgProofOpts)
