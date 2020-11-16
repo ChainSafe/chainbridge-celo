@@ -24,7 +24,7 @@ func ConstructErc20ProposalData(amount []byte, recipient []byte) []byte {
 	return data
 }
 
-// constructErc721ProposalData returns the bytes to construct a proposal suitable for Erc721
+// CreateProposalDataHash constructs and returns proposal data hash
 func CreateProposalDataHash(data []byte, handler common.Address, msgProofOpts *msg.MsgProofOpts) [32]byte {
 	data = append(handler.Bytes(), data...)
 	data = append(data, msgProofOpts.RootHash[:]...)
@@ -46,6 +46,7 @@ func ConstructGenericProposalData(metadata []byte) []byte {
 	return data
 }
 
+// ConstructErc721ProposalData returns the bytes to construct a proposal suitable for Erc721
 func ConstructErc721ProposalData(tokenId []byte, recipient []byte, metadata []byte) []byte {
 	var data []byte
 	data = append(data, common.LeftPadBytes(tokenId, 32)...) // tokenId ([]byte)
