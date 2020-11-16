@@ -8,7 +8,6 @@ import (
 	"math/big"
 	"testing"
 
-	"github.com/ChainSafe/chainbridge-celo/bindings/Bridge"
 	connection "github.com/ChainSafe/chainbridge-celo/connection"
 	utils "github.com/ChainSafe/chainbridge-celo/shared/ethereum"
 	"github.com/ChainSafe/chainbridge-utils/keystore"
@@ -90,73 +89,4 @@ func deployTestContracts(t *testing.T, client *utils.Client, id msg.ChainId) *ut
 	fmt.Println("========================================================")
 
 	return contracts
-}
-
-func createErc20Deposit(
-	t *testing.T,
-	contract *Bridge.Bridge,
-	client *utils.Client,
-	rId msg.ResourceId,
-	destRecipient common.Address,
-	destId msg.ChainId,
-	amount *big.Int,
-) {
-
-	data := utils.ConstructErc20DepositData(destRecipient.Bytes(), amount)
-
-	// Incrememnt Nonce by one
-	client.Opts.Nonce = client.Opts.Nonce.Add(client.Opts.Nonce, big.NewInt(1))
-	if _, err := contract.Deposit(
-		client.Opts,
-		uint8(destId),
-		rId,
-		data,
-	); err != nil {
-		t.Fatal(err)
-	}
-}
-
-func createErc721Deposit(
-	t *testing.T,
-	bridge *Bridge.Bridge,
-	client *utils.Client,
-	rId msg.ResourceId,
-	destRecipient common.Address,
-	destId msg.ChainId,
-	tokenId *big.Int,
-) {
-
-	data := utils.ConstructErc721DepositData(tokenId, destRecipient.Bytes())
-	// Incrememnt Nonce by one
-	client.Opts.Nonce = client.Opts.Nonce.Add(client.Opts.Nonce, big.NewInt(1))
-	if _, err := bridge.Deposit(
-		client.Opts,
-		uint8(destId),
-		rId,
-		data,
-	); err != nil {
-		t.Fatal(err)
-	}
-}
-
-func createGenericDeposit(
-	t *testing.T,
-	bridge *Bridge.Bridge,
-	client *utils.Client,
-	rId msg.ResourceId,
-	destId msg.ChainId,
-	hash []byte) {
-
-	data := utils.ConstructGenericDepositData(hash)
-
-	// Incrememnt Nonce by one
-	client.Opts.Nonce = client.Opts.Nonce.Add(client.Opts.Nonce, big.NewInt(1))
-	if _, err := bridge.Deposit(
-		client.Opts,
-		uint8(destId),
-		rId,
-		data,
-	); err != nil {
-		t.Fatal(err)
-	}
 }
