@@ -23,8 +23,6 @@ import (
 const DefaultGasLimit = 6721975
 const DefaultGasPrice = 20000000000
 
-var maxGasPrice = big.NewInt(160000)
-
 var BlockRetryInterval = time.Second * 5
 
 type Connection struct {
@@ -50,7 +48,7 @@ func NewConnection(endpoint string, http bool, kp *secp256k1.Keypair, log log15.
 		endpoint:    endpoint,
 		http:        http,
 		kp:          kp,
-		maxGasPrice: maxGasPrice,
+		maxGasPrice: big.NewInt(DefaultGasPrice),
 		gasLimit:    gasLimit,
 		log:         log,
 		stop:        make(chan int),
