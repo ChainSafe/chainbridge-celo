@@ -16,7 +16,7 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 )
 
-const DefaultGasLimit = 16721975
+const DefaultGasLimit = 6721975
 const DefaultGasPrice = 20000000000
 
 var TestLogger = newTestLogger("test")
