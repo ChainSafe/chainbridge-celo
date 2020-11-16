@@ -16,13 +16,13 @@ import (
 	"github.com/ChainSafe/chainbridge-celo/bindings/ERC721Handler"
 	"github.com/ChainSafe/chainbridge-celo/bindings/GenericHandler"
 	"github.com/ChainSafe/chainbridge-celo/connection"
-	"github.com/ChainSafe/chainbridge-celo/shared/ethereum"
-	"github.com/ChainSafe/chainbridge-celo/shared/ethereum/testing"
+	utils "github.com/ChainSafe/chainbridge-celo/shared/ethereum"
+	ethtest "github.com/ChainSafe/chainbridge-celo/shared/ethereum/testing"
 
-	log "github.com/ChainSafe/log15"
 	"github.com/ChainSafe/chainbridge-utils/blockstore"
 	"github.com/ChainSafe/chainbridge-utils/core"
 	"github.com/ChainSafe/chainbridge-utils/msg"
+	log "github.com/ChainSafe/log15"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
 	ethcrypto "github.com/ethereum/go-ethereum/crypto"
@@ -47,7 +47,7 @@ func createTestListener(t *testing.T, client *utils.Client, stop <-chan int, err
 	if err != nil {
 		t.Fatal(err)
 	}
-	conn := connection.NewConnection(TestEndpoint, false, AliceKp, log.Root(), GasLimit, GasPrice)
+	conn := connection.NewConnection(TestEndpoint, false, AliceKp, log.Root(), GasLimit)
 	err = conn.Connect()
 	if err != nil {
 		t.Fatal(err)
