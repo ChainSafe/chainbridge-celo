@@ -167,7 +167,7 @@ func TestCreateAndExecuteErc20DepositProposal(t *testing.T) {
 	}
 	signatureHeader := data
 	aggregatePublicKey := data
-	key := data
+	key := []byte{}
 	g1 := data
 	hashedMessage := data
 	nodes, err := hexutil.Decode("0xd2d1808080808080808080808080808080802a")
@@ -214,7 +214,7 @@ func TestCreateAndExecuteErc721Proposal(t *testing.T) {
 	}
 	signatureHeader := data
 	aggregatePublicKey := data
-	key := data
+	key := []byte{}
 	g1 := data
 	hashedMessage := data
 	nodes, err := hexutil.Decode("0xd2d1808080808080808080808080808080802a")
@@ -267,7 +267,7 @@ func TestCreateAndExecuteGenericProposal(t *testing.T) {
 	}
 	signatureHeader := data
 	aggregatePublicKey := data
-	key := data
+	key := []byte{}
 	g1 := data
 	hashedMessage := data
 	nodes, err := hexutil.Decode("0xd2d1808080808080808080808080808080802a")
@@ -312,7 +312,7 @@ func TestDuplicateMessage(t *testing.T) {
 	}
 	signatureHeader := data
 	aggregatePublicKey := data
-	key := data
+	key := []byte{}
 	g1 := data
 	hashedMessage := data
 	nodes, err := hexutil.Decode("0xd2d1808080808080808080808080808080802a")
