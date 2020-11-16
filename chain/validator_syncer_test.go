@@ -12,7 +12,6 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 )
 
-
 var expectedAddresses = []common.Address{
 	// expectedAddresses are packed into our extra data
 	// this references `extraData` from our genesis.json
@@ -26,7 +25,7 @@ var expectedBlsPublicKeys = []string{
 }
 
 func createTestConnection(t *testing.T) *connection.Connection {
-	conn := connection.NewConnection(TestEndpoint, false, AliceKp, log15.Root(), GasLimit, GasPrice)
+	conn := connection.NewConnection(TestEndpoint, false, AliceKp, log15.Root(), GasLimit)
 	return conn
 }
 
