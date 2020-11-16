@@ -22,39 +22,38 @@ import (
 
 const DefaultGasLimit = 6721975
 const DefaultGasPrice = 20000000000
+
 var maxGasPrice = big.NewInt(160000)
 
 var BlockRetryInterval = time.Second * 5
 
 type Connection struct {
-	endpoint string
-	http     bool
-	kp       *secp256k1.Keypair
-	gasLimit *big.Int
-	gasPrice *big.Int
+	endpoint    string
+	http        bool
+	kp          *secp256k1.Keypair
+	gasLimit    *big.Int
 	maxGasPrice *big.Int
-	conn     *ethclient.Client
+	conn        *ethclient.Client
 	// signer    ethtypes.Signer
 	opts      *bind.TransactOpts
 	callOpts  *bind.CallOpts
 	nonce     uint64
 	nonceLock sync.Mutex
 	log       log15.Logger
-	optsLock sync.Mutex
+	optsLock  sync.Mutex
 	stop      chan int // All routines should exit when this channel is closed
 }
 
 // NewConnection returns an uninitialized connection, must call Connection.Connect() before using.
-func NewConnection(endpoint string, http bool, kp *secp256k1.Keypair, log log15.Logger, gasLimit, gasPrice *big.Int) *Connection {
+func NewConnection(endpoint string, http bool, kp *secp256k1.Keypair, log log15.Logger, gasLimit *big.Int) *Connection {
 	return &Connection{
-		endpoint: endpoint,
-		http:     http,
-		kp:       kp,
+		endpoint:    endpoint,
+		http:        http,
+		kp:          kp,
 		maxGasPrice: maxGasPrice,
-		gasLimit: gasLimit,
-		gasPrice: gasPrice,
-		log:      log,
-		stop:     make(chan int),
+		gasLimit:    gasLimit,
+		log:         log,
+		stop:        make(chan int),
 	}
 }
 
@@ -75,7 +74,7 @@ func (c *Connection) Connect() error {
 	c.conn = ethclient.NewClient(rpcClient)
 
 	// Construct tx opts, call opts, and nonce mechanism
-	opts, _, err := c.newTransactOpts(big.NewInt(0), c.gasLimit, c.gasPrice)
+	opts, _, err := c.newTransactOpts(big.NewInt(0), c.gasLimit, c.maxGasPrice)
 	if err != nil {
 		return err
 	}
@@ -219,7 +218,6 @@ func (c *Connection) SafeEstimateGas(ctx context.Context) (*big.Int, error) {
 		return gasPrice, nil
 	}
 }
-
 
 // Close terminates the client connection and stops any running routines
 func (c *Connection) Close() {
