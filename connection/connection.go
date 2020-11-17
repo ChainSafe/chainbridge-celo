@@ -43,12 +43,12 @@ type Connection struct {
 }
 
 // NewConnection returns an uninitialized connection, must call Connection.Connect() before using.
-func NewConnection(endpoint string, http bool, kp *secp256k1.Keypair, log log15.Logger, gasLimit *big.Int) *Connection {
+func NewConnection(endpoint string, http bool, kp *secp256k1.Keypair, log log15.Logger, gasLimit *big.Int, gasPrice *big.Int) *Connection {
 	return &Connection{
 		endpoint:    endpoint,
 		http:        http,
 		kp:          kp,
-		maxGasPrice: big.NewInt(DefaultGasPrice),
+		maxGasPrice: gasPrice,
 		gasLimit:    gasLimit,
 		log:         log,
 		stop:        make(chan int),

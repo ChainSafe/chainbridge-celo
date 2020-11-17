@@ -20,7 +20,7 @@ var GasLimit = big.NewInt(DefaultGasLimit)
 var GasPrice = big.NewInt(DefaultGasPrice)
 
 func TestConnect(t *testing.T) {
-	conn := NewConnection(TestEndpoint, false, AliceKp, log15.Root(), GasLimit)
+	conn := NewConnection(TestEndpoint, false, AliceKp, log15.Root(), GasLimit, GasPrice)
 	err := conn.Connect()
 	if err != nil {
 		t.Fatal(err)
@@ -37,7 +37,7 @@ func TestContractCode(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	conn := NewConnection(TestEndpoint, false, AliceKp, log15.Root(), GasLimit)
+	conn := NewConnection(TestEndpoint, false, AliceKp, log15.Root(), GasLimit, GasPrice)
 	err = conn.Connect()
 	if err != nil {
 		t.Fatal(err)

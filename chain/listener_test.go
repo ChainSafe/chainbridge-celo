@@ -47,7 +47,10 @@ func createTestListener(t *testing.T, client *utils.Client, stop <-chan int, err
 	if err != nil {
 		t.Fatal(err)
 	}
-	conn := connection.NewConnection(TestEndpoint, false, AliceKp, log.Root(), GasLimit)
+
+	var GasPrice = big.NewInt(DefaultGasPrice)
+
+	conn := connection.NewConnection(TestEndpoint, false, AliceKp, log.Root(), GasLimit, GasPrice)
 	err = conn.Connect()
 	if err != nil {
 		t.Fatal(err)

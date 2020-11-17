@@ -5,6 +5,7 @@ package chain
 
 import (
 	"encoding/hex"
+	"math/big"
 	"testing"
 
 	"github.com/ChainSafe/chainbridge-celo/connection"
@@ -25,7 +26,7 @@ var expectedBlsPublicKeys = []string{
 }
 
 func createTestConnection(t *testing.T) *connection.Connection {
-	conn := connection.NewConnection(TestEndpoint, false, AliceKp, log15.Root(), GasLimit)
+	conn := connection.NewConnection(TestEndpoint, false, AliceKp, log15.Root(), GasLimit, big.NewInt(DefaultGasPrice))
 	return conn
 }
 
