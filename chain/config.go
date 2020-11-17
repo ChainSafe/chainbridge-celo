@@ -5,6 +5,7 @@ package chain
 
 import (
 	"math/big"
+
 	"github.com/ChainSafe/chainbridge-utils/msg"
 	"github.com/ethereum/go-ethereum/common"
 )

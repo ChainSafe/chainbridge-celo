@@ -5,21 +5,19 @@ package msg
 
 import (
 	"math/big"
+
 	"github.com/ChainSafe/chainbridge-utils/msg"
 )
- 
 
 type MsgProofOpts struct {
-	RootHash [32]byte
+	RootHash           [32]byte
 	AggregatePublicKey []byte
-	HashedMessage []byte
-	Key []byte
-	SignatureHeader []byte
-	Nodes []byte
-	G1 []byte
+	HashedMessage      []byte
+	Key                []byte
+	SignatureHeader    []byte
+	Nodes              []byte
+	G1                 []byte
 }
-
- 
 
 func NewFungibleTransfer(source, dest msg.ChainId, nonce msg.Nonce, amount *big.Int, resourceId msg.ResourceId, recipient []byte, msgProofOpts *MsgProofOpts) msg.Message {
 	return msg.Message{
@@ -36,7 +34,7 @@ func NewFungibleTransfer(source, dest msg.ChainId, nonce msg.Nonce, amount *big.
 	}
 }
 
-func NewNonFungibleTransfer(source, dest msg.ChainId, nonce msg.Nonce, resourceId msg.ResourceId, tokenId *big.Int, recipient, metadata []byte,  msgProofOpts *MsgProofOpts) msg.Message {
+func NewNonFungibleTransfer(source, dest msg.ChainId, nonce msg.Nonce, resourceId msg.ResourceId, tokenId *big.Int, recipient, metadata []byte, msgProofOpts *MsgProofOpts) msg.Message {
 	return msg.Message{
 		Source:       source,
 		Destination:  dest,
