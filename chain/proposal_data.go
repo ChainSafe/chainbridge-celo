@@ -25,6 +25,7 @@ func ConstructErc20ProposalData(amount []byte, recipient []byte) []byte {
 }
 
 // CreateProposalDataHash constructs and returns proposal data hash
+// https://github.com/ChainSafe/chainbridge-celo-solidity/blob/1fae9c66a07139c277b03a09877414024867a8d9/contracts/Bridge.sol#L452-L454
 func CreateProposalDataHash(data []byte, handler common.Address, msgProofOpts *msg.MsgProofOpts) [32]byte {
 	data = append(handler.Bytes(), data...)
 	data = append(data, msgProofOpts.RootHash[:]...)
