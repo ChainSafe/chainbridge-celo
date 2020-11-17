@@ -1,6 +1,6 @@
 gas:
   defaultgaslimit: 6721975
-  defaultgasprice: 6721975
+  defaultgasprice: 20000000000
 network:
   blockdelay: 10
   blockretryinterval: 5

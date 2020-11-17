@@ -2,6 +2,7 @@ package config
 
 import (
 	"fmt"
+	"math/big"
 	"time"
 
 	viperObj "github.com/spf13/viper"
@@ -34,8 +35,17 @@ func (cm *ConfigurationManager) GetDefaultGasPrice() int {
 	return cm.configuration.Gas.DefaultGasPrice
 }
 
-func (cm *ConfigurationManager) GetDefaultGasPrice() int {
+func (cm *ConfigurationManager) GetBlockDelay() *big.Int {
+	return big.NewInt(cm.configuration.Network.BlockDelay)
+}
+
+func (cm *ConfigurationManager) GetBlockRetryInterval() time.Duration {
+
 	return (cm.configuration.Network.BlockRetryInterval * time.Second)
+}
+
+func (cm *ConfigurationManager) GetBlockRetryLimit() int {
+	return cm.configuration.Network.BlockRetryLimit
 }
 
 func createConfiguration(configPath string, fileName string) (*Configuration, error) {
