@@ -22,8 +22,22 @@ import (
 	ethcrypto "github.com/ethereum/go-ethereum/crypto"
 )
 
-func getMessageProofOpts(rootHash common.Hash, signatureHeader []byte,
-	aggregatePublicKey []byte, hashedMessage []byte, key []byte, nodes []byte, g1 []byte) *celoMsg.MsgProofOpts {
+func getMessageProofOpts() *celoMsg.MsgProofOpts {
+
+	data, err := hexutil.Decode("0xff5c6287761305d7d8ae76ca96f6cb48e48aa04cf3c9280619c8993f21e335caff5c6287761305d7d8ae76ca96f6cb48e48aa04cf3c9280619c8993f21e335ca")
+	if err != nil {
+		panic(err)
+	}
+	signatureHeader := data
+	aggregatePublicKey := data
+	key := []byte{}
+	g1 := data
+	hashedMessage := data
+	nodes, err := hexutil.Decode("0xd2d1808080808080808080808080808080802a")
+	if err != nil {
+		panic(err)
+	}
+	rootHash := common.HexToHash("0x46c51deeabb4a526d21f9344993c8b812de4b37896680da7c4db7ac902563e00")
 
 	msgProofOpts := &celoMsg.MsgProofOpts{
 		RootHash:           rootHash,
@@ -161,23 +175,7 @@ func TestCreateAndExecuteErc20DepositProposal(t *testing.T) {
 	recipient := ethcrypto.PubkeyToAddress(BobKp.PrivateKey().PublicKey)
 	amount := big.NewInt(10)
 
-	data, err := hexutil.Decode("0xff5c6287761305d7d8ae76ca96f6cb48e48aa04cf3c9280619c8993f21e335caff5c6287761305d7d8ae76ca96f6cb48e48aa04cf3c9280619c8993f21e335ca")
-	if err != nil {
-		panic(err)
-	}
-	signatureHeader := data
-	aggregatePublicKey := data
-	key := []byte{}
-	g1 := data
-	hashedMessage := data
-	nodes, err := hexutil.Decode("0xd2d1808080808080808080808080808080802a")
-	if err != nil {
-		panic(err)
-	}
-	recipient = ethcrypto.PubkeyToAddress(BobKp.PrivateKey().PublicKey)
-	rootHash := common.HexToHash("0x46c51deeabb4a526d21f9344993c8b812de4b37896680da7c4db7ac902563e00")
-
-	msgProofOpts := getMessageProofOpts(rootHash, signatureHeader, aggregatePublicKey, hashedMessage, key, nodes, g1)
+	msgProofOpts := getMessageProofOpts()
 
 	m := celoMsg.NewFungibleTransfer(1, 0, 0, amount, resourceId, recipient.Bytes(), msgProofOpts)
 	ethtest.RegisterResource(t, client, contracts.BridgeAddress, contracts.ERC20HandlerAddress, resourceId, erc20Address)
@@ -208,22 +206,7 @@ func TestCreateAndExecuteErc721Proposal(t *testing.T) {
 	// Create initial transfer message
 	resourceId := msg.ResourceIdFromSlice(append(common.LeftPadBytes(erc721Contract.Bytes(), 31), 0))
 
-	data, err := hexutil.Decode("0xff5c6287761305d7d8ae76ca96f6cb48e48aa04cf3c9280619c8993f21e335caff5c6287761305d7d8ae76ca96f6cb48e48aa04cf3c9280619c8993f21e335ca")
-	if err != nil {
-		panic(err)
-	}
-	signatureHeader := data
-	aggregatePublicKey := data
-	key := []byte{}
-	g1 := data
-	hashedMessage := data
-	nodes, err := hexutil.Decode("0xd2d1808080808080808080808080808080802a")
-	if err != nil {
-		panic(err)
-	}
-	rootHash := common.HexToHash("0x46c51deeabb4a526d21f9344993c8b812de4b37896680da7c4db7ac902563e00")
-
-	msgProofOpts := getMessageProofOpts(rootHash, signatureHeader, aggregatePublicKey, hashedMessage, key, nodes, g1)
+	msgProofOpts := getMessageProofOpts()
 
 	recipient := ethcrypto.PubkeyToAddress(BobKp.PrivateKey().PublicKey)
 
@@ -260,23 +243,9 @@ func TestCreateAndExecuteGenericProposal(t *testing.T) {
 	executeSig := utils.CreateFunctionSignature("store(bytes32)")
 
 	ethtest.RegisterGenericResource(t, client, contracts.BridgeAddress, contracts.GenericHandlerAddress, resourceId, assetStoreAddr, depositSig, executeSig)
-	// Create initial transfer message
-	data, err := hexutil.Decode("0xff5c6287761305d7d8ae76ca96f6cb48e48aa04cf3c9280619c8993f21e335caff5c6287761305d7d8ae76ca96f6cb48e48aa04cf3c9280619c8993f21e335ca")
-	if err != nil {
-		panic(err)
-	}
-	signatureHeader := data
-	aggregatePublicKey := data
-	key := []byte{}
-	g1 := data
-	hashedMessage := data
-	nodes, err := hexutil.Decode("0xd2d1808080808080808080808080808080802a")
-	if err != nil {
-		panic(err)
-	}
-	rootHash := common.HexToHash("0x46c51deeabb4a526d21f9344993c8b812de4b37896680da7c4db7ac902563e00")
+	// Create initial transfer messag
 
-	msgProofOpts := getMessageProofOpts(rootHash, signatureHeader, aggregatePublicKey, hashedMessage, key, nodes, g1)
+	msgProofOpts := getMessageProofOpts()
 
 	hash := common.HexToHash("0x46c51deeabb4a526d21f9344993c8b812de4b37896680da7c4db7ac902563e00")
 
@@ -306,23 +275,7 @@ func TestDuplicateMessage(t *testing.T) {
 	// Create initial transfer message
 	resourceId := msg.ResourceIdFromSlice(append(common.LeftPadBytes(erc20Address.Bytes(), 31), 0))
 
-	data, err := hexutil.Decode("0xff5c6287761305d7d8ae76ca96f6cb48e48aa04cf3c9280619c8993f21e335caff5c6287761305d7d8ae76ca96f6cb48e48aa04cf3c9280619c8993f21e335ca")
-	if err != nil {
-		panic(err)
-	}
-	signatureHeader := data
-	aggregatePublicKey := data
-	key := []byte{}
-	g1 := data
-	hashedMessage := data
-	nodes, err := hexutil.Decode("0xd2d1808080808080808080808080808080802a")
-	if err != nil {
-		panic(err)
-	}
-
-	rootHash := common.HexToHash("0x46c51deeabb4a526d21f9344993c8b812de4b37896680da7c4db7ac902563e00")
-
-	msgProofOpts := getMessageProofOpts(rootHash, signatureHeader, aggregatePublicKey, hashedMessage, key, nodes, g1)
+	msgProofOpts := getMessageProofOpts()
 
 	recipient := ethcrypto.PubkeyToAddress(BobKp.PrivateKey().PublicKey)
 
