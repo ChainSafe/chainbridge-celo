@@ -19,16 +19,8 @@ var cliFlags = []cli.Flag{
 	//TODO
 }
 
-var generateFlags = []cli.Flag{
-	//TODO
-}
-
 var devFlags = []cli.Flag{
 	// TODO
-}
-
-var importFlags = []cli.Flag{
-	//TODO
 }
 
 var accountCommand = cli.Command{
@@ -57,12 +49,6 @@ func main() {
 		log.Error(err.Error())
 		os.Exit(1)
 	}
-}
-
-func startLogger(ctx *cli.Context) error {
-	// TODO
-
-	return nil
 }
 
 func run(ctx *cli.Context) error {
