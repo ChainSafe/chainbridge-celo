@@ -5,4 +5,12 @@ network:
   blockdelay: 10
   blockretryinterval: 5
   blockretrylimit: 5
-
+  zeroaddress: 0x0000000000000000000000000000000000000000
+  executeblockwatchlimit: 100
+  txretryinterval: 2
+  txretrylimit: 10
+test:
+  endpoint: "ws://localhost:8545"
+  testrelayerthreshold: 2
+  testtimeout: 30
+  testchainid: 0

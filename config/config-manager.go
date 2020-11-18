@@ -3,36 +3,52 @@ package config
 import (
 	"fmt"
 	"math/big"
+	"sync"
 	"time"
 
+	"github.com/ethereum/go-ethereum/common"
 	viperObj "github.com/spf13/viper"
 )
+
+var configManager *ConfigurationManager
+
+var once sync.Once
 
 type ConfigurationManager struct {
 	configuration *Configuration
 }
 
-func NewConfigurationManager(configPath string, fileName string) (*ConfigurationManager, error) {
+func NewConfigurationManager(configPath string) (*ConfigurationManager, error) {
 
 	var err error
 
 	var config *Configuration
 
-	config, err = createConfiguration(configPath, fileName)
+	once.Do(func() {
+		config, err = createConfiguration(configPath)
 
-	configManager := &ConfigurationManager{
-		configuration: config,
-	}
+		configManager = &ConfigurationManager{
+			configuration: config,
+		}
+	})
 
 	return configManager, err
 }
 
-func (cm *ConfigurationManager) GetDefaultGasLimit() int {
+func GetConfigManager() *ConfigurationManager {
+	return configManager
+}
+
+func (cm *ConfigurationManager) GetDefaultGasLimit() *big.Int {
+	return big.NewInt(cm.configuration.Gas.DefaultGasLimit)
+}
+
+func (cm *ConfigurationManager) GetDefaultGasLimitInt64() int64 {
 	return cm.configuration.Gas.DefaultGasLimit
 }
 
-func (cm *ConfigurationManager) GetDefaultGasPrice() int {
-	return cm.configuration.Gas.DefaultGasPrice
+func (cm *ConfigurationManager) GetDefaultGasPrice() *big.Int {
+	return big.NewInt(cm.configuration.Gas.DefaultGasPrice)
 }
 
 func (cm *ConfigurationManager) GetBlockDelay() *big.Int {
@@ -40,7 +56,6 @@ func (cm *ConfigurationManager) GetBlockDelay() *big.Int {
 }
 
 func (cm *ConfigurationManager) GetBlockRetryInterval() time.Duration {
-
 	return (cm.configuration.Network.BlockRetryInterval * time.Second)
 }
 
@@ -48,11 +63,43 @@ func (cm *ConfigurationManager) GetBlockRetryLimit() int {
 	return cm.configuration.Network.BlockRetryLimit
 }
 
-func createConfiguration(configPath string, fileName string) (*Configuration, error) {
+func (cm *ConfigurationManager) GetTestEndPoint() string {
+	return cm.configuration.Test.EndPoint
+}
+
+func (cm *ConfigurationManager) GetZeroAddress() common.Address {
+	return common.HexToAddress(cm.configuration.Network.ZeroAddress)
+}
+
+func (cm *ConfigurationManager) GetTestChainID() uint8 {
+	return cm.configuration.Test.TestChainID
+}
+
+func (cm *ConfigurationManager) GetTestRelayerThreshold() *big.Int {
+	return big.NewInt(cm.configuration.Test.TestRelayerThreshold)
+}
+
+func (cm *ConfigurationManager) GetTestTimeout() time.Duration {
+	return (cm.configuration.Test.TestTimeout * 30)
+}
+
+func (cm *ConfigurationManager) GetExecuteBlockWatchLimit() int {
+	return cm.configuration.Network.ExecuteBlockWatchLimit
+}
+
+func (cm *ConfigurationManager) GetTxRetryInterval() time.Duration {
+	return cm.configuration.Network.TxRetryInterval * time.Second
+}
+
+func (cm *ConfigurationManager) GetTxRetryLimit() int {
+	return cm.configuration.Network.TxRetryLimit
+}
+
+func createConfiguration(configPath string) (*Configuration, error) {
 
 	var configuration Configuration
 
-	viper, err := bindDefaultConfigurations(viperObj.New(), configPath, fileName)
+	viper, err := bindDefaultConfigurations(viperObj.New(), configPath)
 
 	if err != nil {
 		return nil, err
@@ -69,9 +116,9 @@ func createConfiguration(configPath string, fileName string) (*Configuration, er
 	return &configuration, nil
 }
 
-func bindDefaultConfigurations(viper *viperObj.Viper, configPath string, fileName string) (*viperObj.Viper, error) {
+func bindDefaultConfigurations(viper *viperObj.Viper, configPath string) (*viperObj.Viper, error) {
 
-	viper.SetConfigName(fileName)
+	viper.SetConfigName("config")
 	viper.AddConfigPath(configPath)
 	viper.SetConfigType("yaml")
 
