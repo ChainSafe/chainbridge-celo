@@ -1,3 +1,6 @@
+// Copyright 2020 ChainSafe Systems
+// SPDX-License-Identifier: LGPL-3.0-only
+
 package chain
 
 import (
@@ -15,13 +18,13 @@ var TransferredStatus uint8 = 3
 var CancelledStatus uint8 = 4
 
 type writer struct {
-	cfg           Config
-	conn          Connection
+	cfg            Config
+	conn           Connection
 	bridgeContract *Bridge.Bridge
-	log           log15.Logger
-	stop          <-chan int
-	sysErr        chan<- error
-	metrics       *metrics.ChainMetrics
+	log            log15.Logger
+	stop           <-chan int
+	sysErr         chan<- error
+	metrics        *metrics.ChainMetrics
 }
 
 // NewWriter creates and returns writer
