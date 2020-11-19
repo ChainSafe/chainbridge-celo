@@ -149,4 +149,4 @@ The package consists of 3 files which include:
 
    ```
 
-   [Click here](https://example.com) to view how this may be applied in the actual code
+   [Click here](https://github.com/ChainSafe/chainbridge-celo/blob/yusuf/configuration-management/chain/shared_test.go) to view how this may be applied in the actual code
