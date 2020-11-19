@@ -5,7 +5,6 @@ package chain
 
 import (
 	"encoding/hex"
-	"math/big"
 	"testing"
 
 	"github.com/ChainSafe/chainbridge-celo/connection"
