@@ -12,7 +12,7 @@ The package consists of 3 files which include:
 - config.go    - provides a go data structure which maps to values defined in config.yaml
 - config-manager -  binds config.yaml to config.go (as well as any environment variables) and provides getter functions and initializes a singleton of the configuration.
 
-# Description 
+## Description 
 - config.yaml 
   This YAML file contains the parameters to be consumed and their values.  
 
