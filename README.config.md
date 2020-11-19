@@ -1,12 +1,16 @@
 # Configuration Management
 
 The configuration package provides one source of truth for managing settings for infrastructure parameters 
-blockretryinterval, txretryinterval etc .
+such blockretryinterval, txretryinterval etc .
 As well as provides bindings for environmental variables for easy access.
 
 # Package content
 
 The package consists of 3 files which include 
+
+- config.yaml  - All settings are defined here
+- config.go    - provides a go data structure which maps to values defined in config.yaml
+- config-menager -  initialized configuratuoin
 
 - config.yaml 
   This YAML file contains the parameters to be consumed and their values.  
