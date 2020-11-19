@@ -66,7 +66,7 @@ The package consists of 3 files which include:
 
 - configuration-manager.go 
   This file initializes the configaration by binding the values defined in config.yaml (as well as any specified environment variables) to the struct defined in config.go
-  and instantes a singleton of the configuration-manager which provides access to the bound properties via getter functions.
+  and instantiates a singleton of the configuration-manager which provides access to the bound properties via getter functions.
 
   ```
   package config
