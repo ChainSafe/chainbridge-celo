@@ -80,7 +80,7 @@ func (cm *ConfigurationManager) GetTestRelayerThreshold() *big.Int {
 }
 
 func (cm *ConfigurationManager) GetTestTimeout() time.Duration {
-	return (time.Duration(cm.configuration.Test.TestTimeout )* time.Second)
+	return (time.Duration(cm.configuration.Test.TestTimeout) * time.Second)
 }
 
 func (cm *ConfigurationManager) GetExecuteBlockWatchLimit() int {
@@ -93,6 +93,10 @@ func (cm *ConfigurationManager) GetTxRetryInterval() time.Duration {
 
 func (cm *ConfigurationManager) GetTxRetryLimit() int {
 	return cm.configuration.Network.TxRetryLimit
+}
+
+func (cm *ConfigurationManager) GetExampeEnvironmentVariable() string {
+	return cm.configuration.EXAMPLE_ENVIRONMENT_VARIABLE
 }
 
 func createConfiguration(configPath string) (*Configuration, error) {
@@ -135,5 +139,5 @@ func bindDefaultConfigurations(viper *viperObj.Viper, configPath string) (*viper
 }
 
 func bindEnvironmentVariables(viper *viperObj.Viper) {
-	//viper.BindEnv("<ENVIRONMENT_VARIABLE_NAME>")
+	viper.BindEnv("EXAMPLE_ENVIRONMENT_VARIABLE")
 }

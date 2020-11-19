@@ -23,7 +23,8 @@ type Test struct {
 }
 
 type Configuration struct {
-	Gas     Gas
-	Network Network
-	Test    Test
+	Gas                          Gas
+	Network                      Network
+	Test                         Test
+	EXAMPLE_ENVIRONMENT_VARIABLE string
 }

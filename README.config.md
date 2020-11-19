@@ -70,15 +70,14 @@ The package consists of 3 files which include
   //initializes configuration manager
   func NewConfigurationManager(configPath string) (*ConfigurationManager, error) {
 
-        // Perform initialization here
+        // Perform initialization here by calling createConfiguration() defined below.
         // 1. bind config.yaml
         // 2. bind environment variables
 
         return configManager, err
    }
    
-   // call this function any where in code to have access to configuration and getter functions to return 
-   // any parameter 
+   // call this function any where in code to have access to the configuration and its getter functions that return values
    func GetConfigManager() *ConfigurationManager {
 	 return configManager
    }
@@ -96,6 +95,23 @@ The package consists of 3 files which include
    // getter function to return TxRetryLimit
    func (cm *ConfigurationManager) GetTxRetryLimit() int {
 	 return cm.configuration.Network.TxRetryLimit
+   }
+
+   // getter function to return EXAMPLE_ENVIRONMENT_VARIABLE
+   func (cm *ConfigurationManager) GetExampeEnvironmentVariable() string {
+	return cm.configuration.EXAMPLE_ENVIRONMENT_VARIABLE
+   }
+
+   // called by NewConfigurationManager to bind config.yaml and environment variables to Configruration struct
+   func createConfiguration(configPath string) (*Configuration, error) {
+
+        var configuration Configuration
+
+        //1. Call bindDefaultConfigurations
+        //2. call bindEnvironmentVariables()
+        //3  hydrate configuration with values from both bindings
+
+	  return &configuration, nil
    }
 
    // reads config.yaml 
@@ -120,18 +136,6 @@ The package consists of 3 files which include
    // reads environment variables
    func bindEnvironmentVariables(viper *viperObj.Viper) {
 	  viper.BindEnv("EXAMPLE_ENVIRONMENT_VARIABLE")
-   }
-
-   // binds config.yaml and environment variables to Configruration struct
-   func createConfiguration(configPath string) (*Configuration, error) {
-
-        var configuration Configuration
-
-        //1. Call bindDefaultConfigurations
-        //2. call bindEnvironmentVariables()
-        //3  hydrate configuration with values from both bindings
-
-	  return &configuration, nil
    }
 
    ```
