@@ -4,6 +4,10 @@ The configuration package provides one source of truth for managing settings for
 such blockretryinterval, txretryinterval etc .
 As well as provides bindings for environmental variables for easy access.
 
+
+### Dependencies
+- Viper https://github.com/spf13/viper
+
 # Package content
 
 The package consists of 3 files which include: 
