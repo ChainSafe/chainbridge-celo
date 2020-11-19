@@ -76,7 +76,7 @@ The package consists of 3 files which include:
         configuration *Configuration
   }
 
-  //initializes configuration manager
+  //initializes configuration manager - call this function at the application entry point to initialize the config
   func NewConfigurationManager(configPath string) (*ConfigurationManager, error) {
 
         // Perform initialization here by calling createConfiguration() defined below.
