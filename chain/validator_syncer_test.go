@@ -26,7 +26,7 @@ var expectedBlsPublicKeys = []string{
 }
 
 func createTestConnection(t *testing.T) *connection.Connection {
-	conn := connection.NewConnection(TestEndpoint, false, AliceKp, log15.Root(), GasLimit, big.NewInt(DefaultGasPrice))
+	conn := connection.NewConnection(TestEndpoint, false, AliceKp, log15.Root(), GasLimit, GasPrice)
 	return conn
 }
 
