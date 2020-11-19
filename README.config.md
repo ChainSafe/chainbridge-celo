@@ -18,7 +18,7 @@ The package consists of 3 files which include:
 
 ## Description 
 - config.yaml 
-  This YAML file contains the parameters to be consumed and their values. More values can be added here as the system grows
+  This YAML file contains the parameters to be consumed and their values. More values can be added here as the code base grows
 
   config.yaml
   ```
