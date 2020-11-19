@@ -86,7 +86,7 @@ The package consists of 3 files which include:
         return configManager, err
    }
    
-   // call this function any where in code to have access to the configuration and its getter functions that return values
+   // call this function any where in code to have access to the getter functions.
    func GetConfigManager() *ConfigurationManager {
 	 return configManager
    }
