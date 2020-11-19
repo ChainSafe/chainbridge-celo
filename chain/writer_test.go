@@ -144,6 +144,8 @@ func TestWriter_start_stop(t *testing.T) {
 }
 
 func TestCreateAndExecuteErc20DepositProposal(t *testing.T) {
+
+	// t.Error("--------TestTimeout ---==", TestTimeout)
 	client := ethtest.NewClient(t, TestEndpoint, AliceKp)
 	contracts := deployTestContracts(t, client, TestChainId)
 	writerA, writerB, stopA, stopB, errA, errB := createWriters(t, client, contracts)

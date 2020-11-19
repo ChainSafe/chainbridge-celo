@@ -16,12 +16,7 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 )
 
-const DefaultGasLimit = 16721975
-const DefaultGasPrice = 20000000000
-
 var TestLogger = newTestLogger("test")
-
-var TestChainId = msg.ChainId(0)
 
 var aliceTestConfig = createConfig("alice", nil, nil)
 
@@ -38,8 +33,8 @@ func createConfig(name string, startBlock *big.Int, contracts *utils.DeployedCon
 		erc20HandlerContract:   common.Address{},
 		erc721HandlerContract:  common.Address{},
 		genericHandlerContract: common.Address{},
-		gasLimit:               big.NewInt(DefaultGasLimit),
-		maxGasPrice:            big.NewInt(DefaultGasPrice),
+		gasLimit:               DefaultGasLimit,
+		maxGasPrice:            DefaultGasPrice,
 		http:                   false,
 		startBlock:             startBlock,
 	}
@@ -62,7 +57,7 @@ func newTestLogger(name string) log15.Logger {
 
 func newLocalConnection(t *testing.T, cfg *Config) *connection.Connection {
 	kp := keystore.TestKeyRing.EthereumKeys[cfg.from]
-	conn := connection.NewConnection(TestEndpoint, false, kp, TestLogger, big.NewInt(DefaultGasLimit))
+	conn := connection.NewConnection(TestEndpoint, false, kp, TestLogger, DefaultGasLimit)
 	err := conn.Connect()
 	if err != nil {
 		t.Fatal(err)

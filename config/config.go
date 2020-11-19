@@ -1,29 +1,25 @@
 package config
 
-import (
-	"time"
-)
-
 type Gas struct {
 	DefaultGasLimit int64
 	DefaultGasPrice int64
 }
 
-type Test struct {
-	EndPoint             string
-	TestTimeout          time.Duration
-	TestRelayerThreshold int64
-	TestChainID          uint8
-}
-
 type Network struct {
-	BlockRetryInterval     time.Duration
+	BlockRetryInterval     int64
 	BlockDelay             int64
 	BlockRetryLimit        int
 	ZeroAddress            string
 	ExecuteBlockWatchLimit int
-	TxRetryInterval        time.Duration
+	TxRetryInterval        int64
 	TxRetryLimit           int
+}
+
+type Test struct {
+	EndPoint             string
+	TestTimeout          int64
+	TestRelayerThreshold int64
+	TestChainID          uint8
 }
 
 type Configuration struct {

@@ -43,8 +43,8 @@ func (cm *ConfigurationManager) GetDefaultGasLimit() *big.Int {
 	return big.NewInt(cm.configuration.Gas.DefaultGasLimit)
 }
 
-func (cm *ConfigurationManager) GetDefaultGasLimitInt64() int64 {
-	return cm.configuration.Gas.DefaultGasLimit
+func (cm *ConfigurationManager) GetDefaultGasLimit64() uint64 {
+	return uint64(cm.configuration.Gas.DefaultGasLimit)
 }
 
 func (cm *ConfigurationManager) GetDefaultGasPrice() *big.Int {
@@ -56,7 +56,7 @@ func (cm *ConfigurationManager) GetBlockDelay() *big.Int {
 }
 
 func (cm *ConfigurationManager) GetBlockRetryInterval() time.Duration {
-	return (cm.configuration.Network.BlockRetryInterval * time.Second)
+	return (time.Duration(cm.configuration.Network.BlockRetryInterval) * time.Second)
 }
 
 func (cm *ConfigurationManager) GetBlockRetryLimit() int {
@@ -80,7 +80,7 @@ func (cm *ConfigurationManager) GetTestRelayerThreshold() *big.Int {
 }
 
 func (cm *ConfigurationManager) GetTestTimeout() time.Duration {
-	return (cm.configuration.Test.TestTimeout * 30)
+	return (time.Duration(cm.configuration.Test.TestTimeout )* time.Second)
 }
 
 func (cm *ConfigurationManager) GetExecuteBlockWatchLimit() int {
@@ -88,7 +88,7 @@ func (cm *ConfigurationManager) GetExecuteBlockWatchLimit() int {
 }
 
 func (cm *ConfigurationManager) GetTxRetryInterval() time.Duration {
-	return cm.configuration.Network.TxRetryInterval * time.Second
+	return time.Duration(cm.configuration.Network.TxRetryInterval) * time.Second
 }
 
 func (cm *ConfigurationManager) GetTxRetryLimit() int {
