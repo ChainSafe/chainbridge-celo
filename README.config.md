@@ -142,7 +142,7 @@ The package consists of 3 files which include:
         return viper, nil
    }
 
-   // reads environment variables
+   // reads EXAMPLE_ENVIRONMENT_VARIABLE environment variable
    func bindEnvironmentVariables(viper *viperObj.Viper) {
 	  viper.BindEnv("EXAMPLE_ENVIRONMENT_VARIABLE")
    }
