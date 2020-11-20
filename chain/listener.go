@@ -18,12 +18,15 @@ import (
 	utils "github.com/ChainSafe/chainbridge-celo/shared/ethereum"
 	"github.com/ChainSafe/chainbridge-utils/blockstore"
 	"github.com/ChainSafe/chainbridge-utils/core"
+	"github.com/ChainSafe/chainbridge-utils/crypto/secp256k1"
 	"github.com/ChainSafe/chainbridge-utils/msg"
 	log "github.com/ChainSafe/log15"
 	eth "github.com/ethereum/go-ethereum"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethclient"
+	ethcommon "github.com/ethereum/go-ethereum/common"
+	
 )
 
 var BlockDelay = big.NewInt(10)
@@ -35,12 +38,18 @@ var _ Connection = &connection.Connection{}
 
 type Connection interface {
 	Connect() error
+	Keypair() *secp256k1.Keypair
+	Opts() *bind.TransactOpts
+	CallOpts() *bind.CallOpts
+	LockAndUpdateOpts() error
+	UnlockOpts()
+	Client() *ethclient.Client
+	EnsureHasBytecode(address common.Address) error
 	LatestBlock() (*big.Int, error)
+	WaitForBlock(block *big.Int) error
 	LockAndUpdateNonce() error
 	UnlockNonce()
 	Close()
-	Client() *ethclient.Client
-	Opts() *bind.TransactOpts
 }
 
 var ExpectedBlockTime = time.Second
@@ -209,18 +218,6 @@ func (l *listener) getDepositEventsAndProofsForBlock(latestBlock *big.Int) error
 	return nil
 }
 
-func buildQuery(contract common.Address, sig utils.EventSig, startBlock *big.Int, endBlock *big.Int) eth.FilterQuery {
-	query := eth.FilterQuery{
-		FromBlock: startBlock,
-		ToBlock:   endBlock,
-		Addresses: []common.Address{contract},
-		Topics: [][]common.Hash{
-			{sig.GetTopic()},
-		},
-	}
-	return query
-}
-
 func (l *listener) getBlockHashFromTransactionHash(txHash common.Hash) (blockHash common.Hash, err error) {
 
 	receipt, err := l.conn.Client().TransactionReceipt(context.Background(), txHash)
@@ -244,4 +241,17 @@ func (l *listener) getTransactionsFromBlockHash(blockHash common.Hash) (txHashes
 	}
 
 	return transactionHashes, block.Root(), nil
+}
+
+// buildQuery constructs a query for the bridgeContract by hashing sig to get the event topic
+func buildQuery(contract ethcommon.Address, sig utils.EventSig, startBlock *big.Int, endBlock *big.Int) eth.FilterQuery {
+	query := eth.FilterQuery{
+		FromBlock: startBlock,
+		ToBlock:   endBlock,
+		Addresses: []ethcommon.Address{contract},
+		Topics: [][]ethcommon.Hash{
+			{sig.GetTopic()},
+		},
+	}
+	return query
 }

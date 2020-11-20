@@ -4,6 +4,7 @@
 package utils
 
 import (
+	"math/big"
 	"github.com/ChainSafe/chainbridge-celo/bindings/Bridge"
 	msg "github.com/ChainSafe/chainbridge-utils/msg"
 	"github.com/ethereum/go-ethereum/common"
@@ -99,4 +100,11 @@ func GetDepositNonce(client *Client, bridge common.Address, chain msg.ChainId) (
 	}
 
 	return count, nil
+}
+
+func IDAndNonce(srcId msg.ChainId, nonce msg.Nonce) *big.Int {
+	var data []byte
+	data = append(data, nonce.Big().Bytes()...)
+	data = append(data, uint8(srcId))
+	return big.NewInt(0).SetBytes(data)
 }
