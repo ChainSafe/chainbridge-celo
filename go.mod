@@ -12,7 +12,9 @@ require (
 	github.com/google/addlicense v0.0.0-20200906110928-a0294312aa76 // indirect
 	github.com/gorilla/websocket v1.4.2 // indirect
 	github.com/pkg/errors v0.9.1
+	github.com/prometheus/client_golang v1.4.1
 	github.com/rs/cors v1.7.0 // indirect
+	github.com/urfave/cli/v2 v2.3.0
 	golang.org/x/net v0.0.0-20200707034311-ab3426394381 // indirect
 	golang.org/x/sync v0.0.0-20201020160332-67f06af15bc9 // indirect
 )
