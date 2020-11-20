@@ -23,30 +23,26 @@ import (
 )
 
 func getMessageProofOpts() *celoMsg.MsgProofOpts {
-
 	data, err := hexutil.Decode("0xff5c6287761305d7d8ae76ca96f6cb48e48aa04cf3c9280619c8993f21e335caff5c6287761305d7d8ae76ca96f6cb48e48aa04cf3c9280619c8993f21e335ca")
 	if err != nil {
 		panic(err)
 	}
-	signatureHeader := data
-	aggregatePublicKey := data
-	key := []byte{}
-	g1 := data
-	hashedMessage := data
+
 	nodes, err := hexutil.Decode("0xd2d1808080808080808080808080808080802a")
 	if err != nil {
 		panic(err)
 	}
+
 	rootHash := common.HexToHash("0x46c51deeabb4a526d21f9344993c8b812de4b37896680da7c4db7ac902563e00")
 
 	msgProofOpts := &celoMsg.MsgProofOpts{
 		RootHash:           rootHash,
-		AggregatePublicKey: aggregatePublicKey,
-		HashedMessage:      hashedMessage,
-		Key:                key,
-		SignatureHeader:    signatureHeader,
+		AggregatePublicKey: data,
+		HashedMessage:      data,
+		Key:                []byte{},
+		SignatureHeader:    data,
 		Nodes:              nodes,
-		G1:                 g1,
+		G1:                 data,
 	}
 
 	return msgProofOpts
