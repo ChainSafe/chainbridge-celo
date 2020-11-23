@@ -20,4 +20,28 @@ const (
 	ProposalVote      EventSig = "ProposalVote(uint8,uint8,uint64,bytes32,uint8)"
 	ProposalFinalized EventSig = "ProposalFinalized(uint8,uint8,uint64,bytes32)"
 	ProposalExecuted  EventSig = "ProposalExecuted(uint8,uint8,uint64)"
+	ProposalEvent     EventSig = "ProposalEvent(uint8,uint64,uint8,bytes32,bytes32)"
 )
+
+
+type ProposalStatus int
+
+const (
+	Inactive ProposalStatus = iota
+	Active
+	Passed
+	Executed
+	Cancelled
+)
+
+func IsActive(status uint8) bool {
+	return ProposalStatus(status) == Active
+}
+
+func IsFinalized(status uint8) bool {
+	return ProposalStatus(status) == Passed
+}
+
+func IsExecuted(status uint8) bool {
+	return ProposalStatus(status) == Executed
+}

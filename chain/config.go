@@ -19,8 +19,8 @@ const DefaultGasLimit = 6721975
 const DefaultGasPrice = 20000000000
 
 type Config struct {
-	name                   string      // Human-readable chain name
 	id                     msg.ChainId // ChainID
+	name                   string      // Human-readable chain name
 	endpoint               string      // url for rpc endpoint
 	from                   string      // address of key to use
 	keystorePath           string      // Location of keyfiles
