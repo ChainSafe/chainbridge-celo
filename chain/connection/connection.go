@@ -38,18 +38,17 @@ type Connection struct {
 	nonce     uint64
 	nonceLock sync.Mutex
 	log       log15.Logger
-	stop      chan int // All routines should exit when this channel is closed
+	stop      chan int // All routines should exst when this channel is closed
 }
 
 // NewConnection returns an uninitialized connection, must call Connection.Connect() before using.
-func NewConnection(endpoint string, http bool, kp *secp256k1.Keypair, log log15.Logger, gasLimit, gasPrice *big.Int) *Connection {
+func NewConnection(endpoint string, http bool, kp *secp256k1.Keypair, gasLimit, gasPrice *big.Int) *Connection {
 	return &Connection{
 		endpoint: endpoint,
 		http:     http,
 		kp:       kp,
 		gasLimit: gasLimit,
 		gasPrice: gasPrice,
-		log:      log,
 		stop:     make(chan int),
 	}
 }

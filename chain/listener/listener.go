@@ -1,7 +1,7 @@
 // Copyright 2020 ChainSafe Systems
 // SPDX-License-Identifier: LGPL-3.0-only
 
-package chain
+package listener
 
 import (
 	"context"
@@ -10,16 +10,15 @@ import (
 	"math/big"
 	"time"
 
-	"github.com/ChainSafe/chainbridge-celo/connection"
 	"github.com/ChainSafe/chainbridge-celo/bindings/Bridge"
 	"github.com/ChainSafe/chainbridge-celo/bindings/ERC20Handler"
 	"github.com/ChainSafe/chainbridge-celo/bindings/ERC721Handler"
 	"github.com/ChainSafe/chainbridge-celo/bindings/GenericHandler"
+	"github.com/ChainSafe/chainbridge-celo/chain/connection"
 	utils "github.com/ChainSafe/chainbridge-celo/shared/ethereum"
 	"github.com/ChainSafe/chainbridge-utils/blockstore"
 	"github.com/ChainSafe/chainbridge-utils/core"
 	"github.com/ChainSafe/chainbridge-utils/msg"
-	log "github.com/ChainSafe/log15"
 	eth "github.com/ethereum/go-ethereum"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
@@ -53,22 +52,20 @@ type listener struct {
 	erc20HandlerContract   *ERC20Handler.ERC20Handler
 	erc721HandlerContract  *ERC721Handler.ERC721Handler
 	genericHandlerContract *GenericHandler.GenericHandler
-	log                    log.Logger
 	blockstore             blockstore.Blockstorer
 	stop                   <-chan int
 	sysErr                 chan<- error // Reports fatal error to core
 	syncer                 ValidatorSyncer
 }
 
-func NewListener(conn Connection, cfg *Config, log log.Logger, bs blockstore.Blockstorer, stop <-chan int, sysErr chan<- error, s ValidatorSyncer) *listener {
+func NewListener(conn Connection, cfg *Config, bs blockstore.Blockstorer, stop <-chan int, sysErr chan<- error, s ValidatorSyncer) *listener {
 	return &listener{
-		cfg:         *cfg,
-		conn:        conn,
-		log:         log,
-		blockstore:  bs,
-		stop:        stop,
-		sysErr:      sysErr,
-		syncer:      s,
+		cfg:        *cfg,
+		conn:       conn,
+		blockstore: bs,
+		stop:       stop,
+		sysErr:     sysErr,
+		syncer:     s,
 	}
 }
 
@@ -209,18 +206,6 @@ func (l *listener) getDepositEventsAndProofsForBlock(latestBlock *big.Int) error
 	return nil
 }
 
-func buildQuery(contract common.Address, sig utils.EventSig, startBlock *big.Int, endBlock *big.Int) eth.FilterQuery {
-	query := eth.FilterQuery{
-		FromBlock: startBlock,
-		ToBlock:   endBlock,
-		Addresses: []common.Address{contract},
-		Topics: [][]common.Hash{
-			{sig.GetTopic()},
-		},
-	}
-	return query
-}
-
 func (l *listener) getBlockHashFromTransactionHash(txHash common.Hash) (blockHash common.Hash, err error) {
 
 	receipt, err := l.conn.Client().TransactionReceipt(context.Background(), txHash)
@@ -244,4 +229,16 @@ func (l *listener) getTransactionsFromBlockHash(blockHash common.Hash) (txHashes
 	}
 
 	return transactionHashes, block.Root(), nil
+}
+
+func buildQuery(contract common.Address, sig utils.EventSig, startBlock *big.Int, endBlock *big.Int) eth.FilterQuery {
+	query := eth.FilterQuery{
+		FromBlock: startBlock,
+		ToBlock:   endBlock,
+		Addresses: []common.Address{contract},
+		Topics: [][]common.Hash{
+			{sig.GetTopic()},
+		},
+	}
+	return query
 }
