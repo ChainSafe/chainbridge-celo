@@ -1,7 +1,7 @@
 // Copyright 2020 ChainSafe Systems
 // SPDX-License-Identifier: LGPL-3.0-only
 
-package main
+package flags
 
 import (
 	log "github.com/ChainSafe/log15"
@@ -9,6 +9,8 @@ import (
 )
 
 // Env vars
+const DefaultKeystorePath = "./keys"
+
 var (
 	HealthBlockTimeout = "BLOCK_TIMEOUT"
 )

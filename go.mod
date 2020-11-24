@@ -3,7 +3,6 @@ module github.com/ChainSafe/chainbridge-celo
 go 1.13
 
 require (
-	github.com/ChainSafe/ChainBridge v1.1.0 // indirect
 	github.com/ChainSafe/chainbridge-utils v1.0.3
 	github.com/ChainSafe/log15 v1.0.0
 	github.com/aristanetworks/goarista v0.0.0-20200609010056-95bcf8053598 // indirect

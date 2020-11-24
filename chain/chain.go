@@ -20,28 +20,24 @@ type BlockDB interface {
 	TryLoadLatestBlock() (*big.Int, error)
 }
 
-func InitializeChain(cc *core.ChainConfig, sysErr chan<- error, m *metrics.ChainMetrics, conn connection.Connection, listener Listener, writer Writer, blockDB BlockDB) (core.Chain, error) {
-	cfg, err := parseChainConfig(cc) // TODO: this is really seems to be redundant
-	if err != nil {
-		return nil, err
-	}
+func InitializeChain(cc *CeloChainConfig, sysErr chan<- error, conn connection.Connection, listener Listener, writer Writer, blockDB BlockDB) (core.Chain, error) {
 
 	stop := make(chan int)
 
-	err = conn.EnsureHasBytecode(cfg.bridgeContract)
+	err := conn.EnsureHasBytecode(cc.BridgeContract)
 	if err != nil {
 		return nil, err
 	}
-	err = conn.EnsureHasBytecode(cfg.erc20HandlerContract)
+	err = conn.EnsureHasBytecode(cc.Erc20HandlerContract)
 	if err != nil {
 		return nil, err
 	}
-	err = conn.EnsureHasBytecode(cfg.genericHandlerContract)
+	err = conn.EnsureHasBytecode(cc.GenericHandlerContract)
 	if err != nil {
 		return nil, err
 	}
 
-	bridgeContract, err := bridgeHandler.NewBridge(cfg.bridgeContract, conn.Client())
+	bridgeContract, err := bridgeHandler.NewBridge(cc.BridgeContract, conn.Client())
 	if err != nil {
 		return nil, err
 	}
@@ -51,21 +47,21 @@ func InitializeChain(cc *core.ChainConfig, sysErr chan<- error, m *metrics.Chain
 		return nil, err
 	}
 
-	if chainId != uint8(cfg.id) {
-		return nil, fmt.Errorf("chainId (%d) and configuration chainId (%d) do not match", chainId, cfg.id)
+	if chainId != uint8(cc.ID) {
+		return nil, fmt.Errorf("chainId (%d) and configuration chainId (%d) do not match", chainId, cc.id)
 	}
 
-	erc20HandlerContract, err := erc20Handler.NewERC20Handler(cfg.erc20HandlerContract, conn.Client())
+	erc20HandlerContract, err := erc20Handler.NewERC20Handler(cc.Erc20HandlerContract, conn.Client())
 	if err != nil {
 		return nil, err
 	}
 
-	erc721HandlerContract, err := erc721Handler.NewERC721Handler(cfg.erc721HandlerContract, conn.Client())
+	erc721HandlerContract, err := erc721Handler.NewERC721Handler(cc.Erc721HandlerContract, conn.Client())
 	if err != nil {
 		return nil, err
 	}
 
-	genericHandlerContract, err := GenericHandler.NewGenericHandler(cfg.genericHandlerContract, conn.Client())
+	genericHandlerContract, err := GenericHandler.NewGenericHandler(cc.GenericHandlerContract, conn.Client())
 	if err != nil {
 		return nil, err
 	}

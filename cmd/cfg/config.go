@@ -1,7 +1,7 @@
 // Copyright 2020 ChainSafe Systems
 // SPDX-License-Identifier: LGPL-3.0-only
 
-package main
+package cfg
 
 import (
 	"encoding/json"
@@ -9,12 +9,12 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/ChainSafe/chainbridge-celo/flags"
 	"github.com/ethereum/go-ethereum/log"
 	"github.com/urfave/cli/v2"
 )
 
 const DefaultConfigPath = "./config.json"
-const DefaultKeystorePath = "./keys"
 const DefaultBlockTimeout = int64(180) // 3 minutes
 
 type Config struct {
@@ -89,7 +89,7 @@ func (c *Config) validate() error {
 func GetConfig(ctx *cli.Context) (*Config, error) {
 	var fig Config
 	path := DefaultConfigPath
-	if file := ctx.String(ConfigFileFlag.Name); file != "" {
+	if file := ctx.String(flags.ConfigFileFlag.Name); file != "" {
 		path = file
 	}
 	err := loadConfig(path, &fig)
@@ -97,7 +97,7 @@ func GetConfig(ctx *cli.Context) (*Config, error) {
 		log.Warn("err loading json file", "err", err.Error())
 		return &fig, err
 	}
-	if ksPath := ctx.String(KeystorePathFlag.Name); ksPath != "" {
+	if ksPath := ctx.String(flags.KeystorePathFlag.Name); ksPath != "" {
 		fig.KeystorePath = ksPath
 	}
 	log.Debug("Loaded config", "path", path)

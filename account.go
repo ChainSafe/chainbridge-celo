@@ -10,7 +10,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/ChainSafe/chainbridge-celo/config"
+	"github.com/ChainSafe/chainbridge-celo/flags"
 
 	"github.com/ChainSafe/chainbridge-utils/crypto"
 	"github.com/ChainSafe/chainbridge-utils/crypto/secp256k1"
@@ -31,10 +31,11 @@ type dataHandler struct {
 func wrapHandler(hdl func(*cli.Context, *dataHandler) error) cli.ActionFunc {
 
 	return func(ctx *cli.Context) error {
-		err := startLogger(ctx)
-		if err != nil {
-			return err
-		}
+		// TODO: check logger1
+		//err := startLogger(ctx)
+		//if err != nil {
+		//	return err
+		//}
 
 		datadir, err := getDataDir(ctx)
 		if err != nil {
@@ -52,19 +53,19 @@ func handleGenerateCmd(ctx *cli.Context, dHandler *dataHandler) error {
 
 	// check if --ed25519 or --sr25519 is set
 	keytype := crypto.Secp256k1Type
-	if flagtype := ctx.Bool(config.Sr25519Flag.Name); flagtype {
+	if flagtype := ctx.Bool(flags.Sr25519Flag.Name); flagtype {
 		keytype = crypto.Sr25519Type
-	} else if flagtype := ctx.Bool(config.Secp256k1Flag.Name); flagtype {
+	} else if flagtype := ctx.Bool(flags.Secp256k1Flag.Name); flagtype {
 		keytype = crypto.Secp256k1Type
 	}
 
 	// check if --password is set
 	var password []byte = nil
-	if pwdflag := ctx.String(config.PasswordFlag.Name); pwdflag != "" {
+	if pwdflag := ctx.String(flags.PasswordFlag.Name); pwdflag != "" {
 		password = []byte(pwdflag)
 	}
 
-	_, err := generateKeypair(keytype, dHandler.datadir, password, ctx.String(config.SubkeyNetworkFlag.Name))
+	_, err := generateKeypair(keytype, dHandler.datadir, password, ctx.String(flags.SubkeyNetworkFlag.Name))
 	if err != nil {
 		return fmt.Errorf("failed to generate key: %w", err)
 	}
@@ -78,27 +79,27 @@ func handleImportCmd(ctx *cli.Context, dHandler *dataHandler) error {
 
 	// check if --ed25519 or --sr25519 is set
 	keytype := crypto.Secp256k1Type
-	if flagtype := ctx.Bool(config.Sr25519Flag.Name); flagtype {
+	if flagtype := ctx.Bool(flags.Sr25519Flag.Name); flagtype {
 		keytype = crypto.Sr25519Type
-	} else if flagtype := ctx.Bool(config.Secp256k1Flag.Name); flagtype {
+	} else if flagtype := ctx.Bool(flags.Secp256k1Flag.Name); flagtype {
 		keytype = crypto.Secp256k1Type
 	}
 
-	if ctx.Bool(config.EthereumImportFlag.Name) {
+	if ctx.Bool(flags.EthereumImportFlag.Name) {
 		if keyimport := ctx.Args().First(); keyimport != "" {
 			// check if --password is set
 			var password []byte = nil
-			if pwdflag := ctx.String(config.PasswordFlag.Name); pwdflag != "" {
+			if pwdflag := ctx.String(flags.PasswordFlag.Name); pwdflag != "" {
 				password = []byte(pwdflag)
 			}
 			_, err = importEthKey(keyimport, dHandler.datadir, password, nil)
 		} else {
 			return fmt.Errorf("Must provide a key to import.")
 		}
-	} else if privkeyflag := ctx.String(config.PrivateKeyFlag.Name); privkeyflag != "" {
+	} else if privkeyflag := ctx.String(flags.PrivateKeyFlag.Name); privkeyflag != "" {
 		// check if --password is set
 		var password []byte = nil
-		if pwdflag := ctx.String(config.PasswordFlag.Name); pwdflag != "" {
+		if pwdflag := ctx.String(flags.PasswordFlag.Name); pwdflag != "" {
 			password = []byte(pwdflag)
 		}
 
@@ -132,7 +133,7 @@ func handleListCmd(ctx *cli.Context, dHandler *dataHandler) error {
 // getDataDir obtains the path to the keystore and returns it as a string
 func getDataDir(ctx *cli.Context) (string, error) {
 	// key directory is datadir/keystore/
-	if dir := ctx.String(config.KeystorePathFlag.Name); dir != "" {
+	if dir := ctx.String(flags.KeystorePathFlag.Name); dir != "" {
 		datadir, err := filepath.Abs(dir)
 		if err != nil {
 			return "", err
@@ -159,7 +160,7 @@ func importPrivKey(ctx *cli.Context, keytype, datadir, key string, password []by
 
 	if keytype == crypto.Sr25519Type {
 		// generate sr25519 keys
-		network := ctx.String(config.SubkeyNetworkFlag.Name)
+		network := ctx.String(flags.SubkeyNetworkFlag.Name)
 		kp, err = sr25519.NewKeypairFromSeed(key, network)
 		if err != nil {
 			return "", fmt.Errorf("could not generate sr25519 keypair from given string: %w", err)
@@ -408,7 +409,7 @@ func keystoreDir(keyPath string) (keystorepath string, err error) {
 		}
 	} else {
 		// datadir not specified, use default
-		keyPath = config.DefaultKeystorePath
+		keyPath = flags.DefaultKeystorePath
 
 		keystorepath, err = filepath.Abs(keyPath)
 		if err != nil {

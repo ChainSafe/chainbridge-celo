@@ -4,40 +4,41 @@ import (
 	"os"
 
 	"github.com/ChainSafe/chainbridge-celo/cmd"
+	"github.com/ChainSafe/chainbridge-celo/flags"
 	"github.com/urfave/cli/v2"
 )
 
 var app = cli.NewApp()
 
 var cliFlags = []cli.Flag{
-	ConfigFileFlag,
-	VerbosityFlag,
-	KeystorePathFlag,
-	BlockstorePathFlag,
-	FreshStartFlag,
-	LatestBlockFlag,
-	MetricsFlag,
-	MetricsPort,
+	flags.ConfigFileFlag, // path to config file
+	flags.VerbosityFlag,  // logger flag
+	flags.KeystorePathFlag,
+	flags.BlockstorePathFlag, // seems to be used only in tests
+	flags.FreshStartFlag,     // start blocks from scratch. Used on chain initialization
+	flags.LatestBlockFlag,    // latest block to start listen from. Used on chain initialization
+	flags.MetricsFlag,
+	flags.MetricsPort,
 }
 
 var generateFlags = []cli.Flag{
-	PasswordFlag,
-	Sr25519Flag,
-	Secp256k1Flag,
-	SubkeyNetworkFlag,
+	flags.PasswordFlag,
+	flags.Sr25519Flag,
+	flags.Secp256k1Flag,
+	flags.SubkeyNetworkFlag,
 }
 
 var devFlags = []cli.Flag{
-	TestKeyFlag,
+	flags.TestKeyFlag,
 }
 
 var importFlags = []cli.Flag{
-	EthereumImportFlag,
-	PrivateKeyFlag,
-	Sr25519Flag,
-	Secp256k1Flag,
-	PasswordFlag,
-	SubkeyNetworkFlag,
+	flags.EthereumImportFlag,
+	flags.PrivateKeyFlag,
+	flags.Sr25519Flag,
+	flags.Secp256k1Flag,
+	flags.PasswordFlag,
+	flags.SubkeyNetworkFlag,
 }
 
 var accountCommand = cli.Command{
