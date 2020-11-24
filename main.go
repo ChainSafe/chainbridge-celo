@@ -4,41 +4,40 @@ import (
 	"os"
 
 	"github.com/ChainSafe/chainbridge-celo/cmd"
-	"github.com/ChainSafe/chainbridge-celo/config"
 	"github.com/urfave/cli/v2"
 )
 
 var app = cli.NewApp()
 
 var cliFlags = []cli.Flag{
-	config.ConfigFileFlag,
-	config.VerbosityFlag,
-	config.KeystorePathFlag,
-	config.BlockstorePathFlag,
-	config.FreshStartFlag,
-	config.LatestBlockFlag,
-	config.MetricsFlag,
-	config.MetricsPort,
+	ConfigFileFlag,
+	VerbosityFlag,
+	KeystorePathFlag,
+	BlockstorePathFlag,
+	FreshStartFlag,
+	LatestBlockFlag,
+	MetricsFlag,
+	MetricsPort,
 }
 
 var generateFlags = []cli.Flag{
-	config.PasswordFlag,
-	config.Sr25519Flag,
-	config.Secp256k1Flag,
-	config.SubkeyNetworkFlag,
+	PasswordFlag,
+	Sr25519Flag,
+	Secp256k1Flag,
+	SubkeyNetworkFlag,
 }
 
 var devFlags = []cli.Flag{
-	config.TestKeyFlag,
+	TestKeyFlag,
 }
 
 var importFlags = []cli.Flag{
-	config.EthereumImportFlag,
-	config.PrivateKeyFlag,
-	config.Sr25519Flag,
-	config.Secp256k1Flag,
-	config.PasswordFlag,
-	config.SubkeyNetworkFlag,
+	EthereumImportFlag,
+	PrivateKeyFlag,
+	Sr25519Flag,
+	Secp256k1Flag,
+	PasswordFlag,
+	SubkeyNetworkFlag,
 }
 
 var accountCommand = cli.Command{

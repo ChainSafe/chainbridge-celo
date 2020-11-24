@@ -1,12 +1,13 @@
 package cmd
 
 import (
-	"github.com/ChainSafe/ChainBridge/core"
 	"github.com/ChainSafe/chainbridge-celo/blockdb"
 	"github.com/ChainSafe/chainbridge-celo/chain"
 	"github.com/ChainSafe/chainbridge-celo/chain/connection"
 	"github.com/ChainSafe/chainbridge-celo/chain/listener"
 	"github.com/ChainSafe/chainbridge-celo/config"
+	"github.com/ChainSafe/chainbridge-utils/core"
+
 	"github.com/urfave/cli/v2"
 )
 
