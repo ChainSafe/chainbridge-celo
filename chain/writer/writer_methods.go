@@ -1,7 +1,7 @@
 // Copyright 2020 ChainSafe Systems
 // SPDX-License-Identifier: LGPL-3.0-only
 
-package ethereum
+package writer
 
 import (
 	"context"
@@ -9,9 +9,10 @@ import (
 	"math/big"
 	"time"
 
-	utils "github.com/ChainSafe/ChainBridge/shared/ethereum"
+	celoMsg "github.com/ChainSafe/chainbridge-celo/msg"
+	utils "github.com/ChainSafe/chainbridge-celo/shared/ethereum"
 	"github.com/ChainSafe/chainbridge-utils/msg"
-	log "github.com/ChainSafe/log15"
+	"github.com/ethereum/go-ethereum/log"
 )
 
 // Number of blocks to wait for an finalization event
@@ -20,7 +21,7 @@ const ExecuteBlockWatchLimit = 100
 // Time between retrying a failed tx
 const TxRetryInterval = time.Second * 2
 
-// Maximum number of tx retries before exiting
+// Time between retrying a failed tx
 const TxRetryLimit = 10
 
 var ErrNonceTooLow = errors.New("nonce too low")
@@ -38,21 +39,23 @@ func (w *writer) proposalIsComplete(srcId msg.ChainId, nonce msg.Nonce, dataHash
 	return prop.Status == PassedStatus || prop.Status == TransferredStatus || prop.Status == CancelledStatus
 }
 
-// proposalIsComplete returns true if the proposal state is Transferred or Cancelled
+// proposalIsFinalized returns true if the proposal state is Transferred or Cancelled
 func (w *writer) proposalIsFinalized(srcId msg.ChainId, nonce msg.Nonce, dataHash [32]byte) bool {
 	prop, err := w.bridgeContract.GetProposal(w.conn.CallOpts(), uint8(srcId), uint64(nonce), dataHash)
+
 	if err != nil {
 		w.log.Error("Failed to check proposal existence", "err", err)
 		return false
 	}
-	return prop.Status == TransferredStatus || prop.Status == CancelledStatus // Transferred (3)
+	return prop.Status == TransferredStatus || prop.Status == CancelledStatus
 }
 
 // hasVoted checks if this relayer has already voted
 func (w *writer) hasVoted(srcId msg.ChainId, nonce msg.Nonce, dataHash [32]byte) bool {
 	hasVoted, err := w.bridgeContract.HasVotedOnProposal(w.conn.CallOpts(), utils.IDAndNonce(srcId, nonce), dataHash, w.conn.Opts().From)
+
 	if err != nil {
-		w.log.Error("Failed to check proposal existence", "err", err)
+		w.log.Error("Failed to check proposal existance", "err", err)
 		return false
 	}
 
@@ -63,12 +66,11 @@ func (w *writer) shouldVote(m msg.Message, dataHash [32]byte) bool {
 	// Check if proposal has passed and skip if Passed or Transferred
 	if w.proposalIsComplete(m.Source, m.DepositNonce, dataHash) {
 		w.log.Info("Proposal complete, not voting", "src", m.Source, "nonce", m.DepositNonce)
-		return false
 	}
 
 	// Check if relayer has previously voted
 	if w.hasVoted(m.Source, m.DepositNonce, dataHash) {
-		w.log.Info("Relayer has already voted, not voting", "src", m.Source, "nonce", m.DepositNonce)
+		w.log.Info("Relayer has already voted, not voting", "src", m.Source, "source", m.DepositNonce)
 		return false
 	}
 
@@ -80,22 +82,35 @@ func (w *writer) shouldVote(m msg.Message, dataHash [32]byte) bool {
 func (w *writer) createErc20Proposal(m msg.Message) bool {
 	w.log.Info("Creating erc20 proposal", "src", m.Source, "nonce", m.DepositNonce)
 
+	msgProofOptsInterface := m.Payload[2]
+
+	if msgProofOptsInterface == nil {
+		w.log.Error("msgProofOpts cannot be nil")
+		return false
+	}
+
+	msgProofOpts, ok := msgProofOptsInterface.(*celoMsg.MsgProofOpts)
+
+	if !ok {
+		w.log.Error("unable to convert msgProofOptsInterface to *MsgProofOpts")
+		return false
+	}
+
 	data := ConstructErc20ProposalData(m.Payload[0].([]byte), m.Payload[1].([]byte))
-	dataHash := utils.Hash(append(w.cfg.erc20HandlerContract.Bytes(), data...))
+	dataHash := CreateProposalDataHash(data, w.cfg.erc20HandlerContract, msgProofOpts)
 
 	if !w.shouldVote(m, dataHash) {
 		return false
 	}
-
 	// Capture latest block so when know where to watch from
 	latestBlock, err := w.conn.LatestBlock()
 	if err != nil {
-		w.log.Error("Unable to fetch latest block", "err", err)
+		w.log.Error("unable to fetch latest block", "err", err)
 		return false
 	}
 
 	// watch for execution event
-	go w.watchThenExecute(m, data, dataHash, latestBlock)
+	go w.watchThenExecute(m, data, dataHash, latestBlock, msgProofOpts)
 
 	w.voteProposal(m, dataHash)
 
@@ -107,8 +122,22 @@ func (w *writer) createErc20Proposal(m msg.Message) bool {
 func (w *writer) createErc721Proposal(m msg.Message) bool {
 	w.log.Info("Creating erc721 proposal", "src", m.Source, "nonce", m.DepositNonce)
 
+	msgProofOptsInterface := m.Payload[3]
+
+	if msgProofOptsInterface == nil {
+		w.log.Error("msgProofOpts cannot be nil")
+		return false
+	}
+
+	msgProofOpts, ok := msgProofOptsInterface.(*celoMsg.MsgProofOpts)
+
+	if !ok {
+		w.log.Error("unable to convert msgProofOptsInterface to *MsgProofOpts")
+		return false
+	}
+
 	data := ConstructErc721ProposalData(m.Payload[0].([]byte), m.Payload[1].([]byte), m.Payload[2].([]byte))
-	dataHash := utils.Hash(append(w.cfg.erc721HandlerContract.Bytes(), data...))
+	dataHash := CreateProposalDataHash(data, w.cfg.erc721HandlerContract, msgProofOpts)
 
 	if !w.shouldVote(m, dataHash) {
 		return false
@@ -122,11 +151,12 @@ func (w *writer) createErc721Proposal(m msg.Message) bool {
 	}
 
 	// watch for execution event
-	go w.watchThenExecute(m, data, dataHash, latestBlock)
+	go w.watchThenExecute(m, data, dataHash, latestBlock, msgProofOpts)
 
 	w.voteProposal(m, dataHash)
 
 	return true
+
 }
 
 // createGenericDepositProposal creates a generic proposal
@@ -134,10 +164,29 @@ func (w *writer) createErc721Proposal(m msg.Message) bool {
 func (w *writer) createGenericDepositProposal(m msg.Message) bool {
 	w.log.Info("Creating generic proposal", "src", m.Source, "nonce", m.DepositNonce)
 
-	metadata := m.Payload[0].([]byte)
+	metadata, ok := m.Payload[0].([]byte)
+
+	if !ok {
+		w.log.Error("Unable to convert metadata to []byte")
+		return false
+	}
+
+	msgProofOptsInterface := m.Payload[1]
+
+	if msgProofOptsInterface == nil {
+		w.log.Error("msgProofOpts cannot be nil")
+		return false
+	}
+
+	msgProofOpts, ok := msgProofOptsInterface.(*celoMsg.MsgProofOpts)
+
+	if !ok {
+		w.log.Error("unable to convert msgProofOptsInterface to *msgProofOpts")
+		return false
+	}
+
 	data := ConstructGenericProposalData(metadata)
-	toHash := append(w.cfg.genericHandlerContract.Bytes(), data...)
-	dataHash := utils.Hash(toHash)
+	dataHash := CreateProposalDataHash(data, w.cfg.genericHandlerContract, msgProofOpts)
 
 	if !w.shouldVote(m, dataHash) {
 		return false
@@ -151,7 +200,7 @@ func (w *writer) createGenericDepositProposal(m msg.Message) bool {
 	}
 
 	// watch for execution event
-	go w.watchThenExecute(m, data, dataHash, latestBlock)
+	go w.watchThenExecute(m, data, dataHash, latestBlock, msgProofOpts)
 
 	w.voteProposal(m, dataHash)
 
@@ -159,7 +208,7 @@ func (w *writer) createGenericDepositProposal(m msg.Message) bool {
 }
 
 // watchThenExecute watches for the latest block and executes once the matching finalized event is found
-func (w *writer) watchThenExecute(m msg.Message, data []byte, dataHash [32]byte, latestBlock *big.Int) {
+func (w *writer) watchThenExecute(m msg.Message, data []byte, dataHash [32]byte, latestBlock *big.Int, msgProofOpts *celoMsg.MsgProofOpts) {
 	w.log.Info("Watching for finalization event", "src", m.Source, "nonce", m.DepositNonce)
 
 	// watching for the latest block, querying and matching the finalized event will be retried up to ExecuteBlockWatchLimit times
@@ -201,7 +250,7 @@ func (w *writer) watchThenExecute(m msg.Message, data []byte, dataHash [32]byte,
 				if m.Source == msg.ChainId(sourceId) &&
 					m.DepositNonce.Big().Uint64() == depositNonce &&
 					utils.IsFinalized(uint8(status)) {
-					w.executeProposal(m, data, dataHash)
+					w.executeProposal(m, data, dataHash, msgProofOpts)
 					return
 				} else {
 					w.log.Trace("Ignoring event", "src", sourceId, "nonce", depositNonce)
@@ -263,7 +312,7 @@ func (w *writer) voteProposal(m msg.Message, dataHash [32]byte) {
 }
 
 // executeProposal executes the proposal
-func (w *writer) executeProposal(m msg.Message, data []byte, dataHash [32]byte) {
+func (w *writer) executeProposal(m msg.Message, data []byte, dataHash [32]byte, msgProofOpts *celoMsg.MsgProofOpts) {
 	for i := 0; i < TxRetryLimit; i++ {
 		select {
 		case <-w.stop:
@@ -281,6 +330,14 @@ func (w *writer) executeProposal(m msg.Message, data []byte, dataHash [32]byte) 
 				uint64(m.DepositNonce),
 				data,
 				m.ResourceId,
+				//
+				msgProofOpts.SignatureHeader,
+				msgProofOpts.AggregatePublicKey,
+				msgProofOpts.G1,
+				msgProofOpts.HashedMessage,
+				msgProofOpts.RootHash,
+				msgProofOpts.Key,
+				msgProofOpts.Nodes,
 			)
 			w.conn.UnlockOpts()
 

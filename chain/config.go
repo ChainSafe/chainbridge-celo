@@ -34,6 +34,7 @@ type Config struct {
 	maxGasPrice            *big.Int
 	http                   bool // Config for type of connection
 	startBlock             *big.Int
+	insecure               bool
 }
 
 // parseChainConfig uses a core.ChainConfig to construct a corresponding Config
@@ -55,6 +56,7 @@ func parseChainConfig(chainCfg *core.ChainConfig) (*Config, error) {
 		maxGasPrice:            big.NewInt(DefaultGasPrice),
 		http:                   false,
 		startBlock:             big.NewInt(0),
+		insecure:               chainCfg.Insecure,
 	}
 
 	if contract, ok := chainCfg.Opts["bridge"]; ok && contract != "" {

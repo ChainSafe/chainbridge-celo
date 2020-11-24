@@ -1,7 +1,7 @@
 // Copyright 2020 ChainSafe Systems
 // SPDX-License-Identifier: LGPL-3.0-only
 
-package ethereum
+package writer
 
 import (
 	"context"
@@ -9,16 +9,45 @@ import (
 	"testing"
 	"time"
 
-	"github.com/ChainSafe/ChainBridge/bindings/Bridge"
-	utils "github.com/ChainSafe/ChainBridge/shared/ethereum"
-	ethtest "github.com/ChainSafe/ChainBridge/shared/ethereum/testing"
+	"github.com/ChainSafe/chainbridge-celo/bindings/Bridge"
+	celoMsg "github.com/ChainSafe/chainbridge-celo/msg"
+	utils "github.com/ChainSafe/chainbridge-celo/shared/ethereum"
+	ethtest "github.com/ChainSafe/chainbridge-celo/shared/ethereum/testing"
 	"github.com/ChainSafe/chainbridge-utils/msg"
 	"github.com/ChainSafe/log15"
 	eth "github.com/ethereum/go-ethereum"
 	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/common/hexutil"
 	ethtypes "github.com/ethereum/go-ethereum/core/types"
 	ethcrypto "github.com/ethereum/go-ethereum/crypto"
 )
+
+func getMessageProofOpts() *celoMsg.MsgProofOpts {
+	data, err := hexutil.Decode("0xff5c6287761305d7d8ae76ca96f6cb48e48aa04cf3c9280619c8993f21e335caff5c6287761305d7d8ae76ca96f6cb48e48aa04cf3c9280619c8993f21e335ca")
+	if err != nil {
+		panic(err)
+	}
+
+	nodes, err := hexutil.Decode("0xd2d1808080808080808080808080808080802a")
+	if err != nil {
+		panic(err)
+	}
+
+	rootHash := common.HexToHash("0x46c51deeabb4a526d21f9344993c8b812de4b37896680da7c4db7ac902563e00")
+
+	msgProofOpts := &celoMsg.MsgProofOpts{
+		RootHash:           rootHash,
+		AggregatePublicKey: data,
+		HashedMessage:      data,
+		Key:                []byte{},
+		SignatureHeader:    data,
+		Nodes:              nodes,
+		G1:                 data,
+	}
+
+	return msgProofOpts
+
+}
 
 func createWriters(t *testing.T, client *utils.Client, contracts *utils.DeployedContracts) (*writer, *writer, func(), func(), chan error, chan error) {
 	latestBlock := ethtest.GetLatestBlock(t, client)
@@ -47,6 +76,7 @@ func createTestWriter(t *testing.T, cfg *Config, errs chan<- error) (*writer, fu
 		t.Fatal(err)
 	}
 	return writer, func() { close(stop) }
+
 }
 
 func routeMessageAndWait(t *testing.T, client *utils.Client, alice, bob *writer, m msg.Message, aliceErr, bobErr chan error) {
@@ -140,7 +170,10 @@ func TestCreateAndExecuteErc20DepositProposal(t *testing.T) {
 	resourceId := msg.ResourceIdFromSlice(append(common.LeftPadBytes(erc20Address.Bytes(), 31), 0))
 	recipient := ethcrypto.PubkeyToAddress(BobKp.PrivateKey().PublicKey)
 	amount := big.NewInt(10)
-	m := msg.NewFungibleTransfer(1, 0, 0, amount, resourceId, recipient.Bytes())
+
+	msgProofOpts := getMessageProofOpts()
+
+	m := celoMsg.NewFungibleTransfer(1, 0, 0, amount, resourceId, recipient.Bytes(), msgProofOpts)
 	ethtest.RegisterResource(t, client, contracts.BridgeAddress, contracts.ERC20HandlerAddress, resourceId, erc20Address)
 	// Helpful for debugging
 	go ethtest.WatchEvent(client, contracts.BridgeAddress, utils.ProposalEvent)
@@ -160,18 +193,23 @@ func TestCreateAndExecuteErc721Proposal(t *testing.T) {
 	defer stopB()
 	defer writerA.conn.Close()
 	defer writerB.conn.Close()
-
 	// We'll use alice to setup the erc721
-	tokenId := big.NewInt(1)
 	erc721Contract := ethtest.Erc721Deploy(t, client)
+	tokenId := big.NewInt(1)
 	ethtest.Erc721Mint(t, client, erc721Contract, tokenId, []byte{})
 	ethtest.Erc721FundHandler(t, client, contracts.ERC721HandlerAddress, erc721Contract, tokenId)
 
 	// Create initial transfer message
 	resourceId := msg.ResourceIdFromSlice(append(common.LeftPadBytes(erc721Contract.Bytes(), 31), 0))
+
+	msgProofOpts := getMessageProofOpts()
+
 	recipient := ethcrypto.PubkeyToAddress(BobKp.PrivateKey().PublicKey)
-	m := msg.NewNonFungibleTransfer(1, 0, 0, resourceId, tokenId, recipient.Bytes(), []byte{})
+
+	m := celoMsg.NewNonFungibleTransfer(1, 0, 0, resourceId, tokenId, recipient.Bytes(), []byte{}, msgProofOpts)
+
 	ethtest.RegisterResource(t, client, contracts.BridgeAddress, contracts.ERC721HandlerAddress, resourceId, erc721Contract)
+
 	// Helpful for debugging
 	go ethtest.WatchEvent(client, contracts.BridgeAddress, utils.ProposalEvent)
 	go ethtest.WatchEvent(client, contracts.BridgeAddress, utils.ProposalVote)
@@ -196,23 +234,18 @@ func TestCreateAndExecuteGenericProposal(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	rId := msg.ResourceIdFromSlice(common.LeftPadBytes(assetStoreAddr.Bytes(), 32))
+	resourceId := msg.ResourceIdFromSlice(common.LeftPadBytes(assetStoreAddr.Bytes(), 32))
 	depositSig := utils.CreateFunctionSignature("")
 	executeSig := utils.CreateFunctionSignature("store(bytes32)")
 
-	ethtest.RegisterGenericResource(t, client, contracts.BridgeAddress, contracts.GenericHandlerAddress, rId, assetStoreAddr, depositSig, executeSig)
-	// Create initial transfer message
-	hash := common.HexToHash("0xf0a8748d2b102eb4e0e116047753b9beff0396d81b830693b19a1376ac4b14e8")
-	m := msg.Message{
-		Source:       1,
-		Destination:  0,
-		Type:         msg.GenericTransfer,
-		DepositNonce: 0,
-		ResourceId:   rId,
-		Payload: []interface{}{
-			hash.Bytes(),
-		},
-	}
+	ethtest.RegisterGenericResource(t, client, contracts.BridgeAddress, contracts.GenericHandlerAddress, resourceId, assetStoreAddr, depositSig, executeSig)
+	// Create initial transfer messag
+
+	msgProofOpts := getMessageProofOpts()
+
+	hash := common.HexToHash("0x46c51deeabb4a526d21f9344993c8b812de4b37896680da7c4db7ac902563e00")
+
+	m := celoMsg.NewGenericTransfer(1, 0, 0, resourceId, hash.Bytes(), msgProofOpts)
 
 	// Helpful for debugging
 	go ethtest.WatchEvent(client, contracts.BridgeAddress, utils.ProposalEvent)
@@ -237,13 +270,17 @@ func TestDuplicateMessage(t *testing.T) {
 
 	// Create initial transfer message
 	resourceId := msg.ResourceIdFromSlice(append(common.LeftPadBytes(erc20Address.Bytes(), 31), 0))
+
+	msgProofOpts := getMessageProofOpts()
+
 	recipient := ethcrypto.PubkeyToAddress(BobKp.PrivateKey().PublicKey)
-	amount := big.NewInt(10)
-	m := msg.NewFungibleTransfer(1, 0, 10, amount, resourceId, recipient.Bytes())
+
+	amount := big.NewInt(2)
+	m := celoMsg.NewFungibleTransfer(1, 0, 0, amount, resourceId, recipient.Bytes(), msgProofOpts)
 	ethtest.RegisterResource(t, client, contracts.BridgeAddress, contracts.ERC20HandlerAddress, resourceId, erc20Address)
 
-	data := ConstructErc20ProposalData(m.Payload[0].([]byte), m.Payload[1].([]byte))
-	dataHash := utils.Hash(append(contracts.ERC20HandlerAddress.Bytes(), data...))
+	proposaldata := ConstructErc20ProposalData(m.Payload[0].([]byte), m.Payload[1].([]byte))
+	dataHash := CreateProposalDataHash(proposaldata, contracts.ERC20HandlerAddress, msgProofOpts)
 
 	// Helpful for debugging
 	go ethtest.WatchEvent(client, contracts.BridgeAddress, utils.ProposalEvent)

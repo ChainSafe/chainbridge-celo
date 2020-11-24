@@ -2,30 +2,44 @@ package chain
 
 import (
 	"fmt"
+	"math/big"
 
 	bridgeHandler "github.com/ChainSafe/chainbridge-celo/bindings/Bridge"
+	erc20Handler "github.com/ChainSafe/chainbridge-celo/bindings/ERC20Handler"
+	erc721Handler "github.com/ChainSafe/chainbridge-celo/bindings/ERC721Handler"
+	"github.com/ChainSafe/chainbridge-celo/bindings/GenericHandler"
+	"github.com/ChainSafe/chainbridge-celo/chain/connection"
 	"github.com/ChainSafe/chainbridge-utils/blockstore"
 	"github.com/ChainSafe/chainbridge-utils/core"
-	"github.com/ChainSafe/chainbridge-utils/crypto/secp256k1"
-	"github.com/ChainSafe/chainbridge-utils/keystore"
 	metrics "github.com/ChainSafe/chainbridge-utils/metrics/types"
 	"github.com/ChainSafe/chainbridge-utils/msg"
 )
 
-func InitializeChain(cfg *Config, sysErr chan<- error, m *metrics.ChainMetrics, listener Listener, writer Writer) (core.Chain, error) {
+type BlockDB interface {
+	blockstore.Blockstorer
+	TryLoadLatestBlock() (*big.Int, error)
+}
 
-	kpI, err := keystore.KeypairFromAddress(cfg.from, keystore.EthChain, cfg.keystorePath, chainCfg.Insecure)
-	if err != nil {
-		return nil, err
-	}
-	kp, _ := kpI.(*secp256k1.Keypair)
-
-	bs, err := setupBlockstore(cfg, kp)
+func InitializeChain(cc *core.ChainConfig, sysErr chan<- error, m *metrics.ChainMetrics, conn connection.Connection, listener Listener, writer Writer, blockDB BlockDB) (core.Chain, error) {
+	cfg, err := parseChainConfig(cc) // TODO: this is really seems to be redundant
 	if err != nil {
 		return nil, err
 	}
 
 	stop := make(chan int)
+
+	err = conn.EnsureHasBytecode(cfg.bridgeContract)
+	if err != nil {
+		return nil, err
+	}
+	err = conn.EnsureHasBytecode(cfg.erc20HandlerContract)
+	if err != nil {
+		return nil, err
+	}
+	err = conn.EnsureHasBytecode(cfg.genericHandlerContract)
+	if err != nil {
+		return nil, err
+	}
 
 	bridgeContract, err := bridgeHandler.NewBridge(cfg.bridgeContract, conn.Client())
 	if err != nil {
@@ -37,21 +51,37 @@ func InitializeChain(cfg *Config, sysErr chan<- error, m *metrics.ChainMetrics, 
 		return nil, err
 	}
 
-	if chainId != uint8(chainCfg.Id) {
-		return nil, fmt.Errorf("chainId (%d) and configuration chainId (%d) do not match", chainId, chainCfg.Id)
+	if chainId != uint8(cfg.id) {
+		return nil, fmt.Errorf("chainId (%d) and configuration chainId (%d) do not match", chainId, cfg.id)
 	}
 
-	if chainCfg.LatestBlock {
+	erc20HandlerContract, err := erc20Handler.NewERC20Handler(cfg.erc20HandlerContract, conn.Client())
+	if err != nil {
+		return nil, err
+	}
+
+	erc721HandlerContract, err := erc721Handler.NewERC721Handler(cfg.erc721HandlerContract, conn.Client())
+	if err != nil {
+		return nil, err
+	}
+
+	genericHandlerContract, err := GenericHandler.NewGenericHandler(cfg.genericHandlerContract, conn.Client())
+	if err != nil {
+		return nil, err
+	}
+
+	if cc.LatestBlock {
 		curr, err := conn.LatestBlock()
 		if err != nil {
 			return nil, err
 		}
 		cfg.startBlock = curr
 	}
+	listener.SetContracts(bridgeContract, erc20HandlerContract, erc721HandlerContract, genericHandlerContract)
+	writer.SetBridge(bridgeContract)
 
 	return &Chain{
-		cfg:      chainCfg,
-		conn:     conn,
+		cfg:      cfg,
 		writer:   writer,
 		listener: listener,
 		stop:     stop,
@@ -60,40 +90,22 @@ func InitializeChain(cfg *Config, sysErr chan<- error, m *metrics.ChainMetrics, 
 
 // checkBlockstore queries the blockstore for the latest known block. If the latest block is
 // greater than cfg.startBlock, then cfg.startBlock is replaced with the latest known block.
-func setupBlockstore(cfg *Config, kp *secp256k1.Keypair) (*blockstore.Blockstore, error) {
-	bs, err := blockstore.NewBlockstore(cfg.blockstorePath, cfg.id, kp.Address())
-	if err != nil {
-		return nil, err
-	}
-
-	if !cfg.freshStart {
-		latestBlock, err := bs.TryLoadLatestBlock()
-		if err != nil {
-			return nil, err
-		}
-
-		if latestBlock.Cmp(cfg.startBlock) == 1 {
-			cfg.startBlock = latestBlock
-		}
-	}
-
-	return bs, nil
-}
 
 type Listener interface {
 	SetRouter()
 	Start()
-	SetContracts()
+	SetContracts(bridge *bridgeHandler.Bridge, erc20Handler *erc20Handler.ERC20Handler, erc721Handler *erc721Handler.ERC721Handler, genericHandler *GenericHandler.GenericHandler)
 }
 
 type Writer interface {
 	Start()
+	SetBridge(bc *bridgeHandler.Bridge)
 }
 
 type Chain struct {
-	cfg      *core.ChainConfig // The config of the chain
-	listener Listener          // The listener of this chain
-	writer   Writer            // The writer of the chain
+	cfg      *Config  // The config of the chain
+	listener Listener // The listener of this chain
+	writer   Writer   // The writer of the chain
 	stop     chan<- int
 }
 
@@ -132,7 +144,7 @@ func (c *Chain) LatestBlock() metrics.LatestBlock {
 // Stop signals to any running routines to exit
 func (c *Chain) Stop() {
 	close(c.stop)
-	// TODO not forget add conn close on end users
+	// TODO not forget add conn close on end conn users
 	//if c.conn != nil {
 	//	c.conn.Close()
 	//}

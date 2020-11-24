@@ -1,10 +1,10 @@
 // Copyright 2020 ChainSafe Systems
 // SPDX-License-Identifier: LGPL-3.0-only
 
-package ethereum
+package writer
 
 import (
-	"github.com/ChainSafe/ChainBridge/bindings/Bridge"
+	"github.com/ChainSafe/chainbridge-celo/bindings/Bridge"
 	"github.com/ChainSafe/chainbridge-utils/core"
 	metrics "github.com/ChainSafe/chainbridge-utils/metrics/types"
 	"github.com/ChainSafe/chainbridge-utils/msg"
@@ -13,7 +13,6 @@ import (
 
 var _ core.Writer = &writer{}
 
-// https://github.com/ChainSafe/chainbridge-solidity/blob/b5ed13d9798feb7c340e737a726dd415b8815366/contracts/Bridge.sol#L20
 var PassedStatus uint8 = 2
 var TransferredStatus uint8 = 3
 var CancelledStatus uint8 = 4
@@ -21,10 +20,10 @@ var CancelledStatus uint8 = 4
 type writer struct {
 	cfg            Config
 	conn           Connection
-	bridgeContract *Bridge.Bridge // instance of bound receiver bridgeContract
+	bridgeContract *Bridge.Bridge
 	log            log15.Logger
 	stop           <-chan int
-	sysErr         chan<- error // Reports fatal error to core
+	sysErr         chan<- error
 	metrics        *metrics.ChainMetrics
 }
 
@@ -41,7 +40,7 @@ func NewWriter(conn Connection, cfg *Config, log log15.Logger, stop <-chan int, 
 }
 
 func (w *writer) start() error {
-	w.log.Debug("Starting ethereum writer...")
+	w.log.Debug("Starting celo writer...")
 	return nil
 }
 
@@ -51,10 +50,10 @@ func (w *writer) setContract(bridge *Bridge.Bridge) {
 }
 
 // ResolveMessage handles any given message based on type
-// A bool is returned to indicate failure/success, this should be ignored except for within tests.
+// A bool is returned to indicate failure/success
+// this should be ignored except for within tests.
 func (w *writer) ResolveMessage(m msg.Message) bool {
 	w.log.Info("Attempting to resolve message", "type", m.Type, "src", m.Source, "dst", m.Destination, "nonce", m.DepositNonce, "rId", m.ResourceId.Hex())
-
 	switch m.Type {
 	case msg.FungibleTransfer:
 		return w.createErc20Proposal(m)
