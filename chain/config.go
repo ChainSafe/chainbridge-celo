@@ -6,13 +6,15 @@ package chain
 import (
 	"fmt"
 	"math/big"
+	"strconv"
 
-	"github.com/pkg/errors"
-
+	"github.com/ChainSafe/chainbridge-celo/cmd/cfg"
+	"github.com/ChainSafe/chainbridge-celo/flags"
 	utils "github.com/ChainSafe/chainbridge-celo/shared/ethereum"
-	"github.com/ChainSafe/chainbridge-utils/core"
 	"github.com/ChainSafe/chainbridge-utils/msg"
 	"github.com/ethereum/go-ethereum/common"
+	"github.com/pkg/errors"
+	"github.com/urfave/cli/v2"
 )
 
 const DefaultGasLimit = 6721975
@@ -39,16 +41,21 @@ type CeloChainConfig struct {
 }
 
 // parseChainConfig uses a core.ChainConfig to construct a corresponding Config
-func ParseChainConfig(chainCfg *core.ChainConfig) (*CeloChainConfig, error) {
+func ParseChainConfig(rawCfg *cfg.RawChainConfig, ctx *cli.Context) (*CeloChainConfig, error) {
+	chainId, err := strconv.Atoi(rawCfg.Id)
+	if err != nil {
+		return nil, err
+	}
 
 	config := &CeloChainConfig{
-		Name:                   chainCfg.Name,
-		ID:                     chainCfg.Id,
-		Endpoint:               chainCfg.Endpoint,
-		From:                   chainCfg.From,
-		KeystorePath:           chainCfg.KeystorePath,
-		BlockstorePath:         chainCfg.BlockstorePath,
-		FreshStart:             chainCfg.FreshStart,
+		Name:                   rawCfg.Name,
+		ID:                     msg.ChainId(chainId),
+		Endpoint:               rawCfg.Endpoint,
+		From:                   rawCfg.From,
+		KeystorePath:           ks,
+		BlockstorePath:         ctx.String(flags.BlockstorePathFlag.Name),
+		FreshStart:             ctx.Bool(flags.FreshStartFlag.Name),
+		LatestBlock:            ctx.Bool(flags.LatestBlockFlag.Name),
 		BridgeContract:         utils.ZeroAddress,
 		Erc20HandlerContract:   utils.ZeroAddress,
 		Erc721HandlerContract:  utils.ZeroAddress,
@@ -57,69 +64,68 @@ func ParseChainConfig(chainCfg *core.ChainConfig) (*CeloChainConfig, error) {
 		MaxGasPrice:            big.NewInt(DefaultGasPrice),
 		Http:                   false,
 		StartBlock:             big.NewInt(0),
-		LatestBlock:            chainCfg.LatestBlock,
-		Insecure:               chainCfg.Insecure,
+		Insecure:               insecure,
 	}
 
-	if contract, ok := chainCfg.Opts["bridge"]; ok && contract != "" {
+	if contract, ok := rawCfg.Opts["bridge"]; ok && contract != "" {
 		config.BridgeContract = common.HexToAddress(contract)
-		delete(chainCfg.Opts, "bridge")
+		delete(rawCfg.Opts, "bridge")
 	} else {
 		return nil, errors.New("must provide opts.bridge field for ethereum config")
 	}
 
-	config.Erc20HandlerContract = common.HexToAddress(chainCfg.Opts["erc20Handler"])
-	delete(chainCfg.Opts, "erc20Handler")
+	config.Erc20HandlerContract = common.HexToAddress(rawCfg.Opts["erc20Handler"])
+	delete(rawCfg.Opts, "erc20Handler")
 
-	config.Erc721HandlerContract = common.HexToAddress(chainCfg.Opts["erc721Handler"])
-	delete(chainCfg.Opts, "erc721Handler")
+	config.Erc721HandlerContract = common.HexToAddress(rawCfg.Opts["erc721Handler"])
+	delete(rawCfg.Opts, "erc721Handler")
 
-	config.GenericHandlerContract = common.HexToAddress(chainCfg.Opts["genericHandler"])
-	delete(chainCfg.Opts, "genericHandler")
+	config.GenericHandlerContract = common.HexToAddress(rawCfg.Opts["genericHandler"])
+	delete(rawCfg.Opts, "genericHandler")
 
-	if gasPrice, ok := chainCfg.Opts["maxGasPrice"]; ok {
+	if gasPrice, ok := rawCfg.Opts["maxGasPrice"]; ok {
 		price := big.NewInt(0)
 		_, pass := price.SetString(gasPrice, 10)
 		if pass {
 			config.MaxGasPrice = price
-			delete(chainCfg.Opts, "maxGasPrice")
+			delete(rawCfg.Opts, "maxGasPrice")
 		} else {
 			return nil, errors.New("unable to parse max gas price")
 		}
 	}
 
-	if gasLimit, ok := chainCfg.Opts["gasLimit"]; ok {
+	if gasLimit, ok := rawCfg.Opts["gasLimit"]; ok {
 		limit := big.NewInt(0)
 		_, pass := limit.SetString(gasLimit, 10)
 		if pass {
 			config.GasLimit = limit
-			delete(chainCfg.Opts, "gasLimit")
+			delete(rawCfg.Opts, "gasLimit")
 		} else {
 			return nil, errors.New("unable to parse gas limit")
 		}
 	}
 
-	if HTTP, ok := chainCfg.Opts["http"]; ok && HTTP == "true" {
+	if HTTP, ok := rawCfg.Opts["http"]; ok && HTTP == "true" {
 		config.Http = true
-		delete(chainCfg.Opts, "http")
-	} else if HTTP, ok := chainCfg.Opts["http"]; ok && HTTP == "false" {
+		delete(rawCfg.Opts, "http")
+	} else if HTTP, ok := rawCfg.Opts["http"]; ok && HTTP == "false" {
 		config.Http = false
-		delete(chainCfg.Opts, "http")
+		delete(rawCfg.Opts, "http")
 	}
 
-	if startBlock, ok := chainCfg.Opts["startBlock"]; ok && startBlock != "" {
+	if startBlock, ok := rawCfg.Opts["startBlock"]; ok && startBlock != "" {
 		block := big.NewInt(0)
 		_, pass := block.SetString(startBlock, 10)
 		if pass {
 			config.StartBlock = block
-			delete(chainCfg.Opts, "startBlock")
+			delete(rawCfg.Opts, "startBlock")
 		} else {
 			return nil, errors.New("unable to parse start block")
 		}
 	}
 
-	if len(chainCfg.Opts) != 0 {
-		return nil, fmt.Errorf("unknown Opts Encountered: %#v", chainCfg.Opts)
+	if len(rawCfg.Opts) != 0 {
+		return nil, fmt.Errorf("unknown Opts Encountered: %#v", rawCfg.Opts)
 	}
 
 	return config, nil

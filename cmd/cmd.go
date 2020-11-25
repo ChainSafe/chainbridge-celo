@@ -1,7 +1,8 @@
 package cmd
 
 import (
-	"strconv"
+	"github.com/ChainSafe/chainbridge-utils/crypto/secp256k1"
+	"github.com/ChainSafe/chainbridge-utils/keystore"
 
 	"github.com/ChainSafe/chainbridge-celo/blockdb"
 	"github.com/ChainSafe/chainbridge-celo/chain"
@@ -11,7 +12,6 @@ import (
 	"github.com/ChainSafe/chainbridge-celo/cmd/cfg"
 	"github.com/ChainSafe/chainbridge-celo/flags"
 	"github.com/ChainSafe/chainbridge-utils/core"
-	"github.com/ChainSafe/chainbridge-utils/msg"
 	"github.com/urfave/cli/v2"
 )
 
@@ -33,36 +33,27 @@ func Run(ctx *cli.Context) error {
 
 	sysErr := make(chan error)
 	coreApp := core.NewCore(sysErr)
-
 	for _, c := range startConfig.Chains {
-		chainId, errr := strconv.Atoi(c.Id)
-		if errr != nil {
-			return errr
-		}
-		chainConfig := &core.ChainConfig{
-			Name:           c.Name,
-			Id:             msg.ChainId(chainId),
-			Endpoint:       c.Endpoint,
-			From:           c.From,
-			KeystorePath:   ks,
-			Insecure:       insecure,
-			BlockstorePath: ctx.String(flags.BlockstorePathFlag.Name),
-			FreshStart:     ctx.Bool(flags.FreshStartFlag.Name),
-			LatestBlock:    ctx.Bool(flags.LatestBlockFlag.Name),
-			Opts:           c.Opts,
-		}
 		celoChainConfig, err := chain.ParseChainConfig(chainConfig)
 		if err != nil {
 			return err
 		}
 
-		var newChain core.Chain
+		kpI, err := keystore.KeypairFromAddress(celoChainConfig.From, keystore.EthChain, celoChainConfig.KeystorePath, celoChainConfig.Insecure)
+		if err != nil {
+			return err
+		}
+		kp, _ := kpI.(*secp256k1.Keypair)
 
 		conn := connection.NewConnection(celoChainConfig.Endpoint, celoChainConfig.Http, kp, celoChainConfig.GasLimit, celoChainConfig.MaxGasPrice)
-		bdb := blockdb.NewBlockstoreDB(from, keystorePath, insecure, bloksorePath, chainID, freshStart, startblock)
+		bdb, err := blockdb.NewBlockstoreDB(from, keystorePath, insecure, bloksorePath, chainID, freshStart, startblock)
+		if err != nil {
+			return err
+		}
 		l := listener.NewListener(conn, cfg, bs, stop, sysErr, m)
 		w := writer.NewWriter(conn, cfg, logger, stop, sysErr, m)
 
+		var newChain core.Chain
 		newChain, err = chain.InitializeChain(celoChainConfig, sysErr, conn, l, w, bdb)
 
 		if err != nil {
