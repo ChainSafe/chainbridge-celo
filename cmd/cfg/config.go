@@ -18,8 +18,7 @@ const DefaultConfigPath = "./config.json"
 const DefaultBlockTimeout = int64(180) // 3 minutes
 
 type Config struct {
-	Chains       []RawChainConfig `json:"chains"`
-	KeystorePath string           `json:"keystorePath,omitempty"`
+	Chains []RawChainConfig `json:"chains"`
 }
 
 // RawChainConfig is parsed directly from the config file and should be using to construct the core.ChainConfig
@@ -96,9 +95,6 @@ func GetConfig(ctx *cli.Context) (*Config, error) {
 	if err != nil {
 		log.Warn("err loading json file", "err", err.Error())
 		return &fig, err
-	}
-	if ksPath := ctx.String(flags.KeystorePathFlag.Name); ksPath != "" {
-		fig.KeystorePath = ksPath
 	}
 	log.Debug("Loaded config", "path", path)
 	err = fig.validate()

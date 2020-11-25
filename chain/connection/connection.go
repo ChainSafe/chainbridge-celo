@@ -136,6 +136,7 @@ func (c *Connection) UnlockOpts() {
 	c.optsLock.Unlock()
 }
 
+// TODO: really not sure that this method should be part of connection
 // LatestBlock returns the latest block from the current chain
 func (c *Connection) LatestBlock() (*big.Int, error) {
 	header, err := c.conn.HeaderByNumber(context.Background(), nil)

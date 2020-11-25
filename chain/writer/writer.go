@@ -28,11 +28,10 @@ type writer struct {
 }
 
 // NewWriter creates and returns writer
-func NewWriter(conn Connection, cfg *Config, log log15.Logger, stop <-chan int, sysErr chan<- error, m *metrics.ChainMetrics) *writer {
+func NewWriter(conn Connection, cfg *Config, stop <-chan int, sysErr chan<- error, m *metrics.ChainMetrics) *writer {
 	return &writer{
 		cfg:     *cfg,
 		conn:    conn,
-		log:     log,
 		stop:    stop,
 		sysErr:  sysErr,
 		metrics: m,

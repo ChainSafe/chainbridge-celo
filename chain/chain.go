@@ -20,7 +20,7 @@ type BlockDB interface {
 	TryLoadLatestBlock() (*big.Int, error)
 }
 
-func InitializeChain(cc *CeloChainConfig, sysErr chan<- error, conn connection.Connection, listener Listener, writer Writer, blockDB BlockDB) (core.Chain, error) {
+func InitializeChain(cc *CeloChainConfig, sysErr chan<- error, conn *connection.Connection, listener Listener, writer Writer, blockDB BlockDB) (core.Chain, error) {
 
 	stop := make(chan int)
 

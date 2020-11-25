@@ -4,10 +4,10 @@
 package chain
 
 import (
-	"fmt"
 	"math/big"
 	"strconv"
 
+	"github.com/ChainSafe/chainbridge-celo/chain/connection"
 	"github.com/ChainSafe/chainbridge-celo/cmd/cfg"
 	"github.com/ChainSafe/chainbridge-celo/flags"
 	utils "github.com/ChainSafe/chainbridge-celo/shared/ethereum"
@@ -24,7 +24,7 @@ type CeloChainConfig struct {
 	ID                     msg.ChainId // ChainID
 	Name                   string      // Human-readable chain name
 	Endpoint               string      // url for rpc endpoint
-	From                   string      // address of key to use
+	From                   string      // address of key to use // TODO: name should be changed
 	KeystorePath           string      // Location of keyfiles
 	BlockstorePath         string
 	FreshStart             bool // Disables loading from blockstore at start
@@ -40,8 +40,37 @@ type CeloChainConfig struct {
 	Insecure               bool
 }
 
+func (cfg *CeloChainConfig) EnsureContractsHaveBytecode(conn *connection.Connection) error {
+	err := conn.EnsureHasBytecode(cfg.BridgeContract)
+	if err != nil {
+		return err
+	}
+	err = conn.EnsureHasBytecode(cfg.Erc20HandlerContract)
+	if err != nil {
+		return err
+	}
+	err = conn.EnsureHasBytecode(cfg.GenericHandlerContract)
+	if err != nil {
+		return err
+	}
+	err = conn.EnsureHasBytecode(cfg.Erc721HandlerContract)
+	if err != nil {
+		return err
+	}
+}
+
 // parseChainConfig uses a core.ChainConfig to construct a corresponding Config
 func ParseChainConfig(rawCfg *cfg.RawChainConfig, ctx *cli.Context) (*CeloChainConfig, error) {
+	var ks string
+	var insecure bool
+	if key := ctx.String(flags.TestKeyFlag.Name); key != "" {
+		ks = key
+		insecure = true
+	} else {
+		if ksPath := ctx.String(flags.KeystorePathFlag.Name); ksPath != "" {
+			ks = ksPath
+		}
+	}
 	chainId, err := strconv.Atoi(rawCfg.Id)
 	if err != nil {
 		return nil, err
@@ -69,19 +98,15 @@ func ParseChainConfig(rawCfg *cfg.RawChainConfig, ctx *cli.Context) (*CeloChainC
 
 	if contract, ok := rawCfg.Opts["bridge"]; ok && contract != "" {
 		config.BridgeContract = common.HexToAddress(contract)
-		delete(rawCfg.Opts, "bridge")
 	} else {
 		return nil, errors.New("must provide opts.bridge field for ethereum config")
 	}
 
 	config.Erc20HandlerContract = common.HexToAddress(rawCfg.Opts["erc20Handler"])
-	delete(rawCfg.Opts, "erc20Handler")
 
 	config.Erc721HandlerContract = common.HexToAddress(rawCfg.Opts["erc721Handler"])
-	delete(rawCfg.Opts, "erc721Handler")
 
 	config.GenericHandlerContract = common.HexToAddress(rawCfg.Opts["genericHandler"])
-	delete(rawCfg.Opts, "genericHandler")
 
 	if gasPrice, ok := rawCfg.Opts["maxGasPrice"]; ok {
 		price := big.NewInt(0)
@@ -99,7 +124,6 @@ func ParseChainConfig(rawCfg *cfg.RawChainConfig, ctx *cli.Context) (*CeloChainC
 		_, pass := limit.SetString(gasLimit, 10)
 		if pass {
 			config.GasLimit = limit
-			delete(rawCfg.Opts, "gasLimit")
 		} else {
 			return nil, errors.New("unable to parse gas limit")
 		}
@@ -107,10 +131,8 @@ func ParseChainConfig(rawCfg *cfg.RawChainConfig, ctx *cli.Context) (*CeloChainC
 
 	if HTTP, ok := rawCfg.Opts["http"]; ok && HTTP == "true" {
 		config.Http = true
-		delete(rawCfg.Opts, "http")
 	} else if HTTP, ok := rawCfg.Opts["http"]; ok && HTTP == "false" {
 		config.Http = false
-		delete(rawCfg.Opts, "http")
 	}
 
 	if startBlock, ok := rawCfg.Opts["startBlock"]; ok && startBlock != "" {
@@ -118,15 +140,9 @@ func ParseChainConfig(rawCfg *cfg.RawChainConfig, ctx *cli.Context) (*CeloChainC
 		_, pass := block.SetString(startBlock, 10)
 		if pass {
 			config.StartBlock = block
-			delete(rawCfg.Opts, "startBlock")
 		} else {
 			return nil, errors.New("unable to parse start block")
 		}
 	}
-
-	if len(rawCfg.Opts) != 0 {
-		return nil, fmt.Errorf("unknown Opts Encountered: %#v", rawCfg.Opts)
-	}
-
 	return config, nil
 }

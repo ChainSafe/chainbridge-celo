@@ -10,48 +10,39 @@ import (
 	"github.com/ChainSafe/chainbridge-celo/chain/listener"
 	"github.com/ChainSafe/chainbridge-celo/chain/writer"
 	"github.com/ChainSafe/chainbridge-celo/cmd/cfg"
-	"github.com/ChainSafe/chainbridge-celo/flags"
 	"github.com/ChainSafe/chainbridge-utils/core"
 	"github.com/urfave/cli/v2"
 )
 
 func Run(ctx *cli.Context) error {
+
 	startConfig, err := cfg.GetConfig(ctx)
 	if err != nil {
 		return err
 	}
-
-	// Check for test key flag
-	var ks string
-	var insecure bool
-	if key := ctx.String(flags.TestKeyFlag.Name); key != "" {
-		ks = key
-		insecure = true
-	} else {
-		ks = startConfig.KeystorePath
-	}
-
 	sysErr := make(chan error)
 	coreApp := core.NewCore(sysErr)
 	for _, c := range startConfig.Chains {
-		celoChainConfig, err := chain.ParseChainConfig(chainConfig)
+		celoChainConfig, err := chain.ParseChainConfig(&c, ctx)
 		if err != nil {
 			return err
 		}
-
 		kpI, err := keystore.KeypairFromAddress(celoChainConfig.From, keystore.EthChain, celoChainConfig.KeystorePath, celoChainConfig.Insecure)
 		if err != nil {
 			return err
 		}
 		kp, _ := kpI.(*secp256k1.Keypair)
-
 		conn := connection.NewConnection(celoChainConfig.Endpoint, celoChainConfig.Http, kp, celoChainConfig.GasLimit, celoChainConfig.MaxGasPrice)
-		bdb, err := blockdb.NewBlockstoreDB(from, keystorePath, insecure, bloksorePath, chainID, freshStart, startblock)
+		err = celoChainConfig.EnsureContractsHaveBytecode(conn)
 		if err != nil {
 			return err
 		}
-		l := listener.NewListener(conn, cfg, bs, stop, sysErr, m)
-		w := writer.NewWriter(conn, cfg, logger, stop, sysErr, m)
+		bdb, err := blockdb.NewBlockStoreDB(kp.Address(), celoChainConfig.BlockstorePath, celoChainConfig.ID, celoChainConfig.FreshStart, celoChainConfig.StartBlock)
+		if err != nil {
+			return err
+		}
+		l := listener.NewListener(conn, celoChainConfig, bs, stop, sysErr, m)
+		w := writer.NewWriter(conn, celoChainConfig, stop, sysErr, m)
 
 		var newChain core.Chain
 		newChain, err = chain.InitializeChain(celoChainConfig, sysErr, conn, l, w, bdb)
