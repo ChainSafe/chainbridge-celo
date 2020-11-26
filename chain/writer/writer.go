@@ -21,6 +21,7 @@ var _ core.Writer = &writer{}
 var PassedStatus uint8 = 2
 var TransferredStatus uint8 = 3
 var CancelledStatus uint8 = 4
+var BlockRetryLimit = 5
 
 type writer struct {
 	cfg            *chain.CeloChainConfig

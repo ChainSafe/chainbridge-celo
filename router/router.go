@@ -1,7 +1,7 @@
 // Copyright 2020 ChainSafe Systems
 // SPDX-License-Identifier: LGPL-3.0-only
 
-package core
+package router
 
 import (
 	"fmt"
@@ -12,19 +12,19 @@ import (
 )
 
 // Writer consumes a message and makes the requried on-chain interactions.
-type Writer interface {
+type MessageResolver interface {
 	ResolveMessage(message msg.Message) bool
 }
 
 // Router forwards messages from their source to their destination
 type Router struct {
-	registry map[msg.ChainId]Writer
+	registry map[msg.ChainId]MessageResolver
 	lock     *sync.RWMutex
 }
 
 func NewRouter() *Router {
 	return &Router{
-		registry: make(map[msg.ChainId]Writer),
+		registry: make(map[msg.ChainId]MessageResolver),
 		lock:     &sync.RWMutex{},
 	}
 }
@@ -34,7 +34,7 @@ func (r *Router) Send(msg msg.Message) error {
 	r.lock.Lock()
 	defer r.lock.Unlock()
 
-	log.Trace("Routing message", "src", msg.Source, "dest", msg.Destination, "nonce", msg.DepositNonce, "rId", msg.ResourceId.Hex())
+	log.Trace().Interface("src", msg.Source).Interface("dest", msg.Destination).Interface("nonce", msg.DepositNonce).Interface("rId", msg.ResourceId.Hex()).Msg("Routing message")
 	w := r.registry[msg.Destination]
 	if w == nil {
 		return fmt.Errorf("unknown destination chainId: %d", msg.Destination)
@@ -45,9 +45,9 @@ func (r *Router) Send(msg msg.Message) error {
 }
 
 // Listen registers a Writer with a ChainId which Router.Send can then use to propagate messages
-func (r *Router) Listen(id msg.ChainId, w Writer) {
+func (r *Router) Listen(id msg.ChainId, w MessageResolver) {
 	r.lock.Lock()
 	defer r.lock.Unlock()
-	log.Debug("Registering new chain in router", "id", id)
+	log.Debug().Interface("id", id).Msg("Registering new chain in router")
 	r.registry[id] = w
 }

@@ -13,7 +13,7 @@ import (
 	erc721Handler "github.com/ChainSafe/chainbridge-celo/bindings/ERC721Handler"
 	"github.com/ChainSafe/chainbridge-celo/bindings/GenericHandler"
 	"github.com/ChainSafe/chainbridge-celo/chain/connection"
-	"github.com/ChainSafe/chainbridge-celo/core"
+	defaultRouter "github.com/ChainSafe/chainbridge-celo/router"
 	"github.com/ChainSafe/chainbridge-utils/blockstore"
 	metrics "github.com/ChainSafe/chainbridge-utils/metrics/types"
 	"github.com/ChainSafe/chainbridge-utils/msg"
@@ -27,7 +27,6 @@ type BlockDB interface {
 // checkBlockstore queries the blockstore for the latest known block. If the latest block is
 // greater than cfg.startBlock, then cfg.startBlock is replaced with the latest known block.
 type Listener interface {
-	SetRouter(*core.Router)
 	Start() error
 	SetContracts(bridge *bridgeHandler.Bridge, erc20Handler *erc20Handler.ERC20Handler, erc721Handler *erc721Handler.ERC721Handler, genericHandler *GenericHandler.GenericHandler)
 	LatestBlock() *metrics.LatestBlock
@@ -36,10 +35,9 @@ type Listener interface {
 type Writer interface {
 	Start() error
 	SetBridge(bc *bridgeHandler.Bridge)
-	core.Writer
 }
 
-func InitializeChain(cc *CeloChainConfig, sysErr chan<- error, conn *connection.Connection, listener Listener, writer Writer, blockDB BlockDB) (*Chain, error) {
+func InitializeChain(cc *CeloChainConfig, sysErr chan<- error, conn *connection.Connection, listener Listener, writer Writer) (*Chain, error) {
 
 	stop := make(chan int)
 
@@ -110,7 +108,7 @@ type Chain struct {
 	stop     chan<- int
 }
 
-func (c *Chain) SetRouter(r *core.Router) {
+func (c *Chain) SetRouter(r *defaultRouter.Router) {
 	r.Listen(c.cfg.ID, c.writer)
 	c.listener.SetRouter(r)
 }

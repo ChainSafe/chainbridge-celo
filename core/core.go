@@ -8,6 +8,7 @@ import (
 	"os/signal"
 	"syscall"
 
+	defaultRouter "github.com/ChainSafe/chainbridge-celo/router"
 	metrics "github.com/ChainSafe/chainbridge-utils/metrics/types"
 	"github.com/ChainSafe/chainbridge-utils/msg"
 	"github.com/rs/zerolog/log"
@@ -15,7 +16,7 @@ import (
 
 type Chain interface {
 	Start() error // Start chain
-	SetRouter(*Router)
+	SetRouter(*defaultRouter.Router)
 	ID() msg.ChainId
 	Name() string
 	LatestBlock() *metrics.LatestBlock
@@ -24,7 +25,6 @@ type Chain interface {
 
 type Core struct {
 	Registry []Chain
-	route    *Router
 	sysErr   <-chan error
 }
 
@@ -38,7 +38,6 @@ func NewCore(sysErr <-chan error) *Core {
 // AddChain registers the chain in the Registry and calls Chain.SetRouter()
 func (c *Core) AddChain(chain Chain) {
 	c.Registry = append(c.Registry, chain)
-	chain.SetRouter(c.route)
 }
 
 // Start will call all registered chains' Start methods and block forever (or until signal is received)

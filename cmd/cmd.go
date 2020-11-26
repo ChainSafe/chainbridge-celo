@@ -43,16 +43,18 @@ func Run(ctx *cli.Context) error {
 		}
 
 		stop := make(chan int)
-		l := listener.NewListener(conn, celoChainConfig, bdb, stop, sysErr, validatorSyncer)
+		// TODO  ValidatorSyncer
+		l := listener.NewListener(conn, celoChainConfig, bdb, stop, sysErr, nil)
 		// TODO ChainMetrics
 		w := writer.NewWriter(conn, celoChainConfig, stop, sysErr, nil)
 
-		newChain, err := chain.InitializeChain(celoChainConfig, sysErr, conn, l, w, bdb)
+		newChain, err := chain.InitializeChain(celoChainConfig, sysErr, conn, l, w)
 
 		if err != nil {
 			return err
 		}
 		coreApp.AddChain(newChain)
 	}
+	coreApp.Start()
 	return nil
 }

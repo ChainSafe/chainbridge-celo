@@ -10,37 +10,35 @@ import (
 	"math/big"
 	"time"
 
-	"github.com/ethereum/go-ethereum/ethclient"
-
 	"github.com/ChainSafe/chainbridge-celo/bindings/Bridge"
 	"github.com/ChainSafe/chainbridge-celo/bindings/ERC20Handler"
 	"github.com/ChainSafe/chainbridge-celo/bindings/ERC721Handler"
 	"github.com/ChainSafe/chainbridge-celo/bindings/GenericHandler"
 	"github.com/ChainSafe/chainbridge-celo/chain"
-	"github.com/ChainSafe/chainbridge-celo/core"
 	utils "github.com/ChainSafe/chainbridge-celo/shared/ethereum"
+
+	defaultRouter "github.com/ChainSafe/chainbridge-celo/router"
 	"github.com/ChainSafe/chainbridge-utils/blockstore"
 	metrics "github.com/ChainSafe/chainbridge-utils/metrics/types"
 	"github.com/ChainSafe/chainbridge-utils/msg"
-
 	eth "github.com/ethereum/go-ethereum"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
 	ethcommon "github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/rs/zerolog/log"
 )
 
 var BlockDelay = big.NewInt(10)
 var BlockRetryInterval = time.Second * 5
-var BlockRetryLimit = 5
 var ErrFatalPolling = errors.New("listener block polling failed")
-
 var ExpectedBlockTime = time.Second
+var BlockRetryLimit = 5
 
 type listener struct {
 	cfg                    *chain.CeloChainConfig
 	conn                   ConnectionListener
-	router                 *core.Router
+	router                 *defaultRouter.Router
 	bridgeContract         *Bridge.Bridge // instance of bound bridge contract
 	erc20HandlerContract   *ERC20Handler.ERC20Handler
 	erc721HandlerContract  *ERC721Handler.ERC721Handler
@@ -49,7 +47,7 @@ type listener struct {
 	stop                   <-chan int
 	sysErr                 chan<- error // Reports fatal error to core
 	syncer                 BlockSyncer
-	latestBlock            metrics.LatestBlock
+	latestBlock            *metrics.LatestBlock
 	metrics                *metrics.ChainMetrics
 }
 
@@ -63,7 +61,7 @@ type BlockSyncer interface {
 	Sync(latestBlock *big.Int) error
 }
 
-func NewListener(conn ConnectionListener, cfg *chain.CeloChainConfig, bs blockstore.Blockstorer, stop <-chan int, sysErr chan<- error, s BlockSyncer) *listener {
+func NewListener(conn ConnectionListener, cfg *chain.CeloChainConfig, bs blockstore.Blockstorer, stop <-chan int, sysErr chan<- error, s BlockSyncer, router *defaultRouter.Router) *listener {
 	return &listener{
 		cfg:        cfg,
 		conn:       conn,
@@ -71,6 +69,7 @@ func NewListener(conn ConnectionListener, cfg *chain.CeloChainConfig, bs blockst
 		stop:       stop,
 		sysErr:     sysErr,
 		syncer:     s,
+		router:     router,
 	}
 }
 
@@ -79,10 +78,6 @@ func (l *listener) SetContracts(bridge *Bridge.Bridge, erc20Handler *ERC20Handle
 	l.erc20HandlerContract = erc20Handler
 	l.erc721HandlerContract = erc721Handler
 	l.genericHandlerContract = genericHandler
-}
-
-func (l *listener) SetRouter(r *core.Router) {
-	l.router = r
 }
 
 func (l *listener) Start() error {
