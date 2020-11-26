@@ -6,10 +6,11 @@ package listener
 import (
 	"github.com/ChainSafe/chainbridge-utils/msg"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
+	"github.com/rs/zerolog/log"
 )
 
 func (l *listener) handleErc20DepositedEvent(destId msg.ChainId, nonce msg.Nonce) (msg.Message, error) {
-	l.log.Info("Handling fungible deposit event", "dest", destId, "nonce", nonce)
+	log.Info().Msg("Handling fungible deposit event", "dest", destId, "nonce", nonce)
 
 	record, err := l.erc20HandlerContract.GetDepositRecord(&bind.CallOpts{}, uint64(nonce), uint8(destId))
 	if err != nil {
@@ -28,7 +29,7 @@ func (l *listener) handleErc20DepositedEvent(destId msg.ChainId, nonce msg.Nonce
 }
 
 func (l *listener) handleErc721DepositedEvent(destId msg.ChainId, nonce msg.Nonce) (msg.Message, error) {
-	l.log.Info("Handling nonfungible deposit event")
+	log.Info().Msg("Handling nonfungible deposit event")
 
 	record, err := l.erc721HandlerContract.GetDepositRecord(&bind.CallOpts{}, uint64(nonce), uint8(destId))
 	if err != nil {
@@ -48,7 +49,7 @@ func (l *listener) handleErc721DepositedEvent(destId msg.ChainId, nonce msg.Nonc
 }
 
 func (l *listener) handleGenericDepositedEvent(destId msg.ChainId, nonce msg.Nonce) (msg.Message, error) {
-	l.log.Info("Handling generic deposit event")
+	log.Info().Msg("Handling generic deposit event")
 
 	record, err := l.genericHandlerContract.GetDepositRecord(&bind.CallOpts{}, uint64(nonce), uint8(destId))
 	if err != nil {

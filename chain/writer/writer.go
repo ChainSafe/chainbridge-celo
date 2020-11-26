@@ -4,11 +4,16 @@
 package writer
 
 import (
+	"math/big"
+
 	"github.com/ChainSafe/chainbridge-celo/bindings/Bridge"
+	"github.com/ChainSafe/chainbridge-celo/chain"
 	"github.com/ChainSafe/chainbridge-utils/core"
 	metrics "github.com/ChainSafe/chainbridge-utils/metrics/types"
 	"github.com/ChainSafe/chainbridge-utils/msg"
 	"github.com/ChainSafe/log15"
+	"github.com/ethereum/go-ethereum/accounts/abi/bind"
+	"github.com/ethereum/go-ethereum/ethclient"
 )
 
 var _ core.Writer = &writer{}
@@ -18,8 +23,8 @@ var TransferredStatus uint8 = 3
 var CancelledStatus uint8 = 4
 
 type writer struct {
-	cfg            Config
-	conn           Connection
+	cfg            *chain.CeloChainConfig
+	conn           ConnectionWriter
 	bridgeContract *Bridge.Bridge
 	log            log15.Logger
 	stop           <-chan int
@@ -27,10 +32,20 @@ type writer struct {
 	metrics        *metrics.ChainMetrics
 }
 
+type ConnectionWriter interface {
+	LatestBlock() (*big.Int, error)
+	LockAndUpdateOpts() error
+	Opts() *bind.TransactOpts
+	UnlockOpts()
+	CallOpts() *bind.CallOpts
+	WaitForBlock(block *big.Int) error
+	Client() *ethclient.Client
+}
+
 // NewWriter creates and returns writer
-func NewWriter(conn Connection, cfg *Config, stop <-chan int, sysErr chan<- error, m *metrics.ChainMetrics) *writer {
+func NewWriter(conn ConnectionWriter, cfg *chain.CeloChainConfig, stop <-chan int, sysErr chan<- error, m *metrics.ChainMetrics) *writer {
 	return &writer{
-		cfg:     *cfg,
+		cfg:     cfg,
 		conn:    conn,
 		stop:    stop,
 		sysErr:  sysErr,

@@ -1,13 +1,13 @@
 // Copyright 2020 ChainSafe Systems
 // SPDX-License-Identifier: LGPL-3.0-only
 
-package chain
+package validator
 
 import (
 	"context"
 	"math/big"
 
-	"github.com/ChainSafe/chainbridge-celo/connection"
+	"github.com/ChainSafe/chainbridge-celo/chain/connection"
 	"github.com/celo-org/celo-bls-go/bls"
 	"github.com/ethereum/go-ethereum/consensus/istanbul"
 	"github.com/ethereum/go-ethereum/core/types"

@@ -7,10 +7,11 @@ import (
 	"math/big"
 	"testing"
 
+	"github.com/ethereum/go-ethereum/log"
+
 	ethutils "github.com/ChainSafe/chainbridge-celo/shared/ethereum"
 	ethtest "github.com/ChainSafe/chainbridge-celo/shared/ethereum/testing"
 	"github.com/ChainSafe/chainbridge-utils/keystore"
-	"github.com/ChainSafe/log15"
 	ethcmn "github.com/ethereum/go-ethereum/common"
 )
 
@@ -20,7 +21,7 @@ var GasLimit = big.NewInt(DefaultGasLimit)
 var GasPrice = big.NewInt(DefaultGasPrice)
 
 func TestConnect(t *testing.T) {
-	conn := NewConnection(TestEndpoint, false, AliceKp, log15.Root(), GasLimit, GasPrice)
+	conn := NewConnection(TestEndpoint, false, AliceKp, log.Root(), GasLimit, GasPrice)
 	err := conn.Connect()
 	if err != nil {
 		t.Fatal(err)
@@ -37,7 +38,7 @@ func TestContractCode(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	conn := NewConnection(TestEndpoint, false, AliceKp, log15.Root(), GasLimit, GasPrice)
+	conn := NewConnection(TestEndpoint, false, AliceKp, log.Root(), GasLimit, GasPrice)
 	err = conn.Connect()
 	if err != nil {
 		t.Fatal(err)

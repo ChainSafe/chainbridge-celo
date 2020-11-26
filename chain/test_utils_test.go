@@ -8,11 +8,12 @@ import (
 	"math/big"
 	"testing"
 
+	"github.com/ethereum/go-ethereum/log"
+
 	connection "github.com/ChainSafe/chainbridge-celo/connection"
 	utils "github.com/ChainSafe/chainbridge-celo/shared/ethereum"
 	"github.com/ChainSafe/chainbridge-utils/keystore"
 	"github.com/ChainSafe/chainbridge-utils/msg"
-	"github.com/ChainSafe/log15"
 	"github.com/ethereum/go-ethereum/common"
 )
 
@@ -54,9 +55,9 @@ func createConfig(name string, startBlock *big.Int, contracts *utils.DeployedCon
 	return cfg
 }
 
-func newTestLogger(name string) log15.Logger {
-	tLog := log15.New("chain", name)
-	tLog.SetHandler(log15.LvlFilterHandler(log15.LvlInfo, tLog.GetHandler()))
+func newTestLogger(name string) log.Logger {
+	tLog := log.New("chain", name)
+	tLog.SetHandler(log.LvlFilterHandler(log.LvlInfo, tLog.GetHandler()))
 	return tLog
 }
 

@@ -12,8 +12,8 @@ import (
 	"time"
 
 	"github.com/ChainSafe/chainbridge-utils/crypto/secp256k1"
-	"github.com/ChainSafe/log15"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
+	"github.com/ethereum/go-ethereum/common"
 	ethcommon "github.com/ethereum/go-ethereum/common"
 	ethcrypto "github.com/ethereum/go-ethereum/crypto"
 	"github.com/ethereum/go-ethereum/ethclient"
@@ -24,6 +24,22 @@ const DefaultGasLimit = 6721975
 const DefaultGasPrice = 20000000000
 
 var BlockRetryInterval = time.Second * 5
+
+type Connectioner interface {
+	Connect() error
+	Keypair() *secp256k1.Keypair
+	Opts() *bind.TransactOpts
+	CallOpts() *bind.CallOpts
+	LockAndUpdateOpts() error
+	UnlockOpts()
+	Client() *ethclient.Client
+	EnsureHasBytecode(address common.Address) error
+	LatestBlock() (*big.Int, error)
+	WaitForBlock(block *big.Int) error
+	LockAndUpdateNonce() error
+	UnlockNonce()
+	Close()
+}
 
 type Connection struct {
 	endpoint    string
@@ -37,7 +53,6 @@ type Connection struct {
 	callOpts  *bind.CallOpts
 	nonce     uint64
 	nonceLock sync.Mutex
-	log       log15.Logger
 	optsLock  sync.Mutex
 	stop      chan int // All routines should exit when this channel is closed
 }

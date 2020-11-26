@@ -7,7 +7,7 @@ import (
 	"testing"
 
 	utils "github.com/ChainSafe/chainbridge-celo/shared/ethereum"
-	"github.com/ChainSafe/log15"
+	log "github.com/ChainSafe/log15"
 	"github.com/ethereum/go-ethereum/common"
 )
 
@@ -27,5 +27,5 @@ func AssertHashExistence(t *testing.T, client *utils.Client, hash [32]byte, cont
 	if !exists {
 		t.Fatalf("Hash %x does not exist on chain", hash)
 	}
-	log15.Info("Assert existence in asset store", "hash", hash, "assetStore", contract)
+	log.Info("Assert existence in asset store", "hash", hash, "assetStore", contract)
 }

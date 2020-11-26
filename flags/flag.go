@@ -4,7 +4,7 @@
 package flags
 
 import (
-	log "github.com/ChainSafe/log15"
+	"github.com/ethereum/go-ethereum/log"
 	"github.com/urfave/cli/v2"
 )
 

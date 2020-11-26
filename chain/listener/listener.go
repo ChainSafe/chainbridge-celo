@@ -10,21 +10,24 @@ import (
 	"math/big"
 	"time"
 
+	"github.com/ethereum/go-ethereum/ethclient"
+
 	"github.com/ChainSafe/chainbridge-celo/bindings/Bridge"
 	"github.com/ChainSafe/chainbridge-celo/bindings/ERC20Handler"
 	"github.com/ChainSafe/chainbridge-celo/bindings/ERC721Handler"
 	"github.com/ChainSafe/chainbridge-celo/bindings/GenericHandler"
-	"github.com/ChainSafe/chainbridge-celo/chain/connection"
+	"github.com/ChainSafe/chainbridge-celo/chain"
+	"github.com/ChainSafe/chainbridge-celo/chain/validator"
 	utils "github.com/ChainSafe/chainbridge-celo/shared/ethereum"
 	"github.com/ChainSafe/chainbridge-utils/blockstore"
 	"github.com/ChainSafe/chainbridge-utils/core"
-	"github.com/ChainSafe/chainbridge-utils/crypto/secp256k1"
 	"github.com/ChainSafe/chainbridge-utils/msg"
+
 	eth "github.com/ethereum/go-ethereum"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
 	ethcommon "github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/ethclient"
+	"github.com/rs/zerolog/log"
 )
 
 var BlockDelay = big.NewInt(10)
@@ -32,29 +35,11 @@ var BlockRetryInterval = time.Second * 5
 var BlockRetryLimit = 5
 var ErrFatalPolling = errors.New("listener block polling failed")
 
-var _ Connection = &connection.Connection{}
-
-type Connection interface {
-	Connect() error
-	Keypair() *secp256k1.Keypair
-	Opts() *bind.TransactOpts
-	CallOpts() *bind.CallOpts
-	LockAndUpdateOpts() error
-	UnlockOpts()
-	Client() *ethclient.Client
-	EnsureHasBytecode(address common.Address) error
-	LatestBlock() (*big.Int, error)
-	WaitForBlock(block *big.Int) error
-	LockAndUpdateNonce() error
-	UnlockNonce()
-	Close()
-}
-
 var ExpectedBlockTime = time.Second
 
 type listener struct {
-	cfg                    Config
-	conn                   Connection
+	cfg                    *chain.CeloChainConfig
+	conn                   ConnectionListener
 	router                 *core.Router
 	bridgeContract         *Bridge.Bridge // instance of bound bridge contract
 	erc20HandlerContract   *ERC20Handler.ERC20Handler
@@ -63,12 +48,18 @@ type listener struct {
 	blockstore             blockstore.Blockstorer
 	stop                   <-chan int
 	sysErr                 chan<- error // Reports fatal error to core
-	syncer                 ValidatorSyncer
+	syncer                 *validator.ValidatorSyncer
 }
 
-func NewListener(conn Connection, cfg *Config, bs blockstore.Blockstorer, stop <-chan int, sysErr chan<- error, s ValidatorSyncer) *listener {
+type ConnectionListener interface {
+	Client() *ethclient.Client
+	LatestBlock() (*big.Int, error)
+	Connect() error
+}
+
+func NewListener(conn ConnectionListener, cfg *chain.CeloChainConfig, bs blockstore.Blockstorer, stop <-chan int, sysErr chan<- error, s *validator.ValidatorSyncer) *listener {
 	return &listener{
-		cfg:        *cfg,
+		cfg:        cfg,
 		conn:       conn,
 		blockstore: bs,
 		stop:       stop,
@@ -89,7 +80,7 @@ func (l *listener) setRouter(r *core.Router) {
 }
 
 func (l *listener) start() error {
-	l.log.Debug("Starting listener...")
+	log.Debug().Msg("Starting listener...")
 
 	err := l.conn.Connect()
 	if err != nil {
@@ -99,7 +90,7 @@ func (l *listener) start() error {
 	go func() {
 		err := l.pollBlocks()
 		if err != nil {
-			l.log.Error("Polling blocks failed", "err", err)
+			log.Error().Err(err).Msg("Polling blocks failed")
 		}
 	}()
 
@@ -110,8 +101,8 @@ func (l *listener) start() error {
 // Polling begins at the block defined in `l.cfg.startBlock`. Failed attempts to fetch the latest block or parse
 // a block will be retried up to BlockRetryLimit times before continuing to the next block.
 func (l *listener) pollBlocks() error {
-	l.log.Info("Polling Blocks...")
-	var currentBlock = l.cfg.startBlock
+	log.Info().Msg("Polling Blocks...")
+	var currentBlock = l.cfg.StartBlock
 	var retry = BlockRetryLimit
 	for {
 		select {
@@ -120,14 +111,14 @@ func (l *listener) pollBlocks() error {
 		default:
 			// No more retries, goto next block
 			if retry == 0 {
-				l.log.Error("Polling failed, retries exceeded")
+				log.Error().Msg("Polling failed, retries exceeded")
 				l.sysErr <- ErrFatalPolling
 				return nil
 			}
 
 			latestBlock, err := l.conn.LatestBlock()
 			if err != nil {
-				l.log.Error("Unable to get latest block", "block", currentBlock, "err", err)
+				log.Error().Err(err).Str("block", currentBlock.String()).Msg("Unable to get latest block")
 				retry--
 				time.Sleep(BlockRetryInterval)
 				continue
@@ -135,21 +126,21 @@ func (l *listener) pollBlocks() error {
 
 			// Sleep if the difference is less than BlockDelay; (latest - current) < BlockDelay
 			if big.NewInt(0).Sub(latestBlock, currentBlock).Cmp(BlockDelay) == -1 {
-				l.log.Debug("Block not ready, will retry", "target", currentBlock, "latest", latestBlock)
+				log.Debug().Str("target", currentBlock.String()).Str("latest", latestBlock.String()).Msg("Block not ready, will retry")
 				time.Sleep(BlockRetryInterval)
 				continue
 			}
 
 			err = l.syncer.Sync(currentBlock)
 			if err != nil {
-				l.log.Error("Failed to sync validators for block", "block", currentBlock, "err", err)
+				log.Error().Str("block", currentBlock.String()).Err(err).Msg("Failed to sync validators for block")
 				continue
 			}
 
 			// Parse out events
 			err = l.getDepositEventsAndProofsForBlock(currentBlock)
 			if err != nil {
-				l.log.Error("Failed to get events for block", "block", currentBlock, "err", err)
+				log.Error().Str("block", currentBlock.String()).Err(err).Msg("Failed to get events for block")
 				retry--
 				continue
 			}
@@ -157,7 +148,7 @@ func (l *listener) pollBlocks() error {
 			// Write to block store. Not a critical operation, no need to retry
 			err = l.blockstore.StoreBlock(currentBlock)
 			if err != nil {
-				l.log.Error("Failed to write latest block to blockstore", "block", currentBlock, "err", err)
+				log.Error().Str("block", currentBlock.String()).Err(err).Msg("Failed to write latest block to blockstore")
 			}
 
 			// Goto next block and reset retry counter
@@ -169,8 +160,8 @@ func (l *listener) pollBlocks() error {
 
 // TODO: Proof construction.
 func (l *listener) getDepositEventsAndProofsForBlock(latestBlock *big.Int) error {
-	l.log.Debug("Querying block for deposit events", "block", latestBlock)
-	query := buildQuery(l.cfg.bridgeContract, utils.Deposit, latestBlock, latestBlock)
+	log.Debug().Str("block", latestBlock.String()).Msg("Querying block for deposit events")
+	query := buildQuery(l.cfg.BridgeContract, utils.Deposit, latestBlock, latestBlock)
 
 	// querying for logs
 	logs, err := l.conn.Client().FilterLogs(context.Background(), query)
@@ -179,25 +170,25 @@ func (l *listener) getDepositEventsAndProofsForBlock(latestBlock *big.Int) error
 	}
 
 	// read through the log events and handle their deposit event if handler is recognized
-	for _, log := range logs {
+	for _, eventLog := range logs {
 		var m msg.Message
-		destId := msg.ChainId(log.Topics[1].Big().Uint64())
-		rId := msg.ResourceIdFromSlice(log.Topics[2].Bytes())
-		nonce := msg.Nonce(log.Topics[3].Big().Uint64())
+		destId := msg.ChainId(eventLog.Topics[1].Big().Uint64())
+		rId := msg.ResourceIdFromSlice(eventLog.Topics[2].Bytes())
+		nonce := msg.Nonce(eventLog.Topics[3].Big().Uint64())
 
 		addr, err := l.bridgeContract.ResourceIDToHandlerAddress(&bind.CallOpts{}, rId)
 		if err != nil {
 			return fmt.Errorf("failed to get handler from resource ID %x, reason: %w", rId, err)
 		}
 
-		if addr == l.cfg.erc20HandlerContract {
+		if addr == l.cfg.Erc20HandlerContract {
 			m, err = l.handleErc20DepositedEvent(destId, nonce)
-		} else if addr == l.cfg.erc721HandlerContract {
+		} else if addr == l.cfg.Erc721HandlerContract {
 			m, err = l.handleErc721DepositedEvent(destId, nonce)
-		} else if addr == l.cfg.genericHandlerContract {
+		} else if addr == l.cfg.GenericHandlerContract {
 			m, err = l.handleGenericDepositedEvent(destId, nonce)
 		} else {
-			l.log.Error("event has unrecognized handler", "handler", addr.Hex())
+			log.Error().Err(err).Str("handler", addr.Hex()).Msg("event has unrecognized handler")
 			return nil
 		}
 
@@ -207,7 +198,7 @@ func (l *listener) getDepositEventsAndProofsForBlock(latestBlock *big.Int) error
 
 		err = l.router.Send(m)
 		if err != nil {
-			l.log.Error("subscription error: failed to route message", "err", err)
+			log.Error().Err(err).Msg("subscription error: failed to route message")
 		}
 	}
 

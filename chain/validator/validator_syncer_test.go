@@ -1,14 +1,15 @@
 // Copyright 2020 ChainSafe Systems
 // SPDX-License-Identifier: LGPL-3.0-only
 
-package chain
+package validator
 
 import (
 	"encoding/hex"
 	"testing"
 
+	"github.com/ethereum/go-ethereum/log"
+
 	"github.com/ChainSafe/chainbridge-celo/connection"
-	"github.com/ChainSafe/log15"
 	"github.com/ethereum/go-ethereum/common"
 )
 
@@ -25,7 +26,7 @@ var expectedBlsPublicKeys = []string{
 }
 
 func createTestConnection(t *testing.T) *connection.Connection {
-	conn := connection.NewConnection(TestEndpoint, false, AliceKp, log15.Root(), GasLimit, GasPrice)
+	conn := connection.NewConnection(TestEndpoint, false, AliceKp, log.Root(), GasLimit, GasPrice)
 	return conn
 }
 
