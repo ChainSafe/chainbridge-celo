@@ -52,13 +52,13 @@ func NewWriter(conn ConnectionWriter, cfg *chain.CeloChainConfig, stop <-chan in
 	}
 }
 
-func (w *writer) start() error {
+func (w *writer) Start() error {
 	log.Debug().Msg("Starting celo writer...")
 	return nil
 }
 
 // setContract adds the bound receiver bridgeContract to the writer
-func (w *writer) setContract(bridge *Bridge.Bridge) {
+func (w *writer) SetBridge(bridge *Bridge.Bridge) {
 	w.bridgeContract = bridge
 }
 

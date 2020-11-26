@@ -17,9 +17,10 @@ import (
 	"github.com/ChainSafe/chainbridge-celo/bindings/ERC721Handler"
 	"github.com/ChainSafe/chainbridge-celo/bindings/GenericHandler"
 	"github.com/ChainSafe/chainbridge-celo/chain"
+	"github.com/ChainSafe/chainbridge-celo/core"
 	utils "github.com/ChainSafe/chainbridge-celo/shared/ethereum"
 	"github.com/ChainSafe/chainbridge-utils/blockstore"
-	"github.com/ChainSafe/chainbridge-utils/core"
+	metrics "github.com/ChainSafe/chainbridge-utils/metrics/types"
 	"github.com/ChainSafe/chainbridge-utils/msg"
 
 	eth "github.com/ethereum/go-ethereum"
@@ -48,6 +49,8 @@ type listener struct {
 	stop                   <-chan int
 	sysErr                 chan<- error // Reports fatal error to core
 	syncer                 BlockSyncer
+	latestBlock            metrics.LatestBlock
+	metrics                *metrics.ChainMetrics
 }
 
 type ConnectionListener interface {
@@ -71,18 +74,18 @@ func NewListener(conn ConnectionListener, cfg *chain.CeloChainConfig, bs blockst
 	}
 }
 
-func (l *listener) setContracts(bridge *Bridge.Bridge, erc20Handler *ERC20Handler.ERC20Handler, erc721Handler *ERC721Handler.ERC721Handler, genericHandler *GenericHandler.GenericHandler) {
+func (l *listener) SetContracts(bridge *Bridge.Bridge, erc20Handler *ERC20Handler.ERC20Handler, erc721Handler *ERC721Handler.ERC721Handler, genericHandler *GenericHandler.GenericHandler) {
 	l.bridgeContract = bridge
 	l.erc20HandlerContract = erc20Handler
 	l.erc721HandlerContract = erc721Handler
 	l.genericHandlerContract = genericHandler
 }
 
-func (l *listener) setRouter(r *core.Router) {
+func (l *listener) SetRouter(r *core.Router) {
 	l.router = r
 }
 
-func (l *listener) start() error {
+func (l *listener) Start() error {
 	log.Debug().Msg("Starting listener...")
 
 	err := l.conn.Connect()
@@ -98,6 +101,10 @@ func (l *listener) start() error {
 	}()
 
 	return nil
+}
+
+func (l *listener) LatestBlock() *metrics.LatestBlock {
+	return l.latestBlock
 }
 
 // pollBlocks will poll for the latest block and proceed to parse the associated events as it sees new blocks.
@@ -153,6 +160,14 @@ func (l *listener) pollBlocks() error {
 			if err != nil {
 				log.Error().Str("block", currentBlock.String()).Err(err).Msg("Failed to write latest block to blockstore")
 			}
+
+			if l.metrics != nil {
+				l.metrics.BlocksProcessed.Inc()
+				l.metrics.LatestProcessedBlock.Set(float64(latestBlock.Int64()))
+			}
+
+			l.latestBlock.Height = big.NewInt(0).Set(latestBlock)
+			l.latestBlock.LastUpdated = time.Now()
 
 			// Goto next block and reset retry counter
 			currentBlock.Add(currentBlock, big.NewInt(1))

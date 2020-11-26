@@ -10,12 +10,11 @@ import (
 	"github.com/ChainSafe/chainbridge-celo/chain/listener"
 	"github.com/ChainSafe/chainbridge-celo/chain/writer"
 	"github.com/ChainSafe/chainbridge-celo/cmd/cfg"
-	"github.com/ChainSafe/chainbridge-utils/core"
+	"github.com/ChainSafe/chainbridge-celo/core"
 	"github.com/urfave/cli/v2"
 )
 
 func Run(ctx *cli.Context) error {
-
 	startConfig, err := cfg.GetConfig(ctx)
 	if err != nil {
 		return err
@@ -32,6 +31,7 @@ func Run(ctx *cli.Context) error {
 			return err
 		}
 		kp, _ := kpI.(*secp256k1.Keypair)
+
 		conn := connection.NewConnection(celoChainConfig.Endpoint, celoChainConfig.Http, kp, celoChainConfig.GasLimit, celoChainConfig.MaxGasPrice)
 		err = celoChainConfig.EnsureContractsHaveBytecode(conn)
 		if err != nil {
@@ -44,17 +44,15 @@ func Run(ctx *cli.Context) error {
 
 		stop := make(chan int)
 		l := listener.NewListener(conn, celoChainConfig, bdb, stop, sysErr, validatorSyncer)
-		w := writer.NewWriter(conn, celoChainConfig, stop, sysErr, validatorSyncer)
+		// TODO ChainMetrics
+		w := writer.NewWriter(conn, celoChainConfig, stop, sysErr, nil)
 
-		var newChain core.Chain
-		newChain, err = chain.InitializeChain(celoChainConfig, sysErr, conn, l, w, bdb)
+		newChain, err := chain.InitializeChain(celoChainConfig, sysErr, conn, l, w, bdb)
 
 		if err != nil {
 			return err
 		}
 		coreApp.AddChain(newChain)
-
 	}
-
 	return nil
 }

@@ -14,7 +14,7 @@ require (
 	github.com/pkg/errors v0.9.1
 	github.com/prometheus/client_golang v1.4.1 // indirect
 	github.com/rs/cors v1.7.0 // indirect
-	github.com/rs/zerolog v1.19.0 // indirect
+	github.com/rs/zerolog v1.19.0
 	github.com/urfave/cli v1.22.1
 	github.com/urfave/cli/v2 v2.3.0
 	golang.org/x/net v0.0.0-20200707034311-ab3426394381 // indirect
