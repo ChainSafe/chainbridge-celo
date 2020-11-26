@@ -17,7 +17,6 @@ import (
 	"github.com/ChainSafe/chainbridge-celo/bindings/ERC721Handler"
 	"github.com/ChainSafe/chainbridge-celo/bindings/GenericHandler"
 	"github.com/ChainSafe/chainbridge-celo/chain"
-	"github.com/ChainSafe/chainbridge-celo/chain/validator"
 	utils "github.com/ChainSafe/chainbridge-celo/shared/ethereum"
 	"github.com/ChainSafe/chainbridge-utils/blockstore"
 	"github.com/ChainSafe/chainbridge-utils/core"
@@ -48,7 +47,7 @@ type listener struct {
 	blockstore             blockstore.Blockstorer
 	stop                   <-chan int
 	sysErr                 chan<- error // Reports fatal error to core
-	syncer                 *validator.ValidatorSyncer
+	syncer                 BlockSyncer
 }
 
 type ConnectionListener interface {
@@ -57,7 +56,11 @@ type ConnectionListener interface {
 	Connect() error
 }
 
-func NewListener(conn ConnectionListener, cfg *chain.CeloChainConfig, bs blockstore.Blockstorer, stop <-chan int, sysErr chan<- error, s *validator.ValidatorSyncer) *listener {
+type BlockSyncer interface {
+	Sync(latestBlock *big.Int) error
+}
+
+func NewListener(conn ConnectionListener, cfg *chain.CeloChainConfig, bs blockstore.Blockstorer, stop <-chan int, sysErr chan<- error, s BlockSyncer) *listener {
 	return &listener{
 		cfg:        cfg,
 		conn:       conn,

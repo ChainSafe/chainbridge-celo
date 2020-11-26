@@ -12,7 +12,7 @@ import (
 	celoMsg "github.com/ChainSafe/chainbridge-celo/msg"
 	utils "github.com/ChainSafe/chainbridge-celo/shared/ethereum"
 	"github.com/ChainSafe/chainbridge-utils/msg"
-	"github.com/ethereum/go-ethereum/log"
+	"github.com/rs/zerolog/log"
 )
 
 // Number of blocks to wait for an finalization event
@@ -33,7 +33,7 @@ var ErrFatalQuery = errors.New("query of chain state failed")
 func (w *writer) proposalIsComplete(srcId msg.ChainId, nonce msg.Nonce, dataHash [32]byte) bool {
 	prop, err := w.bridgeContract.GetProposal(w.conn.CallOpts(), uint8(srcId), uint64(nonce), dataHash)
 	if err != nil {
-		w.log.Error("Failed to check proposal existence", "err", err)
+		log.Error().Err(err).Msg("Failed to check proposal existence")
 		return false
 	}
 	return prop.Status == PassedStatus || prop.Status == TransferredStatus || prop.Status == CancelledStatus
@@ -44,7 +44,7 @@ func (w *writer) proposalIsFinalized(srcId msg.ChainId, nonce msg.Nonce, dataHas
 	prop, err := w.bridgeContract.GetProposal(w.conn.CallOpts(), uint8(srcId), uint64(nonce), dataHash)
 
 	if err != nil {
-		w.log.Error("Failed to check proposal existence", "err", err)
+		log.Error().Err(err).Msg("Failed to check proposal existence")
 		return false
 	}
 	return prop.Status == TransferredStatus || prop.Status == CancelledStatus
@@ -55,7 +55,7 @@ func (w *writer) hasVoted(srcId msg.ChainId, nonce msg.Nonce, dataHash [32]byte)
 	hasVoted, err := w.bridgeContract.HasVotedOnProposal(w.conn.CallOpts(), utils.IDAndNonce(srcId, nonce), dataHash, w.conn.Opts().From)
 
 	if err != nil {
-		w.log.Error("Failed to check proposal existance", "err", err)
+		log.Error().Err(err).Msg("Failed to check proposal existance")
 		return false
 	}
 
@@ -65,12 +65,12 @@ func (w *writer) hasVoted(srcId msg.ChainId, nonce msg.Nonce, dataHash [32]byte)
 func (w *writer) shouldVote(m msg.Message, dataHash [32]byte) bool {
 	// Check if proposal has passed and skip if Passed or Transferred
 	if w.proposalIsComplete(m.Source, m.DepositNonce, dataHash) {
-		w.log.Info("Proposal complete, not voting", "src", m.Source, "nonce", m.DepositNonce)
+		log.Info().Interface("src", m.Source).Interface("nonce", m.DepositNonce).Msg("Proposal complete, not voting")
 	}
 
 	// Check if relayer has previously voted
 	if w.hasVoted(m.Source, m.DepositNonce, dataHash) {
-		w.log.Info("Relayer has already voted, not voting", "src", m.Source, "source", m.DepositNonce)
+		log.Info().Interface("src", m.Source).Interface("nonce", m.DepositNonce).Msg("Relayer has already voted, not voting")
 		return false
 	}
 
@@ -80,19 +80,19 @@ func (w *writer) shouldVote(m msg.Message, dataHash [32]byte) bool {
 // createErc20Proposal creates an Erc20 proposal.
 // Returns true if the proposal is successfully created or is complete
 func (w *writer) createErc20Proposal(m msg.Message) bool {
-	w.log.Info("Creating erc20 proposal", "src", m.Source, "nonce", m.DepositNonce)
+	log.Info().Interface("src", m.Source).Interface("nonce", m.DepositNonce).Msg("Creating erc20 proposal")
 
 	msgProofOptsInterface := m.Payload[2]
 
 	if msgProofOptsInterface == nil {
-		w.log.Error("msgProofOpts cannot be nil")
+		log.Error().Msg("msgProofOpts cannot be nil")
 		return false
 	}
 
 	msgProofOpts, ok := msgProofOptsInterface.(*celoMsg.MsgProofOpts)
 
 	if !ok {
-		w.log.Error("unable to convert msgProofOptsInterface to *MsgProofOpts")
+		log.Error().Msg("unable to convert msgProofOptsInterface to *MsgProofOpts")
 		return false
 	}
 
@@ -105,7 +105,7 @@ func (w *writer) createErc20Proposal(m msg.Message) bool {
 	// Capture latest block so when know where to watch from
 	latestBlock, err := w.conn.LatestBlock()
 	if err != nil {
-		w.log.Error("unable to fetch latest block", "err", err)
+		log.Error().Err(err).Msg("unable to fetch latest block")
 		return false
 	}
 
@@ -120,19 +120,19 @@ func (w *writer) createErc20Proposal(m msg.Message) bool {
 // createErc721Proposal creates an Erc721 proposal.
 // Returns true if the proposal is succesfully created or is complete
 func (w *writer) createErc721Proposal(m msg.Message) bool {
-	w.log.Info("Creating erc721 proposal", "src", m.Source, "nonce", m.DepositNonce)
+	log.Info().Interface("src", m.Source).Interface("nonce", m.DepositNonce).Msg("Creating erc721 proposal")
 
 	msgProofOptsInterface := m.Payload[3]
 
 	if msgProofOptsInterface == nil {
-		w.log.Error("msgProofOpts cannot be nil")
+		log.Error().Msg("msgProofOpts cannot be nil")
 		return false
 	}
 
 	msgProofOpts, ok := msgProofOptsInterface.(*celoMsg.MsgProofOpts)
 
 	if !ok {
-		w.log.Error("unable to convert msgProofOptsInterface to *MsgProofOpts")
+		log.Error().Msg("unable to convert msgProofOptsInterface to *MsgProofOpts")
 		return false
 	}
 
@@ -146,7 +146,7 @@ func (w *writer) createErc721Proposal(m msg.Message) bool {
 	// Capture latest block so we know where to watch from
 	latestBlock, err := w.conn.LatestBlock()
 	if err != nil {
-		w.log.Error("Unable to fetch latest block", "err", err)
+		log.Error().Err(err).Msg("Unable to fetch latest block")
 		return false
 	}
 
@@ -162,26 +162,26 @@ func (w *writer) createErc721Proposal(m msg.Message) bool {
 // createGenericDepositProposal creates a generic proposal
 // returns true if the proposal is complete or is succesfully created
 func (w *writer) createGenericDepositProposal(m msg.Message) bool {
-	w.log.Info("Creating generic proposal", "src", m.Source, "nonce", m.DepositNonce)
+	log.Info().Interface("src", m.Source).Interface("nonce", m.DepositNonce).Msg("Creating generic proposal")
 
 	metadata, ok := m.Payload[0].([]byte)
 
 	if !ok {
-		w.log.Error("Unable to convert metadata to []byte")
+		log.Error().Msg("Unable to convert metadata to []byte")
 		return false
 	}
 
 	msgProofOptsInterface := m.Payload[1]
 
 	if msgProofOptsInterface == nil {
-		w.log.Error("msgProofOpts cannot be nil")
+		log.Error().Msg("msgProofOpts cannot be nil")
 		return false
 	}
 
 	msgProofOpts, ok := msgProofOptsInterface.(*celoMsg.MsgProofOpts)
 
 	if !ok {
-		w.log.Error("unable to convert msgProofOptsInterface to *msgProofOpts")
+		log.Error().Msg("unable to convert msgProofOptsInterface to *msgProofOpts")
 		return false
 	}
 
@@ -195,7 +195,7 @@ func (w *writer) createGenericDepositProposal(m msg.Message) bool {
 	// Capture latest block so when know where to watch from
 	latestBlock, err := w.conn.LatestBlock()
 	if err != nil {
-		w.log.Error("Unable to fetch latest block", "err", err)
+		log.Error().Err(err).Msg("Unable to fetch latest block")
 		return false
 	}
 
@@ -209,7 +209,7 @@ func (w *writer) createGenericDepositProposal(m msg.Message) bool {
 
 // watchThenExecute watches for the latest block and executes once the matching finalized event is found
 func (w *writer) watchThenExecute(m msg.Message, data []byte, dataHash [32]byte, latestBlock *big.Int, msgProofOpts *celoMsg.MsgProofOpts) {
-	w.log.Info("Watching for finalization event", "src", m.Source, "nonce", m.DepositNonce)
+	log.Info().Interface("src", m.Source).Interface("nonce", m.DepositNonce).Msg("Watching for finalization event")
 
 	// watching for the latest block, querying and matching the finalized event will be retried up to ExecuteBlockWatchLimit times
 	for i := 0; i < ExecuteBlockWatchLimit; i++ {
@@ -221,10 +221,10 @@ func (w *writer) watchThenExecute(m msg.Message, data []byte, dataHash [32]byte,
 			for waitRetrys := 0; waitRetrys < BlockRetryLimit; waitRetrys++ {
 				err := w.conn.WaitForBlock(latestBlock)
 				if err != nil {
-					w.log.Error("Waiting for block failed", "err", err)
+					log.Error().Err(err).Msg("Waiting for block failed")
 					// Exit if retries exceeded
 					if waitRetrys+1 == BlockRetryLimit {
-						w.log.Error("Waiting for block retries exceeded, shutting down")
+						log.Error().Err(err).Msg("Waiting for block retries exceeded, shutting down")
 						w.sysErr <- ErrFatalQuery
 						return
 					}
@@ -237,7 +237,7 @@ func (w *writer) watchThenExecute(m msg.Message, data []byte, dataHash [32]byte,
 			query := buildQuery(w.cfg.bridgeContract, utils.ProposalEvent, latestBlock, latestBlock)
 			evts, err := w.conn.Client().FilterLogs(context.Background(), query)
 			if err != nil {
-				w.log.Error("Failed to fetch logs", "err", err)
+				log.Error().Err(err).Msg("Failed to fetch logs")
 				return
 			}
 
@@ -253,14 +253,14 @@ func (w *writer) watchThenExecute(m msg.Message, data []byte, dataHash [32]byte,
 					w.executeProposal(m, data, dataHash, msgProofOpts)
 					return
 				} else {
-					w.log.Trace("Ignoring event", "src", sourceId, "nonce", depositNonce)
+					log.Trace().Interface("src", sourceId).Interface("nonce", depositNonce).Msg("Ignoring event")
 				}
 			}
-			w.log.Trace("No finalization event found in current block", "block", latestBlock, "src", m.Source, "nonce", m.DepositNonce)
+			log.Trace().Interface("block", latestBlock).Interface("src", m.Source).Interface("nonce", m.DepositNonce).Msg("No finalization event found in current block")
 			latestBlock = latestBlock.Add(latestBlock, big.NewInt(1))
 		}
 	}
-	log.Warn("Block watch limit exceeded, skipping execution", "source", m.Source, "dest", m.Destination, "nonce", m.DepositNonce)
+	log.Warn().Interface("source", m.Source).Interface("dest", m.Destination).Interface("nonce", m.DepositNonce).Msg("Block watch limit exceeded, skipping execution")
 }
 
 // voteProposal submits a vote proposal
@@ -273,7 +273,7 @@ func (w *writer) voteProposal(m msg.Message, dataHash [32]byte) {
 		default:
 			err := w.conn.LockAndUpdateOpts()
 			if err != nil {
-				w.log.Error("Failed to update tx opts", "err", err)
+				log.Error().Err(err).Msg("Failed to update tx opts")
 				continue
 			}
 
@@ -287,27 +287,28 @@ func (w *writer) voteProposal(m msg.Message, dataHash [32]byte) {
 			w.conn.UnlockOpts()
 
 			if err == nil {
-				w.log.Info("Submitted proposal vote", "tx", tx.Hash(), "src", m.Source, "depositNonce", m.DepositNonce)
+				log.Info().Str("tx", tx.Hash().Hex()).Interface("src", m.Source).Interface("depositNonce", m.DepositNonce).Msg("Submitted proposal vote")
 				if w.metrics != nil {
 					w.metrics.VotesSubmitted.Inc()
 				}
 				return
 			} else if err.Error() == ErrNonceTooLow.Error() || err.Error() == ErrTxUnderpriced.Error() {
-				w.log.Debug("Nonce too low, will retry")
+				log.Debug().Msg("Nonce too low, will retry")
 				time.Sleep(TxRetryInterval)
 			} else {
-				w.log.Warn("Voting failed", "source", m.Source, "dest", m.Destination, "depositNonce", m.DepositNonce, "err", err)
+				//w.log.Warn("Voting failed", "source", m.Source, "dest", m.Destination, "depositNonce", m.DepositNonce, "err", err)
+				log.Warn().Interface("source", m.Source).Interface("dest", m.Destination).Interface("nonce", m.DepositNonce).Msg("Voting failed")
 				time.Sleep(TxRetryInterval)
 			}
 
 			// Verify proposal is still open for voting, otherwise no need to retry
 			if w.proposalIsComplete(m.Source, m.DepositNonce, dataHash) {
-				w.log.Info("Proposal voting complete on chain", "src", m.Source, "dst", m.Destination, "nonce", m.DepositNonce)
+				log.Info().Interface("source", m.Source).Interface("dest", m.Destination).Interface("nonce", m.DepositNonce).Msg("Proposal voting complete on chain")
 				return
 			}
 		}
 	}
-	w.log.Error("Submission of Vote transaction failed", "source", m.Source, "dest", m.Destination, "depositNonce", m.DepositNonce)
+	log.Error().Interface("source", m.Source).Interface("dest", m.Destination).Interface("nonce", m.DepositNonce).Msg("Submission of Vote transaction failed")
 	w.sysErr <- ErrFatalTx
 }
 
@@ -320,7 +321,7 @@ func (w *writer) executeProposal(m msg.Message, data []byte, dataHash [32]byte, 
 		default:
 			err := w.conn.LockAndUpdateOpts()
 			if err != nil {
-				w.log.Error("Failed to update nonce", "err", err)
+				log.Error().Err(err).Msg("Failed to update nonce")
 				return
 			}
 
@@ -342,24 +343,24 @@ func (w *writer) executeProposal(m msg.Message, data []byte, dataHash [32]byte, 
 			w.conn.UnlockOpts()
 
 			if err == nil {
-				w.log.Info("Submitted proposal execution", "tx", tx.Hash(), "src", m.Source, "dst", m.Destination, "nonce", m.DepositNonce)
+				log.Info().Interface("source", m.Source).Interface("dest", m.Destination).Interface("nonce", m.DepositNonce).Str("tx", tx.Hash().Hex()).Msg("Submitted proposal execution")
 				return
 			} else if err.Error() == ErrNonceTooLow.Error() || err.Error() == ErrTxUnderpriced.Error() {
-				w.log.Error("Nonce too low, will retry")
+				log.Error().Err(err).Msg("Nonce too low, will retry")
 				time.Sleep(TxRetryInterval)
 			} else {
-				w.log.Warn("Execution failed, proposal may already be complete", "err", err)
+				log.Error().Err(err).Msg("Execution failed, proposal may already be complete")
 				time.Sleep(TxRetryInterval)
 			}
 
 			// Verify proposal is still open for execution, tx will fail if we aren't the first to execute,
 			// but there is no need to retry
 			if w.proposalIsFinalized(m.Source, m.DepositNonce, dataHash) {
-				w.log.Info("Proposal finalized on chain", "src", m.Source, "dst", m.Destination, "nonce", m.DepositNonce)
+				log.Info().Interface("source", m.Source).Interface("dest", m.Destination).Interface("nonce", m.DepositNonce).Msg("Proposal finalized on chain")
 				return
 			}
 		}
 	}
-	w.log.Error("Submission of Execute transaction failed", "source", m.Source, "dest", m.Destination, "depositNonce", m.DepositNonce)
+	log.Error().Interface("source", m.Source).Interface("dest", m.Destination).Interface("nonce", m.DepositNonce).Msg("Submission of Execute transaction failed")
 	w.sysErr <- ErrFatalTx
 }

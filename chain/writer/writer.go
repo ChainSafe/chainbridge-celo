@@ -11,9 +11,9 @@ import (
 	"github.com/ChainSafe/chainbridge-utils/core"
 	metrics "github.com/ChainSafe/chainbridge-utils/metrics/types"
 	"github.com/ChainSafe/chainbridge-utils/msg"
-	"github.com/ChainSafe/log15"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/ethclient"
+	"github.com/rs/zerolog/log"
 )
 
 var _ core.Writer = &writer{}
@@ -26,7 +26,6 @@ type writer struct {
 	cfg            *chain.CeloChainConfig
 	conn           ConnectionWriter
 	bridgeContract *Bridge.Bridge
-	log            log15.Logger
 	stop           <-chan int
 	sysErr         chan<- error
 	metrics        *metrics.ChainMetrics
@@ -54,7 +53,7 @@ func NewWriter(conn ConnectionWriter, cfg *chain.CeloChainConfig, stop <-chan in
 }
 
 func (w *writer) start() error {
-	w.log.Debug("Starting celo writer...")
+	log.Debug().Msg("Starting celo writer...")
 	return nil
 }
 
@@ -67,7 +66,7 @@ func (w *writer) setContract(bridge *Bridge.Bridge) {
 // A bool is returned to indicate failure/success
 // this should be ignored except for within tests.
 func (w *writer) ResolveMessage(m msg.Message) bool {
-	w.log.Info("Attempting to resolve message", "type", m.Type, "src", m.Source, "dst", m.Destination, "nonce", m.DepositNonce, "rId", m.ResourceId.Hex())
+	log.Info().Str("type", string(m.Type)).Interface("src", m.Source).Interface("dst", m.Destination).Interface("nonce", m.DepositNonce).Str("rId", m.ResourceId.Hex()).Msg("Attempting to resolve message")
 	switch m.Type {
 	case msg.FungibleTransfer:
 		return w.createErc20Proposal(m)
@@ -76,7 +75,7 @@ func (w *writer) ResolveMessage(m msg.Message) bool {
 	case msg.GenericTransfer:
 		return w.createGenericDepositProposal(m)
 	default:
-		w.log.Error("Unknown message type received", "type", m.Type)
+		log.Error().Str("type", string(m.Type)).Msg("Unknown message type received")
 		return false
 	}
 }
