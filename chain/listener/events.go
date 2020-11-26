@@ -10,16 +10,16 @@ import (
 )
 
 func (l *listener) handleErc20DepositedEvent(destId msg.ChainId, nonce msg.Nonce) (msg.Message, error) {
-	log.Info().Msg("Handling fungible deposit event", "dest", destId, "nonce", nonce)
+	log.Info().Interface("dest", destId).Interface("nonce", nonce).Msg("Handling fungible deposit event")
 
 	record, err := l.erc20HandlerContract.GetDepositRecord(&bind.CallOpts{}, uint64(nonce), uint8(destId))
 	if err != nil {
-		l.log.Error("Error Unpacking ERC20 Deposit Record", "err", err)
+		log.Error().Err(err).Msg("Error Unpacking ERC20 Deposit Record")
 		return msg.Message{}, err
 	}
 
 	return msg.NewFungibleTransfer(
-		l.cfg.id,
+		l.cfg.ID,
 		destId,
 		nonce,
 		record.Amount,
@@ -33,12 +33,12 @@ func (l *listener) handleErc721DepositedEvent(destId msg.ChainId, nonce msg.Nonc
 
 	record, err := l.erc721HandlerContract.GetDepositRecord(&bind.CallOpts{}, uint64(nonce), uint8(destId))
 	if err != nil {
-		l.log.Error("Error Unpacking ERC20 Deposit Record", "err", err)
+		log.Error().Err(err).Msg("Error Unpacking ERC721 Deposit Record")
 		return msg.Message{}, err
 	}
 
 	return msg.NewNonFungibleTransfer(
-		l.cfg.id,
+		l.cfg.ID,
 		destId,
 		nonce,
 		record.ResourceID,
@@ -53,12 +53,12 @@ func (l *listener) handleGenericDepositedEvent(destId msg.ChainId, nonce msg.Non
 
 	record, err := l.genericHandlerContract.GetDepositRecord(&bind.CallOpts{}, uint64(nonce), uint8(destId))
 	if err != nil {
-		l.log.Error("Error Unpacking Generic Deposit Record", "err", err)
+		log.Error().Err(err).Msg("Error Unpacking Generic Deposit Record")
 		return msg.Message{}, nil
 	}
 
 	return msg.NewGenericTransfer(
-		l.cfg.id,
+		l.cfg.ID,
 		destId,
 		nonce,
 		record.ResourceID,
