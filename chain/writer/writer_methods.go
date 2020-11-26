@@ -12,6 +12,8 @@ import (
 	celoMsg "github.com/ChainSafe/chainbridge-celo/msg"
 	utils "github.com/ChainSafe/chainbridge-celo/shared/ethereum"
 	"github.com/ChainSafe/chainbridge-utils/msg"
+	eth "github.com/ethereum/go-ethereum"
+	ethcommon "github.com/ethereum/go-ethereum/common"
 	"github.com/rs/zerolog/log"
 )
 
@@ -97,7 +99,7 @@ func (w *writer) createErc20Proposal(m msg.Message) bool {
 	}
 
 	data := ConstructErc20ProposalData(m.Payload[0].([]byte), m.Payload[1].([]byte))
-	dataHash := CreateProposalDataHash(data, w.cfg.erc20HandlerContract, msgProofOpts)
+	dataHash := CreateProposalDataHash(data, w.cfg.Erc20HandlerContract, msgProofOpts)
 
 	if !w.shouldVote(m, dataHash) {
 		return false
@@ -137,7 +139,7 @@ func (w *writer) createErc721Proposal(m msg.Message) bool {
 	}
 
 	data := ConstructErc721ProposalData(m.Payload[0].([]byte), m.Payload[1].([]byte), m.Payload[2].([]byte))
-	dataHash := CreateProposalDataHash(data, w.cfg.erc721HandlerContract, msgProofOpts)
+	dataHash := CreateProposalDataHash(data, w.cfg.Erc721HandlerContract, msgProofOpts)
 
 	if !w.shouldVote(m, dataHash) {
 		return false
@@ -186,7 +188,7 @@ func (w *writer) createGenericDepositProposal(m msg.Message) bool {
 	}
 
 	data := ConstructGenericProposalData(metadata)
-	dataHash := CreateProposalDataHash(data, w.cfg.genericHandlerContract, msgProofOpts)
+	dataHash := CreateProposalDataHash(data, w.cfg.GenericHandlerContract, msgProofOpts)
 
 	if !w.shouldVote(m, dataHash) {
 		return false
@@ -234,7 +236,7 @@ func (w *writer) watchThenExecute(m msg.Message, data []byte, dataHash [32]byte,
 			}
 
 			// query for logs
-			query := buildQuery(w.cfg.bridgeContract, utils.ProposalEvent, latestBlock, latestBlock)
+			query := buildQuery(w.cfg.BridgeContract, utils.ProposalEvent, latestBlock, latestBlock)
 			evts, err := w.conn.Client().FilterLogs(context.Background(), query)
 			if err != nil {
 				log.Error().Err(err).Msg("Failed to fetch logs")
@@ -296,7 +298,6 @@ func (w *writer) voteProposal(m msg.Message, dataHash [32]byte) {
 				log.Debug().Msg("Nonce too low, will retry")
 				time.Sleep(TxRetryInterval)
 			} else {
-				//w.log.Warn("Voting failed", "source", m.Source, "dest", m.Destination, "depositNonce", m.DepositNonce, "err", err)
 				log.Warn().Interface("source", m.Source).Interface("dest", m.Destination).Interface("nonce", m.DepositNonce).Msg("Voting failed")
 				time.Sleep(TxRetryInterval)
 			}
@@ -363,4 +364,17 @@ func (w *writer) executeProposal(m msg.Message, data []byte, dataHash [32]byte, 
 	}
 	log.Error().Interface("source", m.Source).Interface("dest", m.Destination).Interface("nonce", m.DepositNonce).Msg("Submission of Execute transaction failed")
 	w.sysErr <- ErrFatalTx
+}
+
+// buildQuery constructs a query for the bridgeContract by hashing sig to get the event topic
+func buildQuery(contract ethcommon.Address, sig utils.EventSig, startBlock *big.Int, endBlock *big.Int) eth.FilterQuery {
+	query := eth.FilterQuery{
+		FromBlock: startBlock,
+		ToBlock:   endBlock,
+		Addresses: []ethcommon.Address{contract},
+		Topics: [][]ethcommon.Hash{
+			{sig.GetTopic()},
+		},
+	}
+	return query
 }

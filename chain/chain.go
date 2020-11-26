@@ -130,7 +130,7 @@ func (c *Chain) Start() error {
 	return nil
 }
 
-func (c *Chain) Id() msg.ChainId {
+func (c *Chain) ID() msg.ChainId {
 	return c.cfg.ID
 }
 

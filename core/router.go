@@ -8,7 +8,7 @@ import (
 	"sync"
 
 	"github.com/ChainSafe/chainbridge-utils/msg"
-	log "github.com/ChainSafe/log15"
+	"github.com/rs/zerolog/log"
 )
 
 // Writer consumes a message and makes the requried on-chain interactions.
@@ -20,14 +20,12 @@ type Writer interface {
 type Router struct {
 	registry map[msg.ChainId]Writer
 	lock     *sync.RWMutex
-	log      log.Logger
 }
 
-func NewRouter(log log.Logger) *Router {
+func NewRouter() *Router {
 	return &Router{
 		registry: make(map[msg.ChainId]Writer),
 		lock:     &sync.RWMutex{},
-		log:      log,
 	}
 }
 
@@ -36,7 +34,7 @@ func (r *Router) Send(msg msg.Message) error {
 	r.lock.Lock()
 	defer r.lock.Unlock()
 
-	r.log.Trace("Routing message", "src", msg.Source, "dest", msg.Destination, "nonce", msg.DepositNonce, "rId", msg.ResourceId.Hex())
+	log.Trace("Routing message", "src", msg.Source, "dest", msg.Destination, "nonce", msg.DepositNonce, "rId", msg.ResourceId.Hex())
 	w := r.registry[msg.Destination]
 	if w == nil {
 		return fmt.Errorf("unknown destination chainId: %d", msg.Destination)
@@ -50,6 +48,6 @@ func (r *Router) Send(msg msg.Message) error {
 func (r *Router) Listen(id msg.ChainId, w Writer) {
 	r.lock.Lock()
 	defer r.lock.Unlock()
-	r.log.Debug("Registering new chain in router", "id", id)
+	log.Debug("Registering new chain in router", "id", id)
 	r.registry[id] = w
 }

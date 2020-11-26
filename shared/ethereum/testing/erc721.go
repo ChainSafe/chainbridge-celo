@@ -9,8 +9,8 @@ import (
 	"testing"
 
 	utils "github.com/ChainSafe/chainbridge-celo/shared/ethereum"
-	log "github.com/ChainSafe/log15"
 	"github.com/ethereum/go-ethereum/common"
+	"github.com/rs/zerolog/log"
 )
 
 // Erc721 is used for convenience to represent an Erc721

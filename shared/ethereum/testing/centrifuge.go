@@ -7,8 +7,8 @@ import (
 	"testing"
 
 	utils "github.com/ChainSafe/chainbridge-celo/shared/ethereum"
-	log "github.com/ChainSafe/log15"
 	"github.com/ethereum/go-ethereum/common"
+	"github.com/rs/zerolog/log"
 )
 
 func DeployAssetStore(t *testing.T, client *utils.Client) common.Address {

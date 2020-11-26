@@ -4,26 +4,33 @@
 package core
 
 import (
-	"fmt"
 	"os"
 	"os/signal"
 	"syscall"
 
-	"github.com/ChainSafe/log15"
+	metrics "github.com/ChainSafe/chainbridge-utils/metrics/types"
+	"github.com/ChainSafe/chainbridge-utils/msg"
+	"github.com/rs/zerolog/log"
 )
+
+type Chain interface {
+	Start() error // Start chain
+	SetRouter(*Router)
+	ID() msg.ChainId
+	Name() string
+	LatestBlock() *metrics.LatestBlock
+	Stop()
+}
 
 type Core struct {
 	Registry []Chain
 	route    *Router
-	log      log15.Logger
 	sysErr   <-chan error
 }
 
 func NewCore(sysErr <-chan error) *Core {
 	return &Core{
 		Registry: make([]Chain, 0),
-		route:    NewRouter(log15.New("system", "router")),
-		log:      log15.New("system", "core"),
 		sysErr:   sysErr,
 	}
 }
@@ -39,14 +46,10 @@ func (c *Core) Start() {
 	for _, chain := range c.Registry {
 		err := chain.Start()
 		if err != nil {
-			c.log.Error(
-				"failed to start chain",
-				"chain", chain.Id(),
-				"err", err,
-			)
+			log.Error().Interface("chain", chain.ID()).Err(err).Msg("failed to start chain")
 			return
 		}
-		c.log.Info(fmt.Sprintf("Started %s chain", chain.Name()))
+		log.Info().Msgf("Started %s chain", chain.Name())
 	}
 
 	sigc := make(chan os.Signal, 1)
@@ -56,9 +59,9 @@ func (c *Core) Start() {
 	// Block here and wait for a signal
 	select {
 	case err := <-c.sysErr:
-		c.log.Error("FATAL ERROR. Shutting down.", "err", err)
+		log.Error().Err(err).Msg("FATAL ERROR. Shutting down.")
 	case <-sigc:
-		c.log.Warn("Interrupt received, shutting down now.")
+		log.Warn().Msg("Interrupt received, shutting down now.")
 	}
 
 	// Signal chains to shutdown
