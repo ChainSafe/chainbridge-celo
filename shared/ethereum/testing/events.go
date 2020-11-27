@@ -28,7 +28,7 @@ func WatchEvent(client *utils.Client, bridge common.Address, subStr utils.EventS
 	ch := make(chan ethtypes.Log)
 	sub, err := client.Client.SubscribeFilterLogs(context.Background(), query, ch)
 	if err != nil {
-		log.Error("Failed to subscribe to event", "event", subStr)
+		log.Error().Err(err).Str("event", subStr.GetTopic().Hex()).Msg("Failed to subscribe to event")
 		return
 	}
 	defer sub.Unsubscribe()
@@ -40,7 +40,7 @@ func WatchEvent(client *utils.Client, bridge common.Address, subStr utils.EventS
 
 		case err := <-sub.Err():
 			if err != nil {
-				log.Error("Subscription error", "event", subStr, "err", err)
+				log.Error().Err(err).Str("event", subStr.GetTopic().Hex()).Msg("Subscription error")
 				return
 			}
 		}

@@ -109,8 +109,7 @@ func TestValdiateConfig(t *testing.T) {
 	}
 
 	cfg := Config{
-		Chains:       []RawChainConfig{valid},
-		KeystorePath: "",
+		Chains: []RawChainConfig{valid},
 	}
 
 	err := cfg.validate()
@@ -119,8 +118,7 @@ func TestValdiateConfig(t *testing.T) {
 	}
 
 	cfg = Config{
-		Chains:       []RawChainConfig{missingType},
-		KeystorePath: "",
+		Chains: []RawChainConfig{missingType},
 	}
 
 	err = cfg.validate()
@@ -129,8 +127,7 @@ func TestValdiateConfig(t *testing.T) {
 	}
 
 	cfg = Config{
-		Chains:       []RawChainConfig{missingEndpoint},
-		KeystorePath: "",
+		Chains: []RawChainConfig{missingEndpoint},
 	}
 
 	err = cfg.validate()
@@ -139,8 +136,7 @@ func TestValdiateConfig(t *testing.T) {
 	}
 
 	cfg = Config{
-		Chains:       []RawChainConfig{missingName},
-		KeystorePath: "",
+		Chains: []RawChainConfig{missingName},
 	}
 
 	err = cfg.validate()

@@ -221,6 +221,8 @@ func (l *listener) getDepositEventsAndProofsForBlock(latestBlock *big.Int) error
 	return nil
 }
 
+//TODO removenolint
+//nolint
 func (l *listener) getBlockHashFromTransactionHash(txHash common.Hash) (blockHash common.Hash, err error) {
 
 	receipt, err := l.conn.Client().TransactionReceipt(context.Background(), txHash)
@@ -230,6 +232,8 @@ func (l *listener) getBlockHashFromTransactionHash(txHash common.Hash) (blockHas
 	return receipt.BlockHash, nil
 }
 
+//TODO removenolint
+//nolint
 func (l *listener) getTransactionsFromBlockHash(blockHash common.Hash) (txHashes []common.Hash, txRoot common.Hash, err error) {
 	block, err := l.conn.Client().BlockByHash(context.Background(), blockHash)
 	if err != nil {
@@ -246,6 +250,7 @@ func (l *listener) getTransactionsFromBlockHash(blockHash common.Hash) (txHashes
 	return transactionHashes, block.Root(), nil
 }
 
+//nolint
 // buildQuery constructs a query for the bridgeContract by hashing sig to get the event topic
 func buildQuery(contract ethcommon.Address, sig utils.EventSig, startBlock *big.Int, endBlock *big.Int) eth.FilterQuery {
 	query := eth.FilterQuery{

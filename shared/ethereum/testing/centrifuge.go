@@ -27,5 +27,5 @@ func AssertHashExistence(t *testing.T, client *utils.Client, hash [32]byte, cont
 	if !exists {
 		t.Fatalf("Hash %x does not exist on chain", hash)
 	}
-	log.Info("Assert existence in asset store", "hash", hash, "assetStore", contract)
+	log.Info().Interface("hash", hash).Interface("assetStore", contract).Msg("Assert existence in asset store")
 }

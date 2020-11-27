@@ -1,6 +1,7 @@
 // Copyright 2020 ChainSafe Systems
 // SPDX-License-Identifier: LGPL-3.0-only
-
+//nolint
+//TODO remove nolint when start using this pakage
 package validator
 
 import (

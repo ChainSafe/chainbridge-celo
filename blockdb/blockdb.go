@@ -17,9 +17,8 @@ func NewBlockStoreDB(relayerAddress string, blockstorePath string, chainID msg.C
 		if err != nil {
 			return nil, err
 		}
-
 		if latestBlock.Cmp(startBlock) == 1 {
-			startBlock = latestBlock
+			*startBlock = *latestBlock
 		}
 	}
 	return bs, nil

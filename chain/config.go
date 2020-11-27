@@ -57,6 +57,7 @@ func (cfg *CeloChainConfig) EnsureContractsHaveBytecode(conn *connection.Connect
 	if err != nil {
 		return err
 	}
+	return nil
 }
 
 // parseChainConfig uses a core.ChainConfig to construct a corresponding Config

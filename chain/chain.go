@@ -98,11 +98,9 @@ func (c *Chain) Start() error {
 		return err
 	}
 	go func() {
-		select {
-		case <-c.stopChn:
-			if c.conn != nil {
-				c.conn.Close()
-			}
+		<-c.stopChn
+		if c.conn != nil {
+			c.conn.Close()
 		}
 	}()
 	log.Debug().Msg("Chain started!")

@@ -288,7 +288,10 @@ func TestImportEthKey(t *testing.T) {
 		t.Fatal(err)
 	}
 	importkeyfile := "../../test.json"
-	ioutil.WriteFile(importkeyfile, gethJSON, 0644)
+	err = ioutil.WriteFile(importkeyfile, gethJSON, 0644)
+	if err != nil {
+		t.Fatal(err)
+	}
 
 	defer os.RemoveAll(importkeyfile)
 

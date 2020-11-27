@@ -22,5 +22,5 @@ func AssertGenericResourceAddress(t *testing.T, client *utils.Client, handler co
 	if !bytes.Equal(actual.Bytes(), expected.Bytes()) {
 		t.Fatalf("Generic resoruce mismatch for ID %x. Expected address: %x Got: %x", rId, expected, actual)
 	}
-	log.Info("Asserted generic resource ID", "handler", handler, "rId", rId.Hex(), "contract", actual)
+	log.Info().Str("handler", handler.Hex()).Str("rId", rId.Hex()).Str("contract", actual.Hex()).Msg("Asserted generic resource ID")
 }

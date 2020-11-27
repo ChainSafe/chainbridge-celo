@@ -49,7 +49,7 @@ func wrapHandler(hdl func(*cli.Context, *dataHandler) error) cli.ActionFunc {
 // handleGenerateCmd generates a keystore for the accounts
 func handleGenerateCmd(ctx *cli.Context, dHandler *dataHandler) error {
 
-	log.Info("Generating keypair...")
+	log.Info().Msg("Generating keypair...")
 
 	// check if --ed25519 or --sr25519 is set
 	keytype := crypto.Secp256k1Type
@@ -74,7 +74,7 @@ func handleGenerateCmd(ctx *cli.Context, dHandler *dataHandler) error {
 
 // handleImportCmd imports external keystores into the bridge
 func handleImportCmd(ctx *cli.Context, dHandler *dataHandler) error {
-	log.Info("Importing key...")
+	log.Info().Msg("Importing key...")
 	var err error
 
 	// check if --ed25519 or --sr25519 is set
@@ -138,7 +138,7 @@ func getDataDir(ctx *cli.Context) (string, error) {
 		if err != nil {
 			return "", err
 		}
-		log.Trace(fmt.Sprintf("Using keystore dir: %s", datadir))
+		log.Trace().Msg(fmt.Sprintf("Using keystore dir: %s", datadir))
 		return datadir, nil
 	}
 	return "", fmt.Errorf("datadir flag not supplied")
@@ -152,7 +152,7 @@ func importPrivKey(ctx *cli.Context, keytype, datadir, key string, password []by
 	keystorepath, err := keystoreDir(datadir)
 
 	if keytype == "" {
-		log.Info("Using default key type", "type", keytype)
+		log.Info().Str("type", keytype).Msg("Using default key type")
 		keytype = crypto.Secp256k1Type
 	}
 
@@ -193,7 +193,7 @@ func importPrivKey(ctx *cli.Context, keytype, datadir, key string, password []by
 	defer func() {
 		err = file.Close()
 		if err != nil {
-			log.Error("import private key: could not close keystore file")
+			log.Error().Msg("import private key: could not close keystore file")
 		}
 	}()
 
@@ -202,7 +202,7 @@ func importPrivKey(ctx *cli.Context, keytype, datadir, key string, password []by
 		return "", fmt.Errorf("could not write key to file: %w", err)
 	}
 
-	log.Info("private key imported", "address", kp.Address(), "file", fp)
+	log.Info().Str("address", kp.Address()).Str("file", fp).Msg("private key imported")
 	return fp, nil
 
 }
@@ -243,7 +243,7 @@ func importEthKey(filename, datadir string, password, newPassword []byte) (strin
 	defer func() {
 		err = file.Close()
 		if err != nil {
-			log.Error("generate keypair: could not close keystore file")
+			log.Error().Msg("generate keypair: could not close keystore file")
 		}
 	}()
 
@@ -256,7 +256,7 @@ func importEthKey(filename, datadir string, password, newPassword []byte) (strin
 		return "", fmt.Errorf("could not write key to file: %w", err)
 	}
 
-	log.Info("ETH key imported", "address", kp.Address(), "file", fp)
+	log.Info().Str("address", kp.Address()).Str("file", fp).Msg("ETH key imported")
 	return fp, nil
 
 }
@@ -291,7 +291,7 @@ func importKey(filename, datadir string) (string, error) {
 		return "", fmt.Errorf("could not write to keystore directory: %w", err)
 	}
 
-	log.Info("successfully imported key", "address", ksjson.Address, "file", keystorefile)
+	log.Info().Str("address", ksjson.Address).Str("file", keystorefile).Msg("successfully imported key")
 	return keystorefile, nil
 }
 
@@ -343,7 +343,7 @@ func generateKeypair(keytype, datadir string, password []byte, subNetwork string
 	}
 
 	if keytype == "" {
-		log.Info("Using default key type", "type", keytype)
+		log.Info().Str("type", keytype).Msg("Using default key type")
 		keytype = crypto.Secp256k1Type
 	}
 
@@ -384,7 +384,7 @@ func generateKeypair(keytype, datadir string, password []byte, subNetwork string
 	defer func() {
 		err = file.Close()
 		if err != nil {
-			log.Error("generate keypair: could not close keystore file")
+			log.Error().Msg("generate keypair: could not close keystore file")
 		}
 	}()
 
@@ -393,7 +393,7 @@ func generateKeypair(keytype, datadir string, password []byte, subNetwork string
 		return "", fmt.Errorf("could not write key to file: %w", err)
 	}
 
-	log.Info("key generated", "address", kp.Address(), "type", keytype, "file", fp)
+	log.Info().Str("address", kp.Address()).Str("type", keytype).Str("file", fp).Msg("key generated")
 	return fp, nil
 }
 
