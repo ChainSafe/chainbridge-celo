@@ -32,10 +32,10 @@ func TestRouter(t *testing.T) {
 	router := NewRouter(tLog)
 
 	ethW := &mockWriter{msgs: *new([]msg.Message)}
-	router.Listen(msg.ChainId(0), ethW)
+	router.Register(msg.ChainId(0), ethW)
 
 	ctfgW := &mockWriter{msgs: *new([]msg.Message)}
-	router.Listen(msg.ChainId(1), ctfgW)
+	router.Register(msg.ChainId(1), ctfgW)
 
 	msgEthToCtfg := msg.Message{
 		Source:      msg.ChainId(0),

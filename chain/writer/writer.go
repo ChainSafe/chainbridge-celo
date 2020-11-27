@@ -27,7 +27,7 @@ type writer struct {
 	cfg            *chain.CeloChainConfig
 	conn           ConnectionWriter
 	bridgeContract *Bridge.Bridge
-	stop           <-chan int
+	stop           <-chan struct{}
 	sysErr         chan<- error
 	metrics        *metrics.ChainMetrics
 }
@@ -43,7 +43,7 @@ type ConnectionWriter interface {
 }
 
 // NewWriter creates and returns writer
-func NewWriter(conn ConnectionWriter, cfg *chain.CeloChainConfig, stop <-chan int, sysErr chan<- error, m *metrics.ChainMetrics) *writer {
+func NewWriter(conn ConnectionWriter, cfg *chain.CeloChainConfig, stop <-chan struct{}, sysErr chan<- error, m *metrics.ChainMetrics) *writer {
 	return &writer{
 		cfg:     cfg,
 		conn:    conn,
@@ -51,11 +51,6 @@ func NewWriter(conn ConnectionWriter, cfg *chain.CeloChainConfig, stop <-chan in
 		sysErr:  sysErr,
 		metrics: m,
 	}
-}
-
-func (w *writer) Start() error {
-	log.Debug().Msg("Starting celo writer...")
-	return nil
 }
 
 // setContract adds the bound receiver bridgeContract to the writer

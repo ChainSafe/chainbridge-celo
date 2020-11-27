@@ -1,6 +1,11 @@
 package cmd
 
 import (
+	"os"
+	"os/signal"
+	"syscall"
+
+	"github.com/ChainSafe/chainbridge-celo/router"
 	"github.com/ChainSafe/chainbridge-utils/crypto/secp256k1"
 	"github.com/ChainSafe/chainbridge-utils/keystore"
 
@@ -10,7 +15,7 @@ import (
 	"github.com/ChainSafe/chainbridge-celo/chain/listener"
 	"github.com/ChainSafe/chainbridge-celo/chain/writer"
 	"github.com/ChainSafe/chainbridge-celo/cmd/cfg"
-	"github.com/ChainSafe/chainbridge-celo/core"
+	"github.com/rs/zerolog/log"
 	"github.com/urfave/cli/v2"
 )
 
@@ -19,8 +24,9 @@ func Run(ctx *cli.Context) error {
 	if err != nil {
 		return err
 	}
-	sysErr := make(chan error)
-	coreApp := core.NewCore(sysErr)
+	errChn := make(chan error)
+	stopChn := make(chan struct{})
+	r := router.NewRouter()
 	for _, c := range startConfig.Chains {
 		celoChainConfig, err := chain.ParseChainConfig(&c, ctx)
 		if err != nil {
@@ -41,20 +47,35 @@ func Run(ctx *cli.Context) error {
 		if err != nil {
 			return err
 		}
-
-		stop := make(chan int)
 		// TODO  ValidatorSyncer
-		l := listener.NewListener(conn, celoChainConfig, bdb, stop, sysErr, nil)
 		// TODO ChainMetrics
-		w := writer.NewWriter(conn, celoChainConfig, stop, sysErr, nil)
+		w := writer.NewWriter(conn, celoChainConfig, stopChn, errChn, nil)
+		r.Register(celoChainConfig.ID, w)
+		l := listener.NewListener(conn, celoChainConfig, bdb, stopChn, errChn, nil, r)
 
-		newChain, err := chain.InitializeChain(celoChainConfig, sysErr, conn, l, w)
-
+		newChain, err := chain.InitializeChain(celoChainConfig, conn, l, w, stopChn)
 		if err != nil {
 			return err
 		}
-		coreApp.AddChain(newChain)
+		err = newChain.Start()
+		if err != nil {
+			log.Error().Interface("chain", newChain.ID()).Err(err).Msg("failed to start chain")
+		}
 	}
-	coreApp.Start()
-	return nil
+	sysErr := make(chan os.Signal, 1)
+	signal.Notify(sysErr,
+		syscall.SIGTERM,
+		syscall.SIGINT,
+		syscall.SIGHUP,
+		syscall.SIGQUIT)
+
+	select {
+	case err := <-errChn:
+		log.Error().Err(err).Msg("failed to listen and serve")
+		close(stopChn)
+		return err
+	case sig := <-sysErr:
+		log.Info().Msgf("terminating got [%v] signal", sig)
+		return nil
+	}
 }

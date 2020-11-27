@@ -17,7 +17,6 @@ import (
 	"github.com/ChainSafe/chainbridge-celo/chain"
 	utils "github.com/ChainSafe/chainbridge-celo/shared/ethereum"
 
-	defaultRouter "github.com/ChainSafe/chainbridge-celo/router"
 	"github.com/ChainSafe/chainbridge-utils/blockstore"
 	metrics "github.com/ChainSafe/chainbridge-utils/metrics/types"
 	"github.com/ChainSafe/chainbridge-utils/msg"
@@ -38,13 +37,13 @@ var BlockRetryLimit = 5
 type listener struct {
 	cfg                    *chain.CeloChainConfig
 	conn                   ConnectionListener
-	router                 *defaultRouter.Router
+	router                 IRouter
 	bridgeContract         *Bridge.Bridge // instance of bound bridge contract
 	erc20HandlerContract   *ERC20Handler.ERC20Handler
 	erc721HandlerContract  *ERC721Handler.ERC721Handler
 	genericHandlerContract *GenericHandler.GenericHandler
 	blockstore             blockstore.Blockstorer
-	stop                   <-chan int
+	stop                   <-chan struct{}
 	sysErr                 chan<- error // Reports fatal error to core
 	syncer                 BlockSyncer
 	latestBlock            *metrics.LatestBlock
@@ -61,14 +60,18 @@ type BlockSyncer interface {
 	Sync(latestBlock *big.Int) error
 }
 
-func NewListener(conn ConnectionListener, cfg *chain.CeloChainConfig, bs blockstore.Blockstorer, stop <-chan int, sysErr chan<- error, s BlockSyncer, router *defaultRouter.Router) *listener {
+type IRouter interface {
+	Send(msg msg.Message) error
+}
+
+func NewListener(conn ConnectionListener, cfg *chain.CeloChainConfig, bs blockstore.Blockstorer, stop <-chan struct{}, sysErr chan<- error, syncer BlockSyncer, router IRouter) *listener {
 	return &listener{
 		cfg:        cfg,
 		conn:       conn,
 		blockstore: bs,
 		stop:       stop,
 		sysErr:     sysErr,
-		syncer:     s,
+		syncer:     syncer,
 		router:     router,
 	}
 }

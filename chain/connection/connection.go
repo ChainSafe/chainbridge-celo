@@ -18,6 +18,7 @@ import (
 	ethcrypto "github.com/ethereum/go-ethereum/crypto"
 	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/ethereum/go-ethereum/rpc"
+	"github.com/rs/zerolog/log"
 )
 
 const DefaultGasLimit = 6721975
@@ -47,7 +48,7 @@ type Connection struct {
 	kp          *secp256k1.Keypair
 	gasLimit    *big.Int
 	maxGasPrice *big.Int
-	conn        *ethclient.Client
+	client      *ethclient.Client
 	// signer    ethtypes.Signer
 	opts      *bind.TransactOpts
 	callOpts  *bind.CallOpts
@@ -71,7 +72,7 @@ func NewConnection(endpoint string, http bool, kp *secp256k1.Keypair, gasLimit *
 
 // Connect starts the ethereum WS connection
 func (c *Connection) Connect() error {
-	c.log.Info("Connecting to ethereum chain...", "url", c.endpoint)
+	log.Info().Str("url", c.endpoint).Msg("Connecting to ethereum chain...")
 	var rpcClient *rpc.Client
 	var err error
 	// Start http or ws client
@@ -83,7 +84,7 @@ func (c *Connection) Connect() error {
 	if err != nil {
 		return err
 	}
-	c.conn = ethclient.NewClient(rpcClient)
+	c.client = ethclient.NewClient(rpcClient)
 
 	// Construct tx opts, call opts, and nonce mechanism
 	opts, _, err := c.newTransactOpts(big.NewInt(0), c.gasLimit, c.maxGasPrice)
@@ -101,7 +102,7 @@ func (c *Connection) newTransactOpts(value, gasLimit, gasPrice *big.Int) (*bind.
 	privateKey := c.kp.PrivateKey()
 	address := ethcrypto.PubkeyToAddress(privateKey.PublicKey)
 
-	nonce, err := c.conn.PendingNonceAt(context.Background(), address)
+	nonce, err := c.client.PendingNonceAt(context.Background(), address)
 	if err != nil {
 		return nil, 0, err
 	}
@@ -121,7 +122,7 @@ func (c *Connection) Keypair() *secp256k1.Keypair {
 }
 
 func (c *Connection) Client() *ethclient.Client {
-	return c.conn
+	return c.client
 }
 
 func (c *Connection) Opts() *bind.TransactOpts {
@@ -134,7 +135,7 @@ func (c *Connection) CallOpts() *bind.CallOpts {
 
 func (c *Connection) LockAndUpdateNonce() error {
 	c.nonceLock.Lock()
-	nonce, err := c.conn.PendingNonceAt(context.Background(), c.opts.From)
+	nonce, err := c.client.PendingNonceAt(context.Background(), c.opts.From)
 	if err != nil {
 		c.nonceLock.Unlock()
 		return err
@@ -154,7 +155,7 @@ func (c *Connection) UnlockOpts() {
 // TODO: really not sure that this method should be part of connection
 // LatestBlock returns the latest block from the current chain
 func (c *Connection) LatestBlock() (*big.Int, error) {
-	header, err := c.conn.HeaderByNumber(context.Background(), nil)
+	header, err := c.client.HeaderByNumber(context.Background(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -163,7 +164,7 @@ func (c *Connection) LatestBlock() (*big.Int, error) {
 
 // EnsureHasBytecode asserts if contract code exists at the specified address
 func (c *Connection) EnsureHasBytecode(addr ethcommon.Address) error {
-	code, err := c.conn.CodeAt(context.Background(), addr, nil)
+	code, err := c.client.CodeAt(context.Background(), addr, nil)
 	if err != nil {
 		return err
 	}
@@ -190,7 +191,7 @@ func (c *Connection) WaitForBlock(block *big.Int) error {
 			if currBlock.Cmp(block) >= 0 {
 				return nil
 			}
-			c.log.Trace("Block not ready, waiting", "target", block, "current", currBlock)
+			log.Trace().Interface("target", block).Interface("current", currBlock).Msg("Block not ready, waiting")
 			time.Sleep(BlockRetryInterval)
 			continue
 		}
@@ -208,7 +209,7 @@ func (c *Connection) LockAndUpdateOpts() error {
 	}
 	c.opts.GasPrice = gasPrice
 
-	nonce, err := c.conn.PendingNonceAt(context.Background(), c.opts.From)
+	nonce, err := c.client.PendingNonceAt(context.Background(), c.opts.From)
 	if err != nil {
 		c.optsLock.Unlock()
 		return err
@@ -218,7 +219,7 @@ func (c *Connection) LockAndUpdateOpts() error {
 }
 
 func (c *Connection) SafeEstimateGas(ctx context.Context) (*big.Int, error) {
-	gasPrice, err := c.conn.SuggestGasPrice(context.TODO())
+	gasPrice, err := c.client.SuggestGasPrice(context.TODO())
 	if err != nil {
 		return nil, err
 	}
@@ -234,8 +235,7 @@ func (c *Connection) SafeEstimateGas(ctx context.Context) (*big.Int, error) {
 
 // Close terminates the client connection and stops any running routines
 func (c *Connection) Close() {
-	if c.conn != nil {
-		c.conn.Close()
+	if c.client != nil {
+		c.client.Close()
 	}
-	close(c.stop)
 }

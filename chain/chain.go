@@ -13,7 +13,6 @@ import (
 	erc721Handler "github.com/ChainSafe/chainbridge-celo/bindings/ERC721Handler"
 	"github.com/ChainSafe/chainbridge-celo/bindings/GenericHandler"
 	"github.com/ChainSafe/chainbridge-celo/chain/connection"
-	defaultRouter "github.com/ChainSafe/chainbridge-celo/router"
 	"github.com/ChainSafe/chainbridge-utils/blockstore"
 	metrics "github.com/ChainSafe/chainbridge-utils/metrics/types"
 	"github.com/ChainSafe/chainbridge-utils/msg"
@@ -33,26 +32,18 @@ type Listener interface {
 }
 
 type Writer interface {
-	Start() error
 	SetBridge(bc *bridgeHandler.Bridge)
 }
 
-func InitializeChain(cc *CeloChainConfig, sysErr chan<- error, conn *connection.Connection, listener Listener, writer Writer) (*Chain, error) {
+type Chain struct {
+	cfg      *CeloChainConfig // The config of the chain
+	listener Listener         // The listener of this chain
+	writer   Writer           // The writer of the chain
+	conn     *connection.Connection
+	stopChn  <-chan struct{}
+}
 
-	stop := make(chan int)
-
-	err := conn.EnsureHasBytecode(cc.BridgeContract)
-	if err != nil {
-		return nil, err
-	}
-	err = conn.EnsureHasBytecode(cc.Erc20HandlerContract)
-	if err != nil {
-		return nil, err
-	}
-	err = conn.EnsureHasBytecode(cc.GenericHandlerContract)
-	if err != nil {
-		return nil, err
-	}
+func InitializeChain(cc *CeloChainConfig, conn *connection.Connection, listener Listener, writer Writer, stopChn <-chan struct{}) (*Chain, error) {
 
 	bridgeContract, err := bridgeHandler.NewBridge(cc.BridgeContract, conn.Client())
 	if err != nil {
@@ -97,20 +88,8 @@ func InitializeChain(cc *CeloChainConfig, sysErr chan<- error, conn *connection.
 		cfg:      cc,
 		writer:   writer,
 		listener: listener,
-		stop:     stop,
+		stopChn:  stopChn,
 	}, nil
-}
-
-type Chain struct {
-	cfg      *CeloChainConfig // The config of the chain
-	listener Listener         // The listener of this chain
-	writer   Writer           // The writer of the chain
-	stop     chan<- int
-}
-
-func (c *Chain) SetRouter(r *defaultRouter.Router) {
-	r.Listen(c.cfg.ID, c.writer)
-	c.listener.SetRouter(r)
 }
 
 func (c *Chain) Start() error {
@@ -118,12 +97,14 @@ func (c *Chain) Start() error {
 	if err != nil {
 		return err
 	}
-
-	err = c.writer.Start()
-	if err != nil {
-		return err
-	}
-
+	go func() {
+		select {
+		case <-c.stopChn:
+			if c.conn != nil {
+				c.conn.Close()
+			}
+		}
+	}()
 	log.Debug().Msg("Chain started!")
 	return nil
 }
@@ -138,13 +119,4 @@ func (c *Chain) Name() string {
 
 func (c *Chain) LatestBlock() *metrics.LatestBlock {
 	return c.listener.LatestBlock()
-}
-
-// Stop signals to any running routines to exit
-func (c *Chain) Stop() {
-	close(c.stop)
-	// TODO not forget add conn close on end conn users
-	//if c.conn != nil {
-	//	c.conn.Close()
-	//}
 }
