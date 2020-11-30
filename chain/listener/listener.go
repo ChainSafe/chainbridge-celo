@@ -86,11 +86,6 @@ func (l *listener) SetContracts(bridge *Bridge.Bridge, erc20Handler *ERC20Handle
 func (l *listener) Start() error {
 	log.Debug().Msg("Starting listener...")
 
-	err := l.conn.Connect()
-	if err != nil {
-		return err
-	}
-
 	go func() {
 		err := l.pollBlocks()
 		if err != nil {

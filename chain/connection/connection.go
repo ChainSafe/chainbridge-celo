@@ -59,8 +59,8 @@ type Connection struct {
 }
 
 // NewConnection returns an uninitialized connection, must call Connection.Connect() before using.
-func NewConnection(endpoint string, http bool, kp *secp256k1.Keypair, gasLimit *big.Int, gasPrice *big.Int) *Connection {
-	return &Connection{
+func NewConnection(endpoint string, http bool, kp *secp256k1.Keypair, gasLimit *big.Int, gasPrice *big.Int) (*Connection, error) {
+	c := &Connection{
 		endpoint:    endpoint,
 		http:        http,
 		kp:          kp,
@@ -68,6 +68,10 @@ func NewConnection(endpoint string, http bool, kp *secp256k1.Keypair, gasLimit *
 		gasLimit:    gasLimit,
 		stop:        make(chan int),
 	}
+	if err := c.Connect(); err != nil {
+		return nil, err
+	}
+	return c, nil
 }
 
 // Connect starts the ethereum WS connection
@@ -164,6 +168,7 @@ func (c *Connection) LatestBlock() (*big.Int, error) {
 
 // EnsureHasBytecode asserts if contract code exists at the specified address
 func (c *Connection) EnsureHasBytecode(addr ethcommon.Address) error {
+	log.Debug().Msgf("EnsureBytecode %v %v", c.client, addr)
 	code, err := c.client.CodeAt(context.Background(), addr, nil)
 	if err != nil {
 		return err

@@ -102,10 +102,6 @@ func (v *ValidatorSyncer) ExtractValidatorsDiff(num uint64) ([]istanbul.Validato
 }
 
 func (v *ValidatorSyncer) start() error {
-	err := v.conn.Connect()
-	if err != nil {
-		return err
-	}
 	return nil
 }
 

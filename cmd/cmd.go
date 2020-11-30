@@ -38,7 +38,10 @@ func Run(ctx *cli.Context) error {
 		}
 		kp, _ := kpI.(*secp256k1.Keypair)
 
-		conn := connection.NewConnection(celoChainConfig.Endpoint, celoChainConfig.Http, kp, celoChainConfig.GasLimit, celoChainConfig.MaxGasPrice)
+		conn, err := connection.NewConnection(celoChainConfig.Endpoint, celoChainConfig.Http, kp, celoChainConfig.GasLimit, celoChainConfig.MaxGasPrice)
+		if err != nil {
+			return err
+		}
 		err = celoChainConfig.EnsureContractsHaveBytecode(conn)
 		if err != nil {
 			return err
