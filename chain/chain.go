@@ -54,26 +54,21 @@ func InitializeChain(cc *CeloChainConfig, conn *connection.Connection, listener 
 	if err != nil {
 		return nil, err
 	}
-
 	if chainId != uint8(cc.ID) {
 		return nil, errors.New(fmt.Sprintf("chainId (%d) and configuration chainId (%d) do not match", chainId, cc.ID))
 	}
-
 	erc20HandlerContract, err := erc20Handler.NewERC20Handler(cc.Erc20HandlerContract, conn.Client())
 	if err != nil {
 		return nil, err
 	}
-
 	erc721HandlerContract, err := erc721Handler.NewERC721Handler(cc.Erc721HandlerContract, conn.Client())
 	if err != nil {
 		return nil, err
 	}
-
 	genericHandlerContract, err := GenericHandler.NewGenericHandler(cc.GenericHandlerContract, conn.Client())
 	if err != nil {
 		return nil, err
 	}
-
 	if cc.LatestBlock {
 		curr, err := conn.LatestBlock()
 		if err != nil {

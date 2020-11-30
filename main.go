@@ -5,6 +5,7 @@ import (
 
 	"github.com/ChainSafe/chainbridge-celo/cmd"
 	"github.com/ChainSafe/chainbridge-celo/flags"
+	"github.com/rs/zerolog/log"
 	"github.com/urfave/cli/v2"
 )
 
@@ -97,7 +98,7 @@ func init() {
 
 func main() {
 	if err := app.Run(os.Args); err != nil {
-		//log.Error(err.Error())
+		log.Error().Err(err).Msg("Start failed")
 		os.Exit(1)
 	}
 }

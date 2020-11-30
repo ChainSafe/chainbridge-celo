@@ -55,7 +55,6 @@ func Run(ctx *cli.Context) error {
 		w := writer.NewWriter(conn, celoChainConfig, stopChn, errChn, nil)
 		r.Register(celoChainConfig.ID, w)
 		l := listener.NewListener(conn, celoChainConfig, bdb, stopChn, errChn, nil, r)
-
 		newChain, err := chain.InitializeChain(celoChainConfig, conn, l, w, stopChn)
 		if err != nil {
 			return err
@@ -63,9 +62,11 @@ func Run(ctx *cli.Context) error {
 		err = newChain.Start()
 		if err != nil {
 			log.Error().Interface("chain", newChain.ID()).Err(err).Msg("failed to start chain")
+			return err
 		}
+
 	}
-	sysErr := make(chan os.Signal, 1)
+	sysErr := make(chan os.Signal)
 	signal.Notify(sysErr,
 		syscall.SIGTERM,
 		syscall.SIGINT,
