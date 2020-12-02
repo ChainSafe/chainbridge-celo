@@ -1,12 +1,9 @@
 package chain
 
 import (
+	"context"
 	"fmt"
-	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"math/big"
-
-	"github.com/pkg/errors"
-	"github.com/rs/zerolog/log"
 
 	bridgeHandler "github.com/ChainSafe/chainbridge-celo/bindings/Bridge"
 	erc20Handler "github.com/ChainSafe/chainbridge-celo/bindings/ERC20Handler"
@@ -14,8 +11,12 @@ import (
 	"github.com/ChainSafe/chainbridge-celo/bindings/GenericHandler"
 	"github.com/ChainSafe/chainbridge-celo/chain/client"
 	"github.com/ChainSafe/chainbridge-utils/blockstore"
-	metrics "github.com/ChainSafe/chainbridge-utils/metrics/types"
 	"github.com/ChainSafe/chainbridge-utils/msg"
+	eth "github.com/ethereum/go-ethereum"
+	"github.com/ethereum/go-ethereum/accounts/abi/bind"
+	"github.com/ethereum/go-ethereum/core/types"
+	"github.com/pkg/errors"
+	"github.com/rs/zerolog/log"
 )
 
 type BlockDB interface {
@@ -28,7 +29,7 @@ type BlockDB interface {
 type Listener interface {
 	StartPollingBlocks() error
 	SetContracts(bridge *bridgeHandler.Bridge, erc20Handler *erc20Handler.ERC20Handler, erc721Handler *erc721Handler.ERC721Handler, genericHandler *GenericHandler.GenericHandler)
-	LatestBlock() *metrics.LatestBlock
+	//LatestBlock() *metrics.LatestBlock
 }
 
 type Writer interface {
@@ -37,6 +38,11 @@ type Writer interface {
 
 type ContractBackendWithBlockFinder interface {
 	bind.ContractBackend
+	LatestBlock() (*big.Int, error)
+}
+
+type LogFilterWithLatestBlock interface {
+	FilterLogs(ctx context.Context, q eth.FilterQuery) ([]types.Log, error)
 	LatestBlock() (*big.Int, error)
 }
 
@@ -117,6 +123,6 @@ func (c *Chain) Name() string {
 	return c.cfg.Name
 }
 
-func (c *Chain) LatestBlock() *metrics.LatestBlock {
-	return c.listener.LatestBlock()
-}
+//func (c *Chain) LatestBlock() *metrics.LatestBlock {
+//	return c.listener.LatestBlock()
+//}

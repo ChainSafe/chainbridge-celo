@@ -52,7 +52,7 @@ func Run(ctx *cli.Context) error {
 		w := writer.NewWriter(chainClient, celoChainConfig, stopChn, errChn, nil)
 		r.Register(celoChainConfig.ID, w)
 		l := listener.NewListener(celoChainConfig, chainClient, bdb, stopChn, errChn, nil, r)
-		newChain, err := chain.InitializeChain(celoChainConfig, l, w, stopChn)
+		newChain, err := chain.InitializeChain(celoChainConfig, chainClient, l, w, stopChn)
 		if err != nil {
 			return err
 		}

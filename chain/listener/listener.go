@@ -7,7 +7,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/ethereum/go-ethereum/core/types"
 	"math/big"
 	"time"
 
@@ -44,7 +43,7 @@ type listener struct {
 	syncer                 BlockSyncer
 	//latestBlock            *metrics.LatestBlock
 	//metrics                *metrics.ChainMetrics
-	client LogFilterWithLatestBlock
+	client chain.LogFilterWithLatestBlock
 }
 
 type BlockSyncer interface {
@@ -58,12 +57,7 @@ type Blockstorer interface {
 	StoreBlock(*big.Int) error
 }
 
-type LogFilterWithLatestBlock interface {
-	FilterLogs(ctx context.Context, q eth.FilterQuery) ([]types.Log, error)
-	LatestBlock() (*big.Int, error)
-}
-
-func NewListener(cfg *chain.CeloChainConfig, client LogFilterWithLatestBlock, bs Blockstorer, stop <-chan struct{}, sysErr chan<- error, syncer BlockSyncer, router IRouter) *listener {
+func NewListener(cfg *chain.CeloChainConfig, client chain.LogFilterWithLatestBlock, bs Blockstorer, stop <-chan struct{}, sysErr chan<- error, syncer BlockSyncer, router IRouter) *listener {
 	return &listener{
 		cfg:        cfg,
 		blockstore: bs,

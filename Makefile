@@ -57,4 +57,8 @@ install:
 
 
 genmocks:
-	mockgen -destination=./chain/listener/mock/listener.go -source=./chain/listener/listener.go IClient
+	mockgen -destination=./chain/listener/mock/listener.go -source=./chain/listener/listener.go
+	mockgen -destination=./chain/writer/mock/writer.go -source=./chain/writer/writer.go
+	mockgen -destination=./chain/mock/chain.go -source=./chain/chain.go
+
+

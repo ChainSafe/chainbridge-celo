@@ -32,8 +32,9 @@ var ErrFatalTx = errors.New("submission of transaction failed")
 var ErrFatalQuery = errors.New("query of chain state failed")
 
 // proposalIsComplete returns true if the proposal state is either Passed, Transferred or Cancelled
+//TODO: unsderstand CallOpt deeply
 func (w *writer) proposalIsComplete(srcId msg.ChainId, nonce msg.Nonce, dataHash [32]byte) bool {
-	prop, err := w.bridgeContract.GetProposal(w.conn.CallOpts(), uint8(srcId), uint64(nonce), dataHash)
+	prop, err := w.bridgeContract.GetProposal(w.client.CallOpts(), uint8(srcId), uint64(nonce), dataHash)
 	if err != nil {
 		log.Error().Err(err).Msg("Failed to check proposal existence")
 		return false
@@ -43,7 +44,7 @@ func (w *writer) proposalIsComplete(srcId msg.ChainId, nonce msg.Nonce, dataHash
 
 // proposalIsFinalized returns true if the proposal state is Transferred or Cancelled
 func (w *writer) proposalIsFinalized(srcId msg.ChainId, nonce msg.Nonce, dataHash [32]byte) bool {
-	prop, err := w.bridgeContract.GetProposal(w.conn.CallOpts(), uint8(srcId), uint64(nonce), dataHash)
+	prop, err := w.bridgeContract.GetProposal(w.client.CallOpts(), uint8(srcId), uint64(nonce), dataHash)
 
 	if err != nil {
 		log.Error().Err(err).Msg("Failed to check proposal existence")
@@ -54,7 +55,7 @@ func (w *writer) proposalIsFinalized(srcId msg.ChainId, nonce msg.Nonce, dataHas
 
 // hasVoted checks if this relayer has already voted
 func (w *writer) hasVoted(srcId msg.ChainId, nonce msg.Nonce, dataHash [32]byte) bool {
-	hasVoted, err := w.bridgeContract.HasVotedOnProposal(w.conn.CallOpts(), utils.IDAndNonce(srcId, nonce), dataHash, w.conn.Opts().From)
+	hasVoted, err := w.bridgeContract.HasVotedOnProposal(w.client.CallOpts(), utils.IDAndNonce(srcId, nonce), dataHash, w.client.Opts().From)
 
 	if err != nil {
 		log.Error().Err(err).Msg("Failed to check proposal existance")
@@ -105,7 +106,7 @@ func (w *writer) createErc20Proposal(m msg.Message) bool {
 		return false
 	}
 	// Capture latest block so when know where to watch from
-	latestBlock, err := w.conn.LatestBlock()
+	latestBlock, err := w.client.LatestBlock()
 	if err != nil {
 		log.Error().Err(err).Msg("unable to fetch latest block")
 		return false
@@ -146,7 +147,7 @@ func (w *writer) createErc721Proposal(m msg.Message) bool {
 	}
 
 	// Capture latest block so we know where to watch from
-	latestBlock, err := w.conn.LatestBlock()
+	latestBlock, err := w.client.LatestBlock()
 	if err != nil {
 		log.Error().Err(err).Msg("Unable to fetch latest block")
 		return false
@@ -195,7 +196,7 @@ func (w *writer) createGenericDepositProposal(m msg.Message) bool {
 	}
 
 	// Capture latest block so when know where to watch from
-	latestBlock, err := w.conn.LatestBlock()
+	latestBlock, err := w.client.LatestBlock()
 	if err != nil {
 		log.Error().Err(err).Msg("Unable to fetch latest block")
 		return false
@@ -221,7 +222,7 @@ func (w *writer) watchThenExecute(m msg.Message, data []byte, dataHash [32]byte,
 		default:
 			// watch for the lastest block, retry up to BlockRetryLimit times
 			for waitRetrys := 0; waitRetrys < BlockRetryLimit; waitRetrys++ {
-				err := w.conn.WaitForBlock(latestBlock)
+				err := w.client.WaitForBlock(latestBlock)
 				if err != nil {
 					log.Error().Err(err).Msg("Waiting for block failed")
 					// Exit if retries exceeded
@@ -237,7 +238,7 @@ func (w *writer) watchThenExecute(m msg.Message, data []byte, dataHash [32]byte,
 
 			// query for logs
 			query := buildQuery(w.cfg.BridgeContract, utils.ProposalEvent, latestBlock, latestBlock)
-			evts, err := w.conn.Client().FilterLogs(context.Background(), query)
+			evts, err := w.client.FilterLogs(context.Background(), query)
 			if err != nil {
 				log.Error().Err(err).Msg("Failed to fetch logs")
 				return
@@ -273,20 +274,20 @@ func (w *writer) voteProposal(m msg.Message, dataHash [32]byte) {
 		case <-w.stop:
 			return
 		default:
-			err := w.conn.LockAndUpdateOpts()
+			err := w.client.LockAndUpdateOpts()
 			if err != nil {
 				log.Error().Err(err).Msg("Failed to update tx opts")
 				continue
 			}
 
 			tx, err := w.bridgeContract.VoteProposal(
-				w.conn.Opts(),
+				w.client.Opts(),
 				uint8(m.Source),
 				uint64(m.DepositNonce),
 				m.ResourceId,
 				dataHash,
 			)
-			w.conn.UnlockOpts()
+			w.client.UnlockOpts()
 
 			if err == nil {
 				log.Info().Str("tx", tx.Hash().Hex()).Interface("src", m.Source).Interface("depositNonce", m.DepositNonce).Msg("Submitted proposal vote")
@@ -320,14 +321,14 @@ func (w *writer) executeProposal(m msg.Message, data []byte, dataHash [32]byte, 
 		case <-w.stop:
 			return
 		default:
-			err := w.conn.LockAndUpdateOpts()
+			err := w.client.LockAndUpdateOpts()
 			if err != nil {
 				log.Error().Err(err).Msg("Failed to update nonce")
 				return
 			}
 
 			tx, err := w.bridgeContract.ExecuteProposal(
-				w.conn.Opts(),
+				w.client.Opts(),
 				uint8(m.Source),
 				uint64(m.DepositNonce),
 				data,
@@ -341,7 +342,7 @@ func (w *writer) executeProposal(m msg.Message, data []byte, dataHash [32]byte, 
 				msgProofOpts.Key,
 				msgProofOpts.Nodes,
 			)
-			w.conn.UnlockOpts()
+			w.client.UnlockOpts()
 
 			if err == nil {
 				log.Info().Interface("source", m.Source).Interface("dest", m.Destination).Interface("nonce", m.DepositNonce).Str("tx", tx.Hash().Hex()).Msg("Submitted proposal execution")

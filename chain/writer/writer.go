@@ -12,7 +12,6 @@ import (
 	metrics "github.com/ChainSafe/chainbridge-utils/metrics/types"
 	"github.com/ChainSafe/chainbridge-utils/msg"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
-	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/rs/zerolog/log"
 )
 
@@ -25,28 +24,27 @@ var BlockRetryLimit = 5
 
 type writer struct {
 	cfg            *chain.CeloChainConfig
-	conn           ConnectionWriter
+	client         ContractCaller
 	bridgeContract *Bridge.Bridge
 	stop           <-chan struct{}
 	sysErr         chan<- error
 	metrics        *metrics.ChainMetrics
 }
 
-type ConnectionWriter interface {
-	LatestBlock() (*big.Int, error)
-	LockAndUpdateOpts() error
-	Opts() *bind.TransactOpts
-	UnlockOpts()
+type ContractCaller interface {
+	chain.LogFilterWithLatestBlock
 	CallOpts() *bind.CallOpts
+	Opts() *bind.TransactOpts
+	LockAndUpdateOpts() error
+	UnlockOpts()
 	WaitForBlock(block *big.Int) error
-	Client() *ethclient.Client
 }
 
 // NewWriter creates and returns writer
-func NewWriter(conn ConnectionWriter, cfg *chain.CeloChainConfig, stop <-chan struct{}, sysErr chan<- error, m *metrics.ChainMetrics) *writer {
+func NewWriter(client ContractCaller, cfg *chain.CeloChainConfig, stop <-chan struct{}, sysErr chan<- error, m *metrics.ChainMetrics) *writer {
 	return &writer{
 		cfg:     cfg,
-		conn:    conn,
+		client:  client,
 		stop:    stop,
 		sysErr:  sysErr,
 		metrics: m,
