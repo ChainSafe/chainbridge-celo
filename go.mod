@@ -8,6 +8,7 @@ require (
 	github.com/celo-org/celo-bls-go v0.1.4
 	github.com/deckarep/golang-set v1.7.1 // indirect
 	github.com/ethereum/go-ethereum v1.9.18
+	github.com/golang/mock v1.4.4
 	github.com/gorilla/websocket v1.4.2 // indirect
 	github.com/pkg/errors v0.9.1
 	github.com/rs/cors v1.7.0 // indirect

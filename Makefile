@@ -54,3 +54,7 @@ build:
 install:
 	@echo "  >  \033[32mInstalling bridge...\033[0m "
 	go install
+
+
+genmocks:
+	mockgen -destination=./chain/listener/mock/listener.go -source=./chain/listener/listener.go IClient

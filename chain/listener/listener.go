@@ -7,6 +7,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/ethereum/go-ethereum/core/types"
 	"math/big"
 	"time"
 
@@ -15,16 +16,12 @@ import (
 	"github.com/ChainSafe/chainbridge-celo/bindings/ERC721Handler"
 	"github.com/ChainSafe/chainbridge-celo/bindings/GenericHandler"
 	"github.com/ChainSafe/chainbridge-celo/chain"
-	utils "github.com/ChainSafe/chainbridge-celo/shared/ethereum"
-
+	"github.com/ChainSafe/chainbridge-celo/shared/ethereum"
 	"github.com/ChainSafe/chainbridge-utils/blockstore"
-	metrics "github.com/ChainSafe/chainbridge-utils/metrics/types"
 	"github.com/ChainSafe/chainbridge-utils/msg"
 	eth "github.com/ethereum/go-ethereum"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
-	"github.com/ethereum/go-ethereum/common"
 	ethcommon "github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/rs/zerolog/log"
 )
 
@@ -36,7 +33,6 @@ var BlockRetryLimit = 5
 
 type listener struct {
 	cfg                    *chain.CeloChainConfig
-	conn                   ConnectionListener
 	router                 IRouter
 	bridgeContract         *Bridge.Bridge // instance of bound bridge contract
 	erc20HandlerContract   *ERC20Handler.ERC20Handler
@@ -46,14 +42,9 @@ type listener struct {
 	stop                   <-chan struct{}
 	sysErr                 chan<- error // Reports fatal error to core
 	syncer                 BlockSyncer
-	latestBlock            *metrics.LatestBlock
-	metrics                *metrics.ChainMetrics
-}
-
-type ConnectionListener interface {
-	Client() *ethclient.Client
-	LatestBlock() (*big.Int, error)
-	Connect() error
+	//latestBlock            *metrics.LatestBlock
+	//metrics                *metrics.ChainMetrics
+	client LogFilterWithLatestBlock
 }
 
 type BlockSyncer interface {
@@ -63,16 +54,24 @@ type BlockSyncer interface {
 type IRouter interface {
 	Send(msg msg.Message) error
 }
+type Blockstorer interface {
+	StoreBlock(*big.Int) error
+}
 
-func NewListener(conn ConnectionListener, cfg *chain.CeloChainConfig, bs blockstore.Blockstorer, stop <-chan struct{}, sysErr chan<- error, syncer BlockSyncer, router IRouter) *listener {
+type LogFilterWithLatestBlock interface {
+	FilterLogs(ctx context.Context, q eth.FilterQuery) ([]types.Log, error)
+	LatestBlock() (*big.Int, error)
+}
+
+func NewListener(cfg *chain.CeloChainConfig, client LogFilterWithLatestBlock, bs Blockstorer, stop <-chan struct{}, sysErr chan<- error, syncer BlockSyncer, router IRouter) *listener {
 	return &listener{
 		cfg:        cfg,
-		conn:       conn,
 		blockstore: bs,
 		stop:       stop,
 		sysErr:     sysErr,
 		syncer:     syncer,
 		router:     router,
+		client:     client,
 	}
 }
 
@@ -83,7 +82,7 @@ func (l *listener) SetContracts(bridge *Bridge.Bridge, erc20Handler *ERC20Handle
 	l.genericHandlerContract = genericHandler
 }
 
-func (l *listener) Start() error {
+func (l *listener) StartPollingBlocks() error {
 	log.Debug().Msg("Starting listener...")
 
 	go func() {
@@ -96,9 +95,10 @@ func (l *listener) Start() error {
 	return nil
 }
 
-func (l *listener) LatestBlock() *metrics.LatestBlock {
-	return l.latestBlock
-}
+// TODO this is metrics latest block, naming mess
+//func (l *listener) LatestBlock() *metrics.LatestBlock {
+//	return l.latestBlock
+//}
 
 // pollBlocks will poll for the latest block and proceed to parse the associated events as it sees new blocks.
 // Polling begins at the block defined in `l.cfg.startBlock`. Failed attempts to fetch the latest block or parse
@@ -119,7 +119,7 @@ func (l *listener) pollBlocks() error {
 				return nil
 			}
 
-			latestBlock, err := l.conn.LatestBlock()
+			latestBlock, err := l.client.LatestBlock()
 			if err != nil {
 				log.Error().Err(err).Str("block", currentBlock.String()).Msg("Unable to get latest block")
 				retry--
@@ -154,13 +154,13 @@ func (l *listener) pollBlocks() error {
 				log.Error().Str("block", currentBlock.String()).Err(err).Msg("Failed to write latest block to blockstore")
 			}
 
-			if l.metrics != nil {
-				l.metrics.BlocksProcessed.Inc()
-				l.metrics.LatestProcessedBlock.Set(float64(latestBlock.Int64()))
-			}
-
-			l.latestBlock.Height = big.NewInt(0).Set(latestBlock)
-			l.latestBlock.LastUpdated = time.Now()
+			//if l.metrics != nil {
+			//	l.metrics.BlocksProcessed.Inc()
+			//	l.metrics.LatestProcessedBlock.Set(float64(latestBlock.Int64()))
+			//}
+			//
+			//l.latestBlock.Height = big.NewInt(0).Set(latestBlock)
+			//l.latestBlock.LastUpdated = time.Now()
 
 			// Goto next block and reset retry counter
 			currentBlock.Add(currentBlock, big.NewInt(1))
@@ -175,7 +175,7 @@ func (l *listener) getDepositEventsAndProofsForBlock(latestBlock *big.Int) error
 	query := buildQuery(l.cfg.BridgeContract, utils.Deposit, latestBlock, latestBlock)
 
 	// querying for logs
-	logs, err := l.conn.Client().FilterLogs(context.Background(), query)
+	logs, err := l.client.FilterLogs(context.Background(), query)
 	if err != nil {
 		return fmt.Errorf("unable to Filter Logs: %w", err)
 	}
@@ -218,33 +218,34 @@ func (l *listener) getDepositEventsAndProofsForBlock(latestBlock *big.Int) error
 
 //TODO removenolint
 //nolint
-func (l *listener) getBlockHashFromTransactionHash(txHash common.Hash) (blockHash common.Hash, err error) {
-
-	receipt, err := l.conn.Client().TransactionReceipt(context.Background(), txHash)
-	if err != nil {
-		return txHash, fmt.Errorf("unable to get BlockHash: %w", err)
-	}
-	return receipt.BlockHash, nil
-}
-
-//TODO removenolint
-//nolint
-func (l *listener) getTransactionsFromBlockHash(blockHash common.Hash) (txHashes []common.Hash, txRoot common.Hash, err error) {
-	block, err := l.conn.Client().BlockByHash(context.Background(), blockHash)
-	if err != nil {
-		return nil, common.Hash{}, fmt.Errorf("unable to get BlockHash: %w", err)
-	}
-
-	var transactionHashes []common.Hash
-
-	transactions := block.Transactions()
-	for _, transaction := range transactions {
-		transactionHashes = append(transactionHashes, transaction.Hash())
-	}
-
-	return transactionHashes, block.Root(), nil
-}
-
+//COMMENTED SINCE CURRENTLTY UNUSED. SEEMS TO BE USED FOR BLOCK PROOF BUILDING
+//func (l *listener) getBlockHashFromTransactionHash(txHash ethcommon.Hash) (blockHash ethcommon.Hash, err error) {
+//
+//	receipt, err := l.conn.Client().TransactionReceipt(context.Background(), txHash)
+//	if err != nil {
+//		return txHash, fmt.Errorf("unable to get BlockHash: %w", err)
+//	}
+//	return receipt.BlockHash, nil
+//}
+//
+////TODO removenolint
+////nolint
+//func (l *listener) getTransactionsFromBlockHash(blockHash ethcommon.Hash) (txHashes []ethcommon.Hash, txRoot ethcommon.Hash, err error) {
+//	block, err := l.conn.Client().BlockByHash(context.Background(), blockHash)
+//	if err != nil {
+//		return nil, ethcommon.Hash{}, fmt.Errorf("unable to get BlockHash: %w", err)
+//	}
+//
+//	var transactionHashes []ethcommon.Hash
+//
+//	transactions := block.Transactions()
+//	for _, transaction := range transactions {
+//		transactionHashes = append(transactionHashes, transaction.Hash())
+//	}
+//
+//	return transactionHashes, block.Root(), nil
+//}
+//
 //nolint
 // buildQuery constructs a query for the bridgeContract by hashing sig to get the event topic
 func buildQuery(contract ethcommon.Address, sig utils.EventSig, startBlock *big.Int, endBlock *big.Int) eth.FilterQuery {

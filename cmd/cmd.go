@@ -11,7 +11,7 @@ import (
 
 	"github.com/ChainSafe/chainbridge-celo/blockdb"
 	"github.com/ChainSafe/chainbridge-celo/chain"
-	"github.com/ChainSafe/chainbridge-celo/chain/connection"
+	"github.com/ChainSafe/chainbridge-celo/chain/client"
 	"github.com/ChainSafe/chainbridge-celo/chain/listener"
 	"github.com/ChainSafe/chainbridge-celo/chain/writer"
 	"github.com/ChainSafe/chainbridge-celo/cmd/cfg"
@@ -38,24 +38,21 @@ func Run(ctx *cli.Context) error {
 		}
 		kp, _ := kpI.(*secp256k1.Keypair)
 
-		conn, err := connection.NewConnection(celoChainConfig.Endpoint, celoChainConfig.Http, kp, celoChainConfig.GasLimit, celoChainConfig.MaxGasPrice)
+		chainClient, err := client.NewClient(celoChainConfig.Endpoint, celoChainConfig.Http, kp, celoChainConfig.GasLimit, celoChainConfig.MaxGasPrice)
 		if err != nil {
 			return err
 		}
-		err = celoChainConfig.EnsureContractsHaveBytecode(conn)
-		if err != nil {
-			return err
-		}
+		// TODO not to abstract should be moved inside chain initialization
 		bdb, err := blockdb.NewBlockStoreDB(kp.Address(), celoChainConfig.BlockstorePath, celoChainConfig.ID, celoChainConfig.FreshStart, celoChainConfig.StartBlock)
 		if err != nil {
 			return err
 		}
 		// TODO  ValidatorSyncer
 		// TODO ChainMetrics
-		w := writer.NewWriter(conn, celoChainConfig, stopChn, errChn, nil)
+		w := writer.NewWriter(chainClient, celoChainConfig, stopChn, errChn, nil)
 		r.Register(celoChainConfig.ID, w)
-		l := listener.NewListener(conn, celoChainConfig, bdb, stopChn, errChn, nil, r)
-		newChain, err := chain.InitializeChain(celoChainConfig, conn, l, w, stopChn)
+		l := listener.NewListener(celoChainConfig, chainClient, bdb, stopChn, errChn, nil, r)
+		newChain, err := chain.InitializeChain(celoChainConfig, l, w, stopChn)
 		if err != nil {
 			return err
 		}

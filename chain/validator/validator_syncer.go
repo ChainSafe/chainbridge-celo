@@ -8,7 +8,7 @@ import (
 	"context"
 	"math/big"
 
-	"github.com/ChainSafe/chainbridge-celo/chain/connection"
+	"github.com/ChainSafe/chainbridge-celo/chain/client"
 	"github.com/celo-org/celo-bls-go/bls"
 	"github.com/ethereum/go-ethereum/consensus/istanbul"
 	"github.com/ethereum/go-ethereum/core/types"
@@ -17,7 +17,7 @@ import (
 )
 
 type ValidatorSyncer struct {
-	conn       *connection.Connection
+	conn       *client.Client
 	validators []istanbul.ValidatorData
 }
 

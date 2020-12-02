@@ -7,7 +7,7 @@ import (
 	"math/big"
 	"strconv"
 
-	"github.com/ChainSafe/chainbridge-celo/chain/connection"
+	"github.com/ChainSafe/chainbridge-celo/chain/client"
 	"github.com/ChainSafe/chainbridge-celo/cmd/cfg"
 	"github.com/ChainSafe/chainbridge-celo/flags"
 	utils "github.com/ChainSafe/chainbridge-celo/shared/ethereum"
@@ -40,7 +40,7 @@ type CeloChainConfig struct {
 	Insecure               bool
 }
 
-func (cfg *CeloChainConfig) EnsureContractsHaveBytecode(conn *connection.Connection) error {
+func (cfg *CeloChainConfig) EnsureContractsHaveBytecode(conn *client.Client) error {
 	err := conn.EnsureHasBytecode(cfg.BridgeContract)
 	if err != nil {
 		return err
