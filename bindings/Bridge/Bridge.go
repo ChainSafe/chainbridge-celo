@@ -1053,21 +1053,21 @@ func (_Bridge *BridgeTransactorSession) Deposit(destinationChainID uint8, resour
 // ExecuteProposal is a paid mutator transaction binding the contract method 0x706914f8.
 //
 // Solidity: function executeProposal(uint8 chainID, uint64 depositNonce, bytes data, bytes32 resourceID, bytes signatureHeader, bytes aggregatePublicKey, bytes g1, bytes hashedMessage, bytes32 rootHash, bytes key, bytes nodes) returns()
-func (_Bridge *BridgeTransactor) ExecuteProposal(opts *bind.TransactOpts, chainID uint8, depositNonce uint64, data []byte, resourceID [32]byte, signatureHeader []byte, aggregatePublicKey []byte, g1 []byte, hashedMessage []byte, rootHash [32]byte, key []byte, nodes []byte) (*types.Transaction, error) {
+func (_Bridge *BridgeTransactor) ExecuteProposal(opts *bind.TransactOpts, chainID uint8, depositNonce uint64, data []byte, resourceID [32]byte, signatureHeader []byte, aggregatePublicKey []byte, g1 []byte, hashedMessage [32]byte, rootHash [32]byte, key []byte, nodes []byte) (*types.Transaction, error) {
 	return _Bridge.contract.Transact(opts, "executeProposal", chainID, depositNonce, data, resourceID, signatureHeader, aggregatePublicKey, g1, hashedMessage, rootHash, key, nodes)
 }
 
 // ExecuteProposal is a paid mutator transaction binding the contract method 0x706914f8.
 //
 // Solidity: function executeProposal(uint8 chainID, uint64 depositNonce, bytes data, bytes32 resourceID, bytes signatureHeader, bytes aggregatePublicKey, bytes g1, bytes hashedMessage, bytes32 rootHash, bytes key, bytes nodes) returns()
-func (_Bridge *BridgeSession) ExecuteProposal(chainID uint8, depositNonce uint64, data []byte, resourceID [32]byte, signatureHeader []byte, aggregatePublicKey []byte, g1 []byte, hashedMessage []byte, rootHash [32]byte, key []byte, nodes []byte) (*types.Transaction, error) {
+func (_Bridge *BridgeSession) ExecuteProposal(chainID uint8, depositNonce uint64, data []byte, resourceID [32]byte, signatureHeader []byte, aggregatePublicKey []byte, g1 []byte, hashedMessage [32]byte, rootHash [32]byte, key []byte, nodes []byte) (*types.Transaction, error) {
 	return _Bridge.Contract.ExecuteProposal(&_Bridge.TransactOpts, chainID, depositNonce, data, resourceID, signatureHeader, aggregatePublicKey, g1, hashedMessage, rootHash, key, nodes)
 }
 
 // ExecuteProposal is a paid mutator transaction binding the contract method 0x706914f8.
 //
 // Solidity: function executeProposal(uint8 chainID, uint64 depositNonce, bytes data, bytes32 resourceID, bytes signatureHeader, bytes aggregatePublicKey, bytes g1, bytes hashedMessage, bytes32 rootHash, bytes key, bytes nodes) returns()
-func (_Bridge *BridgeTransactorSession) ExecuteProposal(chainID uint8, depositNonce uint64, data []byte, resourceID [32]byte, signatureHeader []byte, aggregatePublicKey []byte, g1 []byte, hashedMessage []byte, rootHash [32]byte, key []byte, nodes []byte) (*types.Transaction, error) {
+func (_Bridge *BridgeTransactorSession) ExecuteProposal(chainID uint8, depositNonce uint64, data []byte, resourceID [32]byte, signatureHeader []byte, aggregatePublicKey []byte, g1 []byte, hashedMessage [32]byte, rootHash [32]byte, key []byte, nodes []byte) (*types.Transaction, error) {
 	return _Bridge.Contract.ExecuteProposal(&_Bridge.TransactOpts, chainID, depositNonce, data, resourceID, signatureHeader, aggregatePublicKey, g1, hashedMessage, rootHash, key, nodes)
 }
 
