@@ -1,6 +1,7 @@
 package listener
 
 import (
+	"github.com/ChainSafe/chainbridge-celo/chain/mock"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/pkg/errors"
@@ -17,7 +18,7 @@ type ListenerTestSuite struct {
 	suite.Suite
 	syncerMock       *mock_listener.MockBlockSyncer
 	routerMock       *mock_listener.MockIRouter
-	clientMock       *mock_listener.MockLogFilterWithLatestBlock
+	clientMock       *mock_chain.MockLogFilterWithLatestBlock
 	blockStorerMock  *mock_listener.MockBlockstorer
 	gomockController *gomock.Controller
 }
@@ -34,7 +35,7 @@ func (s *ListenerTestSuite) SetupTest() {
 	gomockController := gomock.NewController(s.T())
 	s.syncerMock = mock_listener.NewMockBlockSyncer(gomockController)
 	s.routerMock = mock_listener.NewMockIRouter(gomockController)
-	s.clientMock = mock_listener.NewMockLogFilterWithLatestBlock(gomockController)
+	s.clientMock = mock_chain.NewMockLogFilterWithLatestBlock(gomockController)
 	s.blockStorerMock = mock_listener.NewMockBlockstorer(gomockController)
 	s.gomockController = gomockController
 }

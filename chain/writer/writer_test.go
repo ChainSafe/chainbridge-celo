@@ -1,16 +1,15 @@
 package writer
 
 import (
+	"math/big"
+	"testing"
+
 	"github.com/ChainSafe/chainbridge-celo/chain"
 	"github.com/ChainSafe/chainbridge-celo/chain/writer/mock"
 	message "github.com/ChainSafe/chainbridge-utils/msg"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/suite"
-
-	"math/big"
-
-	"testing"
 )
 
 type WriterTestSuite struct {
