@@ -33,12 +33,14 @@ func getMessageProofOpts() *celoMsg.MsgProofOpts {
 		panic(err)
 	}
 
+	hashedMessage := common.HexToHash("0xff5c6287761305d7d8ae76ca96f6cb48e48aa04cf3c9280619c8993f21e335caff5c6287761305d7d8ae76ca96f6cb48e48aa04cf3c9280619c8993f21e335ca")
+
 	rootHash := common.HexToHash("0x46c51deeabb4a526d21f9344993c8b812de4b37896680da7c4db7ac902563e00")
 
 	msgProofOpts := &celoMsg.MsgProofOpts{
 		RootHash:           rootHash,
 		AggregatePublicKey: data,
-		HashedMessage:      data,
+		HashedMessage:      hashedMessage,
 		Key:                []byte{},
 		SignatureHeader:    data,
 		Nodes:              nodes,
