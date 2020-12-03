@@ -4,7 +4,7 @@
 
 CONTRACTS_REPO="https://github.com/ChainSafe/chainbridge-celo-solidity/"
 CONTRACTS_BRANCH="main"
-CONTRACTS_COMMIT="b82cf144a04341190b9574284b8b8825b8fe8f77"
+CONTRACTS_COMMIT="509b949075290254ae5b3057385940133ae7ad59" 
 CONTRACTS_DIR="./solidity"
 DEST_DIR="./bindings"
 
