@@ -14,12 +14,12 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/ChainSafe/chainbridge-utils/keystore"
 	"github.com/urfave/cli/v2"
 )
 
 var testKeystoreDir = "./test_datadir/"
-var testPassword = []byte("1234")
+
+//var testPassword = []byte("1234")
 
 // gethKeystore is a struct representation of the geth keystore file
 // used for testing so that we don't need to call geth to test imported ethereum keys
@@ -218,29 +218,30 @@ func TestGetDatadir(t *testing.T) {
 
 }
 
-func TestGenerateKey_NoType(t *testing.T) {
-	keyfile, err := generateKeypair("", testKeystoreDir, testPassword, "")
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	defer os.RemoveAll(testKeystoreDir)
-
-	contents, err := ioutil.ReadFile(keyfile)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	kscontents := new(keystore.EncryptedKeystore)
-	err = json.Unmarshal(contents, kscontents)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	if kscontents.Type != "secp256k1" {
-		t.Fatalf("Fail: got %s expected %s", kscontents.Type, "secp256k1")
-	}
-}
+//
+//func TestGenerateKey_NoType(t *testing.T) {
+//	keyfile, err := generateKeypair("", testKeystoreDir, testPassword, "")
+//	if err != nil {
+//		t.Fatal(err)
+//	}
+//
+//	defer os.RemoveAll(testKeystoreDir)
+//
+//	contents, err := ioutil.ReadFile(keyfile)
+//	if err != nil {
+//		t.Fatal(err)
+//	}
+//
+//	kscontents := new(keystore.EncryptedKeystore)
+//	err = json.Unmarshal(contents, kscontents)
+//	if err != nil {
+//		t.Fatal(err)
+//	}
+//
+//	if kscontents.Type != "secp256k1" {
+//		t.Fatalf("Fail: got %s expected %s", kscontents.Type, "secp256k1")
+//	}
+//}
 
 func TestImportKey_ShouldFail(t *testing.T) {
 	_, err := importKey("./notakey.key", testKeystoreDir)

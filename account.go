@@ -13,9 +13,7 @@ import (
 	"github.com/ChainSafe/chainbridge-celo/flags"
 	"github.com/rs/zerolog/log"
 
-	"github.com/ChainSafe/chainbridge-utils/crypto"
 	"github.com/ChainSafe/chainbridge-utils/crypto/secp256k1"
-	"github.com/ChainSafe/chainbridge-utils/crypto/sr25519"
 	"github.com/ChainSafe/chainbridge-utils/keystore"
 	gokeystore "github.com/ethereum/go-ethereum/accounts/keystore"
 	"github.com/urfave/cli/v2"
@@ -338,65 +336,65 @@ func getKeyFiles(datadir string) ([]string, error) {
 // generateKeypair create a new keypair with the corresponding type and saves it to datadir/keystore/[public key].key
 // in json format encrypted using the specified password
 // it returns the resulting filepath of the new key
-func generateKeypair(keytype, datadir string, password []byte, subNetwork string) (string, error) {
-	if password == nil {
-		password = keystore.GetPassword("Enter password to encrypt keystore file:")
-	}
-
-	if keytype == "" {
-		log.Info().Str("type", keytype).Msg("Using default key type")
-		keytype = crypto.Secp256k1Type
-	}
-
-	var kp crypto.Keypair
-	var err error
-
-	if keytype == crypto.Sr25519Type {
-		// generate sr25519 keys
-		kp, err = sr25519.GenerateKeypair(subNetwork)
-		if err != nil {
-			return "", fmt.Errorf("could not generate sr25519 keypair: %w", err)
-		}
-	} else if keytype == crypto.Secp256k1Type {
-		// generate secp256k1 keys
-		kp, err = secp256k1.GenerateKeypair()
-		if err != nil {
-			return "", fmt.Errorf("could not generate secp256k1 keypair: %w", err)
-		}
-	} else {
-		return "", fmt.Errorf("invalid key type: %s", keytype)
-	}
-
-	keystorepath, err := keystoreDir(datadir)
-	if err != nil {
-		return "", fmt.Errorf("could not get keystore directory: %w", err)
-	}
-
-	fp, err := filepath.Abs(keystorepath + "/" + kp.Address() + ".key")
-	if err != nil {
-		return "", fmt.Errorf("invalid filepath: %w", err)
-	}
-
-	file, err := os.OpenFile(filepath.Clean(fp), os.O_EXCL|os.O_CREATE|os.O_WRONLY, 0600)
-	if err != nil {
-		return "", err
-	}
-
-	defer func() {
-		err = file.Close()
-		if err != nil {
-			log.Error().Msg("generate keypair: could not close keystore file")
-		}
-	}()
-
-	err = keystore.EncryptAndWriteToFile(file, kp, password)
-	if err != nil {
-		return "", fmt.Errorf("could not write key to file: %w", err)
-	}
-
-	log.Info().Str("address", kp.Address()).Str("type", keytype).Str("file", fp).Msg("key generated")
-	return fp, nil
-}
+//func generateKeypair(keytype, datadir string, password []byte, subNetwork string) (string, error) {
+//	if password == nil {
+//		password = keystore.GetPassword("Enter password to encrypt keystore file:")
+//	}
+//
+//	if keytype == "" {
+//		log.Info().Str("type", keytype).Msg("Using default key type")
+//		keytype = crypto.Secp256k1Type
+//	}
+//
+//	var kp crypto.Keypair
+//	var err error
+//
+//	if keytype == crypto.Sr25519Type {
+//		// generate sr25519 keys
+//		kp, err = sr25519.GenerateKeypair(subNetwork)
+//		if err != nil {
+//			return "", fmt.Errorf("could not generate sr25519 keypair: %w", err)
+//		}
+//	} else if keytype == crypto.Secp256k1Type {
+//		// generate secp256k1 keys
+//		kp, err = secp256k1.GenerateKeypair()
+//		if err != nil {
+//			return "", fmt.Errorf("could not generate secp256k1 keypair: %w", err)
+//		}
+//	} else {
+//		return "", fmt.Errorf("invalid key type: %s", keytype)
+//	}
+//
+//	keystorepath, err := keystoreDir(datadir)
+//	if err != nil {
+//		return "", fmt.Errorf("could not get keystore directory: %w", err)
+//	}
+//
+//	fp, err := filepath.Abs(keystorepath + "/" + kp.Address() + ".key")
+//	if err != nil {
+//		return "", fmt.Errorf("invalid filepath: %w", err)
+//	}
+//
+//	file, err := os.OpenFile(filepath.Clean(fp), os.O_EXCL|os.O_CREATE|os.O_WRONLY, 0600)
+//	if err != nil {
+//		return "", err
+//	}
+//
+//	defer func() {
+//		err = file.Close()
+//		if err != nil {
+//			log.Error().Msg("generate keypair: could not close keystore file")
+//		}
+//	}()
+//
+//	err = keystore.EncryptAndWriteToFile(file, kp, password)
+//	if err != nil {
+//		return "", fmt.Errorf("could not write key to file: %w", err)
+//	}
+//
+//	log.Info().Str("address", kp.Address()).Str("type", keytype).Str("file", fp).Msg("key generated")
+//	return fp, nil
+//}
 
 // keystoreDir returnns the absolute filepath of the keystore directory given a datadir
 // by default, it is ./keys/
