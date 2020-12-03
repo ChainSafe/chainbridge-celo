@@ -70,10 +70,6 @@ var (
 		Name:  "password",
 		Usage: "Password used to encrypt the keystore. Used with --generate, --import, or --unlock",
 	}
-	Sr25519Flag = &cli.BoolFlag{
-		Name:  "sr25519",
-		Usage: "Specify account/key type as sr25519.",
-	}
 	Secp256k1Flag = &cli.BoolFlag{
 		Name:  "secp256k1",
 		Usage: "Specify account/key type as secp256k1.",
