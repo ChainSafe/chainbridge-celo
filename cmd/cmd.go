@@ -63,7 +63,7 @@ func Run(ctx *cli.Context) error {
 		}
 
 	}
-	sysErr := make(chan os.Signal)
+	sysErr := make(chan os.Signal, 1)
 	signal.Notify(sysErr,
 		syscall.SIGTERM,
 		syscall.SIGINT,

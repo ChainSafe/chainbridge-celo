@@ -22,113 +22,113 @@ import (
 )
 
 //dataHandler is a struct which wraps any extra data our CMD functions need that cannot be passed through parameters
-type dataHandler struct {
-	datadir string
-}
+//type dataHandler struct {
+//	datadir string
+//}
 
 // wrapHandler takes in a Cmd function (all declared below) and wraps
 // it in the correct signature for the Cli Commands
-func wrapHandler(hdl func(*cli.Context, *dataHandler) error) cli.ActionFunc {
-
-	return func(ctx *cli.Context) error {
-		// TODO: check logger1
-		//err := startLogger(ctx)
-		//if err != nil {
-		//	return err
-		//}
-
-		datadir, err := getDataDir(ctx)
-		if err != nil {
-			return fmt.Errorf("failed to access the datadir: %w", err)
-		}
-
-		return hdl(ctx, &dataHandler{datadir: datadir})
-	}
-}
+//func wrapHandler(hdl func(*cli.Context, *dataHandler) error) cli.ActionFunc {
+//
+//	return func(ctx *cli.Context) error {
+//		// TODO: check logger1
+//		//err := startLogger(ctx)
+//		//if err != nil {
+//		//	return err
+//		//}
+//
+//		datadir, err := getDataDir(ctx)
+//		if err != nil {
+//			return fmt.Errorf("failed to access the datadir: %w", err)
+//		}
+//
+//		return hdl(ctx, &dataHandler{datadir: datadir})
+//	}
+//}
 
 // handleGenerateCmd generates a keystore for the accounts
-func handleGenerateCmd(ctx *cli.Context, dHandler *dataHandler) error {
-
-	log.Info().Msg("Generating keypair...")
-
-	// check if --ed25519 or --sr25519 is set
-	keytype := crypto.Secp256k1Type
-	if flagtype := ctx.Bool(flags.Sr25519Flag.Name); flagtype {
-		keytype = crypto.Sr25519Type
-	} else if flagtype := ctx.Bool(flags.Secp256k1Flag.Name); flagtype {
-		keytype = crypto.Secp256k1Type
-	}
-
-	// check if --password is set
-	var password []byte = nil
-	if pwdflag := ctx.String(flags.PasswordFlag.Name); pwdflag != "" {
-		password = []byte(pwdflag)
-	}
-
-	_, err := generateKeypair(keytype, dHandler.datadir, password, ctx.String(flags.SubkeyNetworkFlag.Name))
-	if err != nil {
-		return fmt.Errorf("failed to generate key: %w", err)
-	}
-	return nil
-}
+//func handleGenerateCmd(ctx *cli.Context, dHandler *dataHandler) error {
+//
+//	log.Info().Msg("Generating keypair...")
+//
+//	// check if --ed25519 or --sr25519 is set
+//	keytype := crypto.Secp256k1Type
+//	if flagtype := ctx.Bool(flags.Sr25519Flag.Name); flagtype {
+//		keytype = crypto.Sr25519Type
+//	} else if flagtype := ctx.Bool(flags.Secp256k1Flag.Name); flagtype {
+//		keytype = crypto.Secp256k1Type
+//	}
+//
+//	// check if --password is set
+//	var password []byte = nil
+//	if pwdflag := ctx.String(flags.PasswordFlag.Name); pwdflag != "" {
+//		password = []byte(pwdflag)
+//	}
+//
+//	_, err := generateKeypair(keytype, dHandler.datadir, password, ctx.String(flags.SubkeyNetworkFlag.Name))
+//	if err != nil {
+//		return fmt.Errorf("failed to generate key: %w", err)
+//	}
+//	return nil
+//}
 
 // handleImportCmd imports external keystores into the bridge
-func handleImportCmd(ctx *cli.Context, dHandler *dataHandler) error {
-	log.Info().Msg("Importing key...")
-	var err error
-
-	// check if --ed25519 or --sr25519 is set
-	keytype := crypto.Secp256k1Type
-	if flagtype := ctx.Bool(flags.Sr25519Flag.Name); flagtype {
-		keytype = crypto.Sr25519Type
-	} else if flagtype := ctx.Bool(flags.Secp256k1Flag.Name); flagtype {
-		keytype = crypto.Secp256k1Type
-	}
-
-	if ctx.Bool(flags.EthereumImportFlag.Name) {
-		if keyimport := ctx.Args().First(); keyimport != "" {
-			// check if --password is set
-			var password []byte = nil
-			if pwdflag := ctx.String(flags.PasswordFlag.Name); pwdflag != "" {
-				password = []byte(pwdflag)
-			}
-			_, err = importEthKey(keyimport, dHandler.datadir, password, nil)
-		} else {
-			return fmt.Errorf("Must provide a key to import.")
-		}
-	} else if privkeyflag := ctx.String(flags.PrivateKeyFlag.Name); privkeyflag != "" {
-		// check if --password is set
-		var password []byte = nil
-		if pwdflag := ctx.String(flags.PasswordFlag.Name); pwdflag != "" {
-			password = []byte(pwdflag)
-		}
-
-		_, err = importPrivKey(ctx, keytype, dHandler.datadir, privkeyflag, password)
-	} else {
-		if keyimport := ctx.Args().First(); keyimport != "" {
-			_, err = importKey(keyimport, dHandler.datadir)
-		} else {
-			return fmt.Errorf("Must provide a key to import.")
-		}
-	}
-
-	if err != nil {
-		return fmt.Errorf("failed to import key: %w", err)
-	}
-
-	return nil
-}
+//func handleImportCmd(ctx *cli.Context, dHandler *dataHandler) error {
+//	log.Info().Msg("Importing key...")
+//	var err error
+//
+//	// check if --ed25519 or --sr25519 is set
+//	keytype := crypto.Secp256k1Type
+//	if flagtype := ctx.Bool(flags.Sr25519Flag.Name); flagtype {
+//		keytype = crypto.Sr25519Type
+//	} else if flagtype := ctx.Bool(flags.Secp256k1Flag.Name); flagtype {
+//		keytype = crypto.Secp256k1Type
+//	}
+//
+//	if ctx.Bool(flags.EthereumImportFlag.Name) {
+//		if keyimport := ctx.Args().First(); keyimport != "" {
+//			// check if --password is set
+//			var password []byte = nil
+//			if pwdflag := ctx.String(flags.PasswordFlag.Name); pwdflag != "" {
+//				password = []byte(pwdflag)
+//			}
+//			_, err = importEthKey(keyimport, dHandler.datadir, password, nil)
+//		} else {
+//			return fmt.Errorf("Must provide a key to import.")
+//		}
+//	} else if privkeyflag := ctx.String(flags.PrivateKeyFlag.Name); privkeyflag != "" {
+//		// check if --password is set
+//		var password []byte = nil
+//		if pwdflag := ctx.String(flags.PasswordFlag.Name); pwdflag != "" {
+//			password = []byte(pwdflag)
+//		}
+//
+//		_, err = importPrivKey(ctx, keytype, dHandler.datadir, privkeyflag, password)
+//	} else {
+//		if keyimport := ctx.Args().First(); keyimport != "" {
+//			_, err = importKey(keyimport, dHandler.datadir)
+//		} else {
+//			return fmt.Errorf("Must provide a key to import.")
+//		}
+//	}
+//
+//	if err != nil {
+//		return fmt.Errorf("failed to import key: %w", err)
+//	}
+//
+//	return nil
+//}
 
 // handleListCmd lists all accounts currently in the bridge
-func handleListCmd(ctx *cli.Context, dHandler *dataHandler) error {
-
-	_, err := listKeys(dHandler.datadir)
-	if err != nil {
-		return fmt.Errorf("failed to list keys: %w", err)
-	}
-
-	return nil
-}
+//func handleListCmd(ctx *cli.Context, dHandler *dataHandler) error {
+//
+//	_, err := listKeys(dHandler.datadir)
+//	if err != nil {
+//		return fmt.Errorf("failed to list keys: %w", err)
+//	}
+//
+//	return nil
+//}
 
 // getDataDir obtains the path to the keystore and returns it as a string
 func getDataDir(ctx *cli.Context) (string, error) {
@@ -144,68 +144,69 @@ func getDataDir(ctx *cli.Context) (string, error) {
 	return "", fmt.Errorf("datadir flag not supplied")
 }
 
-//importPrivKey imports a private key into a keypair
-func importPrivKey(ctx *cli.Context, keytype, datadir, key string, password []byte) (string, error) {
-	if password == nil {
-		password = keystore.GetPassword("Enter password to encrypt keystore file:")
-	}
-	keystorepath, err := keystoreDir(datadir)
-
-	if keytype == "" {
-		log.Info().Str("type", keytype).Msg("Using default key type")
-		keytype = crypto.Secp256k1Type
-	}
-
-	var kp crypto.Keypair
-
-	if keytype == crypto.Sr25519Type {
-		// generate sr25519 keys
-		network := ctx.String(flags.SubkeyNetworkFlag.Name)
-		kp, err = sr25519.NewKeypairFromSeed(key, network)
-		if err != nil {
-			return "", fmt.Errorf("could not generate sr25519 keypair from given string: %w", err)
-		}
-	} else if keytype == crypto.Secp256k1Type {
-		// Hex must not have leading 0x
-		if key[0:2] == "0x" {
-			kp, err = secp256k1.NewKeypairFromString(key[2:])
-		} else {
-			kp, err = secp256k1.NewKeypairFromString(key)
-		}
-
-		if err != nil {
-			return "", fmt.Errorf("could not generate secp256k1 keypair from given string: %w", err)
-		}
-	} else {
-		return "", fmt.Errorf("invalid key type: %s", keytype)
-	}
-
-	fp, err := filepath.Abs(keystorepath + "/" + kp.Address() + ".key")
-	if err != nil {
-		return "", fmt.Errorf("invalid filepath: %w", err)
-	}
-
-	file, err := os.OpenFile(filepath.Clean(fp), os.O_EXCL|os.O_CREATE|os.O_WRONLY, 0600)
-	if err != nil {
-		return "", fmt.Errorf("Unable to Open File: %w", err)
-	}
-
-	defer func() {
-		err = file.Close()
-		if err != nil {
-			log.Error().Msg("import private key: could not close keystore file")
-		}
-	}()
-
-	err = keystore.EncryptAndWriteToFile(file, kp, password)
-	if err != nil {
-		return "", fmt.Errorf("could not write key to file: %w", err)
-	}
-
-	log.Info().Str("address", kp.Address()).Str("file", fp).Msg("private key imported")
-	return fp, nil
-
-}
+//
+////importPrivKey imports a private key into a keypair
+//func importPrivKey(ctx *cli.Context, keytype, datadir, key string, password []byte) (string, error) {
+//	if password == nil {
+//		password = keystore.GetPassword("Enter password to encrypt keystore file:")
+//	}
+//	keystorepath, err := keystoreDir(datadir)
+//
+//	if keytype == "" {
+//		log.Info().Str("type", keytype).Msg("Using default key type")
+//		keytype = crypto.Secp256k1Type
+//	}
+//
+//	var kp crypto.Keypair
+//
+//	if keytype == crypto.Sr25519Type {
+//		// generate sr25519 keys
+//		network := ctx.String(flags.SubkeyNetworkFlag.Name)
+//		kp, err = sr25519.NewKeypairFromSeed(key, network)
+//		if err != nil {
+//			return "", fmt.Errorf("could not generate sr25519 keypair from given string: %w", err)
+//		}
+//	} else if keytype == crypto.Secp256k1Type {
+//		// Hex must not have leading 0x
+//		if key[0:2] == "0x" {
+//			kp, err = secp256k1.NewKeypairFromString(key[2:])
+//		} else {
+//			kp, err = secp256k1.NewKeypairFromString(key)
+//		}
+//
+//		if err != nil {
+//			return "", fmt.Errorf("could not generate secp256k1 keypair from given string: %w", err)
+//		}
+//	} else {
+//		return "", fmt.Errorf("invalid key type: %s", keytype)
+//	}
+//
+//	fp, err := filepath.Abs(keystorepath + "/" + kp.Address() + ".key")
+//	if err != nil {
+//		return "", fmt.Errorf("invalid filepath: %w", err)
+//	}
+//
+//	file, err := os.OpenFile(filepath.Clean(fp), os.O_EXCL|os.O_CREATE|os.O_WRONLY, 0600)
+//	if err != nil {
+//		return "", fmt.Errorf("Unable to Open File: %w", err)
+//	}
+//
+//	defer func() {
+//		err = file.Close()
+//		if err != nil {
+//			log.Error().Msg("import private key: could not close keystore file")
+//		}
+//	}()
+//
+//	err = keystore.EncryptAndWriteToFile(file, kp, password)
+//	if err != nil {
+//		return "", fmt.Errorf("could not write key to file: %w", err)
+//	}
+//
+//	log.Info().Str("address", kp.Address()).Str("file", fp).Msg("private key imported")
+//	return fp, nil
+//
+//}
 
 //importEthKey takes an ethereum keystore and converts it to our keystore format
 func importEthKey(filename, datadir string, password, newPassword []byte) (string, error) {
