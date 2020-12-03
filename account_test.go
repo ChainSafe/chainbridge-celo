@@ -10,12 +10,10 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
-	"sort"
 	"strconv"
 	"strings"
 	"testing"
 
-	"github.com/ChainSafe/chainbridge-utils/crypto"
 	"github.com/ChainSafe/chainbridge-utils/keystore"
 	"github.com/urfave/cli/v2"
 )
@@ -338,42 +336,42 @@ func TestImportEthKey(t *testing.T) {
 //	}
 //}
 
-func TestListKeys(t *testing.T) {
-	expected := []string{}
-	defer os.RemoveAll(testKeystoreDir)
-
-	for i := 0; i < 5; i++ {
-		var err error
-		var keyfile string
-		if i%2 == 0 {
-			keyfile, err = generateKeypair(crypto.Sr25519Type, testKeystoreDir, testPassword, "")
-			if err != nil {
-				t.Fatal(err)
-			}
-		} else {
-			keyfile, err = generateKeypair(crypto.Secp256k1Type, testKeystoreDir, testPassword, "")
-			if err != nil {
-				t.Fatal(err)
-			}
-		}
-
-		expected = append(expected, keyfile)
-	}
-
-	keys, err := listKeys(testKeystoreDir)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	if len(keys) != len(expected) {
-		t.Fatalf("Fail: expected %d keys in keystore, got %d", len(expected), len(keys))
-	}
-
-	sort.Slice(expected, func(i, j int) bool { return strings.Compare(expected[i], expected[j]) < 0 })
-
-	for i, key := range keys {
-		if strings.Compare(key, filepath.Base(expected[i])) != 0 {
-			t.Fatalf("Fail: got %s expected %s", key, filepath.Base(expected[i]))
-		}
-	}
-}
+//func TestListKeys(t *testing.T) {
+//	expected := []string{}
+//	defer os.RemoveAll(testKeystoreDir)
+//
+//	for i := 0; i < 5; i++ {
+//		var err error
+//		var keyfile string
+//		if i%2 == 0 {
+//			keyfile, err = generateKeypair(crypto.Sr25519Type, testKeystoreDir, testPassword, "")
+//			if err != nil {
+//				t.Fatal(err)
+//			}
+//		} else {
+//			keyfile, err = generateKeypair(crypto.Secp256k1Type, testKeystoreDir, testPassword, "")
+//			if err != nil {
+//				t.Fatal(err)
+//			}
+//		}
+//
+//		expected = append(expected, keyfile)
+//	}
+//
+//	keys, err := listKeys(testKeystoreDir)
+//	if err != nil {
+//		t.Fatal(err)
+//	}
+//
+//	if len(keys) != len(expected) {
+//		t.Fatalf("Fail: expected %d keys in keystore, got %d", len(expected), len(keys))
+//	}
+//
+//	sort.Slice(expected, func(i, j int) bool { return strings.Compare(expected[i], expected[j]) < 0 })
+//
+//	for i, key := range keys {
+//		if strings.Compare(key, filepath.Base(expected[i])) != 0 {
+//			t.Fatalf("Fail: got %s expected %s", key, filepath.Base(expected[i]))
+//		}
+//	}
+//}
