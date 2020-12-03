@@ -249,36 +249,36 @@ func TestImportKey_ShouldFail(t *testing.T) {
 	}
 }
 
-func TestImportKey(t *testing.T) {
-	keypath := "../../"
-
-	importkeyfile, err := generateKeypair("sr25519", keypath, testPassword, "")
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	defer os.RemoveAll(importkeyfile)
-
-	keyfile, err := importKey(importkeyfile, testKeystoreDir)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	keys, err := listKeys(testKeystoreDir)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	defer os.RemoveAll(testKeystoreDir)
-
-	if len(keys) != 1 {
-		t.Fatal("fail")
-	}
-
-	if strings.Compare(keys[0], filepath.Base(keyfile)) != 0 {
-		t.Fatalf("Fail: got %s expected %s", keys[0], keyfile)
-	}
-}
+//func TestImportKey(t *testing.T) {
+//	keypath := "../../"
+//
+//	importkeyfile, err := generateKeypair("sr25519", keypath, testPassword, "")
+//	if err != nil {
+//		t.Fatal(err)
+//	}
+//
+//	defer os.RemoveAll(importkeyfile)
+//
+//	keyfile, err := importKey(importkeyfile, testKeystoreDir)
+//	if err != nil {
+//		t.Fatal(err)
+//	}
+//
+//	keys, err := listKeys(testKeystoreDir)
+//	if err != nil {
+//		t.Fatal(err)
+//	}
+//
+//	defer os.RemoveAll(testKeystoreDir)
+//
+//	if len(keys) != 1 {
+//		t.Fatal("fail")
+//	}
+//
+//	if strings.Compare(keys[0], filepath.Base(keyfile)) != 0 {
+//		t.Fatalf("Fail: got %s expected %s", keys[0], keyfile)
+//	}
+//}
 
 func TestImportEthKey(t *testing.T) {
 	gethJSON, err := json.Marshal(createTestGethKeystore())
