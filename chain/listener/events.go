@@ -12,7 +12,6 @@ import (
 func (l *listener) handleErc20DepositedEvent(destId msg.ChainId, nonce msg.Nonce) (msg.Message, error) {
 	log.Info().Interface("dest", destId).Interface("nonce", nonce).Msg("Handling fungible deposit event")
 	//TODO no call opts. should have From in original chainbridge.
-
 	record, err := l.erc20HandlerContract.GetDepositRecord(&bind.CallOpts{}, uint64(nonce), uint8(destId))
 	if err != nil {
 		log.Error().Err(err).Msg("Error Unpacking ERC20 Deposit Record")

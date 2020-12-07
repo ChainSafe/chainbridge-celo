@@ -87,7 +87,7 @@ func init() {
 	app.Version = "0.0.1"
 	app.EnableBashCompletion = true
 	app.Commands = []*cli.Command{
-		//&accountCommand,
+		&accountCommand,
 	}
 
 	app.Flags = append(app.Flags, cliFlags...)

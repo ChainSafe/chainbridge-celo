@@ -27,9 +27,7 @@ func TestRunTestSuite(t *testing.T) {
 	suite.Run(t, new(ListenerTestSuite))
 }
 
-func (s *ListenerTestSuite) SetupSuite() {
-}
-
+func (s *ListenerTestSuite) SetupSuite()    {}
 func (s *ListenerTestSuite) TearDownSuite() {}
 func (s *ListenerTestSuite) SetupTest() {
 	gomockController := gomock.NewController(s.T())
@@ -50,16 +48,17 @@ func (s *ListenerTestSuite) TestListenerStartStop() {
 	s.NotNil(l.pollBlocks())
 }
 
-func (s *ListenerTestSuite) TestLatestBlockUpdateTest() {
+func (s *ListenerTestSuite) TestLatestBlockUpdate() {
 	stopChn := make(chan struct{})
 	errChn := make(chan error)
 	cfg := &chain.CeloChainConfig{StartBlock: big.NewInt(1), BridgeContract: common.Address{}}
 	l := NewListener(cfg, s.clientMock, s.blockStorerMock, stopChn, errChn, s.syncerMock, s.routerMock)
+
 	s.clientMock.EXPECT().LatestBlock().Return(big.NewInt(555), nil)
 	s.syncerMock.EXPECT().Sync(gomock.Any()).Return(nil)
 	//No event logs found
 	s.clientMock.EXPECT().FilterLogs(gomock.Any(), gomock.Any()).Return(make([]types.Log, 0), nil)
-	// getDepositEventsAndProofsForBlock todo
+
 	s.blockStorerMock.EXPECT().StoreBlock(big.NewInt(1))
 
 	//ON second call to latest block we stopping goroutine
