@@ -7,8 +7,8 @@ import (
 	"testing"
 
 	utils "github.com/ChainSafe/chainbridge-celo/shared/ethereum"
-	"github.com/ChainSafe/log15"
 	"github.com/ethereum/go-ethereum/common"
+	"github.com/rs/zerolog/log"
 )
 
 func DeployAssetStore(t *testing.T, client *utils.Client) common.Address {
@@ -27,5 +27,5 @@ func AssertHashExistence(t *testing.T, client *utils.Client, hash [32]byte, cont
 	if !exists {
 		t.Fatalf("Hash %x does not exist on chain", hash)
 	}
-	log15.Info("Assert existence in asset store", "hash", hash, "assetStore", contract)
+	log.Info().Interface("hash", hash).Interface("assetStore", contract).Msg("Assert existence in asset store")
 }

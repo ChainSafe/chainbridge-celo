@@ -9,8 +9,8 @@ import (
 	"testing"
 
 	utils "github.com/ChainSafe/chainbridge-celo/shared/ethereum"
-	"github.com/ChainSafe/log15"
 	"github.com/ethereum/go-ethereum/common"
+	"github.com/rs/zerolog/log"
 )
 
 // Erc721 is used for convenience to represent an Erc721
@@ -40,7 +40,7 @@ func Erc721Deploy(t *testing.T, client *utils.Client) common.Address {
 }
 
 func Erc721Mint(t *testing.T, client *utils.Client, erc721Contract common.Address, id *big.Int, metadata []byte) {
-	log15.Info("Minting erc721 token", "contract", erc721Contract.Hex(), "Id", id)
+	log.Info().Str("contract", erc721Contract.Hex()).Str("IDD", id.String()).Msg("Minting erc721 token")
 	err := utils.Erc721Mint(client, erc721Contract, id, metadata)
 	if err != nil {
 		t.Fatal(err)
@@ -54,7 +54,8 @@ func Erc721MintMany(t *testing.T, client *utils.Client, erc721Contract common.Ad
 }
 
 func Erc721Approve(t *testing.T, client *utils.Client, erc721Contract, recipient common.Address, tokenId *big.Int) {
-	log15.Info("Approving erc721 token for transfer", "contract", erc721Contract.Hex(), "Id", tokenId, "recipient", recipient)
+	log.Info().Str("contract", erc721Contract.Hex()).Str("ID", tokenId.String()).Str("recipient", recipient.Hex()).Msg("Approving erc721 token for transfer")
+
 	err := utils.ApproveErc721(client, erc721Contract, recipient, tokenId)
 	if err != nil {
 		t.Fatal(err)
@@ -76,7 +77,7 @@ func Erc721AssertOwner(t *testing.T, client *utils.Client, erc721Contract common
 	if addr != expected {
 		t.Fatalf("address %s does not own %x, %s does", expected.Hex(), tokenId.Bytes(), addr.Hex())
 	}
-	log15.Info("Asserted ownership of erc721", "tokenId", tokenId, "owner", addr)
+	log.Info().Str("tokenId", tokenId.String()).Str("owner", addr.Hex()).Msg("Asserted ownership of erc721")
 }
 
 func Erc721FundHandler(t *testing.T, client *utils.Client, handler, erc721Contract common.Address, tokenId *big.Int) {
@@ -84,7 +85,7 @@ func Erc721FundHandler(t *testing.T, client *utils.Client, handler, erc721Contra
 	if err != nil {
 		t.Fatal(err)
 	}
-	log15.Info("Funded handler with erc721 token", "tokenId", tokenId, "handler", handler)
+	log.Info().Str("tokenId", tokenId.String()).Str("handler", handler.Hex()).Msg("Funded handler with erc721 token")
 }
 
 func Erc721FundHandlerMany(t *testing.T, client *utils.Client, handler, erc721Contract common.Address, start, numberOfTokens int) {
@@ -120,7 +121,7 @@ func Erc721AssertNonExistence(t *testing.T, client *utils.Client, erc721Contract
 		//if err.Error() != NonExistentTokenError.Error() {
 		//	t.Fatal(err)
 		//}
-		log15.Info("Asserted non-existence of erc721", "tokenId", id, "result", err)
+		log.Error().Err(err).Str("tokenId", id.String()).Msg("Asserted non-existence of erc721")
 	}
 
 }
