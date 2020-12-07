@@ -43,10 +43,9 @@ func (s *WriterTestSuite) TestResolveMessageWrongType() {
 	m.Type = "123"
 	cfg := &chain.CeloChainConfig{StartBlock: big.NewInt(1), BridgeContract: common.Address{}}
 	w := NewWriter(s.client, cfg, stopChn, errChn, nil)
-	s.False(w.ResolveMessage(m))
+	s.False(w.ResolveMessage(&m))
 }
 
-//TestWriter_start_stop
 //TestCreateAndExecuteErc20DepositProposal
 //TestCreateAndExecuteErc721Proposal
 //TestCreateAndExecuteGenericProposal

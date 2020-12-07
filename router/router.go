@@ -13,7 +13,7 @@ import (
 
 // Writer consumes a message and makes the requried on-chain interactions.
 type MessageResolver interface {
-	ResolveMessage(message msg.Message) bool
+	ResolveMessage(message *msg.Message) bool
 }
 
 // BaseRouter forwards messages from their source to their destination
@@ -40,7 +40,7 @@ func (r *BaseRouter) Send(msg msg.Message) error {
 		return fmt.Errorf("unknown destination chainId: %d", msg.Destination)
 	}
 
-	go w.ResolveMessage(msg)
+	go w.ResolveMessage(&msg)
 	return nil
 }
 
