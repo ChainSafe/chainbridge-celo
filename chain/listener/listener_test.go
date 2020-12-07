@@ -68,10 +68,3 @@ func (s *ListenerTestSuite) TestLatestBlockUpdateTest() {
 	s.NotNil(l.pollBlocks())
 	s.Equal(cfg.StartBlock.String(), "2")
 }
-
-//func TestListener_erc20DepositEvent(t *testing.T) {}
-
-//721 event
-//general event
-//TestListener_BlockHashFromTransactionHash
-//TestListener_TransactionsFromBlockHash
