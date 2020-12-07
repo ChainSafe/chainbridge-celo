@@ -8,9 +8,9 @@ import (
 	"testing"
 
 	utils "github.com/ChainSafe/chainbridge-celo/shared/ethereum"
-	msg "github.com/ChainSafe/chainbridge-utils/msg"
-	"github.com/ChainSafe/log15"
+	"github.com/ChainSafe/chainbridge-utils/msg"
 	"github.com/ethereum/go-ethereum/common"
+	"github.com/rs/zerolog/log"
 )
 
 func AssertGenericResourceAddress(t *testing.T, client *utils.Client, handler common.Address, rId msg.ResourceId, expected common.Address) {
@@ -22,5 +22,5 @@ func AssertGenericResourceAddress(t *testing.T, client *utils.Client, handler co
 	if !bytes.Equal(actual.Bytes(), expected.Bytes()) {
 		t.Fatalf("Generic resoruce mismatch for ID %x. Expected address: %x Got: %x", rId, expected, actual)
 	}
-	log15.Info("Asserted generic resource ID", "handler", handler, "rId", rId.Hex(), "contract", actual)
+	log.Info().Str("handler", handler.Hex()).Str("rId", rId.Hex()).Str("contract", actual.Hex()).Msg("Asserted generic resource ID")
 }

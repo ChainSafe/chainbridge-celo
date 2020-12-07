@@ -19,7 +19,7 @@ lint: $(GOLANGCI)
 	./bin/golangci-lint run ./... --timeout 5m0s
 
 test:
-	go test -race ./...
+	go test ./...
 
 docker:
 	docker-compose -f ./docker-compose-chains.yml up -V
@@ -49,8 +49,16 @@ start-elections:
 
 build:
 	@echo "  >  \033[32mBuilding binary...\033[0m "
-	cd cmd/chainbridge-celo && env GOARCH=amd64 go build -o ../../build/chainbridge-celo
+	GOARCH=amd64 go build -o build/chainbridge-celo
 
 install:
 	@echo "  >  \033[32mInstalling bridge...\033[0m "
-	cd cmd/chainbridge-celo && go install
+	go install
+
+
+genmocks:
+	mockgen -destination=./chain/listener/mock/listener.go -source=./chain/listener/listener.go
+	mockgen -destination=./chain/writer/mock/writer.go -source=./chain/writer/writer.go
+	mockgen -destination=./chain/mock/chain.go -source=./chain/chain.go
+
+
