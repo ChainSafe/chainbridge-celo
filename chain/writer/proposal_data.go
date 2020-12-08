@@ -5,10 +5,10 @@ package writer
 
 import (
 	"bytes"
-	"github.com/ethereum/go-ethereum/crypto"
 	"math/big"
 
-	"github.com/ChainSafe/chainbridge-celo/msg"
+	celoMsg "github.com/ChainSafe/chainbridge-celo/msg"
+	"github.com/ethereum/go-ethereum/crypto"
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/math"
@@ -16,18 +16,17 @@ import (
 
 // constructErc20ProposalData returns the bytes to construct a proposal suitable for Erc20
 func ConstructErc20ProposalData(amount []byte, recipient []byte) []byte {
-	var data []byte
-	data = append(data, common.LeftPadBytes(amount, 32)...) // amount (uint256)
-
+	b := bytes.Buffer{}
+	b.Write(common.LeftPadBytes(amount, 32)) // amount (uint256)
 	recipientLen := big.NewInt(int64(len(recipient))).Bytes()
-	data = append(data, common.LeftPadBytes(recipientLen, 32)...) // length of recipient (uint256)
-	data = append(data, recipient...)                             // recipient ([]byte)
-	return data
+	b.Write(common.LeftPadBytes(recipientLen, 32))
+	b.Write(recipient)
+	return b.Bytes()
 }
 
 // CreateProposalDataHash constructs and returns proposal data hash
 // https://github.com/ChainSafe/chainbridge-celo-solidity/blob/1fae9c66a07139c277b03a09877414024867a8d9/contracts/Bridge.sol#L452-L454
-func CreateProposalDataHash(data []byte, handler common.Address, msgProofOpts *msg.MsgProofOpts) common.Hash {
+func CreateProposalDataHash(data []byte, handler common.Address, msgProofOpts *celoMsg.MsgProofOpts) common.Hash {
 	b := bytes.NewBuffer(data)
 	b.Write(handler.Bytes())
 	b.Write(msgProofOpts.RootHash[:])

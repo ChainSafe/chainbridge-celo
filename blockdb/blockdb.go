@@ -3,8 +3,8 @@ package blockdb
 import (
 	"math/big"
 
-	"github.com/ChainSafe/chainbridge-celo/msg"
 	"github.com/ChainSafe/chainbridge-utils/blockstore"
+	"github.com/ChainSafe/chainbridge-utils/msg"
 )
 
 func NewBlockStoreDB(relayerAddress string, blockstorePath string, chainID msg.ChainId, freshStart bool, startBlock *big.Int) (*blockstore.Blockstore, error) {

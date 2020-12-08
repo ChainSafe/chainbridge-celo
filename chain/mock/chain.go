@@ -10,7 +10,9 @@ import (
 	ERC20Handler "github.com/ChainSafe/chainbridge-celo/bindings/ERC20Handler"
 	ERC721Handler "github.com/ChainSafe/chainbridge-celo/bindings/ERC721Handler"
 	GenericHandler "github.com/ChainSafe/chainbridge-celo/bindings/GenericHandler"
+	chain "github.com/ChainSafe/chainbridge-celo/chain"
 	ethereum "github.com/ethereum/go-ethereum"
+	bind "github.com/ethereum/go-ethereum/accounts/abi/bind"
 	common "github.com/ethereum/go-ethereum/common"
 	types "github.com/ethereum/go-ethereum/core/types"
 	gomock "github.com/golang/mock/gomock"
@@ -119,6 +121,89 @@ func (mr *MockListenerMockRecorder) SetContracts(bridge, erc20Handler, erc721Han
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SetContracts", reflect.TypeOf((*MockListener)(nil).SetContracts), bridge, erc20Handler, erc721Handler, genericHandler)
 }
 
+// MockBridger is a mock of Bridger interface
+type MockBridger struct {
+	ctrl     *gomock.Controller
+	recorder *MockBridgerMockRecorder
+}
+
+// MockBridgerMockRecorder is the mock recorder for MockBridger
+type MockBridgerMockRecorder struct {
+	mock *MockBridger
+}
+
+// NewMockBridger creates a new mock instance
+func NewMockBridger(ctrl *gomock.Controller) *MockBridger {
+	mock := &MockBridger{ctrl: ctrl}
+	mock.recorder = &MockBridgerMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use
+func (m *MockBridger) EXPECT() *MockBridgerMockRecorder {
+	return m.recorder
+}
+
+// GetProposal mocks base method
+func (m *MockBridger) GetProposal(opts *bind.CallOpts, originChainID uint8, depositNonce uint64, dataHash [32]byte) (Bridge.BridgeProposal, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetProposal", opts, originChainID, depositNonce, dataHash)
+	ret0, _ := ret[0].(Bridge.BridgeProposal)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetProposal indicates an expected call of GetProposal
+func (mr *MockBridgerMockRecorder) GetProposal(opts, originChainID, depositNonce, dataHash interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetProposal", reflect.TypeOf((*MockBridger)(nil).GetProposal), opts, originChainID, depositNonce, dataHash)
+}
+
+// HasVotedOnProposal mocks base method
+func (m *MockBridger) HasVotedOnProposal(opts *bind.CallOpts, arg0 *big.Int, arg1 [32]byte, arg2 common.Address) (bool, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "HasVotedOnProposal", opts, arg0, arg1, arg2)
+	ret0, _ := ret[0].(bool)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// HasVotedOnProposal indicates an expected call of HasVotedOnProposal
+func (mr *MockBridgerMockRecorder) HasVotedOnProposal(opts, arg0, arg1, arg2 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "HasVotedOnProposal", reflect.TypeOf((*MockBridger)(nil).HasVotedOnProposal), opts, arg0, arg1, arg2)
+}
+
+// VoteProposal mocks base method
+func (m *MockBridger) VoteProposal(opts *bind.TransactOpts, chainID uint8, depositNonce uint64, resourceID, dataHash [32]byte) (*types.Transaction, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "VoteProposal", opts, chainID, depositNonce, resourceID, dataHash)
+	ret0, _ := ret[0].(*types.Transaction)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// VoteProposal indicates an expected call of VoteProposal
+func (mr *MockBridgerMockRecorder) VoteProposal(opts, chainID, depositNonce, resourceID, dataHash interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "VoteProposal", reflect.TypeOf((*MockBridger)(nil).VoteProposal), opts, chainID, depositNonce, resourceID, dataHash)
+}
+
+// ExecuteProposal mocks base method
+func (m *MockBridger) ExecuteProposal(opts *bind.TransactOpts, chainID uint8, depositNonce uint64, data []byte, resourceID [32]byte, signatureHeader, aggregatePublicKey, g1, hashedMessage []byte, rootHash [32]byte, key, nodes []byte) (*types.Transaction, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ExecuteProposal", opts, chainID, depositNonce, data, resourceID, signatureHeader, aggregatePublicKey, g1, hashedMessage, rootHash, key, nodes)
+	ret0, _ := ret[0].(*types.Transaction)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// ExecuteProposal indicates an expected call of ExecuteProposal
+func (mr *MockBridgerMockRecorder) ExecuteProposal(opts, chainID, depositNonce, data, resourceID, signatureHeader, aggregatePublicKey, g1, hashedMessage, rootHash, key, nodes interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ExecuteProposal", reflect.TypeOf((*MockBridger)(nil).ExecuteProposal), opts, chainID, depositNonce, data, resourceID, signatureHeader, aggregatePublicKey, g1, hashedMessage, rootHash, key, nodes)
+}
+
 // MockWriter is a mock of Writer interface
 type MockWriter struct {
 	ctrl     *gomock.Controller
@@ -143,15 +228,15 @@ func (m *MockWriter) EXPECT() *MockWriterMockRecorder {
 }
 
 // SetBridge mocks base method
-func (m *MockWriter) SetBridge(bc *Bridge.Bridge) {
+func (m *MockWriter) SetBridge(bridge chain.Bridger) {
 	m.ctrl.T.Helper()
-	m.ctrl.Call(m, "SetBridge", bc)
+	m.ctrl.Call(m, "SetBridge", bridge)
 }
 
 // SetBridge indicates an expected call of SetBridge
-func (mr *MockWriterMockRecorder) SetBridge(bc interface{}) *gomock.Call {
+func (mr *MockWriterMockRecorder) SetBridge(bridge interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SetBridge", reflect.TypeOf((*MockWriter)(nil).SetBridge), bc)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SetBridge", reflect.TypeOf((*MockWriter)(nil).SetBridge), bridge)
 }
 
 // MockContractBackendWithBlockFinder is a mock of ContractBackendWithBlockFinder interface

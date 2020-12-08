@@ -5,6 +5,7 @@ package ethtest
 
 import (
 	"errors"
+	"github.com/ethereum/go-ethereum/crypto"
 	"math/big"
 	"testing"
 
@@ -24,7 +25,7 @@ func GenerateErc721Tokens(start int, numOfTokens int) []Erc721 {
 	for i := start; i < start+numOfTokens; i++ {
 		token := Erc721{
 			Id:       big.NewInt(int64(i)),
-			Metadata: utils.Hash([]byte{byte(i)}),
+			Metadata: crypto.Keccak256Hash([]byte{byte(i)}),
 		}
 		res = append(res, token)
 	}
