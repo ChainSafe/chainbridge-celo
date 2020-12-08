@@ -4,9 +4,10 @@ import (
 	"math/big"
 	"testing"
 
+	"github.com/ChainSafe/chainbridge-celo/bindings/Bridge"
 	"github.com/ChainSafe/chainbridge-celo/chain"
 	"github.com/ChainSafe/chainbridge-celo/chain/writer/mock"
-	message "github.com/ChainSafe/chainbridge-utils/msg"
+	message "github.com/ChainSafe/chainbridge-celo/msg"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/suite"
@@ -45,6 +46,25 @@ func (s *WriterTestSuite) TestResolveMessageWrongType() {
 	w := NewWriter(s.client, cfg, stopChn, errChn, nil)
 	s.False(w.ResolveMessage(&m))
 }
+
+func (s *WriterTestSuite) TestResolveMessageProposalIsAlreadyComplete() {
+	resourceId := [32]byte{1}
+	recipient := make([]byte, 32)
+	amount := big.NewInt(10)
+	stopChn := make(chan struct{})
+	errChn := make(chan error)
+	m := message.NewFungibleTransfer(1, 0, 0, amount, resourceId, recipient)
+	cfg := &chain.CeloChainConfig{StartBlock: big.NewInt(1), BridgeContract: common.Address{}}
+	w := NewWriter(s.client, cfg, stopChn, errChn, nil)
+	b := mock_writer.NewMockBridger(s.gomockController)
+	w.SetBridge(b)
+	// Setting returned proposal to PassedStatus
+	prop := Bridge.BridgeProposal{Status: PassedStatus}
+	b.EXPECT().GetProposal(gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).Return(prop, nil)
+	s.False(w.ResolveMessage(&m))
+}
+
+func (s *WriterTestSuite) TestResolveMessageProposalIsAlreadyVoted() {}
 
 //TestCreateAndExecuteErc20DepositProposal
 //TestCreateAndExecuteErc721Proposal

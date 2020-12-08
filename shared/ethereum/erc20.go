@@ -8,7 +8,7 @@ import (
 
 	"github.com/ChainSafe/chainbridge-celo/bindings/ERC20Handler"
 	ERC20 "github.com/ChainSafe/chainbridge-celo/bindings/ERC20PresetMinterPauser"
-	msg "github.com/ChainSafe/chainbridge-utils/msg"
+	msg "github.com/ChainSafe/chainbridge-celo/msg"
 	"github.com/ethereum/go-ethereum/common"
 )
 

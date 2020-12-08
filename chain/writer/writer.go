@@ -8,8 +8,8 @@ import (
 
 	"github.com/ChainSafe/chainbridge-celo/bindings/Bridge"
 	"github.com/ChainSafe/chainbridge-celo/chain"
+	"github.com/ChainSafe/chainbridge-celo/msg"
 	metrics "github.com/ChainSafe/chainbridge-utils/metrics/types"
-	"github.com/ChainSafe/chainbridge-utils/msg"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
@@ -58,7 +58,7 @@ func NewWriter(client ContractCaller, cfg *chain.CeloChainConfig, stop <-chan st
 }
 
 // setContract adds the bound receiver bridgeContract to the writer
-func (w *writer) SetBridge(bridge *Bridge.Bridge) {
+func (w *writer) SetBridge(bridge Bridger) {
 	w.bridgeContract = bridge
 }
 
@@ -97,7 +97,7 @@ func (w *writer) ResolveMessage(m *msg.Message) bool {
 	}
 
 	// watch for execution event
-	go w.watchThenExecute(m, data, dataHash, latestBlock, msgProofOpts)
+	go w.watchThenExecute(m, data, dataHash, latestBlock, nil)
 
 	w.voteProposal(m, dataHash)
 
