@@ -32,8 +32,7 @@ var ErrFatalTx = errors.New("submission of transaction failed")
 var ErrFatalQuery = errors.New("query of chain state failed")
 
 // proposalIsComplete returns true if the proposal state is either Passed, Transferred or Cancelled
-//TODO: understand CallOpt deeply
-func (w *writer) proposalIsComplete(srcId msg.ChainId, nonce msg.Nonce, dataHash [32]byte) bool {
+func (w *writer) proposalIsComplete(srcId msg.ChainId, nonce msg.Nonce, dataHash ethcommon.Hash) bool {
 	prop, err := w.bridgeContract.GetProposal(w.client.CallOpts(), uint8(srcId), uint64(nonce), dataHash)
 	if err != nil {
 		log.Error().Err(err).Msg("Failed to check proposal existence")
@@ -43,7 +42,7 @@ func (w *writer) proposalIsComplete(srcId msg.ChainId, nonce msg.Nonce, dataHash
 }
 
 // proposalIsFinalized returns true if the proposal state is Transferred or Cancelled
-func (w *writer) proposalIsFinalized(srcId msg.ChainId, nonce msg.Nonce, dataHash [32]byte) bool {
+func (w *writer) proposalIsFinalized(srcId msg.ChainId, nonce msg.Nonce, dataHash ethcommon.Hash) bool {
 	prop, err := w.bridgeContract.GetProposal(w.client.CallOpts(), uint8(srcId), uint64(nonce), dataHash)
 
 	if err != nil {
@@ -54,7 +53,7 @@ func (w *writer) proposalIsFinalized(srcId msg.ChainId, nonce msg.Nonce, dataHas
 }
 
 // hasVoted checks if this relayer has already voted
-func (w *writer) hasVoted(srcId msg.ChainId, nonce msg.Nonce, dataHash [32]byte) bool {
+func (w *writer) hasVoted(srcId msg.ChainId, nonce msg.Nonce, dataHash ethcommon.Hash) bool {
 	hasVoted, err := w.bridgeContract.HasVotedOnProposal(w.client.CallOpts(), utils.IDAndNonce(srcId, nonce), dataHash, w.client.Opts().From)
 
 	if err != nil {
@@ -65,10 +64,11 @@ func (w *writer) hasVoted(srcId msg.ChainId, nonce msg.Nonce, dataHash [32]byte)
 	return hasVoted
 }
 
-func (w *writer) shouldVote(m *msg.Message, dataHash [32]byte) bool {
+func (w *writer) shouldVote(m *msg.Message, dataHash ethcommon.Hash) bool {
 	// Check if proposal has passed and skip if Passed or Transferred
 	if w.proposalIsComplete(m.Source, m.DepositNonce, dataHash) {
 		log.Info().Interface("src", m.Source).Interface("nonce", m.DepositNonce).Msg("Proposal complete, not voting")
+		return false
 	}
 
 	// Check if relayer has previously voted
@@ -130,7 +130,7 @@ func (w *writer) createGenericDepositProposalDataAndHash(m *msg.Message) ([]byte
 }
 
 // watchThenExecute watches for the latest block and executes once the matching finalized event is found
-func (w *writer) watchThenExecute(m *msg.Message, data []byte, dataHash [32]byte, latestBlock *big.Int, msgProofOpts *celoMsg.MsgProofOpts) {
+func (w *writer) watchThenExecute(m *msg.Message, data []byte, dataHash ethcommon.Hash, latestBlock *big.Int, msgProofOpts *celoMsg.MsgProofOpts) {
 	log.Info().Interface("src", m.Source).Interface("nonce", m.DepositNonce).Msg("Watching for finalization event")
 
 	// watching for the latest block, querying and matching the finalized event will be retried up to ExecuteBlockWatchLimit times
@@ -187,7 +187,7 @@ func (w *writer) watchThenExecute(m *msg.Message, data []byte, dataHash [32]byte
 
 // voteProposal submits a vote proposal
 // a vote proposal will try to be submitted up to the TxRetryLimit times
-func (w *writer) voteProposal(m *msg.Message, dataHash [32]byte) {
+func (w *writer) voteProposal(m *msg.Message, dataHash ethcommon.Hash) {
 	for i := 0; i < TxRetryLimit; i++ {
 		select {
 		case <-w.stop:
@@ -234,7 +234,7 @@ func (w *writer) voteProposal(m *msg.Message, dataHash [32]byte) {
 }
 
 // executeProposal executes the proposal
-func (w *writer) executeProposal(m *msg.Message, data []byte, dataHash [32]byte, msgProofOpts *celoMsg.MsgProofOpts) {
+func (w *writer) executeProposal(m *msg.Message, data []byte, dataHash ethcommon.Hash, msgProofOpts *celoMsg.MsgProofOpts) {
 	for i := 0; i < TxRetryLimit; i++ {
 		select {
 		case <-w.stop:
