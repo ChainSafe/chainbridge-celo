@@ -4,19 +4,17 @@
 package writer
 
 import (
-	"github.com/ethereum/go-ethereum/common"
 	"math/big"
 
 	"github.com/ChainSafe/chainbridge-celo/bindings/Bridge"
 	"github.com/ChainSafe/chainbridge-celo/chain"
-	"github.com/ChainSafe/chainbridge-utils/core"
 	metrics "github.com/ChainSafe/chainbridge-utils/metrics/types"
 	"github.com/ChainSafe/chainbridge-utils/msg"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
+	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/rs/zerolog/log"
 )
-
-var _ core.Writer = &writer{}
 
 var PassedStatus uint8 = 2
 var TransferredStatus uint8 = 3
@@ -26,10 +24,17 @@ var BlockRetryLimit = 5
 type writer struct {
 	cfg            *chain.CeloChainConfig
 	client         ContractCaller
-	bridgeContract *Bridge.Bridge
+	bridgeContract Bridger
 	stop           <-chan struct{}
 	sysErr         chan<- error
 	metrics        *metrics.ChainMetrics
+}
+
+type Bridger interface {
+	GetProposal(opts *bind.CallOpts, originChainID uint8, depositNonce uint64, dataHash [32]byte) (Bridge.BridgeProposal, error)
+	HasVotedOnProposal(opts *bind.CallOpts, arg0 *big.Int, arg1 [32]byte, arg2 common.Address) (bool, error)
+	VoteProposal(opts *bind.TransactOpts, chainID uint8, depositNonce uint64, resourceID [32]byte, dataHash [32]byte) (*types.Transaction, error)
+	ExecuteProposal(opts *bind.TransactOpts, chainID uint8, depositNonce uint64, data []byte, resourceID [32]byte, signatureHeader []byte, aggregatePublicKey []byte, g1 []byte, hashedMessage []byte, rootHash [32]byte, key []byte, nodes []byte) (*types.Transaction, error)
 }
 
 type ContractCaller interface {
