@@ -40,7 +40,7 @@ type Message struct {
 type MsgProofOpts struct {
 	RootHash           [32]byte
 	AggregatePublicKey []byte
-	HashedMessage      []byte
+	HashedMessage      [32]byte
 	Key                []byte
 	SignatureHeader    []byte
 	Nodes              []byte

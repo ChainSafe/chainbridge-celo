@@ -32,7 +32,7 @@ func CreateProposalDataHash(data []byte, handler common.Address, msgProofOpts *m
 	data = append(data, msgProofOpts.Key...)
 	data = append(data, msgProofOpts.Nodes...)
 	data = append(data, msgProofOpts.AggregatePublicKey...)
-	data = append(data, msgProofOpts.HashedMessage...)
+	data = append(data, msgProofOpts.HashedMessage[:]...)
 	data = append(data, msgProofOpts.SignatureHeader...)
 	return utils.Hash(data)
 }
