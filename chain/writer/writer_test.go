@@ -7,6 +7,7 @@ import (
 	"testing"
 
 	"github.com/ChainSafe/chainbridge-celo/chain"
+	mock_writer "github.com/ChainSafe/chainbridge-celo/chain/writer/mock"
 	message "github.com/ChainSafe/chainbridge-celo/msg"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/golang/mock/gomock"
