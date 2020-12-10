@@ -25,9 +25,7 @@ func TestRunTestSuite(t *testing.T) {
 	suite.Run(t, new(WriterTestSuite))
 }
 
-func (s *WriterTestSuite) SetupSuite() {
-}
-
+func (s *WriterTestSuite) SetupSuite()    {}
 func (s *WriterTestSuite) TearDownSuite() {}
 func (s *WriterTestSuite) SetupTest() {
 	gomockController := gomock.NewController(s.T())
@@ -63,9 +61,9 @@ func (s *WriterTestSuite) TestResolveMessageProposalIsAlreadyComplete() {
 	w := NewWriter(s.client, cfg, stopChn, errChn, nil)
 	w.SetBridge(s.bridgeMock)
 	// Setting returned proposal to PassedStatus
-	prop := Bridge.BridgeProposal{Status: PassedStatus}
+	prop := Bridge.BridgeProposal{Status: ProposalStatusPassed}
 	s.client.EXPECT().CallOpts().Return(nil)
-	s.bridgeMock.EXPECT().GetProposal(gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).Return(prop, nil)
+	s.bridgeMock.EXPECT().GetProposal(gomock.Any(), gomock.Any(), int64(m.DepositNonce), gomock.Any()).Return(prop, nil)
 	s.False(w.shouldVote(&m, common.Hash{}))
 }
 

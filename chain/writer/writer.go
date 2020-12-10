@@ -16,9 +16,9 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
-var PassedStatus uint8 = 2
-var TransferredStatus uint8 = 3
-var CancelledStatus uint8 = 4
+var ProposalStatusPassed uint8 = 2
+var ProposalStatusTransferred uint8 = 3
+var ProposalStatusCancelled uint8 = 4
 var BlockRetryLimit = 5
 
 type writer struct {
@@ -62,6 +62,8 @@ func (w *writer) SetBridge(bridge Bridger) {
 	w.bridgeContract = bridge
 }
 
+func buildMsgOpts()
+
 // ResolveMessage handles any given message based on type
 // A bool is returned to indicate failure/success
 // this should be ignored except for within tests.
@@ -72,11 +74,11 @@ func (w *writer) ResolveMessage(m *msg.Message) bool {
 	var err error
 	switch m.Type {
 	case msg.FungibleTransfer:
-		data, dataHash, err = w.createERC20ProposalDataAndHash(m)
+		data, err = w.createERC20ProposalDataAndHash(m)
 	case msg.NonFungibleTransfer:
-		data, dataHash, err = w.createErc721ProposalDataAndHash(m)
+		data, err = w.createErc721ProposalDataAndHash(m)
 	case msg.GenericTransfer:
-		data, dataHash, err = w.createGenericDepositProposalDataAndHash(m)
+		data, err = w.createGenericDepositProposalDataAndHash(m)
 	default:
 		log.Error().Str("type", string(m.Type)).Msg("Unknown message type received")
 		return false
@@ -97,7 +99,7 @@ func (w *writer) ResolveMessage(m *msg.Message) bool {
 	}
 
 	// watch for execution event
-	go w.watchThenExecute(m, data, dataHash, latestBlock, nil)
+	go w.watchThenExecute(m, data, dataHash, latestBlock)
 
 	w.voteProposal(m, dataHash)
 

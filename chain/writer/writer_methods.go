@@ -38,7 +38,7 @@ func (w *writer) proposalIsComplete(srcId msg.ChainId, nonce msg.Nonce, dataHash
 		log.Error().Err(err).Msg("Failed to check proposal existence")
 		return false
 	}
-	return prop.Status == PassedStatus || prop.Status == TransferredStatus || prop.Status == CancelledStatus
+	return prop.Status == ProposalStatusPassed || prop.Status == ProposalStatusTransferred || prop.Status == ProposalStatusCancelled
 }
 
 // proposalIsFinalized returns true if the proposal state is Transferred or Cancelled
@@ -49,7 +49,7 @@ func (w *writer) proposalIsFinalized(srcId msg.ChainId, nonce msg.Nonce, dataHas
 		log.Error().Err(err).Msg("Failed to check proposal existence")
 		return false
 	}
-	return prop.Status == TransferredStatus || prop.Status == CancelledStatus
+	return prop.Status == ProposalStatusTransferred || prop.Status == ProposalStatusCancelled
 }
 
 // hasVoted checks if this relayer has already voted
@@ -60,7 +60,6 @@ func (w *writer) hasVoted(srcId msg.ChainId, nonce msg.Nonce, dataHash ethcommon
 		log.Error().Err(err).Msg("Failed to check proposal existence")
 		return false
 	}
-
 	return hasVoted
 }
 
@@ -76,23 +75,26 @@ func (w *writer) shouldVote(m *msg.Message, dataHash ethcommon.Hash) bool {
 		log.Info().Interface("src", m.Source).Interface("nonce", m.DepositNonce).Msg("Relayer has already voted, not voting")
 		return false
 	}
-
 	return true
 }
 
-func (w *writer) createERC20ProposalDataAndHash(m *msg.Message) ([]byte, ethcommon.Hash, error) {
+func (w *writer) constructDataHash(data []byte, handlerAddress ethcommon.Address, msgProofOpts *celoMsg.MsgProofOpts) (ethcommon.Hash, error) {
+	//msgProofOptsInterface := m.Payload[2]
+	//if msgProofOptsInterface == nil {
+	//	return ethcommon.Hash{}, errors.New("msgProofOpts cannot be nil")
+	//}
+	//msgProofOpts, ok := msgProofOptsInterface.(*celoMsg.MsgProofOpts)
+	//if !ok {
+	//	return ethcommon.Hash{}, errors.New("unable to convert msgProofOptsInterface to *MsgProofOpts")
+	//}
+	return CreateProposalDataHash(data, handlerAddress, msgProofOpts), nil
+
+}
+
+func (w *writer) createERC20ProposalDataAndHash(m *msg.Message) ([]byte, error) {
 	log.Info().Interface("src", m.Source).Interface("nonce", m.DepositNonce).Msg("Creating erc20 proposal")
-	msgProofOptsInterface := m.Payload[2]
-	if msgProofOptsInterface == nil {
-		return nil, ethcommon.Hash{}, errors.New("msgProofOpts cannot be nil")
-	}
-	msgProofOpts, ok := msgProofOptsInterface.(*celoMsg.MsgProofOpts)
-	if !ok {
-		return nil, ethcommon.Hash{}, errors.New("unable to convert msgProofOptsInterface to *MsgProofOpts")
-	}
 	data := ConstructErc20ProposalData(m.Payload[0].([]byte), m.Payload[1].([]byte))
-	dataHash := CreateProposalDataHash(data, w.cfg.Erc20HandlerContract, msgProofOpts)
-	return data, dataHash, nil
+	return data, nil
 }
 
 func (w *writer) createErc721ProposalDataAndHash(m *msg.Message) ([]byte, ethcommon.Hash, error) {
