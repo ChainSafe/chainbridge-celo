@@ -190,7 +190,7 @@ func (mr *MockBridgerMockRecorder) VoteProposal(opts, chainID, depositNonce, res
 }
 
 // ExecuteProposal mocks base method
-func (m *MockBridger) ExecuteProposal(opts *bind.TransactOpts, chainID uint8, depositNonce uint64, data []byte, resourceID [32]byte, signatureHeader, aggregatePublicKey, g1, hashedMessage []byte, rootHash [32]byte, key, nodes []byte) (*types.Transaction, error) {
+func (m *MockBridger) ExecuteProposal(opts *bind.TransactOpts, chainID uint8, depositNonce uint64, data []byte, resourceID [32]byte, signatureHeader, aggregatePublicKey, g1 []byte, hashedMessage, rootHash [32]byte, key, nodes []byte) (*types.Transaction, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ExecuteProposal", opts, chainID, depositNonce, data, resourceID, signatureHeader, aggregatePublicKey, g1, hashedMessage, rootHash, key, nodes)
 	ret0, _ := ret[0].(*types.Transaction)

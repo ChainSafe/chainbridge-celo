@@ -34,7 +34,7 @@ type Bridger interface {
 	GetProposal(opts *bind.CallOpts, originChainID uint8, depositNonce uint64, dataHash [32]byte) (Bridge.BridgeProposal, error)
 	HasVotedOnProposal(opts *bind.CallOpts, arg0 *big.Int, arg1 [32]byte, arg2 common.Address) (bool, error)
 	VoteProposal(opts *bind.TransactOpts, chainID uint8, depositNonce uint64, resourceID [32]byte, dataHash [32]byte) (*types.Transaction, error)
-	ExecuteProposal(opts *bind.TransactOpts, chainID uint8, depositNonce uint64, data []byte, resourceID [32]byte, signatureHeader []byte, aggregatePublicKey []byte, g1 []byte, hashedMessage []byte, rootHash [32]byte, key []byte, nodes []byte) (*types.Transaction, error)
+	ExecuteProposal(opts *bind.TransactOpts, chainID uint8, depositNonce uint64, data []byte, resourceID [32]byte, signatureHeader []byte, aggregatePublicKey []byte, g1 []byte, hashedMessage [32]byte, rootHash [32]byte, key []byte, nodes []byte) (*types.Transaction, error)
 }
 
 type ContractCaller interface {
@@ -62,23 +62,24 @@ func (w *writer) SetBridge(bridge Bridger) {
 	w.bridgeContract = bridge
 }
 
-func buildMsgOpts()
-
 // ResolveMessage handles any given message based on type
 // A bool is returned to indicate failure/success
 // this should be ignored except for within tests.
 func (w *writer) ResolveMessage(m *msg.Message) bool {
 	log.Info().Str("type", string(m.Type)).Interface("src", m.Source).Interface("dst", m.Destination).Interface("nonce", m.DepositNonce).Str("rId", m.ResourceId.Hex()).Msg("Attempting to resolve message")
-	var dataHash common.Hash
 	var data []byte
+	var handlerContract common.Address
 	var err error
 	switch m.Type {
 	case msg.FungibleTransfer:
-		data, err = w.createERC20ProposalDataAndHash(m)
+		data, err = w.createERC20ProposalData(m)
+		handlerContract = w.cfg.Erc20HandlerContract
 	case msg.NonFungibleTransfer:
-		data, err = w.createErc721ProposalDataAndHash(m)
+		data, err = w.createErc721ProposalData(m)
+		handlerContract = w.cfg.Erc721HandlerContract
 	case msg.GenericTransfer:
-		data, err = w.createGenericDepositProposalDataAndHash(m)
+		data, err = w.createGenericDepositProposalData(m)
+		handlerContract = w.cfg.GenericHandlerContract
 	default:
 		log.Error().Str("type", string(m.Type)).Msg("Unknown message type received")
 		return false
@@ -87,6 +88,7 @@ func (w *writer) ResolveMessage(m *msg.Message) bool {
 		log.Error().Err(err)
 		return false
 	}
+	dataHash := CreateProposalDataHash(data, handlerContract, m.ProofOpts)
 
 	if !w.shouldVote(m, dataHash) {
 		return false
@@ -99,7 +101,7 @@ func (w *writer) ResolveMessage(m *msg.Message) bool {
 	}
 
 	// watch for execution event
-	go w.watchThenExecute(m, data, dataHash, latestBlock)
+	go w.watchThenExecute(m, data, dataHash, latestBlock, m.ProofOpts)
 
 	w.voteProposal(m, dataHash)
 

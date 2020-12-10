@@ -41,7 +41,7 @@ func (s *WriterTestSuite) TestResolveMessageWrongType() {
 	amount := big.NewInt(10)
 	stopChn := make(chan struct{})
 	errChn := make(chan error)
-	m := message.NewFungibleTransfer(1, 0, 0, amount, resourceId, recipient)
+	m := message.NewFungibleTransfer(1, 0, message.Nonce(555), amount, resourceId, recipient)
 	m.Type = "123"
 	cfg := &chain.CeloChainConfig{StartBlock: big.NewInt(1), BridgeContract: common.Address{}}
 	w := NewWriter(s.client, cfg, stopChn, errChn, nil)
@@ -54,22 +54,23 @@ func (s *WriterTestSuite) TestResolveMessageProposalIsAlreadyComplete() {
 	amount := big.NewInt(10)
 	stopChn := make(chan struct{})
 	errChn := make(chan error)
-	m := message.NewFungibleTransfer(1, 0, 0, amount, resourceId, recipient)
+	m := message.NewFungibleTransfer(1, 0, message.Nonce(555), amount, resourceId, recipient)
 
 	cfg := &chain.CeloChainConfig{StartBlock: big.NewInt(1), BridgeContract: common.Address{}}
 	w := NewWriter(s.client, cfg, stopChn, errChn, nil)
 	w.SetBridge(s.bridgeMock)
+
 	// Setting returned proposal to PassedStatus
 	prop := Bridge.BridgeProposal{Status: ProposalStatusPassed}
 	s.client.EXPECT().CallOpts().Return(nil)
-	s.bridgeMock.EXPECT().GetProposal(gomock.Any(), gomock.Any(), int64(m.DepositNonce), gomock.Any()).Return(prop, nil)
+	s.bridgeMock.EXPECT().GetProposal(gomock.Any(), gomock.Any(), uint64(m.DepositNonce), gomock.Any()).Return(prop, nil)
 	s.False(w.shouldVote(&m, common.Hash{}))
 }
 
 func (s *WriterTestSuite) TestResolveMessageProposalIsAlreadyVoted() {
 	stopChn := make(chan struct{})
 	errChn := make(chan error)
-	m := message.NewFungibleTransfer(1, 0, 0, big.NewInt(10), [32]byte{1}, make([]byte, 32))
+	m := message.NewFungibleTransfer(1, 0, message.Nonce(555), big.NewInt(10), [32]byte{1}, make([]byte, 32))
 
 	cfg := &chain.CeloChainConfig{StartBlock: big.NewInt(1), BridgeContract: common.Address{}}
 	w := NewWriter(s.client, cfg, stopChn, errChn, nil)

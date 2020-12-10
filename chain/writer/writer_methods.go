@@ -78,57 +78,54 @@ func (w *writer) shouldVote(m *msg.Message, dataHash ethcommon.Hash) bool {
 	return true
 }
 
-func (w *writer) constructDataHash(data []byte, handlerAddress ethcommon.Address, msgProofOpts *celoMsg.MsgProofOpts) (ethcommon.Hash, error) {
-	//msgProofOptsInterface := m.Payload[2]
-	//if msgProofOptsInterface == nil {
-	//	return ethcommon.Hash{}, errors.New("msgProofOpts cannot be nil")
-	//}
-	//msgProofOpts, ok := msgProofOptsInterface.(*celoMsg.MsgProofOpts)
-	//if !ok {
-	//	return ethcommon.Hash{}, errors.New("unable to convert msgProofOptsInterface to *MsgProofOpts")
-	//}
-	return CreateProposalDataHash(data, handlerAddress, msgProofOpts), nil
-
-}
-
-func (w *writer) createERC20ProposalDataAndHash(m *msg.Message) ([]byte, error) {
+func (w *writer) createERC20ProposalData(m *msg.Message) ([]byte, error) {
 	log.Info().Interface("src", m.Source).Interface("nonce", m.DepositNonce).Msg("Creating erc20 proposal")
-	data := ConstructErc20ProposalData(m.Payload[0].([]byte), m.Payload[1].([]byte))
+	if len(m.Payload) != 2 {
+		return nil, errors.New("malformed payload. Len  of payload should be 2")
+	}
+	amount, ok := m.Payload[0].([]byte)
+	if !ok {
+		return nil, errors.New("wrong payloads amount format")
+	}
+
+	recipient, ok := m.Payload[1].([]byte)
+	if !ok {
+		return nil, errors.New("wrong payloads recipient format")
+	}
+	data := ConstructErc20ProposalData(amount, recipient)
 	return data, nil
 }
 
-func (w *writer) createErc721ProposalDataAndHash(m *msg.Message) ([]byte, ethcommon.Hash, error) {
+func (w *writer) createErc721ProposalData(m *msg.Message) ([]byte, error) {
 	log.Info().Interface("src", m.Source).Interface("nonce", m.DepositNonce).Msg("Creating erc721 proposal")
-	msgProofOptsInterface := m.Payload[3]
-	if msgProofOptsInterface == nil {
-		return nil, ethcommon.Hash{}, errors.New("msgProofOpts cannot be nil")
+	if len(m.Payload) != 3 {
+		return nil, errors.New("malformed payload. Len  of payload should be 3")
 	}
-	msgProofOpts, ok := msgProofOptsInterface.(*celoMsg.MsgProofOpts)
+	tokenID, ok := m.Payload[0].([]byte)
 	if !ok {
-		return nil, ethcommon.Hash{}, errors.New("unable to convert msgProofOptsInterface to *MsgProofOpts")
+		return nil, errors.New("wrong payloads tokenID format")
 	}
-	data := ConstructErc721ProposalData(m.Payload[0].([]byte), m.Payload[1].([]byte), m.Payload[2].([]byte))
-	dataHash := CreateProposalDataHash(data, w.cfg.Erc721HandlerContract, msgProofOpts)
-	return data, dataHash, nil
+	recipient, ok := m.Payload[1].([]byte)
+	if !ok {
+		return nil, errors.New("wrong payloads recipient format")
+	}
+	metadata, ok := m.Payload[2].([]byte)
+	if !ok {
+		return nil, errors.New("wrong payloads metadata format")
+	}
+	return ConstructErc721ProposalData(tokenID, recipient, metadata), nil
 }
 
-func (w *writer) createGenericDepositProposalDataAndHash(m *msg.Message) ([]byte, ethcommon.Hash, error) {
+func (w *writer) createGenericDepositProposalData(m *msg.Message) ([]byte, error) {
 	log.Info().Interface("src", m.Source).Interface("nonce", m.DepositNonce).Msg("Creating generic proposal")
+	if len(m.Payload) != 1 {
+		return nil, errors.New("malformed payload. Len  of payload should be 1")
+	}
 	metadata, ok := m.Payload[0].([]byte)
 	if !ok {
-		return nil, ethcommon.Hash{}, errors.New("unable to convert metadata to []byte")
+		return nil, errors.New("unable to convert metadata to []byte")
 	}
-	msgProofOptsInterface := m.Payload[1]
-	if msgProofOptsInterface == nil {
-		return nil, ethcommon.Hash{}, errors.New("msgProofOpts cannot be nil")
-	}
-	msgProofOpts, ok := msgProofOptsInterface.(*celoMsg.MsgProofOpts)
-	if !ok {
-		return nil, ethcommon.Hash{}, errors.New("unable to convert msgProofOptsInterface to *MsgProofOpts")
-	}
-	data := ConstructGenericProposalData(metadata)
-	dataHash := CreateProposalDataHash(data, w.cfg.GenericHandlerContract, msgProofOpts)
-	return data, dataHash, nil
+	return ConstructGenericProposalData(metadata), nil
 }
 
 // watchThenExecute watches for the latest block and executes once the matching finalized event is found

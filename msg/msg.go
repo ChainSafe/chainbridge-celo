@@ -5,12 +5,11 @@ package msg
 
 import (
 	"fmt"
-	"github.com/ChainSafe/chainbridge-utils/msg"
 	"github.com/ethereum/go-ethereum/common"
 	"math/big"
 )
 
-type ChainId msg.ChainId
+type ChainId uint8
 type TransferType string
 type ResourceId [32]byte
 
@@ -35,6 +34,7 @@ type Message struct {
 	Type         TransferType // type of bridge transfer
 	DepositNonce Nonce        // Nonce for the deposit
 	ResourceId   ResourceId
+	ProofOpts    *MsgProofOpts
 	Payload      []interface{} // data associated with event sequence
 }
 
