@@ -139,12 +139,12 @@ func (w *writer) watchThenExecute(m *msg.Message, data []byte, dataHash ethcommo
 			return
 		default:
 			// watch for the lastest block, retry up to BlockRetryLimit times
-			for waitRetrys := 0; waitRetrys < BlockRetryLimit; waitRetrys++ {
+			for waitRetrys := 0; waitRetrys <= BlockRetryLimit; waitRetrys++ {
 				err := w.client.WaitForBlock(latestBlock)
 				if err != nil {
 					log.Error().Err(err).Msg("Waiting for block failed")
 					// Exit if retries exceeded
-					if waitRetrys+1 == BlockRetryLimit {
+					if waitRetrys == BlockRetryLimit {
 						log.Error().Err(err).Msg("Waiting for block retries exceeded, shutting down")
 						w.sysErr <- ErrFatalQuery
 						return
@@ -206,26 +206,21 @@ func (w *writer) voteProposal(m *msg.Message, dataHash ethcommon.Hash) {
 				dataHash,
 			)
 			w.client.UnlockOpts()
-
-			if err == nil {
-				log.Info().Str("tx", tx.Hash().Hex()).Interface("src", m.Source).Interface("depositNonce", m.DepositNonce).Msg("Submitted proposal vote")
-				if w.metrics != nil {
-					w.metrics.VotesSubmitted.Inc()
+			if err != nil {
+				if err.Error() == ErrNonceTooLow.Error() || err.Error() == ErrTxUnderpriced.Error() {
+					log.Debug().Msg("Nonce too low, will retry")
+					time.Sleep(TxRetryInterval)
+				} else {
+					log.Warn().Interface("source", m.Source).Interface("dest", m.Destination).Interface("nonce", m.DepositNonce).Msg("Voting failed")
+					time.Sleep(TxRetryInterval)
 				}
-				return
-			} else if err.Error() == ErrNonceTooLow.Error() || err.Error() == ErrTxUnderpriced.Error() {
-				log.Debug().Msg("Nonce too low, will retry")
-				time.Sleep(TxRetryInterval)
-			} else {
-				log.Warn().Interface("source", m.Source).Interface("dest", m.Destination).Interface("nonce", m.DepositNonce).Msg("Voting failed")
-				time.Sleep(TxRetryInterval)
+				if w.proposalIsComplete(m.Source, m.DepositNonce, dataHash) {
+					log.Info().Interface("source", m.Source).Interface("dest", m.Destination).Interface("nonce", m.DepositNonce).Msg("Proposal voting complete on chain")
+					return
+				}
 			}
-
-			// Verify proposal is still open for voting, otherwise no need to retry
-			if w.proposalIsComplete(m.Source, m.DepositNonce, dataHash) {
-				log.Info().Interface("source", m.Source).Interface("dest", m.Destination).Interface("nonce", m.DepositNonce).Msg("Proposal voting complete on chain")
-				return
-			}
+			log.Info().Str("tx", tx.Hash().Hex()).Interface("src", m.Source).Interface("depositNonce", m.DepositNonce).Msg("Submitted proposal vote")
+			return
 		}
 	}
 	log.Error().Interface("source", m.Source).Interface("dest", m.Destination).Interface("nonce", m.DepositNonce).Msg("Submission of Vote transaction failed")

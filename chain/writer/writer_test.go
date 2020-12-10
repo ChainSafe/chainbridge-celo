@@ -48,7 +48,7 @@ func (s *WriterTestSuite) TestResolveMessageWrongType() {
 	s.False(w.ResolveMessage(&m))
 }
 
-func (s *WriterTestSuite) TestResolveMessageProposalIsAlreadyComplete() {
+func (s *WriterTestSuite) TestShouldVoteProposalIsAlreadyComplete() {
 	resourceId := [32]byte{1}
 	recipient := make([]byte, 32)
 	amount := big.NewInt(10)
@@ -67,7 +67,7 @@ func (s *WriterTestSuite) TestResolveMessageProposalIsAlreadyComplete() {
 	s.False(w.shouldVote(&m, common.Hash{}))
 }
 
-func (s *WriterTestSuite) TestResolveMessageProposalIsAlreadyVoted() {
+func (s *WriterTestSuite) TestShouldVoteProposalIsAlreadyVoted() {
 	stopChn := make(chan struct{})
 	errChn := make(chan error)
 	m := message.NewFungibleTransfer(1, 0, message.Nonce(555), big.NewInt(10), [32]byte{1}, make([]byte, 32))
