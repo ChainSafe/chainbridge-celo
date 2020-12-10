@@ -15,9 +15,8 @@ import (
 	"github.com/ChainSafe/chainbridge-celo/bindings/ERC721Handler"
 	"github.com/ChainSafe/chainbridge-celo/bindings/GenericHandler"
 	"github.com/ChainSafe/chainbridge-celo/chain"
+	"github.com/ChainSafe/chainbridge-celo/msg"
 	"github.com/ChainSafe/chainbridge-celo/shared/ethereum"
-	"github.com/ChainSafe/chainbridge-utils/blockstore"
-	"github.com/ChainSafe/chainbridge-utils/msg"
 	eth "github.com/ethereum/go-ethereum"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	ethcommon "github.com/ethereum/go-ethereum/common"
@@ -37,7 +36,7 @@ type listener struct {
 	erc20HandlerContract   *ERC20Handler.ERC20Handler
 	erc721HandlerContract  *ERC721Handler.ERC721Handler
 	genericHandlerContract *GenericHandler.GenericHandler
-	blockstore             blockstore.Blockstorer
+	blockstore             Blockstorer
 	stop                   <-chan struct{}
 	sysErr                 chan<- error // Reports fatal error to core
 	syncer                 BlockSyncer
@@ -178,7 +177,7 @@ func (l *listener) getDepositEventsAndProofsForBlock(latestBlock *big.Int) error
 	for _, eventLog := range logs {
 		var m msg.Message
 		destId := msg.ChainId(eventLog.Topics[1].Big().Uint64())
-		rId := msg.ResourceIdFromSlice(eventLog.Topics[2].Bytes())
+		rId := msg.ResourceId(eventLog.Topics[2])
 		nonce := msg.Nonce(eventLog.Topics[3].Big().Uint64())
 
 		addr, err := l.bridgeContract.ResourceIDToHandlerAddress(&bind.CallOpts{}, rId)

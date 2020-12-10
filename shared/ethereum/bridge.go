@@ -4,10 +4,10 @@
 package utils
 
 import (
-	"math/big"
 	"github.com/ChainSafe/chainbridge-celo/bindings/Bridge"
-	msg "github.com/ChainSafe/chainbridge-utils/msg"
+	msg "github.com/ChainSafe/chainbridge-celo/msg"
 	"github.com/ethereum/go-ethereum/common"
+	"math/big"
 )
 
 func RegisterResource(client *Client, bridge, handler common.Address, rId msg.ResourceId, addr common.Address) error {
