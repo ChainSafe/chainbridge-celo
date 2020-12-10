@@ -57,7 +57,7 @@ func CreateProposalDataHash(data []byte, handler common.Address, msgProofOpts *m
 	b.Write(msgProofOpts.Key)
 	b.Write(msgProofOpts.Nodes)
 	b.Write(msgProofOpts.AggregatePublicKey)
-	b.Write(msgProofOpts.HashedMessage)
+	b.Write(msgProofOpts.HashedMessage[:])
 	b.Write(msgProofOpts.SignatureHeader)
 	return crypto.Keccak256Hash(b.Bytes())
 }

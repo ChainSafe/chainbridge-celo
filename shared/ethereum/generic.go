@@ -5,7 +5,7 @@ package utils
 
 import (
 	"github.com/ChainSafe/chainbridge-celo/bindings/GenericHandler"
-	msg "github.com/ChainSafe/chainbridge-utils/msg"
+	msg "github.com/ChainSafe/chainbridge-celo/msg"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/crypto"
 )

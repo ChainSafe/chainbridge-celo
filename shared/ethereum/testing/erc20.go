@@ -7,8 +7,8 @@ import (
 	"math/big"
 	"testing"
 
+	"github.com/ChainSafe/chainbridge-celo/msg"
 	utils "github.com/ChainSafe/chainbridge-celo/shared/ethereum"
-	"github.com/ChainSafe/chainbridge-utils/msg"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/rs/zerolog/log"
 )

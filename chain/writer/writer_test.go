@@ -8,7 +8,7 @@ import (
 	"github.com/ChainSafe/chainbridge-celo/bindings/Bridge"
 	"github.com/ChainSafe/chainbridge-celo/chain"
 	"github.com/ChainSafe/chainbridge-celo/chain/writer/mock"
-	message "github.com/ChainSafe/chainbridge-utils/msg"
+	message "github.com/ChainSafe/chainbridge-celo/msg"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/suite"
@@ -42,7 +42,6 @@ func (s *WriterTestSuite) TestResolveMessageWrongType() {
 	stopChn := make(chan struct{})
 	errChn := make(chan error)
 	m := message.NewFungibleTransfer(1, 0, 0, amount, resourceId, recipient)
-
 	m.Type = "123"
 	cfg := &chain.CeloChainConfig{StartBlock: big.NewInt(1), BridgeContract: common.Address{}}
 	w := NewWriter(s.client, cfg, stopChn, errChn, nil)
