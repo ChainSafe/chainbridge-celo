@@ -1,16 +1,18 @@
+// Copyright 2020 ChainSafe Systems
+// SPDX-License-Identifier: LGPL-3.0-only
 package listener
 
 import (
-	"github.com/ChainSafe/chainbridge-celo/chain/client/mock"
-	"github.com/ChainSafe/chainbridge-celo/chain/config"
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/core/types"
-	"github.com/pkg/errors"
 	"math/big"
 	"testing"
 
+	"github.com/ChainSafe/chainbridge-celo/chain/client/mock"
+	"github.com/ChainSafe/chainbridge-celo/chain/config"
 	"github.com/ChainSafe/chainbridge-celo/chain/listener/mock"
+	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/golang/mock/gomock"
+	"github.com/pkg/errors"
 	"github.com/stretchr/testify/suite"
 )
 
