@@ -1,3 +1,5 @@
+// Copyright 2020 ChainSafe Systems
+// SPDX-License-Identifier: LGPL-3.0-only
 package writer
 
 import (
@@ -7,7 +9,7 @@ import (
 
 	"github.com/ChainSafe/chainbridge-celo/bindings/Bridge"
 	"github.com/ChainSafe/chainbridge-celo/chain"
-	"github.com/ChainSafe/chainbridge-celo/chain/writer/mock"
+	mock_writer "github.com/ChainSafe/chainbridge-celo/chain/writer/mock"
 	message "github.com/ChainSafe/chainbridge-celo/msg"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
