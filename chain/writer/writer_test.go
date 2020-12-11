@@ -1,7 +1,7 @@
 package writer
 
 import (
-	"github.com/ethereum/go-ethereum/accounts/abi/bind"
+	"github.com/pkg/errors"
 	"math/big"
 	"testing"
 
@@ -9,7 +9,9 @@ import (
 	"github.com/ChainSafe/chainbridge-celo/chain"
 	"github.com/ChainSafe/chainbridge-celo/chain/writer/mock"
 	message "github.com/ChainSafe/chainbridge-celo/msg"
+	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/suite"
 )
@@ -45,7 +47,7 @@ func (s *WriterTestSuite) TestResolveMessageWrongType() {
 	m.Type = "123"
 	cfg := &chain.CeloChainConfig{StartBlock: big.NewInt(1), BridgeContract: common.Address{}}
 	w := NewWriter(s.client, cfg, stopChn, errChn, nil)
-	s.False(w.ResolveMessage(&m))
+	s.False(w.ResolveMessage(m))
 }
 
 func (s *WriterTestSuite) TestShouldVoteProposalIsAlreadyComplete() {
@@ -64,7 +66,7 @@ func (s *WriterTestSuite) TestShouldVoteProposalIsAlreadyComplete() {
 	prop := Bridge.BridgeProposal{Status: ProposalStatusPassed}
 	s.client.EXPECT().CallOpts().Return(nil)
 	s.bridgeMock.EXPECT().GetProposal(gomock.Any(), gomock.Any(), uint64(m.DepositNonce), gomock.Any()).Return(prop, nil)
-	s.False(w.shouldVote(&m, common.Hash{}))
+	s.False(w.shouldVote(m, common.Hash{}))
 }
 
 func (s *WriterTestSuite) TestShouldVoteProposalIsAlreadyVoted() {
@@ -86,10 +88,84 @@ func (s *WriterTestSuite) TestShouldVoteProposalIsAlreadyVoted() {
 	s.client.EXPECT().CallOpts().Return(nil)
 	s.client.EXPECT().Opts().Return(&bind.TransactOpts{From: common.Address{}})
 	s.bridgeMock.EXPECT().HasVotedOnProposal(gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).Return(true, nil)
-	s.False(w.shouldVote(&m, common.Hash{}))
+	s.False(w.shouldVote(m, common.Hash{}))
 }
 
-//TestCreateAndExecuteErc20DepositProposal
-//TestCreateAndExecuteErc721Proposal
-//TestCreateAndExecuteGenericProposal
-//TestDuplicateMessage
+func (s *WriterTestSuite) TestVoteProposalAlreadyComplete() {
+	stopChn := make(chan struct{})
+	errChn := make(chan error)
+	m := message.NewFungibleTransfer(message.ChainId(1), 0, message.Nonce(555), big.NewInt(10), [32]byte{1}, make([]byte, 32))
+
+	cfg := &chain.CeloChainConfig{StartBlock: big.NewInt(1), BridgeContract: common.Address{}}
+	w := NewWriter(s.client, cfg, stopChn, errChn, nil)
+	w.SetBridge(s.bridgeMock)
+
+	s.client.EXPECT().CallOpts().Return(nil)
+	proposal := Bridge.BridgeProposal{
+		Status: ProposalStatusPassed,
+	}
+
+	s.bridgeMock.EXPECT().GetProposal(gomock.Any(), uint8(m.Source), uint64(m.DepositNonce), gomock.Any()).Return(proposal, nil)
+
+	//Vote proposal should not be called, since proposal already passed
+	//s.bridgeMock.EXPECT().VoteProposal(gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).DoAndReturn(s.Fail("Vote proposal should not be voted"))
+
+	w.voteProposal(m, common.Hash{})
+}
+
+func (s *WriterTestSuite) TestVoteProposalIsNotComplete() {
+	stopChn := make(chan struct{})
+	errChn := make(chan error)
+	m := message.NewFungibleTransfer(message.ChainId(1), 0, message.Nonce(555), big.NewInt(10), [32]byte{1}, make([]byte, 32))
+
+	cfg := &chain.CeloChainConfig{StartBlock: big.NewInt(1), BridgeContract: common.Address{}}
+	w := NewWriter(s.client, cfg, stopChn, errChn, nil)
+	w.SetBridge(s.bridgeMock)
+
+	proposal := Bridge.BridgeProposal{
+		Status: 0,
+	}
+	tx := types.NewTransaction(5577006791947779410, common.Address{0x0f}, new(big.Int), 0, new(big.Int), &common.Address{0x0f}, &common.Address{0x0f}, big.NewInt(10), nil)
+	s.client.EXPECT().CallOpts().Return(nil)
+	s.bridgeMock.EXPECT().GetProposal(gomock.Any(), uint8(m.Source), uint64(m.DepositNonce), gomock.Any()).Return(proposal, nil)
+	s.client.EXPECT().LockAndUpdateOpts()
+	s.client.EXPECT().Opts()
+	s.bridgeMock.EXPECT().VoteProposal(gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).Return(tx, nil)
+	s.client.EXPECT().UnlockOpts()
+
+	go func() {
+		err := <-errChn
+		s.Nil(err)
+	}()
+
+	w.voteProposal(m, common.Hash{})
+}
+
+func (s *WriterTestSuite) TestVoteProposalUnexpectedErrorOnVote() {
+	stopChn := make(chan struct{})
+	errChn := make(chan error)
+	m := message.NewFungibleTransfer(message.ChainId(1), 0, message.Nonce(555), big.NewInt(10), [32]byte{1}, make([]byte, 32))
+
+	cfg := &chain.CeloChainConfig{StartBlock: big.NewInt(1), BridgeContract: common.Address{}}
+	w := NewWriter(s.client, cfg, stopChn, errChn, nil)
+	w.SetBridge(s.bridgeMock)
+
+	proposal := Bridge.BridgeProposal{
+		Status: 0,
+	}
+	//tx := types.NewTransaction(5577006791947779410, common.Address{0x0f}, new(big.Int), 0, new(big.Int), &common.Address{0x0f}, &common.Address{0x0f}, big.NewInt(10), nil)
+	for i := 0; i < TxRetryLimit; i++ {
+		s.client.EXPECT().CallOpts().Return(nil)
+		s.bridgeMock.EXPECT().GetProposal(gomock.Any(), uint8(m.Source), uint64(m.DepositNonce), gomock.Any()).Return(proposal, nil)
+		s.client.EXPECT().LockAndUpdateOpts()
+		s.client.EXPECT().Opts()
+		s.bridgeMock.EXPECT().VoteProposal(gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).Return(nil, errors.New("unexpectedERROR"))
+		s.client.EXPECT().UnlockOpts()
+	}
+
+	go func() {
+		err := <-errChn
+		s.NotNil(err)
+	}()
+	w.voteProposal(m, common.Hash{})
+}

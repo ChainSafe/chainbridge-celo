@@ -192,6 +192,11 @@ func (w *writer) voteProposal(m *msg.Message, dataHash ethcommon.Hash) {
 		case <-w.stop:
 			return
 		default:
+			// Checking first does proposal complete? If so, we do not need to vote for it
+			if w.proposalIsComplete(m.Source, m.DepositNonce, dataHash) {
+				log.Info().Interface("source", m.Source).Interface("dest", m.Destination).Interface("nonce", m.DepositNonce).Msg("Proposal voting complete on chain")
+				return
+			}
 			err := w.client.LockAndUpdateOpts()
 			if err != nil {
 				log.Error().Err(err).Msg("Failed to update tx opts")
@@ -210,13 +215,11 @@ func (w *writer) voteProposal(m *msg.Message, dataHash ethcommon.Hash) {
 				if err.Error() == ErrNonceTooLow.Error() || err.Error() == ErrTxUnderpriced.Error() {
 					log.Debug().Msg("Nonce too low, will retry")
 					time.Sleep(TxRetryInterval)
+					continue
 				} else {
 					log.Warn().Interface("source", m.Source).Interface("dest", m.Destination).Interface("nonce", m.DepositNonce).Msg("Voting failed")
 					time.Sleep(TxRetryInterval)
-				}
-				if w.proposalIsComplete(m.Source, m.DepositNonce, dataHash) {
-					log.Info().Interface("source", m.Source).Interface("dest", m.Destination).Interface("nonce", m.DepositNonce).Msg("Proposal voting complete on chain")
-					return
+					continue
 				}
 			}
 			log.Info().Str("tx", tx.Hash().Hex()).Interface("src", m.Source).Interface("depositNonce", m.DepositNonce).Msg("Submitted proposal vote")
@@ -247,7 +250,7 @@ func (w *writer) executeProposal(m *msg.Message, data []byte, dataHash ethcommon
 				data,
 				m.ResourceId,
 				//
-				msgProofOpts.SignatureHeader,
+				msgProofOpts.HeaderSignature,
 				msgProofOpts.AggregatePublicKey,
 				msgProofOpts.G1,
 				msgProofOpts.HashedMessage,

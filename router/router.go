@@ -30,7 +30,7 @@ func NewRouter() *BaseRouter {
 }
 
 // Send passes a message to the destination Writer if it exists
-func (r *BaseRouter) Send(msg msg.Message) error {
+func (r *BaseRouter) Send(msg *msg.Message) error {
 	r.lock.Lock()
 	defer r.lock.Unlock()
 
@@ -40,7 +40,7 @@ func (r *BaseRouter) Send(msg msg.Message) error {
 		return fmt.Errorf("unknown destination chainId: %d", msg.Destination)
 	}
 
-	go w.ResolveMessage(&msg)
+	go w.ResolveMessage(msg)
 	return nil
 }
 

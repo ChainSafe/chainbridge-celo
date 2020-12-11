@@ -50,7 +50,7 @@ type BlockSyncer interface {
 }
 
 type IRouter interface {
-	Send(msg msg.Message) error
+	Send(msg *msg.Message) error
 }
 type Blockstorer interface {
 	StoreBlock(*big.Int) error
@@ -175,7 +175,7 @@ func (l *listener) getDepositEventsAndProofsForBlock(latestBlock *big.Int) error
 
 	// read through the log events and handle their deposit event if handler is recognized
 	for _, eventLog := range logs {
-		var m msg.Message
+		var m *msg.Message
 		destId := msg.ChainId(eventLog.Topics[1].Big().Uint64())
 		rId := msg.ResourceId(eventLog.Topics[2])
 		nonce := msg.Nonce(eventLog.Topics[3].Big().Uint64())

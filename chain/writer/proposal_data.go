@@ -9,7 +9,6 @@ import (
 
 	"github.com/ChainSafe/chainbridge-celo/msg"
 	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/common/math"
 	"github.com/ethereum/go-ethereum/crypto"
 )
 
@@ -25,27 +24,27 @@ func ConstructErc20ProposalData(amount []byte, recipient []byte) []byte {
 
 // constructGenericProposalData returns the bytes to construct a generic proposal
 func ConstructGenericProposalData(metadata []byte) []byte {
-	var data []byte
-
-	metadataLen := big.NewInt(int64(len(metadata)))
-	data = append(data, math.PaddedBigBytes(metadataLen, 32)...) // length of metadata (uint256)
-	data = append(data, metadata...)                             // metadata ([]byte)
-	return data
+	data := bytes.Buffer{}
+	metadataLen := big.NewInt(int64(len(metadata))).Bytes()
+	data.Write(common.LeftPadBytes(metadataLen, 32)) // length of metadata (uint256)
+	data.Write(metadata)
+	return data.Bytes()
 }
 
 // ConstructErc721ProposalData returns the bytes to construct a proposal suitable for Erc721
 func ConstructErc721ProposalData(tokenId []byte, recipient []byte, metadata []byte) []byte {
-	var data []byte
-	data = append(data, common.LeftPadBytes(tokenId, 32)...) // tokenId ([]byte)
+	//var data []byte
+	data := bytes.Buffer{}
+	data.Write(common.LeftPadBytes(tokenId, 32))
 
 	recipientLen := big.NewInt(int64(len(recipient))).Bytes()
-	data = append(data, common.LeftPadBytes(recipientLen, 32)...) // length of recipient
-	data = append(data, recipient...)                             // recipient ([]byte)
+	data.Write(common.LeftPadBytes(recipientLen, 32))
+	data.Write(recipient)
 
 	metadataLen := big.NewInt(int64(len(metadata))).Bytes()
-	data = append(data, common.LeftPadBytes(metadataLen, 32)...) // length of metadata (uint256)
-	data = append(data, metadata...)                             // metadata ([]byte)
-	return data
+	data.Write(common.LeftPadBytes(metadataLen, 32))
+	data.Write(metadata)
+	return data.Bytes()
 }
 
 // CreateProposalDataHash constructs and returns proposal data hash
@@ -58,6 +57,6 @@ func CreateProposalDataHash(data []byte, handler common.Address, msgProofOpts *m
 	b.Write(msgProofOpts.Nodes)
 	b.Write(msgProofOpts.AggregatePublicKey)
 	b.Write(msgProofOpts.HashedMessage[:])
-	b.Write(msgProofOpts.SignatureHeader)
+	b.Write(msgProofOpts.HeaderSignature)
 	return crypto.Keccak256Hash(b.Bytes())
 }
