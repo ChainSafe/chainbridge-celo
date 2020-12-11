@@ -1,12 +1,12 @@
 package writer
 
 import (
+	"github.com/ChainSafe/chainbridge-celo/chain/config"
 	"github.com/pkg/errors"
 	"math/big"
 	"testing"
 
 	"github.com/ChainSafe/chainbridge-celo/bindings/Bridge"
-	"github.com/ChainSafe/chainbridge-celo/chain"
 	"github.com/ChainSafe/chainbridge-celo/chain/writer/mock"
 	message "github.com/ChainSafe/chainbridge-celo/msg"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
@@ -45,7 +45,7 @@ func (s *WriterTestSuite) TestResolveMessageWrongType() {
 	errChn := make(chan error)
 	m := message.NewFungibleTransfer(1, 0, message.Nonce(555), amount, resourceId, recipient)
 	m.Type = "123"
-	cfg := &chain.CeloChainConfig{StartBlock: big.NewInt(1), BridgeContract: common.Address{}}
+	cfg := &config.CeloChainConfig{StartBlock: big.NewInt(1), BridgeContract: common.Address{}}
 	w := NewWriter(s.client, cfg, stopChn, errChn, nil)
 	s.False(w.ResolveMessage(m))
 }
@@ -58,7 +58,7 @@ func (s *WriterTestSuite) TestShouldVoteProposalIsAlreadyComplete() {
 	errChn := make(chan error)
 	m := message.NewFungibleTransfer(1, 0, message.Nonce(555), amount, resourceId, recipient)
 
-	cfg := &chain.CeloChainConfig{StartBlock: big.NewInt(1), BridgeContract: common.Address{}}
+	cfg := &config.CeloChainConfig{StartBlock: big.NewInt(1), BridgeContract: common.Address{}}
 	w := NewWriter(s.client, cfg, stopChn, errChn, nil)
 	w.SetBridge(s.bridgeMock)
 
@@ -74,7 +74,7 @@ func (s *WriterTestSuite) TestShouldVoteProposalIsAlreadyVoted() {
 	errChn := make(chan error)
 	m := message.NewFungibleTransfer(1, 0, message.Nonce(555), big.NewInt(10), [32]byte{1}, make([]byte, 32))
 
-	cfg := &chain.CeloChainConfig{StartBlock: big.NewInt(1), BridgeContract: common.Address{}}
+	cfg := &config.CeloChainConfig{StartBlock: big.NewInt(1), BridgeContract: common.Address{}}
 	w := NewWriter(s.client, cfg, stopChn, errChn, nil)
 	w.SetBridge(s.bridgeMock)
 
@@ -96,7 +96,7 @@ func (s *WriterTestSuite) TestVoteProposalAlreadyComplete() {
 	errChn := make(chan error)
 	m := message.NewFungibleTransfer(message.ChainId(1), 0, message.Nonce(555), big.NewInt(10), [32]byte{1}, make([]byte, 32))
 
-	cfg := &chain.CeloChainConfig{StartBlock: big.NewInt(1), BridgeContract: common.Address{}}
+	cfg := &config.CeloChainConfig{StartBlock: big.NewInt(1), BridgeContract: common.Address{}}
 	w := NewWriter(s.client, cfg, stopChn, errChn, nil)
 	w.SetBridge(s.bridgeMock)
 
@@ -118,7 +118,7 @@ func (s *WriterTestSuite) TestVoteProposalIsNotComplete() {
 	errChn := make(chan error)
 	m := message.NewFungibleTransfer(message.ChainId(1), 0, message.Nonce(555), big.NewInt(10), [32]byte{1}, make([]byte, 32))
 
-	cfg := &chain.CeloChainConfig{StartBlock: big.NewInt(1), BridgeContract: common.Address{}}
+	cfg := &config.CeloChainConfig{StartBlock: big.NewInt(1), BridgeContract: common.Address{}}
 	w := NewWriter(s.client, cfg, stopChn, errChn, nil)
 	w.SetBridge(s.bridgeMock)
 
@@ -146,7 +146,7 @@ func (s *WriterTestSuite) TestVoteProposalUnexpectedErrorOnVote() {
 	errChn := make(chan error)
 	m := message.NewFungibleTransfer(message.ChainId(1), 0, message.Nonce(555), big.NewInt(10), [32]byte{1}, make([]byte, 32))
 
-	cfg := &chain.CeloChainConfig{StartBlock: big.NewInt(1), BridgeContract: common.Address{}}
+	cfg := &config.CeloChainConfig{StartBlock: big.NewInt(1), BridgeContract: common.Address{}}
 	w := NewWriter(s.client, cfg, stopChn, errChn, nil)
 	w.SetBridge(s.bridgeMock)
 

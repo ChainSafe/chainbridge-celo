@@ -7,7 +7,8 @@ import (
 	"math/big"
 
 	"github.com/ChainSafe/chainbridge-celo/bindings/Bridge"
-	"github.com/ChainSafe/chainbridge-celo/chain"
+	"github.com/ChainSafe/chainbridge-celo/chain/client"
+	"github.com/ChainSafe/chainbridge-celo/chain/config"
 	"github.com/ChainSafe/chainbridge-celo/msg"
 	metrics "github.com/ChainSafe/chainbridge-utils/metrics/types"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
@@ -22,7 +23,7 @@ var ProposalStatusCancelled uint8 = 4
 var BlockRetryLimit = 5
 
 type writer struct {
-	cfg            *chain.CeloChainConfig
+	cfg            *config.CeloChainConfig
 	client         ContractCaller
 	bridgeContract Bridger
 	stop           <-chan struct{}
@@ -38,7 +39,7 @@ type Bridger interface {
 }
 
 type ContractCaller interface {
-	chain.LogFilterWithLatestBlock
+	client.LogFilterWithLatestBlock
 	CallOpts() *bind.CallOpts
 	Opts() *bind.TransactOpts
 	LockAndUpdateOpts() error
@@ -47,7 +48,7 @@ type ContractCaller interface {
 }
 
 // NewWriter creates and returns writer
-func NewWriter(client ContractCaller, cfg *chain.CeloChainConfig, stop <-chan struct{}, sysErr chan<- error, m *metrics.ChainMetrics) *writer {
+func NewWriter(client ContractCaller, cfg *config.CeloChainConfig, stop <-chan struct{}, sysErr chan<- error, m *metrics.ChainMetrics) *writer {
 	return &writer{
 		cfg:     cfg,
 		client:  client,

@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"github.com/ChainSafe/chainbridge-celo/chain/config"
 	"os"
 	"os/signal"
 	"syscall"
@@ -28,7 +29,7 @@ func Run(ctx *cli.Context) error {
 	stopChn := make(chan struct{})
 	r := router.NewRouter()
 	for _, c := range startConfig.Chains {
-		celoChainConfig, err := chain.ParseChainConfig(&c, ctx)
+		celoChainConfig, err := config.ParseChainConfig(&c, ctx)
 		if err != nil {
 			return err
 		}
@@ -52,7 +53,7 @@ func Run(ctx *cli.Context) error {
 		w := writer.NewWriter(chainClient, celoChainConfig, stopChn, errChn, nil)
 		r.Register(celoChainConfig.ID, w)
 		l := listener.NewListener(celoChainConfig, chainClient, bdb, stopChn, errChn, nil, r)
-		newChain, err := chain.InitializeChain(celoChainConfig, chainClient, l, nil, stopChn)
+		newChain, err := chain.InitializeChain(celoChainConfig, chainClient, l, w, stopChn)
 		if err != nil {
 			return err
 		}

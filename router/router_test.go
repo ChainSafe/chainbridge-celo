@@ -53,11 +53,11 @@ func TestRouter(t *testing.T) {
 
 	time.Sleep(time.Second)
 
-	if !reflect.DeepEqual(*ethW.msgs[0], msgCtfgToEth) {
+	if !reflect.DeepEqual(*ethW.msgs[0], *msgCtfgToEth) {
 		t.Error("Unexpected message")
 	}
 
-	if !reflect.DeepEqual(*ctfgW.msgs[0], msgEthToCtfg) {
+	if !reflect.DeepEqual(*ctfgW.msgs[0], *msgEthToCtfg) {
 		t.Error("Unexpected message")
 	}
 }

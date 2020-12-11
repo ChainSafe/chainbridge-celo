@@ -7,6 +7,8 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/ChainSafe/chainbridge-celo/chain/client"
+	"github.com/ChainSafe/chainbridge-celo/chain/config"
 	"math/big"
 	"time"
 
@@ -14,7 +16,6 @@ import (
 	"github.com/ChainSafe/chainbridge-celo/bindings/ERC20Handler"
 	"github.com/ChainSafe/chainbridge-celo/bindings/ERC721Handler"
 	"github.com/ChainSafe/chainbridge-celo/bindings/GenericHandler"
-	"github.com/ChainSafe/chainbridge-celo/chain"
 	"github.com/ChainSafe/chainbridge-celo/msg"
 	"github.com/ChainSafe/chainbridge-celo/shared/ethereum"
 	eth "github.com/ethereum/go-ethereum"
@@ -30,7 +31,7 @@ var ExpectedBlockTime = time.Second
 var BlockRetryLimit = 5
 
 type listener struct {
-	cfg                    *chain.CeloChainConfig
+	cfg                    *config.CeloChainConfig
 	router                 IRouter
 	bridgeContract         *Bridge.Bridge // instance of bound bridge contract
 	erc20HandlerContract   *ERC20Handler.ERC20Handler
@@ -42,7 +43,7 @@ type listener struct {
 	syncer                 BlockSyncer
 	//latestBlock            *metrics.LatestBlock
 	//metrics                *metrics.ChainMetrics
-	client chain.LogFilterWithLatestBlock
+	client client.LogFilterWithLatestBlock
 }
 
 type BlockSyncer interface {
@@ -56,7 +57,7 @@ type Blockstorer interface {
 	StoreBlock(*big.Int) error
 }
 
-func NewListener(cfg *chain.CeloChainConfig, client chain.LogFilterWithLatestBlock, bs Blockstorer, stop <-chan struct{}, sysErr chan<- error, syncer BlockSyncer, router IRouter) *listener {
+func NewListener(cfg *config.CeloChainConfig, client client.LogFilterWithLatestBlock, bs Blockstorer, stop <-chan struct{}, sysErr chan<- error, syncer BlockSyncer, router IRouter) *listener {
 	return &listener{
 		cfg:        cfg,
 		blockstore: bs,
