@@ -1,4 +1,4 @@
-package listener
+package interfaces
 
 import (
 	erc20 "github.com/ChainSafe/chainbridge-celo/bindings/ERC20Handler"

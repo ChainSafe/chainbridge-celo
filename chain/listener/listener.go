@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"github.com/ChainSafe/chainbridge-celo/chain"
+	"github.com/ChainSafe/chainbridge-celo/chain/listener/interfaces"
 	"github.com/ChainSafe/chainbridge-celo/msg"
 	utils "github.com/ChainSafe/chainbridge-celo/shared/ethereum"
 	eth "github.com/ethereum/go-ethereum"
@@ -28,10 +29,10 @@ var BlockRetryLimit = 5
 type listener struct {
 	cfg                    *chain.CeloChainConfig
 	router                 IRouter
-	bridgeContract         IBridge // instance of bound bridge contract
-	erc20HandlerContract   IERC20Handler
-	erc721HandlerContract  IERC721Handler
-	genericHandlerContract IGenericHandler
+	bridgeContract         interfaces.IBridge // instance of bound bridge contract
+	erc20HandlerContract   interfaces.IERC20Handler
+	erc721HandlerContract  interfaces.IERC721Handler
+	genericHandlerContract interfaces.IGenericHandler
 	blockstore             Blockstorer
 	stop                   <-chan struct{}
 	sysErr                 chan<- error // Reports fatal error to core
@@ -64,7 +65,7 @@ func NewListener(cfg *chain.CeloChainConfig, client chain.LogFilterWithLatestBlo
 	}
 }
 
-func (l *listener) SetContracts(bridge IBridge, erc20Handler IERC20Handler, erc721Handler IERC721Handler, genericHandler IGenericHandler) {
+func (l *listener) SetContracts(bridge interfaces.IBridge, erc20Handler interfaces.IERC20Handler, erc721Handler interfaces.IERC721Handler, genericHandler interfaces.IGenericHandler) {
 	l.bridgeContract = bridge
 	l.erc20HandlerContract = erc20Handler
 	l.erc721HandlerContract = erc721Handler

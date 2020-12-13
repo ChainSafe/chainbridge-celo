@@ -10,6 +10,7 @@ import (
 	erc721Handler "github.com/ChainSafe/chainbridge-celo/bindings/ERC721Handler"
 	"github.com/ChainSafe/chainbridge-celo/bindings/GenericHandler"
 	"github.com/ChainSafe/chainbridge-celo/chain/client"
+	listener "github.com/ChainSafe/chainbridge-celo/chain/listener/interfaces"
 	"github.com/ChainSafe/chainbridge-celo/msg"
 	"github.com/ChainSafe/chainbridge-utils/blockstore"
 	eth "github.com/ethereum/go-ethereum"
@@ -28,7 +29,7 @@ type BlockDB interface {
 // greater than cfg.startBlock, then cfg.startBlock is replaced with the latest known block.
 type Listener interface {
 	StartPollingBlocks() error
-	SetContracts(bridge *bridgeHandler.Bridge, erc20Handler *erc20Handler.ERC20Handler, erc721Handler *erc721Handler.ERC721Handler, genericHandler *GenericHandler.GenericHandler)
+	SetContracts(bridge listener.IBridge, erc20Handler listener.IERC20Handler, erc721Handler listener.IERC721Handler, genericHandler listener.IGenericHandler)
 	//LatestBlock() *metrics.LatestBlock
 }
 
