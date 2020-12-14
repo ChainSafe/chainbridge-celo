@@ -10,6 +10,8 @@ import (
 	"github.com/pkg/errors"
 
 	ERC20Handler "github.com/ChainSafe/chainbridge-celo/bindings/ERC20Handler"
+	"github.com/ChainSafe/chainbridge-celo/bindings/ERC721Handler"
+	"github.com/ChainSafe/chainbridge-celo/bindings/GenericHandler"
 	"github.com/ChainSafe/chainbridge-celo/chain"
 	mock_listener "github.com/ChainSafe/chainbridge-celo/chain/listener/mock"
 	"github.com/golang/mock/gomock"
@@ -79,7 +81,7 @@ func (s *ListenerTestSuite) TestLatestBlockUpdateTest() {
 	s.Equal(cfg.StartBlock.String(), "2")
 }
 
-func (s *ListenerTestSuite) TestHandleErc20DepositedEvent() {
+func (s *ListenerTestSuite) TestHandleErc20DepositedEventSucccess() {
 
 	stopChn := make(chan struct{})
 	errChn := make(chan error)
@@ -88,7 +90,16 @@ func (s *ListenerTestSuite) TestHandleErc20DepositedEvent() {
 
 	listener.SetContracts(s.bridge, s.erc20Handler, s.erc721Handler, s.genericHandler)
 
-	prop := ERC20Handler.ERC20HandlerDepositRecord{}
+	tokenAddress := common.HexToAddress("0x71C7656EC7ab88b098defB751B7401B5f6d8976F")
+
+	prop := ERC20Handler.ERC20HandlerDepositRecord{
+		tokenAddress,
+		1,
+		[32]byte{},
+		[]byte{},
+		tokenAddress,
+		big.NewInt(1),
+	}
 
 	s.erc20Handler.EXPECT().GetDepositRecord(gomock.Any(), gomock.Any(), gomock.Any()).Return(prop, nil)
 
@@ -97,5 +108,119 @@ func (s *ListenerTestSuite) TestHandleErc20DepositedEvent() {
 	s.NotNil(res)
 
 	s.Nil(err)
+
+}
+
+func (s *ListenerTestSuite) TestHandleErc20DepositedEventFailure() {
+
+	stopChn := make(chan struct{})
+	errChn := make(chan error)
+	cfg := &chain.CeloChainConfig{StartBlock: big.NewInt(1), BridgeContract: common.Address{}}
+	listener := NewListener(cfg, s.clientMock, s.blockStorerMock, stopChn, errChn, s.syncerMock, s.routerMock)
+
+	listener.SetContracts(s.bridge, s.erc20Handler, s.erc721Handler, s.genericHandler)
+
+	s.erc20Handler.EXPECT().GetDepositRecord(gomock.Any(), gomock.Any(), gomock.Any()).Return(ERC20Handler.ERC20HandlerDepositRecord{}, errors.New("error occured"))
+
+	_, err := listener.handleErc20DepositedEvent(3, 0)
+
+	s.NotNil(err)
+
+}
+
+func (s *ListenerTestSuite) TestHandleErc721DepositedEventSuccess() {
+
+	stopChn := make(chan struct{})
+	errChn := make(chan error)
+
+	cfg := &chain.CeloChainConfig{StartBlock: big.NewInt(1), BridgeContract: common.Address{}}
+	listener := NewListener(cfg, s.clientMock, s.blockStorerMock, stopChn, errChn, s.syncerMock, s.routerMock)
+
+	listener.SetContracts(s.bridge, s.erc20Handler, s.erc721Handler, s.genericHandler)
+
+	tokenAddress := common.HexToAddress("0x71C7656EC7ab88b098defB751B7401B5f6d8976F")
+
+	prop := ERC721Handler.ERC721HandlerDepositRecord{
+		tokenAddress,
+		1,
+		[32]byte{},
+		[]byte{},
+		tokenAddress,
+		big.NewInt(1),
+		[]byte{},
+	}
+
+	s.erc721Handler.EXPECT().GetDepositRecord(gomock.Any(), gomock.Any(), gomock.Any()).Return(prop, nil)
+
+	res, err := listener.handleErc721DepositedEvent(3, 0)
+
+	s.NotNil(res)
+
+	s.Nil(err)
+
+}
+
+func (s *ListenerTestSuite) TestHandleErc721DepositedEventFailure() {
+
+	stopChn := make(chan struct{})
+	errChn := make(chan error)
+
+	cfg := &chain.CeloChainConfig{StartBlock: big.NewInt(1), BridgeContract: common.Address{}}
+	listener := NewListener(cfg, s.clientMock, s.blockStorerMock, stopChn, errChn, s.syncerMock, s.routerMock)
+
+	listener.SetContracts(s.bridge, s.erc20Handler, s.erc721Handler, s.genericHandler)
+
+	s.erc721Handler.EXPECT().GetDepositRecord(gomock.Any(), gomock.Any(), gomock.Any()).Return(ERC721Handler.ERC721HandlerDepositRecord{}, errors.New("error occured"))
+
+	_, err := listener.handleErc721DepositedEvent(3, 0)
+
+	s.NotNil(err)
+
+}
+
+func (s *ListenerTestSuite) TestHandleGenericDepositedEventSuccess() {
+
+	stopChn := make(chan struct{})
+	errChn := make(chan error)
+
+	cfg := &chain.CeloChainConfig{StartBlock: big.NewInt(1), BridgeContract: common.Address{}}
+	listener := NewListener(cfg, s.clientMock, s.blockStorerMock, stopChn, errChn, s.syncerMock, s.routerMock)
+
+	listener.SetContracts(s.bridge, s.erc20Handler, s.erc721Handler, s.genericHandler)
+
+	tokenAddress := common.HexToAddress("0x71C7656EC7ab88b098defB751B7401B5f6d8976F")
+
+	prop := GenericHandler.GenericHandlerDepositRecord{
+		1,
+		tokenAddress,
+		[32]byte{},
+		[]byte{},
+	}
+
+	s.genericHandler.EXPECT().GetDepositRecord(gomock.Any(), gomock.Any(), gomock.Any()).Return(prop, nil)
+
+	res, err := listener.handleGenericDepositedEvent(3, 0)
+
+	s.NotNil(res)
+
+	s.Nil(err)
+
+}
+
+func (s *ListenerTestSuite) TestHandleGenericDepositedEventFailure() {
+
+	stopChn := make(chan struct{})
+	errChn := make(chan error)
+
+	cfg := &chain.CeloChainConfig{StartBlock: big.NewInt(1), BridgeContract: common.Address{}}
+	listener := NewListener(cfg, s.clientMock, s.blockStorerMock, stopChn, errChn, s.syncerMock, s.routerMock)
+
+	listener.SetContracts(s.bridge, s.erc20Handler, s.erc721Handler, s.genericHandler)
+
+	s.genericHandler.EXPECT().GetDepositRecord(gomock.Any(), gomock.Any(), gomock.Any()).Return(GenericHandler.GenericHandlerDepositRecord{}, errors.New("error occured"))
+
+	_, err := listener.handleGenericDepositedEvent(3, 0)
+
+	s.NotNil(err)
 
 }

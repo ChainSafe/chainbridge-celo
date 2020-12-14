@@ -56,7 +56,7 @@ func (l *listener) handleGenericDepositedEvent(destId msg.ChainId, nonce msg.Non
 	record, err := l.genericHandlerContract.GetDepositRecord(&bind.CallOpts{}, uint64(nonce), uint8(destId))
 	if err != nil {
 		log.Error().Err(err).Msg("Error Unpacking Generic Deposit Record")
-		return msg.Message{}, nil
+		return msg.Message{}, err
 	}
 
 	return msg.NewGenericTransfer(
