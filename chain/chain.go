@@ -4,8 +4,6 @@ package chain
 
 import (
 	"fmt"
-	"math/big"
-
 	bridgeHandler "github.com/ChainSafe/chainbridge-celo/bindings/Bridge"
 	erc20Handler "github.com/ChainSafe/chainbridge-celo/bindings/ERC20Handler"
 	erc721Handler "github.com/ChainSafe/chainbridge-celo/bindings/ERC721Handler"
@@ -14,15 +12,9 @@ import (
 	"github.com/ChainSafe/chainbridge-celo/chain/config"
 	"github.com/ChainSafe/chainbridge-celo/chain/writer"
 	"github.com/ChainSafe/chainbridge-celo/msg"
-	"github.com/ChainSafe/chainbridge-utils/blockstore"
 	"github.com/pkg/errors"
 	"github.com/rs/zerolog/log"
 )
-
-type BlockDB interface {
-	blockstore.Blockstorer
-	TryLoadLatestBlock() (*big.Int, error)
-}
 
 // checkBlockstore queries the blockstore for the latest known block. If the latest block is
 // greater than cfg.startBlock, then cfg.startBlock is replaced with the latest known block.
@@ -51,7 +43,6 @@ func InitializeChain(cc *config.CeloChainConfig, c *client.Client, listener List
 		return nil, err
 	}
 
-	//TODO
 	chainId, err := bridgeContract.ChainID(c.CallOpts())
 	if err != nil {
 		return nil, err
@@ -81,7 +72,6 @@ func InitializeChain(cc *config.CeloChainConfig, c *client.Client, listener List
 	}
 	listener.SetContracts(bridgeContract, erc20HandlerContract, erc721HandlerContract, genericHandlerContract)
 	writer.SetBridge(bridgeContract)
-
 	return &Chain{
 		cfg:      cc,
 		writer:   writer,
