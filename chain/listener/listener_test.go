@@ -101,12 +101,12 @@ func (s *ListenerTestSuite) TestHandleErc20DepositedEventSucccess() {
 	tokenAddress := common.HexToAddress("0x71C7656EC7ab88b098defB751B7401B5f6d8976F")
 
 	prop := ERC20Handler.ERC20HandlerDepositRecord{
-		tokenAddress,
-		1,
-		[32]byte{},
-		[]byte{},
-		tokenAddress,
-		big.NewInt(1),
+		TokenAddress:                tokenAddress,
+		DestinationChainID:          1,
+		ResourceID:                  [32]byte{},
+		DestinationRecipientAddress: []byte{},
+		Depositer:                   tokenAddress,
+		Amount:                      big.NewInt(1),
 	}
 
 	s.erc20Handler.EXPECT().GetDepositRecord(gomock.Any(), gomock.Any(), gomock.Any()).Return(prop, nil)
@@ -149,13 +149,13 @@ func (s *ListenerTestSuite) TestHandleErc721DepositedEventSuccess() {
 	tokenAddress := common.HexToAddress("0x71C7656EC7ab88b098defB751B7401B5f6d8976F")
 
 	prop := ERC721Handler.ERC721HandlerDepositRecord{
-		tokenAddress,
-		1,
-		[32]byte{},
-		[]byte{},
-		tokenAddress,
-		big.NewInt(1),
-		[]byte{},
+		TokenAddress:                tokenAddress,
+		DestinationChainID:          1,
+		ResourceID:                  [32]byte{},
+		DestinationRecipientAddress: []byte{},
+		Depositer:                   tokenAddress,
+		TokenID:                     big.NewInt(1),
+		MetaData:                    []byte{},
 	}
 
 	s.erc721Handler.EXPECT().GetDepositRecord(gomock.Any(), gomock.Any(), gomock.Any()).Return(prop, nil)
@@ -199,10 +199,10 @@ func (s *ListenerTestSuite) TestHandleGenericDepositedEventSuccess() {
 	tokenAddress := common.HexToAddress("0x71C7656EC7ab88b098defB751B7401B5f6d8976F")
 
 	prop := GenericHandler.GenericHandlerDepositRecord{
-		1,
-		tokenAddress,
-		[32]byte{},
-		[]byte{},
+		DestinationChainID: 1,
+		Depositer:          tokenAddress,
+		ResourceID:         [32]byte{},
+		MetaData:           []byte{},
 	}
 
 	s.genericHandler.EXPECT().GetDepositRecord(gomock.Any(), gomock.Any(), gomock.Any()).Return(prop, nil)
