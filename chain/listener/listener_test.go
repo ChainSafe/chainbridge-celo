@@ -388,6 +388,79 @@ func (s *ListenerTestSuite) TestGetDepositEventsAndProofsForBlockerERC721() {
 
 }
 
+func (s *ListenerTestSuite) TestGetDepositEventsAndProofsForBlockerGeneric() {
+
+	stopChn := make(chan struct{})
+	errChn := make(chan error)
+
+	startBlock := big.NewInt(112233)
+
+	address := common.HexToAddress("0x71C7656EC7ab88b098defB751B7401B5f6d8976F")
+	bridgeContract := address
+
+	genericContractaddress := common.HexToAddress("0x71C7656EC7ab88b098defB751B7401B5f6d8976F")
+
+	cfg := &chain.CeloChainConfig{
+		ID:                     3,
+		GenericHandlerContract: genericContractaddress,
+		StartBlock:             startBlock,
+		BridgeContract:         bridgeContract,
+	}
+
+	listener := NewListener(cfg, s.clientMock, s.blockStorerMock, stopChn, errChn, s.syncerMock, s.routerMock)
+
+	listener.SetContracts(s.bridge, s.erc20Handler, s.erc721Handler, s.genericHandler)
+
+	query := buildQuery(address, utils.Deposit, startBlock, startBlock)
+
+	logs := []types.Log{
+		{
+			Address: listener.cfg.GenericHandlerContract,
+			// list of topics provided by the contract.
+			Topics: []common.Hash{
+				utils.Deposit.GetTopic(),
+				crypto.Keccak256Hash(big.NewInt(1).Bytes()),
+				address.Hash(),
+				crypto.Keccak256Hash(big.NewInt(1).Bytes()),
+			},
+			Data: []byte{},
+		},
+	}
+
+	s.clientMock.EXPECT().FilterLogs(context.Background(), query).Return(logs, nil)
+
+	prop := GenericHandler.GenericHandlerDepositRecord{
+		DestinationChainID: 1,
+		ResourceID:         [32]byte{},
+		Depositer:          address,
+		MetaData:           []byte{},
+	}
+
+	s.genericHandler.EXPECT().GetDepositRecord(gomock.Any(), gomock.Any(), gomock.Any()).Return(prop, nil)
+
+	s.bridge.EXPECT().ResourceIDToHandlerAddress(&bind.CallOpts{}, [32]byte(listener.cfg.GenericHandlerContract.Hash())).Return(listener.cfg.GenericHandlerContract, nil)
+
+	nonce := msg.Nonce(logs[0].Topics[3].Big().Uint64())
+
+	destID := msg.ChainId(logs[0].Topics[1].Big().Uint64())
+
+	message := msg.NewGenericTransfer(
+		listener.cfg.ID,
+		destID,
+		nonce,
+		prop.ResourceID,
+		prop.MetaData,
+		nil,
+	)
+
+	s.routerMock.EXPECT().Send(message).Times(1).Return(nil)
+
+	err := listener.getDepositEventsAndProofsForBlock(big.NewInt(112233))
+
+	s.Nil(err)
+
+}
+
 func (s *ListenerTestSuite) TestBuildQuery() {
 
 	startBlock := big.NewInt(112233)
