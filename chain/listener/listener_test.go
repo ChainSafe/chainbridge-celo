@@ -5,15 +5,21 @@ import (
 	"testing"
 
 	mock_chain "github.com/ChainSafe/chainbridge-celo/chain/mock"
+	utils "github.com/ChainSafe/chainbridge-celo/shared/ethereum"
+	eth "github.com/ethereum/go-ethereum"
+	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
+	ethcommon "github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/pkg/errors"
+	"golang.org/x/net/context"
 
 	ERC20Handler "github.com/ChainSafe/chainbridge-celo/bindings/ERC20Handler"
 	"github.com/ChainSafe/chainbridge-celo/bindings/ERC721Handler"
 	"github.com/ChainSafe/chainbridge-celo/bindings/GenericHandler"
 	"github.com/ChainSafe/chainbridge-celo/chain"
 	mock_listener "github.com/ChainSafe/chainbridge-celo/chain/listener/mock"
+	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/suite"
 )
@@ -222,5 +228,68 @@ func (s *ListenerTestSuite) TestHandleGenericDepositedEventFailure() {
 	_, err := listener.handleGenericDepositedEvent(3, 0)
 
 	s.NotNil(err)
+
+}
+
+func (s *ListenerTestSuite) TestGetDepositEventsAndProofsForBlock() {
+
+	stopChn := make(chan struct{})
+	errChn := make(chan error)
+
+	startBlock := big.NewInt(112233)
+
+	contractAddress := common.HexToAddress("0x71C7656EC7ab88b098defB751B7401B5f6d8976F")
+
+	bridgeContract := contractAddress
+
+	cfg := &chain.CeloChainConfig{StartBlock: startBlock, BridgeContract: bridgeContract}
+	listener := NewListener(cfg, s.clientMock, s.blockStorerMock, stopChn, errChn, s.syncerMock, s.routerMock)
+
+	listener.SetContracts(s.bridge, s.erc20Handler, s.erc721Handler, s.genericHandler)
+
+	query := buildQuery(contractAddress, utils.Deposit, startBlock, startBlock)
+
+	logs := []types.Log{
+		{
+			Address: contractAddress,
+			// list of topics provided by the contract.
+			Topics: []common.Hash{
+				utils.Deposit.GetTopic(),
+				crypto.Keccak256Hash(big.NewInt(1).Bytes()),
+				contractAddress.Hash(),
+				crypto.Keccak256Hash(big.NewInt(1).Bytes()),
+			},
+			Data: []byte{},
+		},
+	}
+
+	s.clientMock.EXPECT().FilterLogs(context.Background(), query).Return(logs, nil)
+
+	s.bridge.EXPECT().ResourceIDToHandlerAddress(&bind.CallOpts{}, [32]byte(contractAddress.Hash())).Return(contractAddress, nil)
+
+	err := listener.getDepositEventsAndProofsForBlock(big.NewInt(112233))
+
+	s.Nil(err)
+
+}
+
+func (s *ListenerTestSuite) TestBuildQuery() {
+
+	startBlock := big.NewInt(112233)
+
+	contractAddress := common.HexToAddress("0x71C7656EC7ab88b098defB751B7401B5f6d8976F")
+
+	expected := eth.FilterQuery{
+		FromBlock: startBlock,
+		ToBlock:   startBlock,
+		Addresses: []common.Address{contractAddress},
+		Topics: [][]ethcommon.Hash{
+			{utils.Deposit.GetTopic()},
+		},
+	}
+
+	actual := buildQuery(contractAddress, utils.Deposit, startBlock, startBlock)
+
+	s.Equal(expected, actual)
 
 }
