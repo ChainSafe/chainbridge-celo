@@ -7,6 +7,7 @@ import (
 	"testing"
 
 	mock_chain "github.com/ChainSafe/chainbridge-celo/chain/mock"
+	"github.com/ChainSafe/chainbridge-celo/msg"
 	utils "github.com/ChainSafe/chainbridge-celo/shared/ethereum"
 	eth "github.com/ethereum/go-ethereum"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
@@ -233,32 +234,39 @@ func (s *ListenerTestSuite) TestHandleGenericDepositedEventFailure() {
 
 }
 
-func (s *ListenerTestSuite) TestGetDepositEventsAndProofsForBlock() {
+func (s *ListenerTestSuite) TestGetDepositEventsAndProofsForBlockerERC20() {
 
 	stopChn := make(chan struct{})
 	errChn := make(chan error)
 
 	startBlock := big.NewInt(112233)
 
-	contractAddress := common.HexToAddress("0x71C7656EC7ab88b098defB751B7401B5f6d8976F")
+	address := common.HexToAddress("0x71C7656EC7ab88b098defB751B7401B5f6d8976F")
+	bridgeContract := address
 
-	bridgeContract := contractAddress
+	erc20HandlerContractaddress := common.HexToAddress("0x71C7656EC7ab88b098defB751B7401B5f6d8976F")
 
-	cfg := &chain.CeloChainConfig{StartBlock: startBlock, BridgeContract: bridgeContract}
+	cfg := &chain.CeloChainConfig{
+		ID:                   3,
+		Erc20HandlerContract: erc20HandlerContractaddress,
+		StartBlock:           startBlock,
+		BridgeContract:       bridgeContract,
+	}
+
 	listener := NewListener(cfg, s.clientMock, s.blockStorerMock, stopChn, errChn, s.syncerMock, s.routerMock)
 
 	listener.SetContracts(s.bridge, s.erc20Handler, s.erc721Handler, s.genericHandler)
 
-	query := buildQuery(contractAddress, utils.Deposit, startBlock, startBlock)
+	query := buildQuery(address, utils.Deposit, startBlock, startBlock)
 
 	logs := []types.Log{
 		{
-			Address: contractAddress,
+			Address: listener.cfg.Erc20HandlerContract,
 			// list of topics provided by the contract.
 			Topics: []common.Hash{
 				utils.Deposit.GetTopic(),
 				crypto.Keccak256Hash(big.NewInt(1).Bytes()),
-				contractAddress.Hash(),
+				address.Hash(),
 				crypto.Keccak256Hash(big.NewInt(1).Bytes()),
 			},
 			Data: []byte{},
@@ -267,7 +275,34 @@ func (s *ListenerTestSuite) TestGetDepositEventsAndProofsForBlock() {
 
 	s.clientMock.EXPECT().FilterLogs(context.Background(), query).Return(logs, nil)
 
-	s.bridge.EXPECT().ResourceIDToHandlerAddress(&bind.CallOpts{}, [32]byte(contractAddress.Hash())).Return(contractAddress, nil)
+	prop := ERC20Handler.ERC20HandlerDepositRecord{
+		TokenAddress:                listener.cfg.Erc20HandlerContract,
+		DestinationChainID:          1,
+		ResourceID:                  [32]byte{},
+		DestinationRecipientAddress: []byte{},
+		Depositer:                   address,
+		Amount:                      big.NewInt(1),
+	}
+
+	s.erc20Handler.EXPECT().GetDepositRecord(gomock.Any(), gomock.Any(), gomock.Any()).Return(prop, nil)
+
+	s.bridge.EXPECT().ResourceIDToHandlerAddress(&bind.CallOpts{}, [32]byte(listener.cfg.Erc20HandlerContract.Hash())).Return(listener.cfg.Erc20HandlerContract, nil)
+
+	nonce := msg.Nonce(logs[0].Topics[3].Big().Uint64())
+
+	destID := msg.ChainId(logs[0].Topics[1].Big().Uint64())
+
+	message := msg.NewFungibleTransfer(
+		listener.cfg.ID,
+		destID,
+		nonce,
+		prop.Amount,
+		prop.ResourceID,
+		prop.DestinationRecipientAddress,
+		nil,
+	)
+
+	s.routerMock.EXPECT().Send(message).Times(1).Return(nil)
 
 	err := listener.getDepositEventsAndProofsForBlock(big.NewInt(112233))
 
