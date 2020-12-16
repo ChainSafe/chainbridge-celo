@@ -7,6 +7,7 @@ import (
 	"github.com/pkg/errors"
 	"math/big"
 	"testing"
+	"time"
 
 	"github.com/ChainSafe/chainbridge-celo/bindings/Bridge"
 	"github.com/ChainSafe/chainbridge-celo/chain/writer/mock"
@@ -112,6 +113,16 @@ func (s *WriterTestSuite) TestVoteProposalAlreadyComplete() {
 	//Vote proposal should not be called, since proposal already passed
 	//s.bridgeMock.EXPECT().VoteProposal(gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).DoAndReturn(s.Fail("Vote proposal should not be voted"))
 
+	go func() {
+		select {
+		case <-errChn:
+			s.Fail("err channel has value")
+		case <-time.After(time.Second * 10):
+			// Closing this goroutine after 10 seconds
+			return
+		}
+	}()
+
 	w.voteProposal(m, common.Hash{})
 }
 
@@ -136,10 +147,14 @@ func (s *WriterTestSuite) TestVoteProposalIsNotComplete() {
 	s.client.EXPECT().UnlockOpts()
 
 	go func() {
-		err := <-errChn
-		s.Nil(err)
+		select {
+		case <-errChn:
+			s.Fail("err channel has value")
+		case <-time.After(time.Second * 10):
+			// Closing this goroutine after 10 seconds
+			return
+		}
 	}()
-
 	w.voteProposal(m, common.Hash{})
 }
 
@@ -155,7 +170,6 @@ func (s *WriterTestSuite) TestVoteProposalUnexpectedErrorOnVote() {
 	proposal := Bridge.BridgeProposal{
 		Status: 0,
 	}
-	//tx := types.NewTransaction(5577006791947779410, common.Address{0x0f}, new(big.Int), 0, new(big.Int), &common.Address{0x0f}, &common.Address{0x0f}, big.NewInt(10), nil)
 	for i := 0; i < TxRetryLimit; i++ {
 		s.client.EXPECT().CallOpts().Return(nil)
 		s.bridgeMock.EXPECT().GetProposal(gomock.Any(), uint8(m.Source), uint64(m.DepositNonce), gomock.Any()).Return(proposal, nil)
@@ -169,5 +183,6 @@ func (s *WriterTestSuite) TestVoteProposalUnexpectedErrorOnVote() {
 		err := <-errChn
 		s.NotNil(err)
 	}()
+
 	w.voteProposal(m, common.Hash{})
 }
