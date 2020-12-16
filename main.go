@@ -7,6 +7,7 @@ import (
 
 	"github.com/ChainSafe/chainbridge-celo/cmd"
 	"github.com/ChainSafe/chainbridge-celo/flags"
+	"github.com/ChainSafe/chainbridge-celo/validator-syncer"
 	"github.com/rs/zerolog/log"
 	"github.com/urfave/cli/v2"
 )
@@ -77,6 +78,11 @@ var accountCommand = cli.Command{
 			Description: "The list subcommand is used to list all of the bridge keystores.\n",
 		},
 	},
+}
+
+var validatorsSyncerCommands = cli.Command{
+	Name:   "syncer",
+	Action: validator_syncer.Sync,
 }
 
 // init initializes CLI
