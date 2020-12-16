@@ -33,7 +33,6 @@ func ConstructGenericProposalData(metadata []byte) []byte {
 
 // ConstructErc721ProposalData returns the bytes to construct a proposal suitable for Erc721
 func ConstructErc721ProposalData(tokenId []byte, recipient []byte, metadata []byte) []byte {
-	//var data []byte
 	data := bytes.Buffer{}
 	data.Write(common.LeftPadBytes(tokenId, 32))
 
