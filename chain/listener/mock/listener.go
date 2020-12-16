@@ -75,7 +75,7 @@ func (m *MockIRouter) EXPECT() *MockIRouterMockRecorder {
 }
 
 // Send mocks base method
-func (m *MockIRouter) Send(msg msg.Message) error {
+func (m *MockIRouter) Send(msg *msg.Message) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Send", msg)
 	ret0, _ := ret[0].(error)

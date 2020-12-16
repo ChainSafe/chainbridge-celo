@@ -14,7 +14,8 @@ import (
 	"github.com/ChainSafe/chainbridge-celo/bindings/ERC20Handler"
 	"github.com/ChainSafe/chainbridge-celo/bindings/ERC721Handler"
 	"github.com/ChainSafe/chainbridge-celo/bindings/GenericHandler"
-	"github.com/ChainSafe/chainbridge-celo/chain"
+	"github.com/ChainSafe/chainbridge-celo/chain/client"
+	"github.com/ChainSafe/chainbridge-celo/chain/config"
 	"github.com/ChainSafe/chainbridge-celo/msg"
 	"github.com/ChainSafe/chainbridge-celo/shared/ethereum"
 	eth "github.com/ethereum/go-ethereum"
@@ -30,7 +31,7 @@ var ExpectedBlockTime = time.Second
 var BlockRetryLimit = 5
 
 type listener struct {
-	cfg                    *chain.CeloChainConfig
+	cfg                    *config.CeloChainConfig
 	router                 IRouter
 	bridgeContract         *Bridge.Bridge // instance of bound bridge contract
 	erc20HandlerContract   *ERC20Handler.ERC20Handler
@@ -42,7 +43,7 @@ type listener struct {
 	syncer                 BlockSyncer
 	//latestBlock            *metrics.LatestBlock
 	//metrics                *metrics.ChainMetrics
-	client chain.LogFilterWithLatestBlock
+	client client.LogFilterWithLatestBlock
 }
 
 type BlockSyncer interface {
@@ -50,13 +51,13 @@ type BlockSyncer interface {
 }
 
 type IRouter interface {
-	Send(msg msg.Message) error
+	Send(msg *msg.Message) error
 }
 type Blockstorer interface {
 	StoreBlock(*big.Int) error
 }
 
-func NewListener(cfg *chain.CeloChainConfig, client chain.LogFilterWithLatestBlock, bs Blockstorer, stop <-chan struct{}, sysErr chan<- error, syncer BlockSyncer, router IRouter) *listener {
+func NewListener(cfg *config.CeloChainConfig, client client.LogFilterWithLatestBlock, bs Blockstorer, stop <-chan struct{}, sysErr chan<- error, syncer BlockSyncer, router IRouter) *listener {
 	return &listener{
 		cfg:        cfg,
 		blockstore: bs,
@@ -175,7 +176,7 @@ func (l *listener) getDepositEventsAndProofsForBlock(latestBlock *big.Int) error
 
 	// read through the log events and handle their deposit event if handler is recognized
 	for _, eventLog := range logs {
-		var m msg.Message
+		var m *msg.Message
 		destId := msg.ChainId(eventLog.Topics[1].Big().Uint64())
 		rId := msg.ResourceId(eventLog.Topics[2])
 		nonce := msg.Nonce(eventLog.Topics[3].Big().Uint64())

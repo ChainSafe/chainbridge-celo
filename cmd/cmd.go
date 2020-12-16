@@ -7,16 +7,17 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/ChainSafe/chainbridge-celo/router"
-	"github.com/ChainSafe/chainbridge-utils/crypto/secp256k1"
-	"github.com/ChainSafe/chainbridge-utils/keystore"
-
 	"github.com/ChainSafe/chainbridge-celo/blockdb"
 	"github.com/ChainSafe/chainbridge-celo/chain"
 	"github.com/ChainSafe/chainbridge-celo/chain/client"
+	"github.com/ChainSafe/chainbridge-celo/chain/config"
 	"github.com/ChainSafe/chainbridge-celo/chain/listener"
 	"github.com/ChainSafe/chainbridge-celo/chain/writer"
 	"github.com/ChainSafe/chainbridge-celo/cmd/cfg"
+	"github.com/ChainSafe/chainbridge-celo/router"
+
+	"github.com/ChainSafe/chainbridge-utils/crypto/secp256k1"
+	"github.com/ChainSafe/chainbridge-utils/keystore"
 	"github.com/rs/zerolog/log"
 	"github.com/urfave/cli/v2"
 )
@@ -30,7 +31,7 @@ func Run(ctx *cli.Context) error {
 	stopChn := make(chan struct{})
 	r := router.NewRouter()
 	for _, c := range startConfig.Chains {
-		celoChainConfig, err := chain.ParseChainConfig(&c, ctx)
+		celoChainConfig, err := config.ParseChainConfig(&c, ctx)
 		if err != nil {
 			return err
 		}
