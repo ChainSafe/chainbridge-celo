@@ -155,7 +155,6 @@ func (s *WriterTestSuite) TestVoteProposalUnexpectedErrorOnVote() {
 	proposal := Bridge.BridgeProposal{
 		Status: 0,
 	}
-	//tx := types.NewTransaction(5577006791947779410, common.Address{0x0f}, new(big.Int), 0, new(big.Int), &common.Address{0x0f}, &common.Address{0x0f}, big.NewInt(10), nil)
 	for i := 0; i < TxRetryLimit; i++ {
 		s.client.EXPECT().CallOpts().Return(nil)
 		s.bridgeMock.EXPECT().GetProposal(gomock.Any(), uint8(m.Source), uint64(m.DepositNonce), gomock.Any()).Return(proposal, nil)
