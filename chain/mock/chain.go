@@ -5,68 +5,11 @@
 package mock_chain
 
 import (
-	context "context"
-	Bridge "github.com/ChainSafe/chainbridge-celo/bindings/Bridge"
-	interfaces "github.com/ChainSafe/chainbridge-celo/chain/listener/interfaces"
-	ethereum "github.com/ethereum/go-ethereum"
-	common "github.com/ethereum/go-ethereum/common"
-	types "github.com/ethereum/go-ethereum/core/types"
+	"github.com/ChainSafe/chainbridge-celo/chain/listener"
+	writer "github.com/ChainSafe/chainbridge-celo/chain/writer"
 	gomock "github.com/golang/mock/gomock"
-	big "math/big"
 	reflect "reflect"
 )
-
-// MockBlockDB is a mock of BlockDB interface
-type MockBlockDB struct {
-	ctrl     *gomock.Controller
-	recorder *MockBlockDBMockRecorder
-}
-
-// MockBlockDBMockRecorder is the mock recorder for MockBlockDB
-type MockBlockDBMockRecorder struct {
-	mock *MockBlockDB
-}
-
-// NewMockBlockDB creates a new mock instance
-func NewMockBlockDB(ctrl *gomock.Controller) *MockBlockDB {
-	mock := &MockBlockDB{ctrl: ctrl}
-	mock.recorder = &MockBlockDBMockRecorder{mock}
-	return mock
-}
-
-// EXPECT returns an object that allows the caller to indicate expected use
-func (m *MockBlockDB) EXPECT() *MockBlockDBMockRecorder {
-	return m.recorder
-}
-
-// StoreBlock mocks base method
-func (m *MockBlockDB) StoreBlock(arg0 *big.Int) error {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "StoreBlock", arg0)
-	ret0, _ := ret[0].(error)
-	return ret0
-}
-
-// StoreBlock indicates an expected call of StoreBlock
-func (mr *MockBlockDBMockRecorder) StoreBlock(arg0 interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "StoreBlock", reflect.TypeOf((*MockBlockDB)(nil).StoreBlock), arg0)
-}
-
-// TryLoadLatestBlock mocks base method
-func (m *MockBlockDB) TryLoadLatestBlock() (*big.Int, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "TryLoadLatestBlock")
-	ret0, _ := ret[0].(*big.Int)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// TryLoadLatestBlock indicates an expected call of TryLoadLatestBlock
-func (mr *MockBlockDBMockRecorder) TryLoadLatestBlock() *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "TryLoadLatestBlock", reflect.TypeOf((*MockBlockDB)(nil).TryLoadLatestBlock))
-}
 
 // MockListener is a mock of Listener interface
 type MockListener struct {
@@ -106,7 +49,7 @@ func (mr *MockListenerMockRecorder) StartPollingBlocks() *gomock.Call {
 }
 
 // SetContracts mocks base method
-func (m *MockListener) SetContracts(bridge interfaces.IBridge, erc20Handler interfaces.IERC20Handler, erc721Handler interfaces.IERC721Handler, genericHandler interfaces.IGenericHandler) {
+func (m *MockListener) SetContracts(bridge listener.IBridge, erc20Handler listener.IERC20Handler, erc721Handler listener.IERC721Handler, genericHandler listener.IGenericHandler) {
 	m.ctrl.T.Helper()
 	m.ctrl.Call(m, "SetContracts", bridge, erc20Handler, erc721Handler, genericHandler)
 }
@@ -141,238 +84,13 @@ func (m *MockWriter) EXPECT() *MockWriterMockRecorder {
 }
 
 // SetBridge mocks base method
-func (m *MockWriter) SetBridge(bc *Bridge.Bridge) {
+func (m *MockWriter) SetBridge(bridge writer.Bridger) {
 	m.ctrl.T.Helper()
-	m.ctrl.Call(m, "SetBridge", bc)
+	m.ctrl.Call(m, "SetBridge", bridge)
 }
 
 // SetBridge indicates an expected call of SetBridge
-func (mr *MockWriterMockRecorder) SetBridge(bc interface{}) *gomock.Call {
+func (mr *MockWriterMockRecorder) SetBridge(bridge interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SetBridge", reflect.TypeOf((*MockWriter)(nil).SetBridge), bc)
-}
-
-// MockContractBackendWithBlockFinder is a mock of ContractBackendWithBlockFinder interface
-type MockContractBackendWithBlockFinder struct {
-	ctrl     *gomock.Controller
-	recorder *MockContractBackendWithBlockFinderMockRecorder
-}
-
-// MockContractBackendWithBlockFinderMockRecorder is the mock recorder for MockContractBackendWithBlockFinder
-type MockContractBackendWithBlockFinderMockRecorder struct {
-	mock *MockContractBackendWithBlockFinder
-}
-
-// NewMockContractBackendWithBlockFinder creates a new mock instance
-func NewMockContractBackendWithBlockFinder(ctrl *gomock.Controller) *MockContractBackendWithBlockFinder {
-	mock := &MockContractBackendWithBlockFinder{ctrl: ctrl}
-	mock.recorder = &MockContractBackendWithBlockFinderMockRecorder{mock}
-	return mock
-}
-
-// EXPECT returns an object that allows the caller to indicate expected use
-func (m *MockContractBackendWithBlockFinder) EXPECT() *MockContractBackendWithBlockFinderMockRecorder {
-	return m.recorder
-}
-
-// CodeAt mocks base method
-func (m *MockContractBackendWithBlockFinder) CodeAt(ctx context.Context, contract common.Address, blockNumber *big.Int) ([]byte, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "CodeAt", ctx, contract, blockNumber)
-	ret0, _ := ret[0].([]byte)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// CodeAt indicates an expected call of CodeAt
-func (mr *MockContractBackendWithBlockFinderMockRecorder) CodeAt(ctx, contract, blockNumber interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CodeAt", reflect.TypeOf((*MockContractBackendWithBlockFinder)(nil).CodeAt), ctx, contract, blockNumber)
-}
-
-// CallContract mocks base method
-func (m *MockContractBackendWithBlockFinder) CallContract(ctx context.Context, call ethereum.CallMsg, blockNumber *big.Int) ([]byte, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "CallContract", ctx, call, blockNumber)
-	ret0, _ := ret[0].([]byte)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// CallContract indicates an expected call of CallContract
-func (mr *MockContractBackendWithBlockFinderMockRecorder) CallContract(ctx, call, blockNumber interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CallContract", reflect.TypeOf((*MockContractBackendWithBlockFinder)(nil).CallContract), ctx, call, blockNumber)
-}
-
-// PendingCodeAt mocks base method
-func (m *MockContractBackendWithBlockFinder) PendingCodeAt(ctx context.Context, account common.Address) ([]byte, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "PendingCodeAt", ctx, account)
-	ret0, _ := ret[0].([]byte)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// PendingCodeAt indicates an expected call of PendingCodeAt
-func (mr *MockContractBackendWithBlockFinderMockRecorder) PendingCodeAt(ctx, account interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "PendingCodeAt", reflect.TypeOf((*MockContractBackendWithBlockFinder)(nil).PendingCodeAt), ctx, account)
-}
-
-// PendingNonceAt mocks base method
-func (m *MockContractBackendWithBlockFinder) PendingNonceAt(ctx context.Context, account common.Address) (uint64, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "PendingNonceAt", ctx, account)
-	ret0, _ := ret[0].(uint64)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// PendingNonceAt indicates an expected call of PendingNonceAt
-func (mr *MockContractBackendWithBlockFinderMockRecorder) PendingNonceAt(ctx, account interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "PendingNonceAt", reflect.TypeOf((*MockContractBackendWithBlockFinder)(nil).PendingNonceAt), ctx, account)
-}
-
-// SuggestGasPrice mocks base method
-func (m *MockContractBackendWithBlockFinder) SuggestGasPrice(ctx context.Context) (*big.Int, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "SuggestGasPrice", ctx)
-	ret0, _ := ret[0].(*big.Int)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// SuggestGasPrice indicates an expected call of SuggestGasPrice
-func (mr *MockContractBackendWithBlockFinderMockRecorder) SuggestGasPrice(ctx interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SuggestGasPrice", reflect.TypeOf((*MockContractBackendWithBlockFinder)(nil).SuggestGasPrice), ctx)
-}
-
-// EstimateGas mocks base method
-func (m *MockContractBackendWithBlockFinder) EstimateGas(ctx context.Context, call ethereum.CallMsg) (uint64, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "EstimateGas", ctx, call)
-	ret0, _ := ret[0].(uint64)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// EstimateGas indicates an expected call of EstimateGas
-func (mr *MockContractBackendWithBlockFinderMockRecorder) EstimateGas(ctx, call interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "EstimateGas", reflect.TypeOf((*MockContractBackendWithBlockFinder)(nil).EstimateGas), ctx, call)
-}
-
-// SendTransaction mocks base method
-func (m *MockContractBackendWithBlockFinder) SendTransaction(ctx context.Context, tx *types.Transaction) error {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "SendTransaction", ctx, tx)
-	ret0, _ := ret[0].(error)
-	return ret0
-}
-
-// SendTransaction indicates an expected call of SendTransaction
-func (mr *MockContractBackendWithBlockFinderMockRecorder) SendTransaction(ctx, tx interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SendTransaction", reflect.TypeOf((*MockContractBackendWithBlockFinder)(nil).SendTransaction), ctx, tx)
-}
-
-// FilterLogs mocks base method
-func (m *MockContractBackendWithBlockFinder) FilterLogs(ctx context.Context, query ethereum.FilterQuery) ([]types.Log, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "FilterLogs", ctx, query)
-	ret0, _ := ret[0].([]types.Log)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// FilterLogs indicates an expected call of FilterLogs
-func (mr *MockContractBackendWithBlockFinderMockRecorder) FilterLogs(ctx, query interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FilterLogs", reflect.TypeOf((*MockContractBackendWithBlockFinder)(nil).FilterLogs), ctx, query)
-}
-
-// SubscribeFilterLogs mocks base method
-func (m *MockContractBackendWithBlockFinder) SubscribeFilterLogs(ctx context.Context, query ethereum.FilterQuery, ch chan<- types.Log) (ethereum.Subscription, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "SubscribeFilterLogs", ctx, query, ch)
-	ret0, _ := ret[0].(ethereum.Subscription)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// SubscribeFilterLogs indicates an expected call of SubscribeFilterLogs
-func (mr *MockContractBackendWithBlockFinderMockRecorder) SubscribeFilterLogs(ctx, query, ch interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SubscribeFilterLogs", reflect.TypeOf((*MockContractBackendWithBlockFinder)(nil).SubscribeFilterLogs), ctx, query, ch)
-}
-
-// LatestBlock mocks base method
-func (m *MockContractBackendWithBlockFinder) LatestBlock() (*big.Int, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "LatestBlock")
-	ret0, _ := ret[0].(*big.Int)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// LatestBlock indicates an expected call of LatestBlock
-func (mr *MockContractBackendWithBlockFinderMockRecorder) LatestBlock() *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "LatestBlock", reflect.TypeOf((*MockContractBackendWithBlockFinder)(nil).LatestBlock))
-}
-
-// MockLogFilterWithLatestBlock is a mock of LogFilterWithLatestBlock interface
-type MockLogFilterWithLatestBlock struct {
-	ctrl     *gomock.Controller
-	recorder *MockLogFilterWithLatestBlockMockRecorder
-}
-
-// MockLogFilterWithLatestBlockMockRecorder is the mock recorder for MockLogFilterWithLatestBlock
-type MockLogFilterWithLatestBlockMockRecorder struct {
-	mock *MockLogFilterWithLatestBlock
-}
-
-// NewMockLogFilterWithLatestBlock creates a new mock instance
-func NewMockLogFilterWithLatestBlock(ctrl *gomock.Controller) *MockLogFilterWithLatestBlock {
-	mock := &MockLogFilterWithLatestBlock{ctrl: ctrl}
-	mock.recorder = &MockLogFilterWithLatestBlockMockRecorder{mock}
-	return mock
-}
-
-// EXPECT returns an object that allows the caller to indicate expected use
-func (m *MockLogFilterWithLatestBlock) EXPECT() *MockLogFilterWithLatestBlockMockRecorder {
-	return m.recorder
-}
-
-// FilterLogs mocks base method
-func (m *MockLogFilterWithLatestBlock) FilterLogs(ctx context.Context, q ethereum.FilterQuery) ([]types.Log, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "FilterLogs", ctx, q)
-	ret0, _ := ret[0].([]types.Log)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// FilterLogs indicates an expected call of FilterLogs
-func (mr *MockLogFilterWithLatestBlockMockRecorder) FilterLogs(ctx, q interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FilterLogs", reflect.TypeOf((*MockLogFilterWithLatestBlock)(nil).FilterLogs), ctx, q)
-}
-
-// LatestBlock mocks base method
-func (m *MockLogFilterWithLatestBlock) LatestBlock() (*big.Int, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "LatestBlock")
-	ret0, _ := ret[0].(*big.Int)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// LatestBlock indicates an expected call of LatestBlock
-func (mr *MockLogFilterWithLatestBlockMockRecorder) LatestBlock() *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "LatestBlock", reflect.TypeOf((*MockLogFilterWithLatestBlock)(nil).LatestBlock))
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SetBridge", reflect.TypeOf((*MockWriter)(nil).SetBridge), bridge)
 }

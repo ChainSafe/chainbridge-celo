@@ -6,7 +6,8 @@ import (
 	"math/big"
 	"testing"
 
-	mock_chain "github.com/ChainSafe/chainbridge-celo/chain/mock"
+	mock_client "github.com/ChainSafe/chainbridge-celo/chain/client/mock"
+	"github.com/ChainSafe/chainbridge-celo/chain/config"
 	"github.com/ChainSafe/chainbridge-celo/msg"
 	utils "github.com/ChainSafe/chainbridge-celo/shared/ethereum"
 	eth "github.com/ethereum/go-ethereum"
@@ -20,7 +21,6 @@ import (
 	ERC20Handler "github.com/ChainSafe/chainbridge-celo/bindings/ERC20Handler"
 	"github.com/ChainSafe/chainbridge-celo/bindings/ERC721Handler"
 	"github.com/ChainSafe/chainbridge-celo/bindings/GenericHandler"
-	"github.com/ChainSafe/chainbridge-celo/chain"
 	mock_listener "github.com/ChainSafe/chainbridge-celo/chain/listener/mock"
 	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/golang/mock/gomock"
@@ -31,7 +31,7 @@ type ListenerTestSuite struct {
 	suite.Suite
 	syncerMock       *mock_listener.MockBlockSyncer
 	routerMock       *mock_listener.MockIRouter
-	clientMock       *mock_chain.MockLogFilterWithLatestBlock
+	clientMock       *mock_client.MockLogFilterWithLatestBlock
 	blockStorerMock  *mock_listener.MockBlockstorer
 	gomockController *gomock.Controller
 	bridge           *mock_listener.MockIBridge
@@ -44,15 +44,13 @@ func TestRunTestSuite(t *testing.T) {
 	suite.Run(t, new(ListenerTestSuite))
 }
 
-func (s *ListenerTestSuite) SetupSuite() {
-}
-
+func (s *ListenerTestSuite) SetupSuite()    {}
 func (s *ListenerTestSuite) TearDownSuite() {}
 func (s *ListenerTestSuite) SetupTest() {
 	gomockController := gomock.NewController(s.T())
 	s.syncerMock = mock_listener.NewMockBlockSyncer(gomockController)
 	s.routerMock = mock_listener.NewMockIRouter(gomockController)
-	s.clientMock = mock_chain.NewMockLogFilterWithLatestBlock(gomockController)
+	s.clientMock = mock_client.NewMockLogFilterWithLatestBlock(gomockController)
 	s.blockStorerMock = mock_listener.NewMockBlockstorer(gomockController)
 	s.gomockController = gomockController
 	s.bridge = mock_listener.NewMockIBridge(gomockController)
@@ -66,21 +64,22 @@ func (s *ListenerTestSuite) TestListenerStartStop() {
 	stopChn := make(chan struct{})
 	errChn := make(chan error)
 
-	l := NewListener(&chain.CeloChainConfig{StartBlock: big.NewInt(1)}, s.clientMock, s.blockStorerMock, stopChn, errChn, s.syncerMock, s.routerMock)
+	l := NewListener(&config.CeloChainConfig{StartBlock: big.NewInt(1)}, s.clientMock, s.blockStorerMock, stopChn, errChn, s.syncerMock, s.routerMock)
 	close(stopChn)
 	s.NotNil(l.pollBlocks())
 }
 
-func (s *ListenerTestSuite) TestLatestBlockUpdateTest() {
+func (s *ListenerTestSuite) TestLatestBlockUpdate() {
 	stopChn := make(chan struct{})
 	errChn := make(chan error)
-	cfg := &chain.CeloChainConfig{StartBlock: big.NewInt(1), BridgeContract: common.Address{}}
+	cfg := &config.CeloChainConfig{StartBlock: big.NewInt(1), BridgeContract: common.Address{}}
 	l := NewListener(cfg, s.clientMock, s.blockStorerMock, stopChn, errChn, s.syncerMock, s.routerMock)
+
 	s.clientMock.EXPECT().LatestBlock().Return(big.NewInt(555), nil)
 	s.syncerMock.EXPECT().Sync(gomock.Any()).Return(nil)
 	//No event logs found
 	s.clientMock.EXPECT().FilterLogs(gomock.Any(), gomock.Any()).Return(make([]types.Log, 0), nil)
-	// getDepositEventsAndProofsForBlock todo
+
 	s.blockStorerMock.EXPECT().StoreBlock(big.NewInt(1))
 
 	//ON second call to latest block we stopping goroutine
@@ -94,7 +93,7 @@ func (s *ListenerTestSuite) TestHandleErc20DepositedEventSucccess() {
 
 	stopChn := make(chan struct{})
 	errChn := make(chan error)
-	cfg := &chain.CeloChainConfig{StartBlock: big.NewInt(1), BridgeContract: common.Address{}}
+	cfg := &config.CeloChainConfig{StartBlock: big.NewInt(1), BridgeContract: common.Address{}}
 	listener := NewListener(cfg, s.clientMock, s.blockStorerMock, stopChn, errChn, s.syncerMock, s.routerMock)
 
 	listener.SetContracts(s.bridge, s.erc20Handler, s.erc721Handler, s.genericHandler)
@@ -124,7 +123,7 @@ func (s *ListenerTestSuite) TestHandleErc20DepositedEventFailure() {
 
 	stopChn := make(chan struct{})
 	errChn := make(chan error)
-	cfg := &chain.CeloChainConfig{StartBlock: big.NewInt(1), BridgeContract: common.Address{}}
+	cfg := &config.CeloChainConfig{StartBlock: big.NewInt(1), BridgeContract: common.Address{}}
 	listener := NewListener(cfg, s.clientMock, s.blockStorerMock, stopChn, errChn, s.syncerMock, s.routerMock)
 
 	listener.SetContracts(s.bridge, s.erc20Handler, s.erc721Handler, s.genericHandler)
@@ -142,7 +141,7 @@ func (s *ListenerTestSuite) TestHandleErc721DepositedEventSuccess() {
 	stopChn := make(chan struct{})
 	errChn := make(chan error)
 
-	cfg := &chain.CeloChainConfig{StartBlock: big.NewInt(1), BridgeContract: common.Address{}}
+	cfg := &config.CeloChainConfig{StartBlock: big.NewInt(1), BridgeContract: common.Address{}}
 	listener := NewListener(cfg, s.clientMock, s.blockStorerMock, stopChn, errChn, s.syncerMock, s.routerMock)
 
 	listener.SetContracts(s.bridge, s.erc20Handler, s.erc721Handler, s.genericHandler)
@@ -174,7 +173,7 @@ func (s *ListenerTestSuite) TestHandleErc721DepositedEventFailure() {
 	stopChn := make(chan struct{})
 	errChn := make(chan error)
 
-	cfg := &chain.CeloChainConfig{StartBlock: big.NewInt(1), BridgeContract: common.Address{}}
+	cfg := &config.CeloChainConfig{StartBlock: big.NewInt(1), BridgeContract: common.Address{}}
 	listener := NewListener(cfg, s.clientMock, s.blockStorerMock, stopChn, errChn, s.syncerMock, s.routerMock)
 
 	listener.SetContracts(s.bridge, s.erc20Handler, s.erc721Handler, s.genericHandler)
@@ -192,7 +191,7 @@ func (s *ListenerTestSuite) TestHandleGenericDepositedEventSuccess() {
 	stopChn := make(chan struct{})
 	errChn := make(chan error)
 
-	cfg := &chain.CeloChainConfig{StartBlock: big.NewInt(1), BridgeContract: common.Address{}}
+	cfg := &config.CeloChainConfig{StartBlock: big.NewInt(1), BridgeContract: common.Address{}}
 	listener := NewListener(cfg, s.clientMock, s.blockStorerMock, stopChn, errChn, s.syncerMock, s.routerMock)
 
 	listener.SetContracts(s.bridge, s.erc20Handler, s.erc721Handler, s.genericHandler)
@@ -221,7 +220,7 @@ func (s *ListenerTestSuite) TestHandleGenericDepositedEventFailure() {
 	stopChn := make(chan struct{})
 	errChn := make(chan error)
 
-	cfg := &chain.CeloChainConfig{StartBlock: big.NewInt(1), BridgeContract: common.Address{}}
+	cfg := &config.CeloChainConfig{StartBlock: big.NewInt(1), BridgeContract: common.Address{}}
 	listener := NewListener(cfg, s.clientMock, s.blockStorerMock, stopChn, errChn, s.syncerMock, s.routerMock)
 
 	listener.SetContracts(s.bridge, s.erc20Handler, s.erc721Handler, s.genericHandler)
@@ -246,7 +245,7 @@ func (s *ListenerTestSuite) TestGetDepositEventsAndProofsForBlockerERC20() {
 
 	erc20HandlerContractaddress := common.HexToAddress("0x71C7656EC7ab88b098defB751B7401B5f6d8976F")
 
-	cfg := &chain.CeloChainConfig{
+	cfg := &config.CeloChainConfig{
 		ID:                   3,
 		Erc20HandlerContract: erc20HandlerContractaddress,
 		StartBlock:           startBlock,
@@ -299,7 +298,6 @@ func (s *ListenerTestSuite) TestGetDepositEventsAndProofsForBlockerERC20() {
 		prop.Amount,
 		prop.ResourceID,
 		prop.DestinationRecipientAddress,
-		nil,
 	)
 
 	s.routerMock.EXPECT().Send(message).Times(1).Return(nil)
@@ -322,7 +320,7 @@ func (s *ListenerTestSuite) TestGetDepositEventsAndProofsForBlockerERC721() {
 
 	erc721HandlerContractaddress := common.HexToAddress("0x71C7656EC7ab88b098defB751B7401B5f6d8976F")
 
-	cfg := &chain.CeloChainConfig{
+	cfg := &config.CeloChainConfig{
 		ID:                    3,
 		Erc721HandlerContract: erc721HandlerContractaddress,
 		StartBlock:            startBlock,
@@ -377,7 +375,6 @@ func (s *ListenerTestSuite) TestGetDepositEventsAndProofsForBlockerERC721() {
 		prop.TokenID,
 		prop.DestinationRecipientAddress,
 		prop.MetaData,
-		nil,
 	)
 
 	s.routerMock.EXPECT().Send(message).Times(1).Return(nil)
@@ -400,7 +397,7 @@ func (s *ListenerTestSuite) TestGetDepositEventsAndProofsForBlockerGeneric() {
 
 	genericContractaddress := common.HexToAddress("0x71C7656EC7ab88b098defB751B7401B5f6d8976F")
 
-	cfg := &chain.CeloChainConfig{
+	cfg := &config.CeloChainConfig{
 		ID:                     3,
 		GenericHandlerContract: genericContractaddress,
 		StartBlock:             startBlock,
@@ -450,7 +447,6 @@ func (s *ListenerTestSuite) TestGetDepositEventsAndProofsForBlockerGeneric() {
 		nonce,
 		prop.ResourceID,
 		prop.MetaData,
-		nil,
 	)
 
 	s.routerMock.EXPECT().Send(message).Times(1).Return(nil)
@@ -474,7 +470,7 @@ func (s *ListenerTestSuite) TestGetDepositEventsAndProofsForBlockerFailure() {
 
 	bridgeContract := contractAddress
 
-	cfg := &chain.CeloChainConfig{
+	cfg := &config.CeloChainConfig{
 		ID:                     3,
 		Erc20HandlerContract:   handlerContractaddress,
 		GenericHandlerContract: handlerContractaddress,
@@ -529,7 +525,6 @@ func (s *ListenerTestSuite) TestGetDepositEventsAndProofsForBlockerFailure() {
 		nonce,
 		prop.ResourceID,
 		prop.MetaData,
-		nil,
 	)
 
 	//should not be called

@@ -7,6 +7,7 @@ import (
 	"github.com/ChainSafe/chainbridge-celo/bindings/GenericHandler"
 	msg "github.com/ChainSafe/chainbridge-celo/msg"
 	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/crypto"
 )
 
 var StoreFunctionSig = CreateFunctionSignature("store(bytes32)")
@@ -14,7 +15,7 @@ var StoreFunctionSig = CreateFunctionSignature("store(bytes32)")
 // CreateFunctionSignature hashes the function signature and returns the first 4 bytes
 func CreateFunctionSignature(sig string) [4]byte {
 	var res [4]byte
-	hash := Hash([]byte(sig))
+	hash := crypto.Keccak256Hash([]byte(sig))
 	copy(res[:], hash[:])
 	return res
 }

@@ -1,6 +1,6 @@
 // Copyright 2020 ChainSafe Systems
 // SPDX-License-Identifier: LGPL-3.0-only
-package interfaces
+package listener
 
 import (
 	erc20 "github.com/ChainSafe/chainbridge-celo/bindings/ERC20Handler"
