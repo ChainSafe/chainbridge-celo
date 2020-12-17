@@ -16,7 +16,7 @@ require (
 	github.com/rs/zerolog v1.19.0
 	github.com/stretchr/testify v1.4.0
 	github.com/urfave/cli/v2 v2.3.0
-	golang.org/x/net v0.0.0-20200707034311-ab3426394381 // indirect
+	golang.org/x/net v0.0.0-20200707034311-ab3426394381
 	golang.org/x/sync v0.0.0-20201207232520-09787c993a3a // indirect
 )
 
