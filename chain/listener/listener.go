@@ -206,7 +206,6 @@ func (l *listener) getDepositEventsAndProofsForBlock(latestBlock *big.Int) error
 			log.Error().Err(err).Msg("subscription error: failed to route message")
 		}
 	}
-
 	return nil
 }
 

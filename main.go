@@ -83,6 +83,7 @@ var accountCommand = cli.Command{
 var validatorsSyncerCommands = cli.Command{
 	Name:   "syncer",
 	Action: validator_syncer.Sync,
+	Flags:  append(cliFlags, devFlags...),
 }
 
 // init initializes CLI
@@ -96,6 +97,7 @@ func init() {
 	app.EnableBashCompletion = true
 	app.Commands = []*cli.Command{
 		&accountCommand,
+		&validatorsSyncerCommands,
 	}
 
 	app.Flags = append(app.Flags, cliFlags...)
