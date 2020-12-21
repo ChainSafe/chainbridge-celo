@@ -15,9 +15,11 @@ require (
 	github.com/rs/cors v1.7.0 // indirect
 	github.com/rs/zerolog v1.19.0
 	github.com/stretchr/testify v1.4.0
+	github.com/syndtr/goleveldb v1.0.1-0.20190923125748-758128399b1d
 	github.com/urfave/cli/v2 v2.3.0
 	golang.org/x/net v0.0.0-20200707034311-ab3426394381 // indirect
 	golang.org/x/sync v0.0.0-20201207232520-09787c993a3a // indirect
+	golang.org/x/tools v0.0.0-20200221224223-e1da425f72fd
 )
 
 replace github.com/ethereum/go-ethereum => github.com/celo-org/celo-blockchain v0.0.0-20200612100840-bf2ba25426f9

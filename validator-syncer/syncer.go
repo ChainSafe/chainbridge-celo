@@ -41,7 +41,7 @@ func Sync(ctx *cli.Context) error {
 
 	chainClient, err := client.NewClient(celoChainConfig.Endpoint, celoChainConfig.Http, kp, celoChainConfig.GasLimit, celoChainConfig.MaxGasPrice)
 	//syncer := validator.NewValidatorSyncer(chainClient)
-	db := NewValidatorsDB()
+	db, err := NewSyncerDB("/test/db")
 
 	go SyncValidators(stopChn, errChn, chainClient, db)
 
@@ -69,15 +69,17 @@ func Sync(ctx *cli.Context) error {
 	}
 }
 
-type SyncerDB interface {
-	GetLatestValidators() []*istanbul.ValidatorData
-	GetLatestBlock() *big.Int
-	SetValidatorsForBlock(block *big.Int, validators []*istanbul.ValidatorData)
+type SyncerStoreger interface {
+	GetLatestKnownValidators() ([]*istanbul.ValidatorData, error)
+	GetLatestKnownBlock() (*big.Int, error)
+	SetValidatorsForBlock(block *big.Int, validators []*istanbul.ValidatorData) error
 }
 
-func SyncValidators(stopChn <-chan struct{}, errChn chan error, c *client.Client, db SyncerDB) {
-	block := db.GetLatestBlock()
-	actualValidators := db.GetLatestValidators()
+func SyncValidators(stopChn <-chan struct{}, errChn chan error, c *client.Client, db SyncerStoreger) {
+	block, err := db.GetLatestKnownBlock()
+	if err != nil {
+		// TODO
+	}
 	for {
 		select {
 		case <-stopChn:
@@ -93,13 +95,20 @@ func SyncValidators(stopChn <-chan struct{}, errChn chan error, c *client.Client
 				errChn <- fmt.Errorf("gettings header by number err: %w", err)
 				return
 			}
+			actualValidators, err := db.GetLatestKnownValidators()
+			if err != nil {
+				// TODO
+			}
 			extra, err := types.ExtractIstanbulExtra(header)
 			b := bytes.NewBuffer(extra.RemovedValidators.Bytes())
 			if len(extra.AddedValidators) != 0 || b.Len() > 0 {
-				actualValidators, err = ApplyValidatorsDiff(extra, db.GetLatestValidators())
+				actualValidators, err = ApplyValidatorsDiff(extra, actualValidators)
 				log.Debug().Msgf("New validators %+v", actualValidators)
 			}
-			db.SetValidatorsForBlock(block, actualValidators)
+			err = db.SetValidatorsForBlock(block, actualValidators)
+			if err != nil {
+				// TODO
+			}
 			block.Add(block, big.NewInt(1))
 		}
 	}
