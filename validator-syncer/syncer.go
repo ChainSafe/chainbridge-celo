@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/ethereum/go-ethereum"
+	"github.com/ethereum/go-ethereum/consensus/istanbul"
 	"math/big"
 	"os"
 	"os/signal"
@@ -42,7 +43,7 @@ func Sync(ctx *cli.Context) error {
 	//syncer := validator.NewValidatorSyncer(chainClient)
 	db := NewValidatorsDB()
 
-	go validate(stopChn, errChn, dataChn, chainClient, db)
+	go SyncValidators(stopChn, errChn, chainClient, db)
 
 	sysErr := make(chan os.Signal, 1)
 	signal.Notify(sysErr,
@@ -68,9 +69,15 @@ func Sync(ctx *cli.Context) error {
 	}
 }
 
-func validate(stopChn <-chan struct{}, errChn chan error, dataChn chan string, c *client.Client, db *validatorsDB) {
-	block := db.getLatestAddedBlock()
-	actualValidators := db.getLatestValidators()
+type SyncerDB interface {
+	GetLatestValidators() []*istanbul.ValidatorData
+	GetLatestBlock() *big.Int
+	SetValidatorsForBlock(block *big.Int, validators []*istanbul.ValidatorData)
+}
+
+func SyncValidators(stopChn <-chan struct{}, errChn chan error, c *client.Client, db SyncerDB) {
+	block := db.GetLatestBlock()
+	actualValidators := db.GetLatestValidators()
 	for {
 		select {
 		case <-stopChn:
@@ -79,6 +86,7 @@ func validate(stopChn <-chan struct{}, errChn chan error, dataChn chan string, c
 			header, err := c.HeaderByNumber(context.Background(), block)
 			if err != nil {
 				if errors.Is(err, ethereum.NotFound) {
+					// Block not yet mined, waiting
 					time.Sleep(5)
 					continue
 				}
@@ -88,11 +96,10 @@ func validate(stopChn <-chan struct{}, errChn chan error, dataChn chan string, c
 			extra, err := types.ExtractIstanbulExtra(header)
 			b := bytes.NewBuffer(extra.RemovedValidators.Bytes())
 			if len(extra.AddedValidators) != 0 || b.Len() > 0 {
-				log.Debug().Msgf("EXTRA OF BLOCK %+v %s", extra, block.String())
-				actualValidators = ApplyValidatorsDiff(extra, db.latestValidators)
+				actualValidators, err = ApplyValidatorsDiff(extra, db.GetLatestValidators())
 				log.Debug().Msgf("New validators %+v", actualValidators)
 			}
-			db.setValidatorsForBlock(block, actualValidators)
+			db.SetValidatorsForBlock(block, actualValidators)
 			block.Add(block, big.NewInt(1))
 		}
 	}

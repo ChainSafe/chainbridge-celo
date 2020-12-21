@@ -1,38 +1,29 @@
 package validator_syncer
 
 import (
+	"github.com/pkg/errors"
+	"math/big"
+
 	"github.com/celo-org/celo-bls-go/bls"
 	"github.com/ethereum/go-ethereum/consensus/istanbul"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/crypto/bls"
-	"github.com/rs/zerolog/log"
-	"math/big"
 )
 
-func ExtractValidatorsDiff(headerExtra *types.IstanbulExtra, validators []*istanbul.ValidatorData) ([]*istanbul.ValidatorData, []*istanbul.ValidatorData, error) {
-	var addedValidators []*istanbul.ValidatorData
-	for i, addr := range headerExtra.AddedValidators {
-		addedValidators = append(addedValidators, &istanbul.ValidatorData{Address: addr, BLSPublicKey: headerExtra.AddedValidatorsPublicKeys[i]})
-	}
+var (
+	ErrorWrongInitialValidators = errors.New("wrong initial validators")
+)
 
-	bitmap := headerExtra.RemovedValidators.Bytes()
-	var removedValidators []*istanbul.ValidatorData
-
-	for _, i := range bitmap {
-		removedValidators = append(removedValidators, validators[i])
-	}
-
-	return addedValidators, removedValidators, nil
-}
-
-func ApplyValidatorsDiff(extra *types.IstanbulExtra, validators []*istanbul.ValidatorData) []*istanbul.ValidatorData {
+func ApplyValidatorsDiff(extra *types.IstanbulExtra, validators []*istanbul.ValidatorData) ([]*istanbul.ValidatorData, error) {
 	var addedValidators []*istanbul.ValidatorData
 	for i, addr := range extra.AddedValidators {
 		addedValidators = append(addedValidators, &istanbul.ValidatorData{Address: addr, BLSPublicKey: extra.AddedValidatorsPublicKeys[i]})
 	}
 
-	log.Debug().Msgf("LEN BYTEARR %s", extra.RemovedValidators.BitLen())
 	for i := 0; i < extra.RemovedValidators.BitLen(); i++ {
+		if len(validators) <= i {
+			return nil, ErrorWrongInitialValidators
+		}
 		if bitSetToTrue(i, extra.RemovedValidators) {
 			validators[i] = nil
 		}
@@ -44,12 +35,9 @@ func ApplyValidatorsDiff(extra *types.IstanbulExtra, validators []*istanbul.Vali
 			newValidators = append(newValidators, v)
 		}
 	}
-	return newValidators
+	return newValidators, nil
 }
 
-func remove(slice []*istanbul.ValidatorData, s int) []*istanbul.ValidatorData {
-	return append(slice[:s], slice[s+1:]...)
-}
 func bitSetToTrue(index int, bits *big.Int) bool {
 	andY := big.NewInt(0).Exp(big.NewInt(2), big.NewInt(int64(index)), nil)
 	andRes := big.NewInt(0).And(bits, andY)

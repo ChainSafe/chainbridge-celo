@@ -17,7 +17,7 @@ func NewValidatorsDB() *validatorsDB {
 	return &validatorsDB{epochSize: big.NewInt(12), db: make(map[*big.Int][]*istanbul.ValidatorData)}
 }
 
-func (db *validatorsDB) setValidatorsForBlock(blockNumber *big.Int, vals []*istanbul.ValidatorData) {
+func (db *validatorsDB) SetValidatorsForBlock(blockNumber *big.Int, vals []*istanbul.ValidatorData) {
 	db.db[blockNumber] = vals
 	db.latestServedBlock = blockNumber
 	db.latestValidators = vals
@@ -27,7 +27,7 @@ func (db *validatorsDB) getValidatorsForBlock(blockNumber *big.Int) []*istanbul.
 	return db.db[blockNumber]
 }
 
-func (db *validatorsDB) getLatestAddedBlock() *big.Int {
+func (db *validatorsDB) GetLatestBlock() *big.Int {
 	if db.latestServedBlock == nil {
 		return big.NewInt(0)
 	} else {
@@ -35,7 +35,7 @@ func (db *validatorsDB) getLatestAddedBlock() *big.Int {
 	}
 }
 
-func (db *validatorsDB) getLatestValidators() []*istanbul.ValidatorData {
+func (db *validatorsDB) GetLatestValidators() []*istanbul.ValidatorData {
 	if db.latestValidators != nil {
 		return db.latestValidators
 	}
