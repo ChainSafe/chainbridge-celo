@@ -8,17 +8,17 @@ import (
 	"testing"
 	"time"
 
-	"github.com/ChainSafe/chainbridge-utils/msg"
+	"github.com/ChainSafe/chainbridge-celo/msg"
 )
 
 type mockWriter struct {
-	msgs []msg.Message
+	msgs []*msg.Message
 }
 
 func (w *mockWriter) Start() error { return nil }
 func (w *mockWriter) Stop() error  { return nil }
 
-func (w *mockWriter) ResolveMessage(msg msg.Message) bool {
+func (w *mockWriter) ResolveMessage(msg *msg.Message) bool {
 	w.msgs = append(w.msgs, msg)
 	return true
 }
@@ -26,18 +26,18 @@ func (w *mockWriter) ResolveMessage(msg msg.Message) bool {
 func TestRouter(t *testing.T) {
 	router := NewRouter()
 
-	ethW := &mockWriter{msgs: *new([]msg.Message)}
+	ethW := &mockWriter{msgs: make([]*msg.Message, 0)}
 	router.Register(msg.ChainId(0), ethW)
 
-	ctfgW := &mockWriter{msgs: *new([]msg.Message)}
+	ctfgW := &mockWriter{msgs: make([]*msg.Message, 0)}
 	router.Register(msg.ChainId(1), ctfgW)
 
-	msgEthToCtfg := msg.Message{
+	msgEthToCtfg := &msg.Message{
 		Source:      msg.ChainId(0),
 		Destination: msg.ChainId(1),
 	}
 
-	msgCtfgToEth := msg.Message{
+	msgCtfgToEth := &msg.Message{
 		Source:      msg.ChainId(1),
 		Destination: msg.ChainId(0),
 	}
@@ -53,11 +53,11 @@ func TestRouter(t *testing.T) {
 
 	time.Sleep(time.Second)
 
-	if !reflect.DeepEqual(ethW.msgs[0], msgCtfgToEth) {
+	if !reflect.DeepEqual(*ethW.msgs[0], *msgCtfgToEth) {
 		t.Error("Unexpected message")
 	}
 
-	if !reflect.DeepEqual(ctfgW.msgs[0], msgEthToCtfg) {
+	if !reflect.DeepEqual(*ctfgW.msgs[0], *msgEthToCtfg) {
 		t.Error("Unexpected message")
 	}
 }

@@ -7,13 +7,13 @@ import (
 	"fmt"
 	"sync"
 
-	"github.com/ChainSafe/chainbridge-utils/msg"
+	"github.com/ChainSafe/chainbridge-celo/msg"
 	"github.com/rs/zerolog/log"
 )
 
 // Writer consumes a message and makes the requried on-chain interactions.
 type MessageResolver interface {
-	ResolveMessage(message msg.Message) bool
+	ResolveMessage(message *msg.Message) bool
 }
 
 // BaseRouter forwards messages from their source to their destination
@@ -30,7 +30,7 @@ func NewRouter() *BaseRouter {
 }
 
 // Send passes a message to the destination Writer if it exists
-func (r *BaseRouter) Send(msg msg.Message) error {
+func (r *BaseRouter) Send(msg *msg.Message) error {
 	r.lock.Lock()
 	defer r.lock.Unlock()
 

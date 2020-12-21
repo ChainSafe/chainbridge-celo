@@ -5,8 +5,9 @@ package utils
 
 import (
 	"math/big"
+
 	"github.com/ChainSafe/chainbridge-celo/bindings/Bridge"
-	msg "github.com/ChainSafe/chainbridge-utils/msg"
+	"github.com/ChainSafe/chainbridge-celo/msg"
 	"github.com/ethereum/go-ethereum/common"
 )
 

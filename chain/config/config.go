@@ -1,7 +1,7 @@
 // Copyright 2020 ChainSafe Systems
 // SPDX-License-Identifier: LGPL-3.0-only
 
-package chain
+package config
 
 import (
 	"math/big"
@@ -10,8 +10,8 @@ import (
 	"github.com/ChainSafe/chainbridge-celo/chain/client"
 	"github.com/ChainSafe/chainbridge-celo/cmd/cfg"
 	"github.com/ChainSafe/chainbridge-celo/flags"
+	"github.com/ChainSafe/chainbridge-celo/msg"
 	utils "github.com/ChainSafe/chainbridge-celo/shared/ethereum"
-	"github.com/ChainSafe/chainbridge-utils/msg"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/pkg/errors"
 	"github.com/urfave/cli/v2"

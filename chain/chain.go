@@ -1,67 +1,50 @@
+// Copyright 2020 ChainSafe Systems
+// SPDX-License-Identifier: LGPL-3.0-only
 package chain
 
 import (
-	"context"
 	"fmt"
-	"math/big"
 
 	bridgeHandler "github.com/ChainSafe/chainbridge-celo/bindings/Bridge"
 	erc20Handler "github.com/ChainSafe/chainbridge-celo/bindings/ERC20Handler"
 	erc721Handler "github.com/ChainSafe/chainbridge-celo/bindings/ERC721Handler"
 	"github.com/ChainSafe/chainbridge-celo/bindings/GenericHandler"
 	"github.com/ChainSafe/chainbridge-celo/chain/client"
-	"github.com/ChainSafe/chainbridge-utils/blockstore"
-	"github.com/ChainSafe/chainbridge-utils/msg"
-	eth "github.com/ethereum/go-ethereum"
-	"github.com/ethereum/go-ethereum/accounts/abi/bind"
-	"github.com/ethereum/go-ethereum/core/types"
+	"github.com/ChainSafe/chainbridge-celo/chain/config"
+	listener "github.com/ChainSafe/chainbridge-celo/chain/listener"
+	"github.com/ChainSafe/chainbridge-celo/chain/writer"
+	"github.com/ChainSafe/chainbridge-celo/msg"
 	"github.com/pkg/errors"
 	"github.com/rs/zerolog/log"
 )
-
-type BlockDB interface {
-	blockstore.Blockstorer
-	TryLoadLatestBlock() (*big.Int, error)
-}
 
 // checkBlockstore queries the blockstore for the latest known block. If the latest block is
 // greater than cfg.startBlock, then cfg.startBlock is replaced with the latest known block.
 type Listener interface {
 	StartPollingBlocks() error
-	SetContracts(bridge *bridgeHandler.Bridge, erc20Handler *erc20Handler.ERC20Handler, erc721Handler *erc721Handler.ERC721Handler, genericHandler *GenericHandler.GenericHandler)
+	SetContracts(bridge listener.IBridge, erc20Handler listener.IERC20Handler, erc721Handler listener.IERC721Handler, genericHandler listener.IGenericHandler)
 	//LatestBlock() *metrics.LatestBlock
 }
 
 type Writer interface {
-	SetBridge(bc *bridgeHandler.Bridge)
-}
-
-type ContractBackendWithBlockFinder interface {
-	bind.ContractBackend
-	LatestBlock() (*big.Int, error)
-}
-
-type LogFilterWithLatestBlock interface {
-	FilterLogs(ctx context.Context, q eth.FilterQuery) ([]types.Log, error)
-	LatestBlock() (*big.Int, error)
+	SetBridge(bridge writer.Bridger)
 }
 
 type Chain struct {
-	cfg      *CeloChainConfig // The config of the chain
-	listener Listener         // The listener of this chain
-	writer   Writer           // The writer of the chain
+	cfg      *config.CeloChainConfig // The config of the chain
+	listener Listener                // The listener of this chain
+	writer   Writer                  // The writer of the chain
 	client   *client.Client
 	stopChn  <-chan struct{}
 }
 
-func InitializeChain(cc *CeloChainConfig, c *client.Client, listener Listener, writer Writer, stopChn <-chan struct{}) (*Chain, error) {
+func InitializeChain(cc *config.CeloChainConfig, c *client.Client, listener Listener, writer Writer, stopChn <-chan struct{}) (*Chain, error) {
 
 	bridgeContract, err := bridgeHandler.NewBridge(cc.BridgeContract, c)
 	if err != nil {
 		return nil, err
 	}
 
-	//TODO
 	chainId, err := bridgeContract.ChainID(c.CallOpts())
 	if err != nil {
 		return nil, err
@@ -91,7 +74,6 @@ func InitializeChain(cc *CeloChainConfig, c *client.Client, listener Listener, w
 	}
 	listener.SetContracts(bridgeContract, erc20HandlerContract, erc721HandlerContract, genericHandlerContract)
 	writer.SetBridge(bridgeContract)
-
 	return &Chain{
 		cfg:      cc,
 		writer:   writer,

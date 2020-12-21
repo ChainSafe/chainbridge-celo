@@ -10,14 +10,10 @@ import (
 	"math/big"
 	"time"
 
-	"github.com/ChainSafe/chainbridge-celo/bindings/Bridge"
-	"github.com/ChainSafe/chainbridge-celo/bindings/ERC20Handler"
-	"github.com/ChainSafe/chainbridge-celo/bindings/ERC721Handler"
-	"github.com/ChainSafe/chainbridge-celo/bindings/GenericHandler"
-	"github.com/ChainSafe/chainbridge-celo/chain"
-	"github.com/ChainSafe/chainbridge-celo/shared/ethereum"
-	"github.com/ChainSafe/chainbridge-utils/blockstore"
-	"github.com/ChainSafe/chainbridge-utils/msg"
+	"github.com/ChainSafe/chainbridge-celo/chain/client"
+	"github.com/ChainSafe/chainbridge-celo/chain/config"
+	"github.com/ChainSafe/chainbridge-celo/msg"
+	utils "github.com/ChainSafe/chainbridge-celo/shared/ethereum"
 	eth "github.com/ethereum/go-ethereum"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	ethcommon "github.com/ethereum/go-ethereum/common"
@@ -31,19 +27,19 @@ var ExpectedBlockTime = time.Second
 var BlockRetryLimit = 5
 
 type listener struct {
-	cfg                    *chain.CeloChainConfig
+	cfg                    *config.CeloChainConfig
 	router                 IRouter
-	bridgeContract         *Bridge.Bridge // instance of bound bridge contract
-	erc20HandlerContract   *ERC20Handler.ERC20Handler
-	erc721HandlerContract  *ERC721Handler.ERC721Handler
-	genericHandlerContract *GenericHandler.GenericHandler
-	blockstore             blockstore.Blockstorer
+	bridgeContract         IBridge // instance of bound bridge contract
+	erc20HandlerContract   IERC20Handler
+	erc721HandlerContract  IERC721Handler
+	genericHandlerContract IGenericHandler
+	blockstore             Blockstorer
 	stop                   <-chan struct{}
 	sysErr                 chan<- error // Reports fatal error to core
 	syncer                 BlockSyncer
 	//latestBlock            *metrics.LatestBlock
 	//metrics                *metrics.ChainMetrics
-	client chain.LogFilterWithLatestBlock
+	client client.LogFilterWithLatestBlock
 }
 
 type BlockSyncer interface {
@@ -51,13 +47,13 @@ type BlockSyncer interface {
 }
 
 type IRouter interface {
-	Send(msg msg.Message) error
+	Send(msg *msg.Message) error
 }
 type Blockstorer interface {
 	StoreBlock(*big.Int) error
 }
 
-func NewListener(cfg *chain.CeloChainConfig, client chain.LogFilterWithLatestBlock, bs Blockstorer, stop <-chan struct{}, sysErr chan<- error, syncer BlockSyncer, router IRouter) *listener {
+func NewListener(cfg *config.CeloChainConfig, client client.LogFilterWithLatestBlock, bs Blockstorer, stop <-chan struct{}, sysErr chan<- error, syncer BlockSyncer, router IRouter) *listener {
 	return &listener{
 		cfg:        cfg,
 		blockstore: bs,
@@ -69,7 +65,7 @@ func NewListener(cfg *chain.CeloChainConfig, client chain.LogFilterWithLatestBlo
 	}
 }
 
-func (l *listener) SetContracts(bridge *Bridge.Bridge, erc20Handler *ERC20Handler.ERC20Handler, erc721Handler *ERC721Handler.ERC721Handler, genericHandler *GenericHandler.GenericHandler) {
+func (l *listener) SetContracts(bridge IBridge, erc20Handler IERC20Handler, erc721Handler IERC721Handler, genericHandler IGenericHandler) {
 	l.bridgeContract = bridge
 	l.erc20HandlerContract = erc20Handler
 	l.erc721HandlerContract = erc721Handler
@@ -176,9 +172,9 @@ func (l *listener) getDepositEventsAndProofsForBlock(latestBlock *big.Int) error
 
 	// read through the log events and handle their deposit event if handler is recognized
 	for _, eventLog := range logs {
-		var m msg.Message
+		var m *msg.Message
 		destId := msg.ChainId(eventLog.Topics[1].Big().Uint64())
-		rId := msg.ResourceIdFromSlice(eventLog.Topics[2].Bytes())
+		rId := msg.ResourceId(eventLog.Topics[2])
 		nonce := msg.Nonce(eventLog.Topics[3].Big().Uint64())
 
 		addr, err := l.bridgeContract.ResourceIDToHandlerAddress(&bind.CallOpts{}, rId)

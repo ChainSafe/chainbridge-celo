@@ -12,8 +12,10 @@ import (
 	"time"
 
 	"github.com/ChainSafe/chainbridge-utils/crypto/secp256k1"
+	eth "github.com/ethereum/go-ethereum"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	ethcommon "github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/core/types"
 	ethcrypto "github.com/ethereum/go-ethereum/crypto"
 	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/ethereum/go-ethereum/rpc"
@@ -38,6 +40,11 @@ type Client struct {
 	nonceLock   sync.Mutex
 	optsLock    sync.Mutex
 	stop        chan int // All routines should exit when this channel is closed
+}
+
+type LogFilterWithLatestBlock interface {
+	FilterLogs(ctx context.Context, q eth.FilterQuery) ([]types.Log, error)
+	LatestBlock() (*big.Int, error)
 }
 
 // NewConnection returns an uninitialized connection, must call Client.Connect() before using.
