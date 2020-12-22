@@ -46,7 +46,7 @@ func (s *WriterTestSuite) TestResolveMessageWrongType() {
 	amount := big.NewInt(10)
 	stopChn := make(chan struct{})
 	errChn := make(chan error)
-	m := message.NewFungibleTransfer(1, 0, message.Nonce(555), amount, resourceId, recipient)
+	m := message.NewFungibleTransfer(1, 0, message.Nonce(555), resourceId, nil, nil,  amount,  recipient)
 	m.Type = "123"
 	cfg := &config.CeloChainConfig{StartBlock: big.NewInt(1), BridgeContract: common.Address{}}
 	w := NewWriter(s.client, cfg, stopChn, errChn, nil)
@@ -59,7 +59,7 @@ func (s *WriterTestSuite) TestShouldVoteProposalIsAlreadyComplete() {
 	amount := big.NewInt(10)
 	stopChn := make(chan struct{})
 	errChn := make(chan error)
-	m := message.NewFungibleTransfer(1, 0, message.Nonce(555), amount, resourceId, recipient)
+	m := message.NewFungibleTransfer(1, 0, message.Nonce(555), resourceId, nil, nil, amount, recipient)
 
 	cfg := &config.CeloChainConfig{StartBlock: big.NewInt(1), BridgeContract: common.Address{}}
 	w := NewWriter(s.client, cfg, stopChn, errChn, nil)
@@ -75,7 +75,7 @@ func (s *WriterTestSuite) TestShouldVoteProposalIsAlreadyComplete() {
 func (s *WriterTestSuite) TestShouldVoteProposalIsAlreadyVoted() {
 	stopChn := make(chan struct{})
 	errChn := make(chan error)
-	m := message.NewFungibleTransfer(1, 0, message.Nonce(555), big.NewInt(10), [32]byte{1}, make([]byte, 32))
+	m := message.NewFungibleTransfer(1, 0, message.Nonce(555), [32]byte{1}, nil, nil, big.NewInt(10),  make([]byte, 32))
 
 	cfg := &config.CeloChainConfig{StartBlock: big.NewInt(1), BridgeContract: common.Address{}}
 	w := NewWriter(s.client, cfg, stopChn, errChn, nil)
@@ -97,7 +97,7 @@ func (s *WriterTestSuite) TestShouldVoteProposalIsAlreadyVoted() {
 func (s *WriterTestSuite) TestVoteProposalAlreadyComplete() {
 	stopChn := make(chan struct{})
 	errChn := make(chan error)
-	m := message.NewFungibleTransfer(message.ChainId(1), 0, message.Nonce(555), big.NewInt(10), [32]byte{1}, make([]byte, 32))
+	m := message.NewFungibleTransfer(message.ChainId(1), 0, message.Nonce(555), [32]byte{1}, nil, nil, big.NewInt(10), make([]byte, 32))
 
 	cfg := &config.CeloChainConfig{StartBlock: big.NewInt(1), BridgeContract: common.Address{}}
 	w := NewWriter(s.client, cfg, stopChn, errChn, nil)
@@ -129,7 +129,7 @@ func (s *WriterTestSuite) TestVoteProposalAlreadyComplete() {
 func (s *WriterTestSuite) TestVoteProposalIsNotComplete() {
 	stopChn := make(chan struct{})
 	errChn := make(chan error)
-	m := message.NewFungibleTransfer(message.ChainId(1), 0, message.Nonce(555), big.NewInt(10), [32]byte{1}, make([]byte, 32))
+	m := message.NewFungibleTransfer(message.ChainId(1), 0, message.Nonce(555), [32]byte{1}, nil, nil, big.NewInt(10), make([]byte, 32))
 
 	cfg := &config.CeloChainConfig{StartBlock: big.NewInt(1), BridgeContract: common.Address{}}
 	w := NewWriter(s.client, cfg, stopChn, errChn, nil)
@@ -161,7 +161,7 @@ func (s *WriterTestSuite) TestVoteProposalIsNotComplete() {
 func (s *WriterTestSuite) TestVoteProposalUnexpectedErrorOnVote() {
 	stopChn := make(chan struct{})
 	errChn := make(chan error)
-	m := message.NewFungibleTransfer(message.ChainId(1), 0, message.Nonce(555), big.NewInt(10), [32]byte{1}, make([]byte, 32))
+	m := message.NewFungibleTransfer(message.ChainId(1), 0, message.Nonce(555), [32]byte{1}, nil, nil, big.NewInt(10),make([]byte, 32))
 
 	cfg := &config.CeloChainConfig{StartBlock: big.NewInt(1), BridgeContract: common.Address{}}
 	w := NewWriter(s.client, cfg, stopChn, errChn, nil)
