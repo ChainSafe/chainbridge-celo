@@ -41,7 +41,10 @@ func Sync(ctx *cli.Context) error {
 
 	chainClient, err := client.NewClient(celoChainConfig.Endpoint, celoChainConfig.Http, kp, celoChainConfig.GasLimit, celoChainConfig.MaxGasPrice)
 	//syncer := validator.NewValidatorSyncer(chainClient)
-	db, err := NewSyncerDB("/test/db")
+	db, err := NewSyncerDB("test/db")
+	if err != nil {
+		panic(err)
+	}
 
 	go SyncValidators(stopChn, errChn, chainClient, db)
 
@@ -78,7 +81,8 @@ type SyncerStoreger interface {
 func SyncValidators(stopChn <-chan struct{}, errChn chan error, c *client.Client, db SyncerStoreger) {
 	block, err := db.GetLatestKnownBlock()
 	if err != nil {
-		// TODO
+		errChn <- fmt.Errorf("error on get latest known block from db: %w", err)
+		return
 	}
 	for {
 		select {
@@ -97,7 +101,8 @@ func SyncValidators(stopChn <-chan struct{}, errChn chan error, c *client.Client
 			}
 			actualValidators, err := db.GetLatestKnownValidators()
 			if err != nil {
-				// TODO
+				errChn <- fmt.Errorf("error on get latest known validators from db: %w", err)
+				return
 			}
 			extra, err := types.ExtractIstanbulExtra(header)
 			b := bytes.NewBuffer(extra.RemovedValidators.Bytes())
@@ -107,7 +112,8 @@ func SyncValidators(stopChn <-chan struct{}, errChn chan error, c *client.Client
 			}
 			err = db.SetValidatorsForBlock(block, actualValidators)
 			if err != nil {
-				// TODO
+				errChn <- fmt.Errorf("error on set validators to db: %w", err)
+				return
 			}
 			block.Add(block, big.NewInt(1))
 		}

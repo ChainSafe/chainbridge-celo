@@ -75,3 +75,15 @@ func (s *SyncerDBTestSuite) TestSetValidatorsForBlock() {
 	s.Equal(common.Address{0x0f}, validators[0].Address)
 
 }
+
+func (s *SyncerDBTestSuite) TestGetLatestKnownBlockWithEmptyDB() {
+	v, err := s.syncer.GetLatestKnownBlock()
+	s.Nil(err)
+	s.Equal(0, v.Cmp(big.NewInt(0)))
+}
+
+func (s *SyncerDBTestSuite) TestGetLatestKnownValidatorsFromEmptyDB() {
+	v, err := s.syncer.GetLatestKnownValidators()
+	s.Nil(err)
+	s.Equal(0, len(v))
+}

@@ -3,9 +3,11 @@ package validator_syncer
 import (
 	"bytes"
 	"encoding/gob"
+	"errors"
 	"math/big"
 
 	"github.com/ethereum/go-ethereum/consensus/istanbul"
+	"github.com/rs/zerolog/log"
 	"github.com/syndtr/goleveldb/leveldb"
 )
 
@@ -50,6 +52,9 @@ func (db *SyncerDB) setLatestKnownValidators(validators []*istanbul.ValidatorDat
 func (db *SyncerDB) GetLatestKnownBlock() (*big.Int, error) {
 	data, err := db.db.Get([]byte(latestKnowBlockKey), nil)
 	if err != nil {
+		if errors.Is(err, leveldb.ErrNotFound) {
+			return big.NewInt(0), nil
+		}
 		return nil, err
 	}
 	v := big.NewInt(0)
@@ -60,6 +65,9 @@ func (db *SyncerDB) GetLatestKnownBlock() (*big.Int, error) {
 func (db *SyncerDB) GetLatestKnownValidators() ([]*istanbul.ValidatorData, error) {
 	res, err := db.db.Get([]byte(latestKnowValidatorsKey), nil)
 	if err != nil {
+		if errors.Is(err, leveldb.ErrNotFound) {
+			return make([]*istanbul.ValidatorData, 0), nil
+		}
 		return nil, err
 	}
 	b := &bytes.Buffer{}
@@ -105,6 +113,7 @@ func (db *SyncerDB) SetValidatorsForBlock(block *big.Int, validators []*istanbul
 		tx.Discard()
 		return err
 	}
+	log.Info().Int64("block", block.Int64()).Msgf("New validators set for block")
 	return nil
 }
 
