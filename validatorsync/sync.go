@@ -13,6 +13,10 @@ import (
 	"github.com/ethereum/go-ethereum/core/types"
 )
 
+const (
+	timeToWaitUntilNExtBLockAppear = 5
+)
+
 func StoreBlockValidators(stopChn <-chan struct{}, errChn chan error, c *client.Client, db *SyncerStorr, chainID uint8) {
 	block, err := db.GetLatestKnownBlock(chainID)
 	if err != nil {
@@ -28,7 +32,7 @@ func StoreBlockValidators(stopChn <-chan struct{}, errChn chan error, c *client.
 			if err != nil {
 				if errors.Is(err, ethereum.NotFound) {
 					// Block not yet mined, waiting
-					time.Sleep(5)
+					time.Sleep(timeToWaitUntilNExtBLockAppear * time.Second)
 					continue
 				}
 				errChn <- fmt.Errorf("gettings header by number err: %w", err)
@@ -40,9 +44,17 @@ func StoreBlockValidators(stopChn <-chan struct{}, errChn chan error, c *client.
 				return
 			}
 			extra, err := types.ExtractIstanbulExtra(header)
+			if err != nil {
+				errChn <- fmt.Errorf("error on extracting istanbul extra: %w", err)
+				return
+			}
 			b := bytes.NewBuffer(extra.RemovedValidators.Bytes())
 			if len(extra.AddedValidators) != 0 || b.Len() > 0 {
 				actualValidators, err = applyValidatorsDiff(extra, actualValidators)
+				if err != nil {
+					errChn <- fmt.Errorf("error applying validators diff: %w", err)
+					return
+				}
 			}
 			err = db.SetValidatorsForBlock(block, actualValidators, chainID)
 			if err != nil {

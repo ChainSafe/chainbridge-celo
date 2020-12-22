@@ -41,13 +41,10 @@ func applyValidatorsDiff(extra *types.IstanbulExtra, validators []*istanbul.Vali
 func bitSetToTrue(index int, bits *big.Int) bool {
 	andY := big.NewInt(0).Exp(big.NewInt(2), big.NewInt(int64(index)), nil)
 	andRes := big.NewInt(0).And(bits, andY)
-	if andRes.Cmp(big.NewInt(0)) > 0 {
-		return true
-	}
-	return false
+	return andRes.Cmp(big.NewInt(0)) > 0
 }
 
-func AggregatePublicKeys(validators []*istanbul.ValidatorData) (*bls.PublicKey, error) {
+func aggregatePublicKeys(validators []*istanbul.ValidatorData) (*bls.PublicKey, error) {
 	publicKeys := make([]blscrypto.SerializedPublicKey, len(validators))
 	for i := range validators {
 		publicKeys[i] = validators[i].BLSPublicKey

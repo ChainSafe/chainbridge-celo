@@ -7,7 +7,6 @@ import (
 
 	"github.com/ChainSafe/chainbridge-celo/cmd"
 	"github.com/ChainSafe/chainbridge-celo/flags"
-	"github.com/ChainSafe/chainbridge-celo/validatorsync"
 	"github.com/rs/zerolog/log"
 	"github.com/urfave/cli/v2"
 )
@@ -80,12 +79,6 @@ var accountCommand = cli.Command{
 	},
 }
 
-var validatorsSyncerCommands = cli.Command{
-	Name:   "syncer",
-	Action: validatorsync.Sync,
-	Flags:  append(cliFlags, devFlags...),
-}
-
 // init initializes CLI
 func init() {
 	app.Action = cmd.Run
@@ -97,7 +90,6 @@ func init() {
 	app.EnableBashCompletion = true
 	app.Commands = []*cli.Command{
 		&accountCommand,
-		&validatorsSyncerCommands,
 	}
 
 	app.Flags = append(app.Flags, cliFlags...)

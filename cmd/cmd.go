@@ -38,6 +38,7 @@ func Run(ctx *cli.Context) error {
 		return err
 	}
 	syncerStorer := validatorsync.NewSyncerStorr(ldb)
+	defer syncerStorer.Close()
 
 	for _, c := range startConfig.Chains {
 		celoChainConfig, err := config.ParseChainConfig(&c, ctx)
@@ -59,12 +60,11 @@ func Run(ctx *cli.Context) error {
 		if err != nil {
 			return err
 		}
-		// TODO  ValidatorSyncer
 		// TODO ChainMetrics
 		w := writer.NewWriter(chainClient, celoChainConfig, stopChn, errChn, nil)
 		r.Register(celoChainConfig.ID, w)
 		l := listener.NewListener(celoChainConfig, chainClient, bdb, stopChn, errChn, nil, r)
-		newChain, err := chain.InitializeChain(celoChainConfig, chainClient, l, w, stopChn)
+		newChain, err := chain.InitializeChain(celoChainConfig, chainClient, l, w, stopChn, syncerStorer)
 		if err != nil {
 			return err
 		}
@@ -73,8 +73,7 @@ func Run(ctx *cli.Context) error {
 			log.Error().Interface("chain", newChain.ID()).Err(err).Msg("failed to start chain")
 			return err
 		}
-		go validatorsync.StoreBlockValidators(stopChn, errChn, chainClient, syncerStorer, chainID)
-
+		go validatorsync.StoreBlockValidators(stopChn, errChn, chainClient, syncerStorer, uint8(celoChainConfig.ID))
 	}
 
 	sysErr := make(chan os.Signal, 1)

@@ -26,7 +26,7 @@ func (s *SyncerDBTestSuite) SetupTest() {
 	if err != nil {
 		s.Fail(err.Error())
 	}
-	syncer := NewSyncerDB(db)
+	syncer := NewSyncerStorr(db)
 	s.syncer = syncer
 }
 func (s *SyncerDBTestSuite) TearDownTest() {
