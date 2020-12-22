@@ -1,10 +1,11 @@
-package validator_syncer
+package validatorsync
 
 import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/consensus/istanbul"
 	"github.com/ethereum/go-ethereum/crypto/bls"
 	"github.com/stretchr/testify/suite"
+	"github.com/syndtr/goleveldb/leveldb"
 	"math/big"
 	"os"
 	"testing"
@@ -12,7 +13,7 @@ import (
 
 type SyncerDBTestSuite struct {
 	suite.Suite
-	syncer *SyncerDB
+	syncer *SyncerStorr
 }
 
 func TestRunSyncerDBTestSuite(t *testing.T) {
@@ -21,10 +22,11 @@ func TestRunSyncerDBTestSuite(t *testing.T) {
 func (s *SyncerDBTestSuite) SetupSuite()    {}
 func (s *SyncerDBTestSuite) TearDownSuite() {}
 func (s *SyncerDBTestSuite) SetupTest() {
-	syncer, err := NewSyncerDB("test/db")
+	db, err := leveldb.OpenFile("./test/db", nil)
 	if err != nil {
 		s.Fail(err.Error())
 	}
+	syncer := NewSyncerDB(db)
 	s.syncer = syncer
 }
 func (s *SyncerDBTestSuite) TearDownTest() {

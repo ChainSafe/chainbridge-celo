@@ -1,4 +1,4 @@
-package validator_syncer
+package validatorsync
 
 import (
 	"bytes"
@@ -17,19 +17,15 @@ const (
 	latestKnowValidatorsKey = "latestKnownValidators"
 )
 
-func NewSyncerDB(path string) (*SyncerDB, error) {
-	db, err := leveldb.OpenFile(path, nil)
-	if err != nil {
-		return nil, err
-	}
-	return &SyncerDB{db: db}, nil
+func NewSyncerStorr(db *leveldb.DB) *SyncerStorr {
+	return &SyncerStorr{db: db}
 }
 
-type SyncerDB struct {
+type SyncerStorr struct {
 	db *leveldb.DB
 }
 
-func (db *SyncerDB) setLatestKnownBlock(block *big.Int, chainID uint8) error {
+func (db *SyncerStorr) setLatestKnownBlock(block *big.Int, chainID uint8) error {
 	key := new(bytes.Buffer)
 	err := binary.Write(key, binary.BigEndian, chainID)
 	if err != nil {
@@ -42,7 +38,7 @@ func (db *SyncerDB) setLatestKnownBlock(block *big.Int, chainID uint8) error {
 	}
 	return nil
 }
-func (db *SyncerDB) setLatestKnownValidators(validators []*istanbul.ValidatorData, chainID uint8) error {
+func (db *SyncerStorr) setLatestKnownValidators(validators []*istanbul.ValidatorData, chainID uint8) error {
 	b := &bytes.Buffer{}
 	enc := gob.NewEncoder(b)
 	err := enc.Encode(validators)
@@ -62,7 +58,7 @@ func (db *SyncerDB) setLatestKnownValidators(validators []*istanbul.ValidatorDat
 	return nil
 }
 
-func (db *SyncerDB) GetLatestKnownBlock(chainID uint8) (*big.Int, error) {
+func (db *SyncerStorr) GetLatestKnownBlock(chainID uint8) (*big.Int, error) {
 	key := new(bytes.Buffer)
 	err := binary.Write(key, binary.BigEndian, chainID)
 	if err != nil {
@@ -81,7 +77,7 @@ func (db *SyncerDB) GetLatestKnownBlock(chainID uint8) (*big.Int, error) {
 	return v, nil
 }
 
-func (db *SyncerDB) GetLatestKnownValidators(chainID uint8) ([]*istanbul.ValidatorData, error) {
+func (db *SyncerStorr) GetLatestKnownValidators(chainID uint8) ([]*istanbul.ValidatorData, error) {
 	key := new(bytes.Buffer)
 	err := binary.Write(key, binary.BigEndian, chainID)
 	if err != nil {
@@ -107,7 +103,7 @@ func (db *SyncerDB) GetLatestKnownValidators(chainID uint8) ([]*istanbul.Validat
 }
 
 // Atomically sets block and validators as related KV to underlying DB backend
-func (db *SyncerDB) SetValidatorsForBlock(block *big.Int, validators []*istanbul.ValidatorData, chainID uint8) error {
+func (db *SyncerStorr) SetValidatorsForBlock(block *big.Int, validators []*istanbul.ValidatorData, chainID uint8) error {
 	byteValidators := &bytes.Buffer{}
 	enc := gob.NewEncoder(byteValidators)
 	err := enc.Encode(validators)
@@ -148,7 +144,7 @@ func (db *SyncerDB) SetValidatorsForBlock(block *big.Int, validators []*istanbul
 	return nil
 }
 
-func (db *SyncerDB) GetValidatorsForBLock(block *big.Int, chainID uint8) ([]*istanbul.ValidatorData, error) {
+func (db *SyncerStorr) GetValidatorsForBLock(block *big.Int, chainID uint8) ([]*istanbul.ValidatorData, error) {
 	key := new(bytes.Buffer)
 	err := binary.Write(key, binary.BigEndian, chainID)
 	if err != nil {
@@ -170,7 +166,7 @@ func (db *SyncerDB) GetValidatorsForBLock(block *big.Int, chainID uint8) ([]*ist
 	return dataArr, nil
 }
 
-func (db *SyncerDB) setLatestKnownBlockWithTransaction(block *big.Int, chainID uint8, transaction *leveldb.Transaction) error {
+func (db *SyncerStorr) setLatestKnownBlockWithTransaction(block *big.Int, chainID uint8, transaction *leveldb.Transaction) error {
 	key := new(bytes.Buffer)
 	err := binary.Write(key, binary.BigEndian, chainID)
 	if err != nil {
@@ -184,7 +180,7 @@ func (db *SyncerDB) setLatestKnownBlockWithTransaction(block *big.Int, chainID u
 	return nil
 }
 
-func (db *SyncerDB) setLatestKnownValidatorsWithTransaction(validators []*istanbul.ValidatorData, chainID uint8, transaction *leveldb.Transaction) error {
+func (db *SyncerStorr) setLatestKnownValidatorsWithTransaction(validators []*istanbul.ValidatorData, chainID uint8, transaction *leveldb.Transaction) error {
 	b := &bytes.Buffer{}
 	enc := gob.NewEncoder(b)
 	err := enc.Encode(validators)
@@ -205,6 +201,9 @@ func (db *SyncerDB) setLatestKnownValidatorsWithTransaction(validators []*istanb
 }
 
 // Closes connection to underlying DB backend
-func (db *SyncerDB) Close() {
-	db.db.Close()
+func (db *SyncerStorr) Close() error {
+	if err := db.db.Close(); err != nil {
+		return err
+	}
+	return nil
 }

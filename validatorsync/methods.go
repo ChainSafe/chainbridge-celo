@@ -1,4 +1,4 @@
-package validator_syncer
+package validatorsync
 
 import (
 	"github.com/pkg/errors"
@@ -14,7 +14,7 @@ var (
 	ErrorWrongInitialValidators = errors.New("wrong initial validators")
 )
 
-func ApplyValidatorsDiff(extra *types.IstanbulExtra, validators []*istanbul.ValidatorData) ([]*istanbul.ValidatorData, error) {
+func applyValidatorsDiff(extra *types.IstanbulExtra, validators []*istanbul.ValidatorData) ([]*istanbul.ValidatorData, error) {
 	var addedValidators []*istanbul.ValidatorData
 	for i, addr := range extra.AddedValidators {
 		addedValidators = append(addedValidators, &istanbul.ValidatorData{Address: addr, BLSPublicKey: extra.AddedValidatorsPublicKeys[i]})
@@ -48,19 +48,19 @@ func bitSetToTrue(index int, bits *big.Int) bool {
 }
 
 func AggregatePublicKeys(validators []*istanbul.ValidatorData) (*bls.PublicKey, error) {
-	var publicKeys []blscrypto.SerializedPublicKey
-	for _, validator := range validators {
-		publicKeys = append(publicKeys, validator.BLSPublicKey)
+	publicKeys := make([]blscrypto.SerializedPublicKey, len(validators))
+	for i := range validators {
+		publicKeys[i] = validators[i].BLSPublicKey
 	}
 
-	publicKeyObjs := []*bls.PublicKey{}
-	for _, publicKey := range publicKeys {
-		publicKeyObj, err := bls.DeserializePublicKeyCached(publicKey[:])
+	publicKeyObjs := make([]*bls.PublicKey, len(publicKeys))
+	for i := range publicKeys {
+		publicKeyObj, err := bls.DeserializePublicKeyCached(publicKeys[i][:])
 		if err != nil {
 			return nil, err
 		}
-		defer publicKeyObj.Destroy()
-		publicKeyObjs = append(publicKeyObjs, publicKeyObj)
+		publicKeyObjs[i] = publicKeyObj
+		publicKeyObj.Destroy()
 	}
 	apk, err := bls.AggregatePublicKeys(publicKeyObjs)
 	if err != nil {

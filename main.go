@@ -7,7 +7,7 @@ import (
 
 	"github.com/ChainSafe/chainbridge-celo/cmd"
 	"github.com/ChainSafe/chainbridge-celo/flags"
-	"github.com/ChainSafe/chainbridge-celo/validator-syncer"
+	"github.com/ChainSafe/chainbridge-celo/validatorsync"
 	"github.com/rs/zerolog/log"
 	"github.com/urfave/cli/v2"
 )
@@ -82,7 +82,7 @@ var accountCommand = cli.Command{
 
 var validatorsSyncerCommands = cli.Command{
 	Name:   "syncer",
-	Action: validator_syncer.Sync,
+	Action: validatorsync.Sync,
 	Flags:  append(cliFlags, devFlags...),
 }
 

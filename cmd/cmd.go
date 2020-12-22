@@ -3,6 +3,8 @@
 package cmd
 
 import (
+	"github.com/ChainSafe/chainbridge-celo/validatorsync"
+	"github.com/syndtr/goleveldb/leveldb"
 	"os"
 	"os/signal"
 	"syscall"
@@ -30,6 +32,13 @@ func Run(ctx *cli.Context) error {
 	errChn := make(chan error)
 	stopChn := make(chan struct{})
 	r := router.NewRouter()
+	pathToDB := "./test/db"
+	ldb, err := leveldb.OpenFile(pathToDB, nil)
+	if err != nil {
+		return err
+	}
+	syncerStorer := validatorsync.NewSyncerStorr(ldb)
+
 	for _, c := range startConfig.Chains {
 		celoChainConfig, err := config.ParseChainConfig(&c, ctx)
 		if err != nil {
@@ -64,15 +73,9 @@ func Run(ctx *cli.Context) error {
 			log.Error().Interface("chain", newChain.ID()).Err(err).Msg("failed to start chain")
 			return err
 		}
+		go validatorsync.StoreBlockValidators(stopChn, errChn, chainClient, syncerStorer, chainID)
 
 	}
-
-	//db, err := validator_syncer.NewSyncerDB("test/db")
-	//if err != nil {
-	//	panic(err)
-	//}
-
-	//go validator_syncer.SyncValidators(stopChn, errChn, chainClient, db)
 
 	sysErr := make(chan os.Signal, 1)
 	signal.Notify(sysErr,

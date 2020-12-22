@@ -1,4 +1,4 @@
-package validator_syncer
+package validatorsync
 
 import (
 	"github.com/ethereum/go-ethereum/common"
@@ -49,7 +49,7 @@ func (s *WriterTestSuite) TestApplyValidatorsDiff() {
 		RemovedValidators:         big.NewInt(4),
 		AddedValidatorsPublicKeys: []blscrypto.SerializedPublicKey{{0x3f}},
 	}
-	resVals, err := ApplyValidatorsDiff(extra, startVals)
+	resVals, err := applyValidatorsDiff(extra, startVals)
 	s.Nil(err)
 	s.Equal(len(resVals), 3)
 	s.Equal(resVals[2].BLSPublicKey, blscrypto.SerializedPublicKey{0x3f})
@@ -64,7 +64,7 @@ func (s *WriterTestSuite) TestApplyValidatorsDiffEmptyStartVals() {
 		RemovedValidators:         big.NewInt(0),
 		AddedValidatorsPublicKeys: []blscrypto.SerializedPublicKey{{0x3f}},
 	}
-	resVals, err := ApplyValidatorsDiff(extra, startVals)
+	resVals, err := applyValidatorsDiff(extra, startVals)
 	s.Nil(err)
 	s.Equal(len(resVals), 1)
 	s.Equal(resVals[0].BLSPublicKey, blscrypto.SerializedPublicKey{0x3f})
@@ -79,7 +79,7 @@ func (s *WriterTestSuite) TestApplyValidatorsDiffWithRemovedOnEmptyVals() {
 		RemovedValidators:         big.NewInt(1),
 		AddedValidatorsPublicKeys: []blscrypto.SerializedPublicKey{{0x3f}},
 	}
-	resVals, err := ApplyValidatorsDiff(extra, startVals)
+	resVals, err := applyValidatorsDiff(extra, startVals)
 	s.Nil(resVals)
 	s.NotNil(err)
 	s.Equal(err, ErrorWrongInitialValidators)
