@@ -66,6 +66,14 @@ func Run(ctx *cli.Context) error {
 		}
 
 	}
+
+	//db, err := validator_syncer.NewSyncerDB("test/db")
+	//if err != nil {
+	//	panic(err)
+	//}
+
+	//go validator_syncer.SyncValidators(stopChn, errChn, chainClient, db)
+
 	sysErr := make(chan os.Signal, 1)
 	signal.Notify(sysErr,
 		syscall.SIGTERM,

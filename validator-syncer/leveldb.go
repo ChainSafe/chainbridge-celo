@@ -2,6 +2,7 @@ package validator_syncer
 
 import (
 	"bytes"
+	"encoding/binary"
 	"encoding/gob"
 	"errors"
 	"math/big"
@@ -28,29 +29,47 @@ type SyncerDB struct {
 	db *leveldb.DB
 }
 
-func (db *SyncerDB) setLatestKnownBlock(block *big.Int) error {
-	err := db.db.Put([]byte(latestKnowBlockKey), block.Bytes(), nil)
+func (db *SyncerDB) setLatestKnownBlock(block *big.Int, chainID uint8) error {
+	key := new(bytes.Buffer)
+	err := binary.Write(key, binary.BigEndian, chainID)
+	if err != nil {
+		return err
+	}
+	key.WriteString(latestKnowBlockKey)
+	err = db.db.Put(key.Bytes(), block.Bytes(), nil)
 	if err != nil {
 		return err
 	}
 	return nil
 }
-func (db *SyncerDB) setLatestKnownValidators(validators []*istanbul.ValidatorData) error {
+func (db *SyncerDB) setLatestKnownValidators(validators []*istanbul.ValidatorData, chainID uint8) error {
 	b := &bytes.Buffer{}
 	enc := gob.NewEncoder(b)
 	err := enc.Encode(validators)
 	if err != nil {
 		return err
 	}
-	err = db.db.Put([]byte(latestKnowValidatorsKey), b.Bytes(), nil)
+	key := new(bytes.Buffer)
+	err = binary.Write(key, binary.BigEndian, chainID)
+	if err != nil {
+		return err
+	}
+	key.WriteString(latestKnowValidatorsKey)
+	err = db.db.Put(key.Bytes(), b.Bytes(), nil)
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func (db *SyncerDB) GetLatestKnownBlock() (*big.Int, error) {
-	data, err := db.db.Get([]byte(latestKnowBlockKey), nil)
+func (db *SyncerDB) GetLatestKnownBlock(chainID uint8) (*big.Int, error) {
+	key := new(bytes.Buffer)
+	err := binary.Write(key, binary.BigEndian, chainID)
+	if err != nil {
+		return nil, err
+	}
+	key.WriteString(latestKnowBlockKey)
+	data, err := db.db.Get(key.Bytes(), nil)
 	if err != nil {
 		if errors.Is(err, leveldb.ErrNotFound) {
 			return big.NewInt(0), nil
@@ -62,8 +81,14 @@ func (db *SyncerDB) GetLatestKnownBlock() (*big.Int, error) {
 	return v, nil
 }
 
-func (db *SyncerDB) GetLatestKnownValidators() ([]*istanbul.ValidatorData, error) {
-	res, err := db.db.Get([]byte(latestKnowValidatorsKey), nil)
+func (db *SyncerDB) GetLatestKnownValidators(chainID uint8) ([]*istanbul.ValidatorData, error) {
+	key := new(bytes.Buffer)
+	err := binary.Write(key, binary.BigEndian, chainID)
+	if err != nil {
+		return nil, err
+	}
+	key.WriteString(latestKnowValidatorsKey)
+	res, err := db.db.Get(key.Bytes(), nil)
 	if err != nil {
 		if errors.Is(err, leveldb.ErrNotFound) {
 			return make([]*istanbul.ValidatorData, 0), nil
@@ -82,7 +107,7 @@ func (db *SyncerDB) GetLatestKnownValidators() ([]*istanbul.ValidatorData, error
 }
 
 // Atomically sets block and validators as related KV to underlying DB backend
-func (db *SyncerDB) SetValidatorsForBlock(block *big.Int, validators []*istanbul.ValidatorData) error {
+func (db *SyncerDB) SetValidatorsForBlock(block *big.Int, validators []*istanbul.ValidatorData, chainID uint8) error {
 	byteValidators := &bytes.Buffer{}
 	enc := gob.NewEncoder(byteValidators)
 	err := enc.Encode(validators)
@@ -93,17 +118,23 @@ func (db *SyncerDB) SetValidatorsForBlock(block *big.Int, validators []*istanbul
 	if err != nil {
 		return err
 	}
-	err = tx.Put(block.Bytes(), byteValidators.Bytes(), nil)
+	key := new(bytes.Buffer)
+	err = binary.Write(key, binary.BigEndian, chainID)
+	if err != nil {
+		return err
+	}
+	key.Write(block.Bytes())
+	err = tx.Put(key.Bytes(), byteValidators.Bytes(), nil)
 	if err != nil {
 		tx.Discard()
 		return err
 	}
-	err = db.setLatestKnownBlockWithTransaction(block, tx)
+	err = db.setLatestKnownBlockWithTransaction(block, chainID, tx)
 	if err != nil {
 		tx.Discard()
 		return err
 	}
-	err = db.setLatestKnownValidatorsWithTransaction(validators, tx)
+	err = db.setLatestKnownValidatorsWithTransaction(validators, chainID, tx)
 	if err != nil {
 		tx.Discard()
 		return err
@@ -117,8 +148,14 @@ func (db *SyncerDB) SetValidatorsForBlock(block *big.Int, validators []*istanbul
 	return nil
 }
 
-func (db *SyncerDB) GetValidatorsForBLock(block *big.Int) ([]*istanbul.ValidatorData, error) {
-	res, err := db.db.Get(block.Bytes(), nil)
+func (db *SyncerDB) GetValidatorsForBLock(block *big.Int, chainID uint8) ([]*istanbul.ValidatorData, error) {
+	key := new(bytes.Buffer)
+	err := binary.Write(key, binary.BigEndian, chainID)
+	if err != nil {
+		return nil, err
+	}
+	key.Write(block.Bytes())
+	res, err := db.db.Get(key.Bytes(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -133,22 +170,34 @@ func (db *SyncerDB) GetValidatorsForBLock(block *big.Int) ([]*istanbul.Validator
 	return dataArr, nil
 }
 
-func (db *SyncerDB) setLatestKnownBlockWithTransaction(block *big.Int, transaction *leveldb.Transaction) error {
-	err := transaction.Put([]byte(latestKnowBlockKey), block.Bytes(), nil)
+func (db *SyncerDB) setLatestKnownBlockWithTransaction(block *big.Int, chainID uint8, transaction *leveldb.Transaction) error {
+	key := new(bytes.Buffer)
+	err := binary.Write(key, binary.BigEndian, chainID)
+	if err != nil {
+		return err
+	}
+	key.WriteString(latestKnowBlockKey)
+	err = transaction.Put(key.Bytes(), block.Bytes(), nil)
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func (db *SyncerDB) setLatestKnownValidatorsWithTransaction(validators []*istanbul.ValidatorData, transaction *leveldb.Transaction) error {
+func (db *SyncerDB) setLatestKnownValidatorsWithTransaction(validators []*istanbul.ValidatorData, chainID uint8, transaction *leveldb.Transaction) error {
 	b := &bytes.Buffer{}
 	enc := gob.NewEncoder(b)
 	err := enc.Encode(validators)
 	if err != nil {
 		return err
 	}
-	err = transaction.Put([]byte(latestKnowValidatorsKey), b.Bytes(), nil)
+	key := new(bytes.Buffer)
+	err = binary.Write(key, binary.BigEndian, chainID)
+	if err != nil {
+		return err
+	}
+	key.WriteString(latestKnowValidatorsKey)
+	err = transaction.Put(key.Bytes(), b.Bytes(), nil)
 	if err != nil {
 		return err
 	}

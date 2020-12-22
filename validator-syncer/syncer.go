@@ -19,7 +19,6 @@ import (
 	"github.com/ChainSafe/chainbridge-utils/crypto/secp256k1"
 	"github.com/ChainSafe/chainbridge-utils/keystore"
 	"github.com/ethereum/go-ethereum/core/types"
-	"github.com/rs/zerolog/log"
 	"github.com/urfave/cli/v2"
 )
 
@@ -46,7 +45,7 @@ func Sync(ctx *cli.Context) error {
 		panic(err)
 	}
 
-	go SyncValidators(stopChn, errChn, chainClient, db)
+	go SyncValidators(stopChn, errChn, chainClient, db, 1)
 
 	sysErr := make(chan os.Signal, 1)
 	signal.Notify(sysErr,
@@ -73,13 +72,13 @@ func Sync(ctx *cli.Context) error {
 }
 
 type SyncerStoreger interface {
-	GetLatestKnownValidators() ([]*istanbul.ValidatorData, error)
-	GetLatestKnownBlock() (*big.Int, error)
-	SetValidatorsForBlock(block *big.Int, validators []*istanbul.ValidatorData) error
+	GetLatestKnownValidators(chainID uint8) ([]*istanbul.ValidatorData, error)
+	GetLatestKnownBlock(chainID uint8) (*big.Int, error)
+	SetValidatorsForBlock(block *big.Int, validators []*istanbul.ValidatorData, chainID uint8) error
 }
 
-func SyncValidators(stopChn <-chan struct{}, errChn chan error, c *client.Client, db SyncerStoreger) {
-	block, err := db.GetLatestKnownBlock()
+func SyncValidators(stopChn <-chan struct{}, errChn chan error, c *client.Client, db SyncerStoreger, chainID uint8) {
+	block, err := db.GetLatestKnownBlock(chainID)
 	if err != nil {
 		errChn <- fmt.Errorf("error on get latest known block from db: %w", err)
 		return
@@ -99,7 +98,7 @@ func SyncValidators(stopChn <-chan struct{}, errChn chan error, c *client.Client
 				errChn <- fmt.Errorf("gettings header by number err: %w", err)
 				return
 			}
-			actualValidators, err := db.GetLatestKnownValidators()
+			actualValidators, err := db.GetLatestKnownValidators(chainID)
 			if err != nil {
 				errChn <- fmt.Errorf("error on get latest known validators from db: %w", err)
 				return
@@ -108,9 +107,8 @@ func SyncValidators(stopChn <-chan struct{}, errChn chan error, c *client.Client
 			b := bytes.NewBuffer(extra.RemovedValidators.Bytes())
 			if len(extra.AddedValidators) != 0 || b.Len() > 0 {
 				actualValidators, err = ApplyValidatorsDiff(extra, actualValidators)
-				log.Debug().Msgf("New validators %+v", actualValidators)
 			}
-			err = db.SetValidatorsForBlock(block, actualValidators)
+			err = db.SetValidatorsForBlock(block, actualValidators, chainID)
 			if err != nil {
 				errChn <- fmt.Errorf("error on set validators to db: %w", err)
 				return
