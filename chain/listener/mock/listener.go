@@ -6,6 +6,7 @@ package mock_listener
 
 import (
 	msg "github.com/ChainSafe/chainbridge-celo/msg"
+	bls "github.com/celo-org/celo-bls-go/bls"
 	gomock "github.com/golang/mock/gomock"
 	big "math/big"
 	reflect "reflect"
@@ -120,4 +121,42 @@ func (m *MockBlockstorer) StoreBlock(arg0 *big.Int) error {
 func (mr *MockBlockstorerMockRecorder) StoreBlock(arg0 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "StoreBlock", reflect.TypeOf((*MockBlockstorer)(nil).StoreBlock), arg0)
+}
+
+// MockValidatorsAggregator is a mock of ValidatorsAggregator interface
+type MockValidatorsAggregator struct {
+	ctrl     *gomock.Controller
+	recorder *MockValidatorsAggregatorMockRecorder
+}
+
+// MockValidatorsAggregatorMockRecorder is the mock recorder for MockValidatorsAggregator
+type MockValidatorsAggregatorMockRecorder struct {
+	mock *MockValidatorsAggregator
+}
+
+// NewMockValidatorsAggregator creates a new mock instance
+func NewMockValidatorsAggregator(ctrl *gomock.Controller) *MockValidatorsAggregator {
+	mock := &MockValidatorsAggregator{ctrl: ctrl}
+	mock.recorder = &MockValidatorsAggregatorMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use
+func (m *MockValidatorsAggregator) EXPECT() *MockValidatorsAggregatorMockRecorder {
+	return m.recorder
+}
+
+// GetAggPKForBlock mocks base method
+func (m *MockValidatorsAggregator) GetAggPKForBlock(block *big.Int, chainID uint8) (*bls.PublicKey, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetAggPKForBlock", block, chainID)
+	ret0, _ := ret[0].(*bls.PublicKey)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetAggPKForBlock indicates an expected call of GetAggPKForBlock
+func (mr *MockValidatorsAggregatorMockRecorder) GetAggPKForBlock(block, chainID interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAggPKForBlock", reflect.TypeOf((*MockValidatorsAggregator)(nil).GetAggPKForBlock), block, chainID)
 }

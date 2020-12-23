@@ -14,10 +14,8 @@ import (
 	listener "github.com/ChainSafe/chainbridge-celo/chain/listener"
 	"github.com/ChainSafe/chainbridge-celo/chain/writer"
 	"github.com/ChainSafe/chainbridge-celo/msg"
-	"github.com/celo-org/celo-bls-go/bls"
 	"github.com/pkg/errors"
 	"github.com/rs/zerolog/log"
-	"math/big"
 )
 
 // checkBlockstore queries the blockstore for the latest known block. If the latest block is
@@ -38,14 +36,9 @@ type Chain struct {
 	writer   Writer                  // The writer of the chain
 	client   *client.Client
 	stopChn  <-chan struct{}
-	valsAggr ValidatorsAggregator
 }
 
-type ValidatorsAggregator interface {
-	GetAggPKForBlock(block *big.Int, chainID uint8) (*bls.PublicKey, error)
-}
-
-func InitializeChain(cc *config.CeloChainConfig, c *client.Client, listener Listener, writer Writer, stopChn <-chan struct{}, valsAggr ValidatorsAggregator) (*Chain, error) {
+func InitializeChain(cc *config.CeloChainConfig, c *client.Client, listener Listener, writer Writer, stopChn <-chan struct{}) (*Chain, error) {
 
 	bridgeContract, err := bridgeHandler.NewBridge(cc.BridgeContract, c)
 	if err != nil {
@@ -86,7 +79,6 @@ func InitializeChain(cc *config.CeloChainConfig, c *client.Client, listener List
 		writer:   writer,
 		listener: listener,
 		stopChn:  stopChn,
-		valsAggr: valsAggr,
 	}, nil
 }
 

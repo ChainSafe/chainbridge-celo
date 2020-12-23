@@ -5,7 +5,7 @@
 package mock_chain
 
 import (
-	"github.com/ChainSafe/chainbridge-celo/chain/listener"
+	listener "github.com/ChainSafe/chainbridge-celo/chain/listener"
 	writer "github.com/ChainSafe/chainbridge-celo/chain/writer"
 	gomock "github.com/golang/mock/gomock"
 	reflect "reflect"

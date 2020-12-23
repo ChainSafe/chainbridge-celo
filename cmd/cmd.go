@@ -63,8 +63,8 @@ func Run(ctx *cli.Context) error {
 		// TODO ChainMetrics
 		w := writer.NewWriter(chainClient, celoChainConfig, stopChn, errChn, nil)
 		r.Register(celoChainConfig.ID, w)
-		l := listener.NewListener(celoChainConfig, chainClient, bdb, stopChn, errChn, nil, r)
-		newChain, err := chain.InitializeChain(celoChainConfig, chainClient, l, w, stopChn, syncerStorer)
+		l := listener.NewListener(celoChainConfig, chainClient, bdb, stopChn, errChn, nil, r, syncerStorer)
+		newChain, err := chain.InitializeChain(celoChainConfig, chainClient, l, w, stopChn)
 		if err != nil {
 			return err
 		}

@@ -76,7 +76,7 @@ func (s *SyncerDBTestSuite) TestSetValidatorsForBlock() {
 	s.Nil(err)
 	s.Equal(0, b.Cmp(big.NewInt(420)))
 
-	validators, err := s.syncer.GetValidatorsForBLock(big.NewInt(420), chainID)
+	validators, err := s.syncer.GetValidatorsForBlock(big.NewInt(420), chainID)
 	s.Nil(err)
 	s.Equal(3, len(validators))
 	s.Equal(common.Address{0x0f}, validators[0].Address)
@@ -121,7 +121,7 @@ func (s *SyncerDBTestSuite) TestTestSetValidatorsForBlockForDifferentChains() {
 	s.Nil(err)
 	s.Equal(0, b.Cmp(big.NewInt(420)))
 
-	validators, err := s.syncer.GetValidatorsForBLock(big.NewInt(420), chainID1)
+	validators, err := s.syncer.GetValidatorsForBlock(big.NewInt(420), chainID1)
 	s.Nil(err)
 	s.Equal(3, len(validators))
 	s.Equal(common.Address{0x0f}, validators[0].Address)
@@ -134,7 +134,7 @@ func (s *SyncerDBTestSuite) TestTestSetValidatorsForBlockForDifferentChains() {
 	s.Nil(err)
 	s.Equal(0, b.Cmp(big.NewInt(420)))
 
-	validators, err = s.syncer.GetValidatorsForBLock(big.NewInt(420), chainID2)
+	validators, err = s.syncer.GetValidatorsForBlock(big.NewInt(420), chainID2)
 	s.Nil(err)
 	s.Equal(2, len(validators))
 	s.Equal(common.Address{0x3f}, validators[0].Address)

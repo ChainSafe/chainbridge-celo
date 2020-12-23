@@ -147,7 +147,7 @@ func (db *SyncerStorr) SetValidatorsForBlock(block *big.Int, validators []*istan
 	return nil
 }
 
-func (db *SyncerStorr) GetValidatorsForBLock(block *big.Int, chainID uint8) ([]*istanbul.ValidatorData, error) {
+func (db *SyncerStorr) GetValidatorsForBlock(block *big.Int, chainID uint8) ([]*istanbul.ValidatorData, error) {
 	key := new(bytes.Buffer)
 	err := binary.Write(key, binary.BigEndian, chainID)
 	if err != nil {
@@ -206,7 +206,7 @@ func (db *SyncerStorr) setLatestKnownValidatorsWithTransaction(validators []*ist
 var ErrNoBlockInStore = errors.New("no corresponding validators for prodivde block number")
 
 func (db *SyncerStorr) GetAggPKForBlock(block *big.Int, chainID uint8) (*bls.PublicKey, error) {
-	vals, err := db.GetValidatorsForBLock(block, chainID)
+	vals, err := db.GetValidatorsForBlock(block, chainID)
 	if err != nil {
 		if errors.Is(err, leveldb.ErrNotFound) {
 			return nil, ErrNoBlockInStore

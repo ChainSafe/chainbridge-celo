@@ -7,6 +7,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/celo-org/celo-bls-go/bls"
 	"math/big"
 	"time"
 
@@ -39,7 +40,8 @@ type listener struct {
 	syncer                 BlockSyncer
 	//latestBlock            *metrics.LatestBlock
 	//metrics                *metrics.ChainMetrics
-	client client.LogFilterWithLatestBlock
+	client   client.LogFilterWithLatestBlock
+	valsAggr ValidatorsAggregator
 }
 
 type BlockSyncer interface {
@@ -53,7 +55,11 @@ type Blockstorer interface {
 	StoreBlock(*big.Int) error
 }
 
-func NewListener(cfg *config.CeloChainConfig, client client.LogFilterWithLatestBlock, bs Blockstorer, stop <-chan struct{}, sysErr chan<- error, syncer BlockSyncer, router IRouter) *listener {
+type ValidatorsAggregator interface {
+	GetAggPKForBlock(block *big.Int, chainID uint8) (*bls.PublicKey, error)
+}
+
+func NewListener(cfg *config.CeloChainConfig, client client.LogFilterWithLatestBlock, bs Blockstorer, stop <-chan struct{}, sysErr chan<- error, syncer BlockSyncer, router IRouter, valsAggr ValidatorsAggregator) *listener {
 	return &listener{
 		cfg:        cfg,
 		blockstore: bs,
@@ -62,6 +68,7 @@ func NewListener(cfg *config.CeloChainConfig, client client.LogFilterWithLatestB
 		syncer:     syncer,
 		router:     router,
 		client:     client,
+		valsAggr:   valsAggr,
 	}
 }
 
@@ -192,10 +199,21 @@ func (l *listener) getDepositEventsAndProofsForBlock(latestBlock *big.Int) error
 			log.Error().Err(err).Str("handler", addr.Hex()).Msg("event has unrecognized handler")
 			return nil
 		}
-
 		if err != nil {
 			return err
 		}
+		pubKey, err := l.valsAggr.GetAggPKForBlock(latestBlock, uint8(l.cfg.ID))
+		if err != nil {
+			return err
+		}
+		bPubKey, err := pubKey.Serialize()
+		if err != nil {
+			return err
+		}
+		if m.SVParams == nil {
+			m.SVParams = &msg.SignatureVerification{}
+		}
+		m.SVParams.AggregatePublicKey = bPubKey
 
 		err = l.router.Send(m)
 		if err != nil {

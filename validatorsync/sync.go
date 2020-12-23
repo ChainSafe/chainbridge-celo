@@ -10,16 +10,19 @@ import (
 	"math/big"
 	"time"
 
-	"github.com/ChainSafe/chainbridge-celo/chain/client"
 	"github.com/ethereum/go-ethereum"
 	"github.com/ethereum/go-ethereum/core/types"
 )
 
 const (
-	timeToWaitUntilNExtBLockAppear = 5
+	timeToWaitUntilNextBLockAppear = 5
 )
 
-func StoreBlockValidators(stopChn <-chan struct{}, errChn chan error, c *client.Client, db *SyncerStorr, chainID uint8) {
+type HeaderByNumberGetter interface {
+	HeaderByNumber(ctx context.Context, number *big.Int) (*types.Header, error)
+}
+
+func StoreBlockValidators(stopChn <-chan struct{}, errChn chan error, c HeaderByNumberGetter, db *SyncerStorr, chainID uint8) {
 	block, err := db.GetLatestKnownBlock(chainID)
 	if err != nil {
 		errChn <- fmt.Errorf("error on get latest known block from db: %w", err)
@@ -34,7 +37,7 @@ func StoreBlockValidators(stopChn <-chan struct{}, errChn chan error, c *client.
 			if err != nil {
 				if errors.Is(err, ethereum.NotFound) {
 					// Block not yet mined, waiting
-					time.Sleep(timeToWaitUntilNExtBLockAppear * time.Second)
+					time.Sleep(timeToWaitUntilNextBLockAppear * time.Second)
 					continue
 				}
 				errChn <- fmt.Errorf("gettings header by number err: %w", err)
