@@ -32,13 +32,14 @@ func Run(ctx *cli.Context) error {
 	errChn := make(chan error)
 	stopChn := make(chan struct{})
 	r := router.NewRouter()
+	///TODO update with flag
 	pathToDB := "./test/db"
 	ldb, err := leveldb.OpenFile(pathToDB, nil)
 	if err != nil {
 		return err
 	}
-	syncerStorer := validatorsync.NewSyncerStorr(ldb)
-	defer syncerStorer.Close()
+	validatorsStore := validatorsync.NewValidatorsStore(ldb)
+	defer validatorsStore.Close()
 
 	for _, c := range startConfig.Chains {
 		celoChainConfig, err := config.ParseChainConfig(&c, ctx)
@@ -63,7 +64,7 @@ func Run(ctx *cli.Context) error {
 		// TODO ChainMetrics
 		w := writer.NewWriter(chainClient, celoChainConfig, stopChn, errChn, nil)
 		r.Register(celoChainConfig.ID, w)
-		l := listener.NewListener(celoChainConfig, chainClient, bdb, stopChn, errChn, nil, r, syncerStorer)
+		l := listener.NewListener(celoChainConfig, chainClient, bdb, stopChn, errChn, nil, r, validatorsStore)
 		newChain, err := chain.InitializeChain(celoChainConfig, chainClient, l, w, stopChn)
 		if err != nil {
 			return err
@@ -73,7 +74,7 @@ func Run(ctx *cli.Context) error {
 			log.Error().Interface("chain", newChain.ID()).Err(err).Msg("failed to start chain")
 			return err
 		}
-		go validatorsync.StoreBlockValidators(stopChn, errChn, chainClient, syncerStorer, uint8(celoChainConfig.ID))
+		go validatorsync.StoreBlockValidators(stopChn, errChn, chainClient, validatorsStore, uint8(celoChainConfig.ID))
 	}
 
 	sysErr := make(chan os.Signal, 1)

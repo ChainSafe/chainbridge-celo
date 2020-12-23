@@ -22,7 +22,7 @@ type HeaderByNumberGetter interface {
 	HeaderByNumber(ctx context.Context, number *big.Int) (*types.Header, error)
 }
 
-func StoreBlockValidators(stopChn <-chan struct{}, errChn chan error, c HeaderByNumberGetter, db *SyncerStorr, chainID uint8) {
+func StoreBlockValidators(stopChn <-chan struct{}, errChn chan error, c HeaderByNumberGetter, db *ValidatorsStore, chainID uint8) {
 	block, err := db.GetLatestKnownBlock(chainID)
 	if err != nil {
 		errChn <- fmt.Errorf("error on get latest known block from db: %w", err)

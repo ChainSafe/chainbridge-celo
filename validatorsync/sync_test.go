@@ -12,7 +12,7 @@ import (
 
 type SyncTestSuite struct {
 	suite.Suite
-	syncer *SyncerStorr
+	syncer *ValidatorsStore
 	client *mock_validatorsync.MockHeaderByNumberGetter
 }
 
@@ -27,7 +27,7 @@ func (s *SyncTestSuite) SetupTest() {
 	if err != nil {
 		s.Fail(err.Error())
 	}
-	syncer := NewSyncerStorr(db)
+	syncer := NewValidatorsStore(db)
 	s.syncer = syncer
 	s.client = mock_validatorsync.NewMockHeaderByNumberGetter(gomockController)
 

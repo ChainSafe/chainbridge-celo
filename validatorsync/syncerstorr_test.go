@@ -15,7 +15,7 @@ import (
 
 type SyncerDBTestSuite struct {
 	suite.Suite
-	syncer *SyncerStorr
+	syncer *ValidatorsStore
 }
 
 func TestRunSyncerDBTestSuite(t *testing.T) {
@@ -28,7 +28,7 @@ func (s *SyncerDBTestSuite) SetupTest() {
 	if err != nil {
 		s.Fail(err.Error())
 	}
-	syncer := NewSyncerStorr(db)
+	syncer := NewValidatorsStore(db)
 	s.syncer = syncer
 }
 func (s *SyncerDBTestSuite) TearDownTest() {

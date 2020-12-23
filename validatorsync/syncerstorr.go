@@ -19,15 +19,15 @@ const (
 	latestKnowValidatorsKey = "latestKnownValidators"
 )
 
-func NewSyncerStorr(db *leveldb.DB) *SyncerStorr {
-	return &SyncerStorr{db: db}
+func NewValidatorsStore(db *leveldb.DB) *ValidatorsStore {
+	return &ValidatorsStore{db: db}
 }
 
-type SyncerStorr struct {
+type ValidatorsStore struct {
 	db *leveldb.DB
 }
 
-func (db *SyncerStorr) setLatestKnownBlock(block *big.Int, chainID uint8) error {
+func (db *ValidatorsStore) setLatestKnownBlock(block *big.Int, chainID uint8) error {
 	key := new(bytes.Buffer)
 	err := binary.Write(key, binary.BigEndian, chainID)
 	if err != nil {
@@ -40,7 +40,7 @@ func (db *SyncerStorr) setLatestKnownBlock(block *big.Int, chainID uint8) error 
 	}
 	return nil
 }
-func (db *SyncerStorr) setLatestKnownValidators(validators []*istanbul.ValidatorData, chainID uint8) error {
+func (db *ValidatorsStore) setLatestKnownValidators(validators []*istanbul.ValidatorData, chainID uint8) error {
 	b := &bytes.Buffer{}
 	enc := gob.NewEncoder(b)
 	err := enc.Encode(validators)
@@ -60,7 +60,7 @@ func (db *SyncerStorr) setLatestKnownValidators(validators []*istanbul.Validator
 	return nil
 }
 
-func (db *SyncerStorr) GetLatestKnownBlock(chainID uint8) (*big.Int, error) {
+func (db *ValidatorsStore) GetLatestKnownBlock(chainID uint8) (*big.Int, error) {
 	key := new(bytes.Buffer)
 	err := binary.Write(key, binary.BigEndian, chainID)
 	if err != nil {
@@ -79,7 +79,7 @@ func (db *SyncerStorr) GetLatestKnownBlock(chainID uint8) (*big.Int, error) {
 	return v, nil
 }
 
-func (db *SyncerStorr) GetLatestKnownValidators(chainID uint8) ([]*istanbul.ValidatorData, error) {
+func (db *ValidatorsStore) GetLatestKnownValidators(chainID uint8) ([]*istanbul.ValidatorData, error) {
 	key := new(bytes.Buffer)
 	err := binary.Write(key, binary.BigEndian, chainID)
 	if err != nil {
@@ -105,7 +105,7 @@ func (db *SyncerStorr) GetLatestKnownValidators(chainID uint8) ([]*istanbul.Vali
 }
 
 // Atomically sets block and validators as related KV to underlying DB backend
-func (db *SyncerStorr) SetValidatorsForBlock(block *big.Int, validators []*istanbul.ValidatorData, chainID uint8) error {
+func (db *ValidatorsStore) SetValidatorsForBlock(block *big.Int, validators []*istanbul.ValidatorData, chainID uint8) error {
 	byteValidators := &bytes.Buffer{}
 	enc := gob.NewEncoder(byteValidators)
 	err := enc.Encode(validators)
@@ -146,7 +146,7 @@ func (db *SyncerStorr) SetValidatorsForBlock(block *big.Int, validators []*istan
 	return nil
 }
 
-func (db *SyncerStorr) GetValidatorsForBlock(block *big.Int, chainID uint8) ([]*istanbul.ValidatorData, error) {
+func (db *ValidatorsStore) GetValidatorsForBlock(block *big.Int, chainID uint8) ([]*istanbul.ValidatorData, error) {
 	key := new(bytes.Buffer)
 	err := binary.Write(key, binary.BigEndian, chainID)
 	if err != nil {
@@ -168,7 +168,7 @@ func (db *SyncerStorr) GetValidatorsForBlock(block *big.Int, chainID uint8) ([]*
 	return dataArr, nil
 }
 
-func (db *SyncerStorr) setLatestKnownBlockWithTransaction(block *big.Int, chainID uint8, transaction *leveldb.Transaction) error {
+func (db *ValidatorsStore) setLatestKnownBlockWithTransaction(block *big.Int, chainID uint8, transaction *leveldb.Transaction) error {
 	key := new(bytes.Buffer)
 	err := binary.Write(key, binary.BigEndian, chainID)
 	if err != nil {
@@ -182,7 +182,7 @@ func (db *SyncerStorr) setLatestKnownBlockWithTransaction(block *big.Int, chainI
 	return nil
 }
 
-func (db *SyncerStorr) setLatestKnownValidatorsWithTransaction(validators []*istanbul.ValidatorData, chainID uint8, transaction *leveldb.Transaction) error {
+func (db *ValidatorsStore) setLatestKnownValidatorsWithTransaction(validators []*istanbul.ValidatorData, chainID uint8, transaction *leveldb.Transaction) error {
 	b := &bytes.Buffer{}
 	enc := gob.NewEncoder(b)
 	err := enc.Encode(validators)
@@ -204,7 +204,7 @@ func (db *SyncerStorr) setLatestKnownValidatorsWithTransaction(validators []*ist
 
 var ErrNoBlockInStore = errors.New("no corresponding validators for prodivde block number")
 
-func (db *SyncerStorr) GetAggPKForBlock(block *big.Int, chainID uint8) ([]byte, error) {
+func (db *ValidatorsStore) GetAggPKForBlock(block *big.Int, chainID uint8) ([]byte, error) {
 	vals, err := db.GetValidatorsForBlock(block, chainID)
 	if err != nil {
 		if errors.Is(err, leveldb.ErrNotFound) {
@@ -220,7 +220,7 @@ func (db *SyncerStorr) GetAggPKForBlock(block *big.Int, chainID uint8) ([]byte, 
 }
 
 // Closes connection to underlying DB backend
-func (db *SyncerStorr) Close() error {
+func (db *ValidatorsStore) Close() error {
 	if err := db.db.Close(); err != nil {
 		return err
 	}
