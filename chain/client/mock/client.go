@@ -65,3 +65,18 @@ func (mr *MockLogFilterWithLatestBlockMockRecorder) LatestBlock() *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "LatestBlock", reflect.TypeOf((*MockLogFilterWithLatestBlock)(nil).LatestBlock))
 }
+
+// BlockByNumber mocks base method
+func (m *MockLogFilterWithLatestBlock) BlockByNumber(ctx context.Context, number *big.Int) (*types.Block, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "BlockByNumber", ctx, number)
+	ret0, _ := ret[0].(*types.Block)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// BlockByNumber indicates an expected call of BlockByNumber
+func (mr *MockLogFilterWithLatestBlockMockRecorder) BlockByNumber(ctx, number interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "BlockByNumber", reflect.TypeOf((*MockLogFilterWithLatestBlock)(nil).BlockByNumber), ctx, number)
+}
