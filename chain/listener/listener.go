@@ -214,7 +214,7 @@ func (l *listener) getDepositEventsAndProofsForBlock(latestBlock *big.Int) error
 
 		proof, err := celoTrie.GetProof(block.TxHash(), block.Transactions(), eventLog.TxIndex)
 
-		m.ProofOpts.Nodes = proof
+		m.MPParams.Nodes = proof
 
 		err = l.router.Send(m)
 
