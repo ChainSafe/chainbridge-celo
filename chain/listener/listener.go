@@ -7,14 +7,13 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/celo-org/celo-bls-go/bls"
 	"math/big"
 	"time"
 
 	"github.com/ChainSafe/chainbridge-celo/chain/client"
 	"github.com/ChainSafe/chainbridge-celo/chain/config"
 	"github.com/ChainSafe/chainbridge-celo/msg"
-	utils "github.com/ChainSafe/chainbridge-celo/shared/ethereum"
+	"github.com/ChainSafe/chainbridge-celo/shared/ethereum"
 	eth "github.com/ethereum/go-ethereum"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	ethcommon "github.com/ethereum/go-ethereum/common"
@@ -56,7 +55,7 @@ type Blockstorer interface {
 }
 
 type ValidatorsAggregator interface {
-	GetAggPKForBlock(block *big.Int, chainID uint8) (*bls.PublicKey, error)
+	GetAggPKForBlock(block *big.Int, chainID uint8) ([]byte, error)
 }
 
 func NewListener(cfg *config.CeloChainConfig, client client.LogFilterWithLatestBlock, bs Blockstorer, stop <-chan struct{}, sysErr chan<- error, syncer BlockSyncer, router IRouter, valsAggr ValidatorsAggregator) *listener {
@@ -206,14 +205,10 @@ func (l *listener) getDepositEventsAndProofsForBlock(latestBlock *big.Int) error
 		if err != nil {
 			return err
 		}
-		bPubKey, err := pubKey.Serialize()
-		if err != nil {
-			return err
-		}
 		if m.SVParams == nil {
 			m.SVParams = &msg.SignatureVerification{}
 		}
-		m.SVParams.AggregatePublicKey = bPubKey
+		m.SVParams.AggregatePublicKey = pubKey
 
 		err = l.router.Send(m)
 		if err != nil {

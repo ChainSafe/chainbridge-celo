@@ -9,7 +9,6 @@ import (
 	"errors"
 	"math/big"
 
-	"github.com/celo-org/celo-bls-go/bls"
 	"github.com/ethereum/go-ethereum/consensus/istanbul"
 	"github.com/rs/zerolog/log"
 	"github.com/syndtr/goleveldb/leveldb"
@@ -205,7 +204,7 @@ func (db *SyncerStorr) setLatestKnownValidatorsWithTransaction(validators []*ist
 
 var ErrNoBlockInStore = errors.New("no corresponding validators for prodivde block number")
 
-func (db *SyncerStorr) GetAggPKForBlock(block *big.Int, chainID uint8) (*bls.PublicKey, error) {
+func (db *SyncerStorr) GetAggPKForBlock(block *big.Int, chainID uint8) ([]byte, error) {
 	vals, err := db.GetValidatorsForBlock(block, chainID)
 	if err != nil {
 		if errors.Is(err, leveldb.ErrNotFound) {
@@ -213,7 +212,11 @@ func (db *SyncerStorr) GetAggPKForBlock(block *big.Int, chainID uint8) (*bls.Pub
 		}
 		return nil, err
 	}
-	return aggregatePublicKeys(vals)
+	pk, err := aggregatePublicKeys(vals)
+	if err != nil {
+		return nil, err
+	}
+	return pk.Serialize()
 }
 
 // Closes connection to underlying DB backend
