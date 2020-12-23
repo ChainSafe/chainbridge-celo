@@ -22,8 +22,10 @@ func (l *listener) handleErc20DepositedEvent(destId msg.ChainId, nonce msg.Nonce
 		l.cfg.ID,
 		destId,
 		nonce,
-		record.Amount,
 		record.ResourceID,
+		nil,
+		nil,
+		record.Amount,
 		record.DestinationRecipientAddress,
 	), nil
 }
@@ -42,6 +44,8 @@ func (l *listener) handleErc721DepositedEvent(destId msg.ChainId, nonce msg.Nonc
 		destId,
 		nonce,
 		record.ResourceID,
+		nil,
+		nil,
 		record.TokenID,
 		record.DestinationRecipientAddress,
 		record.MetaData,
@@ -62,6 +66,8 @@ func (l *listener) handleGenericDepositedEvent(destId msg.ChainId, nonce msg.Non
 		destId,
 		nonce,
 		record.ResourceID,
+		nil,
+		nil,
 		record.MetaData[:],
 	), nil
 }

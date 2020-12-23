@@ -1,8 +1,10 @@
-# Go Repo Template
+# chainbridge-celo
 
-## TODO
-- [ ] Add license
-- [ ] Update `go.mod` with package path
+An alternative implementation of ChainBridge which supports bridging Celo chains. It includes additional proving mechanisms to provide initial security.
+
+## Developers
+
+See [developers.md](/docs/developers.md).
 
 # ChainSafe Security Policy
 

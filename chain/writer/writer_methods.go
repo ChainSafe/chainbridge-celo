@@ -10,7 +10,6 @@ import (
 	"time"
 
 	"github.com/ChainSafe/chainbridge-celo/msg"
-	celoMsg "github.com/ChainSafe/chainbridge-celo/msg"
 	utils "github.com/ChainSafe/chainbridge-celo/shared/ethereum"
 	eth "github.com/ethereum/go-ethereum"
 	ethcommon "github.com/ethereum/go-ethereum/common"
@@ -129,7 +128,7 @@ func (w *writer) createGenericDepositProposalData(m *msg.Message) ([]byte, error
 }
 
 // watchThenExecute watches for the latest block and executes once the matching finalized event is found
-func (w *writer) watchThenExecute(m *msg.Message, data []byte, dataHash ethcommon.Hash, latestBlock *big.Int, msgProofOpts *celoMsg.MsgProofOpts) {
+func (w *writer) watchThenExecute(m *msg.Message, data []byte, dataHash ethcommon.Hash, latestBlock *big.Int) {
 	log.Info().Interface("src", m.Source).Interface("nonce", m.DepositNonce).Msg("Watching for finalization event")
 
 	// watching for the latest block, querying and matching the finalized event will be retried up to ExecuteBlockWatchLimit times
@@ -171,7 +170,7 @@ func (w *writer) watchThenExecute(m *msg.Message, data []byte, dataHash ethcommo
 				if m.Source == msg.ChainId(sourceId) &&
 					m.DepositNonce.Big().Uint64() == depositNonce &&
 					utils.IsFinalized(uint8(status)) {
-					w.executeProposal(m, data, dataHash, msgProofOpts)
+					w.executeProposal(m, data, dataHash)
 					return
 				} else {
 					log.Trace().Interface("src", sourceId).Interface("nonce", depositNonce).Msg("Ignoring event")
@@ -231,7 +230,7 @@ func (w *writer) voteProposal(m *msg.Message, dataHash ethcommon.Hash) {
 }
 
 // executeProposal executes the proposal
-func (w *writer) executeProposal(m *msg.Message, data []byte, dataHash ethcommon.Hash, msgProofOpts *celoMsg.MsgProofOpts) {
+func (w *writer) executeProposal(m *msg.Message, data []byte, dataHash ethcommon.Hash) {
 	for i := 0; i < TxRetryLimit; i++ {
 		select {
 		case <-w.stop:
@@ -250,13 +249,14 @@ func (w *writer) executeProposal(m *msg.Message, data []byte, dataHash ethcommon
 				data,
 				m.ResourceId,
 				//
-				msgProofOpts.HeaderSignature,
-				msgProofOpts.AggregatePublicKey,
-				msgProofOpts.G1,
-				msgProofOpts.HashedMessage,
-				msgProofOpts.RootHash,
-				msgProofOpts.Key,
-				msgProofOpts.Nodes,
+				m.SVParams.Signature,
+				m.SVParams.AggregatePublicKey,
+				// TODO: Remove once G1 has been removed from contracts
+				[]byte{},
+				m.SVParams.BlockHash,
+				m.MPParams.RootHash,
+				m.MPParams.Key,
+				m.MPParams.Nodes,
 			)
 			w.client.UnlockOpts()
 
