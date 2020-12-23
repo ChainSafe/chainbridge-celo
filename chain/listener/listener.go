@@ -176,12 +176,6 @@ func (l *listener) getDepositEventsAndProofsForBlock(latestBlock *big.Int) error
 		return nil
 	}
 
-	celoTrie := celoTrie.NewCeloTrie()
-
-	if err != nil {
-		return err
-	}
-
 	block, err := getBlock(logs[0].BlockNumber, l.client.BlockByNumber)
 
 	if err != nil {
@@ -215,6 +209,8 @@ func (l *listener) getDepositEventsAndProofsForBlock(latestBlock *big.Int) error
 		if err != nil {
 			return err
 		}
+
+		celoTrie := celoTrie.NewCeloTrie()
 
 		proof, err := celoTrie.GetProof(block.TxHash(), block.Transactions(), eventLog.TxIndex)
 
