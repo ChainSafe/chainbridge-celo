@@ -10,17 +10,15 @@ import (
 	"math/big"
 	"time"
 
-	"github.com/ChainSafe/chainbridge-celo/bindings/Bridge"
-	"github.com/ChainSafe/chainbridge-celo/bindings/ERC20Handler"
-	"github.com/ChainSafe/chainbridge-celo/bindings/ERC721Handler"
-	"github.com/ChainSafe/chainbridge-celo/bindings/GenericHandler"
 	"github.com/ChainSafe/chainbridge-celo/chain/client"
 	"github.com/ChainSafe/chainbridge-celo/chain/config"
+	celoTrie "github.com/ChainSafe/chainbridge-celo/chain/trie"
 	"github.com/ChainSafe/chainbridge-celo/msg"
-	"github.com/ChainSafe/chainbridge-celo/shared/ethereum"
+	utils "github.com/ChainSafe/chainbridge-celo/shared/ethereum"
 	eth "github.com/ethereum/go-ethereum"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	ethcommon "github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/rs/zerolog/log"
 )
 
@@ -33,10 +31,10 @@ var BlockRetryLimit = 5
 type listener struct {
 	cfg                    *config.CeloChainConfig
 	router                 IRouter
-	bridgeContract         *Bridge.Bridge // instance of bound bridge contract
-	erc20HandlerContract   *ERC20Handler.ERC20Handler
-	erc721HandlerContract  *ERC721Handler.ERC721Handler
-	genericHandlerContract *GenericHandler.GenericHandler
+	bridgeContract         IBridge // instance of bound bridge contract
+	erc20HandlerContract   IERC20Handler
+	erc721HandlerContract  IERC721Handler
+	genericHandlerContract IGenericHandler
 	blockstore             Blockstorer
 	stop                   <-chan struct{}
 	sysErr                 chan<- error // Reports fatal error to core
@@ -69,7 +67,7 @@ func NewListener(cfg *config.CeloChainConfig, client client.LogFilterWithLatestB
 	}
 }
 
-func (l *listener) SetContracts(bridge *Bridge.Bridge, erc20Handler *ERC20Handler.ERC20Handler, erc721Handler *ERC721Handler.ERC721Handler, genericHandler *GenericHandler.GenericHandler) {
+func (l *listener) SetContracts(bridge IBridge, erc20Handler IERC20Handler, erc721Handler IERC721Handler, genericHandler IGenericHandler) {
 	l.bridgeContract = bridge
 	l.erc20HandlerContract = erc20Handler
 	l.erc721HandlerContract = erc721Handler
@@ -174,8 +172,25 @@ func (l *listener) getDepositEventsAndProofsForBlock(latestBlock *big.Int) error
 		return fmt.Errorf("unable to Filter Logs: %w", err)
 	}
 
+	if len(logs) == 0 {
+		return nil
+	}
+
+	celoTrie := celoTrie.NewCeloTrie()
+
+	if err != nil {
+		return err
+	}
+
+	block, err := getBlock(logs[0].BlockNumber, l.client.BlockByNumber)
+
+	if err != nil {
+		return err
+	}
+
 	// read through the log events and handle their deposit event if handler is recognized
 	for _, eventLog := range logs {
+
 		var m *msg.Message
 		destId := msg.ChainId(eventLog.Topics[1].Big().Uint64())
 		rId := msg.ResourceId(eventLog.Topics[2])
@@ -201,7 +216,12 @@ func (l *listener) getDepositEventsAndProofsForBlock(latestBlock *big.Int) error
 			return err
 		}
 
+		proof, err := celoTrie.GetProof(block.TxHash(), block.Transactions(), eventLog.TxIndex)
+
+		m.ProofOpts.Nodes = proof
+
 		err = l.router.Send(m)
+
 		if err != nil {
 			log.Error().Err(err).Msg("subscription error: failed to route message")
 		}
@@ -252,4 +272,17 @@ func buildQuery(contract ethcommon.Address, sig utils.EventSig, startBlock *big.
 		},
 	}
 	return query
+}
+
+func getBlock(_blockNumber uint64, blockByNumber func(ctx context.Context, number *big.Int) (*types.Block, error)) (*types.Block, error) {
+
+	blockNumber := big.NewInt(int64(_blockNumber))
+
+	block, err := blockByNumber(context.Background(), blockNumber)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return block, nil
 }
