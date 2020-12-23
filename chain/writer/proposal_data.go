@@ -48,14 +48,14 @@ func ConstructErc721ProposalData(tokenId []byte, recipient []byte, metadata []by
 
 // CreateProposalDataHash constructs and returns proposal data hash
 // https://github.com/ChainSafe/chainbridge-celo-solidity/blob/1fae9c66a07139c277b03a09877414024867a8d9/contracts/Bridge.sol#L452-L454
-func CreateProposalDataHash(data []byte, handler common.Address, msgProofOpts *msg.MsgProofOpts) common.Hash {
+func CreateProposalDataHash(data []byte, handler common.Address, mp *msg.MerkleProof, sv *msg.SignatureVerification) common.Hash {
 	b := bytes.NewBuffer(data)
 	b.Write(handler.Bytes())
-	b.Write(msgProofOpts.RootHash[:])
-	b.Write(msgProofOpts.Key)
-	b.Write(msgProofOpts.Nodes)
-	b.Write(msgProofOpts.AggregatePublicKey)
-	b.Write(msgProofOpts.HashedMessage[:])
-	b.Write(msgProofOpts.HeaderSignature)
+	b.Write(mp.RootHash[:])
+	b.Write(mp.Key)
+	b.Write(mp.Nodes)
+	b.Write(sv.AggregatePublicKey)
+	b.Write(sv.BlockHash[:])
+	b.Write(sv.Signature)
 	return crypto.Keccak256Hash(b.Bytes())
 }

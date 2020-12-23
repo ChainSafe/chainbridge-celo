@@ -295,8 +295,10 @@ func (s *ListenerTestSuite) TestGetDepositEventsAndProofsForBlockerERC20() {
 		listener.cfg.ID,
 		destID,
 		nonce,
-		prop.Amount,
 		prop.ResourceID,
+		nil,
+		nil,
+		prop.Amount,
 		prop.DestinationRecipientAddress,
 	)
 
@@ -372,6 +374,8 @@ func (s *ListenerTestSuite) TestGetDepositEventsAndProofsForBlockerERC721() {
 		destID,
 		nonce,
 		prop.ResourceID,
+		nil,
+		nil,
 		prop.TokenID,
 		prop.DestinationRecipientAddress,
 		prop.MetaData,
@@ -446,6 +450,8 @@ func (s *ListenerTestSuite) TestGetDepositEventsAndProofsForBlockerGeneric() {
 		destID,
 		nonce,
 		prop.ResourceID,
+		nil,
+		nil,
 		prop.MetaData,
 	)
 
@@ -524,6 +530,8 @@ func (s *ListenerTestSuite) TestGetDepositEventsAndProofsForBlockerFailure() {
 		destID,
 		nonce,
 		prop.ResourceID,
+		nil,
+		nil,
 		prop.MetaData,
 	)
 
