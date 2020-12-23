@@ -89,7 +89,7 @@ func (w *writer) ResolveMessage(m *msg.Message) bool {
 		log.Error().Err(err)
 		return false
 	}
-	dataHash := CreateProposalDataHash(data, handlerContract, m.ProofOpts)
+	dataHash := CreateProposalDataHash(data, handlerContract, m.MPParams, m.SVParams)
 
 	if !w.shouldVote(m, dataHash) {
 		return false
@@ -102,7 +102,7 @@ func (w *writer) ResolveMessage(m *msg.Message) bool {
 	}
 
 	// watch for execution event
-	go w.watchThenExecute(m, data, dataHash, latestBlock, m.ProofOpts)
+	go w.watchThenExecute(m, data, dataHash, latestBlock)
 
 	w.voteProposal(m, dataHash)
 

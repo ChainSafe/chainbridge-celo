@@ -5,10 +5,7 @@
 package mock_chain
 
 import (
-	Bridge "github.com/ChainSafe/chainbridge-celo/bindings/Bridge"
-	ERC20Handler "github.com/ChainSafe/chainbridge-celo/bindings/ERC20Handler"
-	ERC721Handler "github.com/ChainSafe/chainbridge-celo/bindings/ERC721Handler"
-	GenericHandler "github.com/ChainSafe/chainbridge-celo/bindings/GenericHandler"
+	"github.com/ChainSafe/chainbridge-celo/chain/listener"
 	writer "github.com/ChainSafe/chainbridge-celo/chain/writer"
 	gomock "github.com/golang/mock/gomock"
 	reflect "reflect"
@@ -52,7 +49,7 @@ func (mr *MockListenerMockRecorder) StartPollingBlocks() *gomock.Call {
 }
 
 // SetContracts mocks base method
-func (m *MockListener) SetContracts(bridge *Bridge.Bridge, erc20Handler *ERC20Handler.ERC20Handler, erc721Handler *ERC721Handler.ERC721Handler, genericHandler *GenericHandler.GenericHandler) {
+func (m *MockListener) SetContracts(bridge listener.IBridge, erc20Handler listener.IERC20Handler, erc721Handler listener.IERC721Handler, genericHandler listener.IGenericHandler) {
 	m.ctrl.T.Helper()
 	m.ctrl.Call(m, "SetContracts", bridge, erc20Handler, erc721Handler, genericHandler)
 }
