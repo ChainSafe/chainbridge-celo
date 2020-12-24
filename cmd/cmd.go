@@ -3,6 +3,7 @@
 package cmd
 
 import (
+	"github.com/ChainSafe/chainbridge-celo/flags"
 	"github.com/ChainSafe/chainbridge-celo/validatorsync"
 	"github.com/syndtr/goleveldb/leveldb"
 	"os"
@@ -32,8 +33,7 @@ func Run(ctx *cli.Context) error {
 	errChn := make(chan error)
 	stopChn := make(chan struct{})
 	r := router.NewRouter()
-	///TODO update with flag
-	pathToDB := "./test/db"
+	pathToDB := ctx.String(flags.LevelDBPath.Name)
 	ldb, err := leveldb.OpenFile(pathToDB, nil)
 	if err != nil {
 		return err

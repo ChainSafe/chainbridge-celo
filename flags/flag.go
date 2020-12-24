@@ -48,6 +48,11 @@ var (
 		Name:  "latest",
 		Usage: "Overrides blockstore and start block, starts from latest block",
 	}
+
+	LevelDBPath = &cli.BoolFlag{
+		Name:  "leveldb",
+		Usage: "sets path to leveldb database",
+	}
 )
 
 // Metrics flags
