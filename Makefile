@@ -19,7 +19,7 @@ lint: $(GOLANGCI)
 	./bin/golangci-lint run ./... --timeout 5m0s
 
 test:
-	go test ./...
+	go test ./... --cover
 
 docker:
 	docker-compose -f ./docker-compose-chains.yml up -V
