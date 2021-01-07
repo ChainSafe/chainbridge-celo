@@ -201,6 +201,7 @@ func (s *WriterTestSuite) TestVoteProposalIsNotComplete() {
 			return
 		}
 	}()
+
 	w.voteProposal(m, common.Hash{})
 }
 
@@ -260,6 +261,31 @@ func (s *WriterTestSuite) TestVoteProposalLockAndUpdateOptsError() {
 	}()
 
 	w.voteProposal(m, common.Hash{})
+}
+
+func (s *WriterTestSuite) TestWatchThenExecute() {
+	stopChn := make(chan struct{})
+	errChn := make(chan error)
+	message := message.NewFungibleTransfer(message.ChainId(1), 0, message.Nonce(555), [32]byte{1}, nil, nil, big.NewInt(10), make([]byte, 32))
+
+	cfg := &config.CeloChainConfig{StartBlock: big.NewInt(1), BridgeContract: common.Address{}}
+	w := NewWriter(s.client, cfg, stopChn, errChn, nil)
+	w.SetBridge(s.bridgeMock)
+
+	latestblock := big.NewInt(3)
+	for i := 0; i < ExecuteBlockWatchLimit; i++ {
+		for waitRetrys := 0; waitRetrys <= BlockRetryLimit; waitRetrys++ {
+			s.client.EXPECT().WaitForBlock(latestblock).Return(errors.New("error"))
+
+		}
+	}
+
+	go func() {
+		err := <-errChn
+		s.True(err.Error() == ErrFatalQuery.Error())
+	}()
+
+	w.watchThenExecute(message, []byte{}, common.Hash{}, latestblock)
 }
 
 func (s *WriterTestSuite) TestProposalIsFinalizedError() {
