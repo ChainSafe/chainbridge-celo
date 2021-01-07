@@ -263,7 +263,7 @@ func (s *WriterTestSuite) TestVoteProposalLockAndUpdateOptsError() {
 	w.voteProposal(m, common.Hash{})
 }
 
-func (s *WriterTestSuite) TestWatchThenExecute() {
+func (s *WriterTestSuite) TestWatchThenExecuteWaitForBlockError() {
 	stopChn := make(chan struct{})
 	errChn := make(chan error)
 	message := message.NewFungibleTransfer(message.ChainId(1), 0, message.Nonce(555), [32]byte{1}, nil, nil, big.NewInt(10), make([]byte, 32))
