@@ -233,6 +233,35 @@ func (s *WriterTestSuite) TestVoteProposalUnexpectedErrorOnVote() {
 	w.voteProposal(m, common.Hash{})
 }
 
+func (s *WriterTestSuite) TestVoteProposalLockAndUpdateOptsError() {
+	stopChn := make(chan struct{})
+	errChn := make(chan error)
+	m := message.NewFungibleTransfer(message.ChainId(1), 0, message.Nonce(555), [32]byte{1}, nil, nil, big.NewInt(10), make([]byte, 32))
+
+	cfg := &config.CeloChainConfig{StartBlock: big.NewInt(1), BridgeContract: common.Address{}}
+	w := NewWriter(s.client, cfg, stopChn, errChn, nil)
+	w.SetBridge(s.bridgeMock)
+
+	proposal := Bridge.BridgeProposal{
+		Status: 0,
+	}
+	for i := 0; i < TxRetryLimit; i++ {
+		s.client.EXPECT().CallOpts().Return(nil)
+		s.bridgeMock.EXPECT().GetProposal(gomock.Any(), uint8(m.Source), uint64(m.DepositNonce), gomock.Any()).Return(proposal, nil)
+		s.client.EXPECT().LockAndUpdateOpts().Return(errors.New("error")).Times(1)
+		s.client.EXPECT().Opts().Times(0)
+		s.bridgeMock.EXPECT().VoteProposal(gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).Return(nil, errors.New("unexpectedERROR")).Times(0)
+		s.client.EXPECT().UnlockOpts().Times(0)
+	}
+
+	go func() {
+		err := <-errChn
+		s.NotNil(err)
+	}()
+
+	w.voteProposal(m, common.Hash{})
+}
+
 func (s *WriterTestSuite) TestProposalIsFinalizedError() {
 	stopChn := make(chan struct{})
 	errChn := make(chan error)
@@ -419,7 +448,7 @@ func (s *WriterTestSuite) TestCreateERC20ProposalDataComplete() {
 		MPParams:     nil,
 		SVParams:     nil,
 		Payload: []interface{}{
-			big.NewInt(76).Bytes(),
+			[]byte{},
 			contractAddress.Bytes(),
 		},
 	}
@@ -429,4 +458,238 @@ func (s *WriterTestSuite) TestCreateERC20ProposalDataComplete() {
 	s.NotNil(result)
 	s.Nil(err)
 
+}
+
+func (s *WriterTestSuite) TestCreateERC21ProposalMalformedPayload() {
+
+	stopChn := make(chan struct{})
+	errChn := make(chan error)
+	cfg := &config.CeloChainConfig{StartBlock: big.NewInt(1), BridgeContract: common.Address{}}
+	w := NewWriter(s.client, cfg, stopChn, errChn, nil)
+	w.SetBridge(s.bridgeMock)
+
+	message := &msg.Message{
+		Source:       msg.ChainId(3),
+		Destination:  msg.ChainId(3),
+		Type:         msg.FungibleTransfer,
+		DepositNonce: msg.Nonce(1),
+		ResourceId:   [32]byte{},
+		MPParams:     nil,
+		SVParams:     nil,
+		Payload:      []interface{}{},
+	}
+
+	result, err := w.createErc721ProposalData(message)
+
+	s.NotNil(err)
+	s.Nil(result)
+
+}
+
+func (s *WriterTestSuite) TestCreateERC21ProposalDataTokenIDFormat() {
+
+	stopChn := make(chan struct{})
+	errChn := make(chan error)
+	cfg := &config.CeloChainConfig{StartBlock: big.NewInt(1), BridgeContract: common.Address{}}
+	w := NewWriter(s.client, cfg, stopChn, errChn, nil)
+	w.SetBridge(s.bridgeMock)
+
+	contractAddress := common.HexToAddress("0x71C7656EC7ab88b098defB751B7401B5f6d8976F")
+
+	message := &msg.Message{
+		Source:       msg.ChainId(3),
+		Destination:  msg.ChainId(3),
+		Type:         msg.FungibleTransfer,
+		DepositNonce: msg.Nonce(1),
+		ResourceId:   [32]byte{},
+		MPParams:     nil,
+		SVParams:     nil,
+		Payload: []interface{}{
+			contractAddress,
+			big.NewInt(76).Bytes(),
+			[]byte{},
+		},
+	}
+
+	result, err := w.createErc721ProposalData(message)
+
+	s.NotNil(err)
+	s.Nil(result)
+
+}
+
+func (s *WriterTestSuite) TestCreateERC21ProposalDataRecipientFormat() {
+
+	stopChn := make(chan struct{})
+	errChn := make(chan error)
+	cfg := &config.CeloChainConfig{StartBlock: big.NewInt(1), BridgeContract: common.Address{}}
+	w := NewWriter(s.client, cfg, stopChn, errChn, nil)
+	w.SetBridge(s.bridgeMock)
+
+	contractAddress := common.HexToAddress("0x71C7656EC7ab88b098defB751B7401B5f6d8976F")
+
+	message := &msg.Message{
+		Source:       msg.ChainId(3),
+		Destination:  msg.ChainId(3),
+		Type:         msg.FungibleTransfer,
+		DepositNonce: msg.Nonce(1),
+		ResourceId:   [32]byte{},
+		MPParams:     nil,
+		SVParams:     nil,
+		Payload: []interface{}{
+			contractAddress.Bytes(),
+			"0x",
+			[]byte{},
+		},
+	}
+
+	result, err := w.createErc721ProposalData(message)
+
+	s.NotNil(err)
+	s.Nil(result)
+
+}
+
+func (s *WriterTestSuite) TestCreateERC21ProposalDataMetaDataFormat() {
+
+	stopChn := make(chan struct{})
+	errChn := make(chan error)
+	cfg := &config.CeloChainConfig{StartBlock: big.NewInt(1), BridgeContract: common.Address{}}
+	w := NewWriter(s.client, cfg, stopChn, errChn, nil)
+	w.SetBridge(s.bridgeMock)
+
+	contractAddress := common.HexToAddress("0x71C7656EC7ab88b098defB751B7401B5f6d8976F")
+
+	message := &msg.Message{
+		Source:       msg.ChainId(3),
+		Destination:  msg.ChainId(3),
+		Type:         msg.FungibleTransfer,
+		DepositNonce: msg.Nonce(1),
+		ResourceId:   [32]byte{},
+		MPParams:     nil,
+		SVParams:     nil,
+		Payload: []interface{}{
+			contractAddress.Bytes(),
+			[]byte{},
+			uint64(65),
+		},
+	}
+
+	result, err := w.createErc721ProposalData(message)
+
+	s.NotNil(err)
+	s.Nil(result)
+
+}
+
+func (s *WriterTestSuite) TestCreateERC21ProposalDataComplete() {
+
+	stopChn := make(chan struct{})
+	errChn := make(chan error)
+	cfg := &config.CeloChainConfig{StartBlock: big.NewInt(1), BridgeContract: common.Address{}}
+	w := NewWriter(s.client, cfg, stopChn, errChn, nil)
+	w.SetBridge(s.bridgeMock)
+
+	contractAddress := common.HexToAddress("0x71C7656EC7ab88b098defB751B7401B5f6d8976F")
+
+	message := &msg.Message{
+		Source:       msg.ChainId(3),
+		Destination:  msg.ChainId(3),
+		Type:         msg.FungibleTransfer,
+		DepositNonce: msg.Nonce(1),
+		ResourceId:   [32]byte{},
+		MPParams:     nil,
+		SVParams:     nil,
+		Payload: []interface{}{
+			contractAddress.Bytes(),
+			[]byte{},
+			[]byte{},
+		},
+	}
+
+	result, err := w.createErc721ProposalData(message)
+
+	s.NotNil(result)
+	s.Nil(err)
+
+}
+
+func (s *WriterTestSuite) TestCreateGenericProposalDataMalformedPayload() {
+
+	stopChn := make(chan struct{})
+	errChn := make(chan error)
+	cfg := &config.CeloChainConfig{StartBlock: big.NewInt(1), BridgeContract: common.Address{}}
+	w := NewWriter(s.client, cfg, stopChn, errChn, nil)
+	w.SetBridge(s.bridgeMock)
+
+	message := &msg.Message{
+		Source:       msg.ChainId(3),
+		Destination:  msg.ChainId(3),
+		Type:         msg.FungibleTransfer,
+		DepositNonce: msg.Nonce(1),
+		ResourceId:   [32]byte{},
+		MPParams:     nil,
+		SVParams:     nil,
+		Payload:      []interface{}{},
+	}
+
+	result, err := w.createGenericDepositProposalData(message)
+
+	s.NotNil(err)
+	s.Nil(result)
+
+}
+
+func (s *WriterTestSuite) TestCreateGenericProposalDataWrongMetadataFormat() {
+
+	stopChn := make(chan struct{})
+	errChn := make(chan error)
+	cfg := &config.CeloChainConfig{StartBlock: big.NewInt(1), BridgeContract: common.Address{}}
+	w := NewWriter(s.client, cfg, stopChn, errChn, nil)
+	w.SetBridge(s.bridgeMock)
+
+	message := &msg.Message{
+		Source:       msg.ChainId(3),
+		Destination:  msg.ChainId(3),
+		Type:         msg.FungibleTransfer,
+		DepositNonce: msg.Nonce(1),
+		ResourceId:   [32]byte{},
+		MPParams:     nil,
+		SVParams:     nil,
+		Payload: []interface{}{
+			"wrong_metadata",
+		},
+	}
+
+	result, err := w.createGenericDepositProposalData(message)
+
+	s.NotNil(err)
+	s.Nil(result)
+}
+
+func (s *WriterTestSuite) TestCreateGenericProposalDataComplete() {
+
+	stopChn := make(chan struct{})
+	errChn := make(chan error)
+	cfg := &config.CeloChainConfig{StartBlock: big.NewInt(1), BridgeContract: common.Address{}}
+	w := NewWriter(s.client, cfg, stopChn, errChn, nil)
+	w.SetBridge(s.bridgeMock)
+
+	message := &msg.Message{
+		Source:       msg.ChainId(3),
+		Destination:  msg.ChainId(3),
+		Type:         msg.FungibleTransfer,
+		DepositNonce: msg.Nonce(1),
+		ResourceId:   [32]byte{},
+		MPParams:     nil,
+		SVParams:     nil,
+		Payload: []interface{}{
+			[]byte{},
+		},
+	}
+
+	result, err := w.createGenericDepositProposalData(message)
+
+	s.NotNil(result)
+	s.Nil(err)
 }
