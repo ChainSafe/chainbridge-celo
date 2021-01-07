@@ -3,6 +3,7 @@
 package writer
 
 import (
+	"context"
 	"math/big"
 	"testing"
 	"time"
@@ -283,6 +284,81 @@ func (s *WriterTestSuite) TestWatchThenExecuteWaitForBlockError() {
 	go func() {
 		err := <-errChn
 		s.True(err.Error() == ErrFatalQuery.Error())
+	}()
+
+	w.watchThenExecute(message, []byte{}, common.Hash{}, latestblock)
+}
+
+func (s *WriterTestSuite) TestWatchThenExecuteFilterLogsError() {
+	stopChn := make(chan struct{})
+	errChn := make(chan error)
+	message := message.NewFungibleTransfer(message.ChainId(1), 0, message.Nonce(555), [32]byte{1}, nil, nil, big.NewInt(10), make([]byte, 32))
+
+	cfg := &config.CeloChainConfig{StartBlock: big.NewInt(1), BridgeContract: common.Address{}}
+	w := NewWriter(s.client, cfg, stopChn, errChn, nil)
+	w.SetBridge(s.bridgeMock)
+
+	latestblock := big.NewInt(3)
+	for i := 0; i < ExecuteBlockWatchLimit; i++ {
+		for waitRetrys := 0; waitRetrys <= BlockRetryLimit; waitRetrys++ {
+			s.client.EXPECT().WaitForBlock(latestblock).Return(nil)
+
+		}
+
+		query := buildQuery(w.cfg.BridgeContract, utils.ProposalEvent, latestblock, latestblock)
+
+		s.client.EXPECT().FilterLogs(context.Background(), query).Return([]types.Log{}, errors.New("error"))
+
+	}
+
+	go func() {
+		err := <-errChn
+		s.Nil(err)
+	}()
+
+	w.watchThenExecute(message, []byte{}, common.Hash{}, latestblock)
+}
+
+func (s *WriterTestSuite) TestWatchThenExecuteFilterLogsError2() {
+	stopChn := make(chan struct{})
+	errChn := make(chan error)
+	message := message.NewFungibleTransfer(message.ChainId(1), 0, message.Nonce(555), [32]byte{1}, nil, nil, big.NewInt(10), make([]byte, 32))
+
+	cfg := &config.CeloChainConfig{StartBlock: big.NewInt(1), BridgeContract: common.Address{}}
+	w := NewWriter(s.client, cfg, stopChn, errChn, nil)
+	w.SetBridge(s.bridgeMock)
+
+	latestblock := big.NewInt(3)
+
+	for i := 0; i < ExecuteBlockWatchLimit; i++ {
+		for waitRetrys := 0; waitRetrys <= BlockRetryLimit; waitRetrys++ {
+			s.client.EXPECT().WaitForBlock(latestblock).Return(nil)
+
+		}
+		query := buildQuery(w.cfg.BridgeContract, utils.ProposalEvent, latestblock, latestblock)
+		contractAddress := common.HexToAddress("0x71C7656EC7ab88b098defB751B7401B5f6d8976F")
+
+		logs := []types.Log{
+			{
+				Address: contractAddress,
+				// list of topics provided by the contract.
+				Topics: []common.Hash{
+					utils.Deposit.GetTopic(),
+					crypto.Keccak256Hash(big.NewInt(1).Bytes()),
+					contractAddress.Hash(),
+					crypto.Keccak256Hash(big.NewInt(1).Bytes()),
+				},
+				Data: []byte{},
+			},
+		}
+
+		s.client.EXPECT().FilterLogs(context.Background(), query).Return(logs, nil)
+
+	}
+
+	go func() {
+		err := <-errChn
+		s.Nil(err)
 	}()
 
 	w.watchThenExecute(message, []byte{}, common.Hash{}, latestblock)
