@@ -24,7 +24,9 @@ test:
 test-cover:
 	go test -v -coverprofile=coverage.out ./...
 	go tool cover -func=coverage.out
+	go tool cover -html=coverage.out -o coverage.html
 	go tool cover -html=coverage.out
+
 
 docker:
 	docker-compose -f ./docker-compose-chains.yml up -V
