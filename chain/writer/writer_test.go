@@ -264,6 +264,324 @@ func (s *WriterTestSuite) TestVoteProposalLockAndUpdateOptsError() {
 	w.voteProposal(m, common.Hash{})
 }
 
+func (s *WriterTestSuite) TestExecuteProposalLockAndUpdateOptsError() {
+
+	stopChn := make(chan struct{})
+	errChn := make(chan error)
+	message := message.NewFungibleTransfer(message.ChainId(1), 0, message.Nonce(555), [32]byte{1}, nil, nil, big.NewInt(10), make([]byte, 32))
+
+	cfg := &config.CeloChainConfig{StartBlock: big.NewInt(1), BridgeContract: common.Address{}}
+	w := NewWriter(s.client, cfg, stopChn, errChn, nil)
+	w.SetBridge(s.bridgeMock)
+
+	for i := 0; i < TxRetryLimit; i++ {
+		s.client.EXPECT().LockAndUpdateOpts().Return(errors.New("error"))
+	}
+
+	go func() {
+		err := <-errChn
+		s.True(err.Error() == ErrFatalTx.Error())
+	}()
+
+	w.executeProposal(message, []byte{}, common.Hash{})
+
+}
+
+func (s *WriterTestSuite) TestExecuteProposalNonceTooLowError() {
+
+	stopChn := make(chan struct{})
+	errChn := make(chan error)
+
+	sig := &msg.SignatureVerification{
+		AggregatePublicKey: []byte{},
+		BlockHash:          common.Hash{},
+		Signature:          []byte{},
+	}
+
+	mp := &msg.MerkleProof{
+		RootHash: common.Hash{},
+		Key:      []byte{},
+		Nodes:    []byte{},
+	}
+
+	message := message.NewFungibleTransfer(message.ChainId(1), 0, message.Nonce(555), [32]byte{1}, mp, sig, big.NewInt(10), make([]byte, 32))
+
+	cfg := &config.CeloChainConfig{StartBlock: big.NewInt(1), BridgeContract: common.Address{}}
+	w := NewWriter(s.client, cfg, stopChn, errChn, nil)
+	w.SetBridge(s.bridgeMock)
+
+	for i := 0; i < TxRetryLimit; i++ {
+		s.client.EXPECT().LockAndUpdateOpts().Return(nil)
+
+		s.client.EXPECT().Opts()
+
+		s.client.EXPECT().CallOpts()
+
+		s.bridgeMock.EXPECT().ExecuteProposal(
+			gomock.Any(),
+			uint8(message.Source),
+			uint64(message.DepositNonce),
+			[]byte{},
+			gomock.Any(),
+			[]byte{},
+			[]byte{},
+			[]byte{},
+			gomock.Any(),
+			gomock.Any(),
+			[]byte{},
+			[]byte{},
+		).Return(nil, ErrNonceTooLow)
+
+		s.client.EXPECT().UnlockOpts()
+
+		s.bridgeMock.EXPECT().GetProposal(gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).Return(Bridge.BridgeProposal{}, errors.New("error"))
+	}
+
+	go func() {
+		err := <-errChn
+		s.True(err.Error() == ErrFatalTx.Error())
+	}()
+
+	w.executeProposal(message, []byte{}, common.Hash{})
+
+}
+
+func (s *WriterTestSuite) TestExecuteProposalCompleted() {
+
+	stopChn := make(chan struct{})
+	errChn := make(chan error)
+
+	sig := &msg.SignatureVerification{
+		AggregatePublicKey: []byte{},
+		BlockHash:          common.Hash{},
+		Signature:          []byte{},
+	}
+
+	mp := &msg.MerkleProof{
+		RootHash: common.Hash{},
+		Key:      []byte{},
+		Nodes:    []byte{},
+	}
+
+	message := message.NewFungibleTransfer(message.ChainId(1), 0, message.Nonce(555), [32]byte{1}, mp, sig, big.NewInt(10), make([]byte, 32))
+
+	cfg := &config.CeloChainConfig{StartBlock: big.NewInt(1), BridgeContract: common.Address{}}
+	w := NewWriter(s.client, cfg, stopChn, errChn, nil)
+	w.SetBridge(s.bridgeMock)
+
+	for i := 0; i < TxRetryLimit; i++ {
+		s.client.EXPECT().LockAndUpdateOpts().Return(nil)
+
+		s.client.EXPECT().Opts()
+
+		s.client.EXPECT().CallOpts()
+
+		s.bridgeMock.EXPECT().ExecuteProposal(
+			gomock.Any(),
+			uint8(message.Source),
+			uint64(message.DepositNonce),
+			[]byte{},
+			gomock.Any(),
+			[]byte{},
+			[]byte{},
+			[]byte{},
+			gomock.Any(),
+			gomock.Any(),
+			[]byte{},
+			[]byte{},
+		).Return(&types.Transaction{}, nil)
+
+		s.client.EXPECT().UnlockOpts()
+
+		s.bridgeMock.EXPECT().GetProposal(gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).Return(Bridge.BridgeProposal{}, nil)
+	}
+
+	go func() {
+		err := <-errChn
+		s.True(err.Error() == ErrFatalTx.Error())
+	}()
+
+	w.executeProposal(message, []byte{}, common.Hash{})
+
+}
+
+func (s *WriterTestSuite) TestExecuteProposalProposalIsFinalizedError() {
+
+	stopChn := make(chan struct{})
+	errChn := make(chan error)
+
+	sig := &msg.SignatureVerification{
+		AggregatePublicKey: []byte{},
+		BlockHash:          common.Hash{},
+		Signature:          []byte{},
+	}
+
+	mp := &msg.MerkleProof{
+		RootHash: common.Hash{},
+		Key:      []byte{},
+		Nodes:    []byte{},
+	}
+
+	message := message.NewFungibleTransfer(message.ChainId(1), 0, message.Nonce(555), [32]byte{1}, mp, sig, big.NewInt(10), make([]byte, 32))
+
+	cfg := &config.CeloChainConfig{StartBlock: big.NewInt(1), BridgeContract: common.Address{}}
+	w := NewWriter(s.client, cfg, stopChn, errChn, nil)
+	w.SetBridge(s.bridgeMock)
+
+	for i := 0; i < TxRetryLimit; i++ {
+		s.client.EXPECT().LockAndUpdateOpts().Return(nil)
+
+		s.client.EXPECT().Opts()
+
+		s.client.EXPECT().CallOpts()
+
+		s.bridgeMock.EXPECT().ExecuteProposal(
+			gomock.Any(),
+			uint8(message.Source),
+			uint64(message.DepositNonce),
+			[]byte{},
+			gomock.Any(),
+			[]byte{},
+			[]byte{},
+			[]byte{},
+			gomock.Any(),
+			gomock.Any(),
+			[]byte{},
+			[]byte{},
+		).Return(nil, errors.New("fail"))
+
+		s.client.EXPECT().UnlockOpts()
+
+		s.bridgeMock.EXPECT().GetProposal(gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).Return(Bridge.BridgeProposal{}, errors.New("error"))
+	}
+
+	go func() {
+		err := <-errChn
+		s.True(err.Error() == ErrFatalTx.Error())
+	}()
+
+	w.executeProposal(message, []byte{}, common.Hash{})
+
+}
+
+func (s *WriterTestSuite) TestExecuteProposalProposalStatusTransferred() {
+
+	stopChn := make(chan struct{})
+	errChn := make(chan error)
+
+	sig := &msg.SignatureVerification{
+		AggregatePublicKey: []byte{},
+		BlockHash:          common.Hash{},
+		Signature:          []byte{},
+	}
+
+	mp := &msg.MerkleProof{
+		RootHash: common.Hash{},
+		Key:      []byte{},
+		Nodes:    []byte{},
+	}
+
+	message := message.NewFungibleTransfer(message.ChainId(1), 0, message.Nonce(555), [32]byte{1}, mp, sig, big.NewInt(10), make([]byte, 32))
+
+	cfg := &config.CeloChainConfig{StartBlock: big.NewInt(1), BridgeContract: common.Address{}}
+	w := NewWriter(s.client, cfg, stopChn, errChn, nil)
+	w.SetBridge(s.bridgeMock)
+
+	for i := 0; i < TxRetryLimit; i++ {
+		s.client.EXPECT().LockAndUpdateOpts().Return(nil)
+
+		s.client.EXPECT().Opts()
+
+		s.client.EXPECT().CallOpts()
+
+		s.bridgeMock.EXPECT().ExecuteProposal(
+			gomock.Any(),
+			uint8(message.Source),
+			uint64(message.DepositNonce),
+			[]byte{},
+			gomock.Any(),
+			[]byte{},
+			[]byte{},
+			[]byte{},
+			gomock.Any(),
+			gomock.Any(),
+			[]byte{},
+			[]byte{},
+		).Return(nil, errors.New("fail"))
+
+		s.client.EXPECT().UnlockOpts()
+
+		s.bridgeMock.EXPECT().GetProposal(gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).Return(Bridge.BridgeProposal{Status: ProposalStatusTransferred}, nil)
+	}
+
+	go func() {
+		err := <-errChn
+		s.True(err.Error() == ErrFatalTx.Error())
+	}()
+
+	w.executeProposal(message, []byte{}, common.Hash{})
+
+}
+
+func (s *WriterTestSuite) TestExecuteProposalProposalStatusCancelled() {
+
+	stopChn := make(chan struct{})
+	errChn := make(chan error)
+
+	sig := &msg.SignatureVerification{
+		AggregatePublicKey: []byte{},
+		BlockHash:          common.Hash{},
+		Signature:          []byte{},
+	}
+
+	mp := &msg.MerkleProof{
+		RootHash: common.Hash{},
+		Key:      []byte{},
+		Nodes:    []byte{},
+	}
+
+	message := message.NewFungibleTransfer(message.ChainId(1), 0, message.Nonce(555), [32]byte{1}, mp, sig, big.NewInt(10), make([]byte, 32))
+
+	cfg := &config.CeloChainConfig{StartBlock: big.NewInt(1), BridgeContract: common.Address{}}
+	w := NewWriter(s.client, cfg, stopChn, errChn, nil)
+	w.SetBridge(s.bridgeMock)
+
+	for i := 0; i < TxRetryLimit; i++ {
+		s.client.EXPECT().LockAndUpdateOpts().Return(nil)
+
+		s.client.EXPECT().Opts()
+
+		s.client.EXPECT().CallOpts()
+
+		s.bridgeMock.EXPECT().ExecuteProposal(
+			gomock.Any(),
+			uint8(message.Source),
+			uint64(message.DepositNonce),
+			[]byte{},
+			gomock.Any(),
+			[]byte{},
+			[]byte{},
+			[]byte{},
+			gomock.Any(),
+			gomock.Any(),
+			[]byte{},
+			[]byte{},
+		).Return(nil, errors.New("fail"))
+
+		s.client.EXPECT().UnlockOpts()
+
+		s.bridgeMock.EXPECT().GetProposal(gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).Return(Bridge.BridgeProposal{Status: ProposalStatusCancelled}, nil)
+	}
+
+	go func() {
+		err := <-errChn
+		s.True(err.Error() == ErrFatalTx.Error())
+	}()
+
+	w.executeProposal(message, []byte{}, common.Hash{})
+
+}
+
 func (s *WriterTestSuite) TestWatchThenExecuteWaitForBlockError() {
 	stopChn := make(chan struct{})
 	errChn := make(chan error)
