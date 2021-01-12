@@ -25,8 +25,8 @@ type HeaderByNumberGetter interface {
 }
 
 func SyncBlockValidators(stopChn <-chan struct{}, errChn chan error, c HeaderByNumberGetter, db *ValidatorsStore, chainID uint8, epochSize uint64) {
-	// If DB is empty will return 0 (first epoch by itself)
 	var prevValidators []*istanbul.ValidatorData
+	// If DB is empty will return 0 (first epoch by itself)
 	block, err := db.GetLatestKnownEpochLastBlock(chainID)
 	if err != nil {
 		errChn <- fmt.Errorf("error on get latest known block from db: %w", err)
@@ -76,20 +76,10 @@ func SyncBlockValidators(stopChn <-chan struct{}, errChn chan error, c HeaderByN
 					return
 				}
 			}
-			// Zero block is first and last block of first epoch. So zero block should be set with its own diff validators
-			if block.Cmp(big.NewInt(0)) == 0 {
-				err = db.SetValidatorsForBlock(block, prevValidators, chainID)
-				if err != nil {
-					errChn <- fmt.Errorf("error on set validators to db: %w", err)
-					return
-				}
-			} else {
-				// If block is not zero, then it is last block of epoch, so
-				err = db.SetValidatorsForBlock(block, prevValidators, chainID)
-				if err != nil {
-					errChn <- fmt.Errorf("error on set validators to db: %w", err)
-					return
-				}
+			err = db.SetValidatorsForBlock(block, prevValidators, chainID)
+			if err != nil {
+				errChn <- fmt.Errorf("error on set validators to db: %w", err)
+				return
 			}
 			// Current validators for next epoch, will be set for next last epoch block and applied with its diff
 			block.Add(block, big.NewInt(0).SetUint64(epochSize))
