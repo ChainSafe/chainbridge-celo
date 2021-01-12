@@ -3,7 +3,7 @@ module github.com/ChainSafe/chainbridge-celo
 go 1.15
 
 require (
-	github.com/ChainSafe/chainbridge-ethereum-trie v0.0.0-20210111144737-06730910c642
+	github.com/ChainSafe/chainbridge-ethereum-trie v0.0.0-20210112124933-e83f68cceafb
 	github.com/ChainSafe/chainbridge-utils v1.0.3
 	github.com/aristanetworks/goarista v0.0.0-20200609010056-95bcf8053598 // indirect
 	github.com/celo-org/celo-bls-go v0.1.4

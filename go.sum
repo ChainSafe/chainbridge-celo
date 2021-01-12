@@ -16,6 +16,8 @@ github.com/BurntSushi/toml v0.3.1/go.mod h1:xHWCNGjB5oqiDr8zfno3MHue2Ht5sIBksp03
 github.com/BurntSushi/xgb v0.0.0-20160522181843-27f122750802/go.mod h1:IVnqGOEym/WlBOVXweHU+Q+/VP0lqqI8lqeDx9IjBqo=
 github.com/ChainSafe/chainbridge-ethereum-trie v0.0.0-20210111144737-06730910c642 h1:WtwG+/NKcb1QHb6zAgUTNefKToP/VOz4sarC1wXSmoQ=
 github.com/ChainSafe/chainbridge-ethereum-trie v0.0.0-20210111144737-06730910c642/go.mod h1:AfagVMKAU9rCRjO2vzMkR/R0zwT1ekX0Arh2p3bMIws=
+github.com/ChainSafe/chainbridge-ethereum-trie v0.0.0-20210112124933-e83f68cceafb h1:IgUWwZdZBLMPT+QSQa/CRXZAyJbIEtvkjkIH6CrSG2c=
+github.com/ChainSafe/chainbridge-ethereum-trie v0.0.0-20210112124933-e83f68cceafb/go.mod h1:AfagVMKAU9rCRjO2vzMkR/R0zwT1ekX0Arh2p3bMIws=
 github.com/ChainSafe/chainbridge-utils v1.0.3 h1:a8pa5N11uo2wzgzNV9QkSocFrbkO+HiWCiihKDnkuAg=
 github.com/ChainSafe/chainbridge-utils v1.0.3/go.mod h1:T5cOZhxdY4x0DrE0EqOnMwAPE8d4bNGqiPfN16o1rzc=
 github.com/ChainSafe/log15 v1.0.0 h1:vRDVtWtVwIH5uSCBvgTTZh6FA58UBJ6+QiiypaZfBf8=
