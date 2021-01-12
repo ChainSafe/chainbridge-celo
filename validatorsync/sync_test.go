@@ -43,5 +43,5 @@ func (s *SyncTestSuite) TestStoreBlockValidators() {
 	//stopChn := make(chan struct{})
 	//errChn := make(chan error)
 	//chainID := uint8(1)
-	//StoreBlockValidators(stopChn, errChn, s.client, s.syncer, chainID)
+	//SyncBlockValidators(stopChn, errChn, s.client, s.syncer, chainID)
 }

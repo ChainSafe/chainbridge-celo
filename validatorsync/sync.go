@@ -24,7 +24,7 @@ type HeaderByNumberGetter interface {
 	HeaderByNumber(ctx context.Context, number *big.Int) (*types.Header, error)
 }
 
-func StoreBlockValidators(stopChn <-chan struct{}, errChn chan error, c HeaderByNumberGetter, db *ValidatorsStore, chainID uint8, epochSize uint64) {
+func SyncBlockValidators(stopChn <-chan struct{}, errChn chan error, c HeaderByNumberGetter, db *ValidatorsStore, chainID uint8, epochSize uint64) {
 	// If DB is empty will return 0 (first epoch by itself)
 	var prevValidators []*istanbul.ValidatorData
 	block, err := db.GetLatestKnownEpochLastBlock(chainID)

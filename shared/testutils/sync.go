@@ -21,6 +21,7 @@ import (
 	"github.com/urfave/cli/v2"
 )
 
+// SYnc is the function that only runs ValidatorsSyncer functionality of chainbridge for test purposes
 func Sync(ctx *cli.Context) error {
 	startConfig, err := cfg.GetConfig(ctx)
 	if err != nil {
@@ -48,7 +49,7 @@ func Sync(ctx *cli.Context) error {
 	}
 	store := validatorsync.NewValidatorsStore(db)
 
-	go validatorsync.StoreBlockValidators(stopChn, errChn, chainClient, store, 1, 12)
+	go validatorsync.SyncBlockValidators(stopChn, errChn, chainClient, store, 1, 12)
 
 	sysErr := make(chan os.Signal, 1)
 	signal.Notify(sysErr,
