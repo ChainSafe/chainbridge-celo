@@ -27,7 +27,6 @@ type HeaderByNumberGetter interface {
 func StoreBlockValidators(stopChn <-chan struct{}, errChn chan error, c HeaderByNumberGetter, db *ValidatorsStore, chainID uint8, epochSize uint64) {
 	// If DB is empty will return 0 (first epoch by itself)
 	var prevValidators []*istanbul.ValidatorData
-	var currentValidators []*istanbul.ValidatorData
 	block, err := db.GetLatestKnownEpochLastBlock(chainID)
 	if err != nil {
 		errChn <- fmt.Errorf("error on get latest known block from db: %w", err)
@@ -69,11 +68,9 @@ func StoreBlockValidators(stopChn <-chan struct{}, errChn chan error, c HeaderBy
 			}
 			b := bytes.NewBuffer(extra.RemovedValidators.Bytes())
 
-			currentValidators = append(make([]*istanbul.ValidatorData, 0), prevValidators...)
-
 			if len(extra.AddedValidators) != 0 || b.Len() > 0 {
 				log.Debug().Str("block", block.String()).Msg("New validators data")
-				currentValidators, err = applyValidatorsDiff(extra, prevValidators)
+				prevValidators, err = applyValidatorsDiff(extra, prevValidators)
 				if err != nil {
 					errChn <- fmt.Errorf("error applying validators diff: %w", err)
 					return
@@ -81,21 +78,20 @@ func StoreBlockValidators(stopChn <-chan struct{}, errChn chan error, c HeaderBy
 			}
 			// Zero block is first and last block of first epoch. So zero block should be set with its own diff validators
 			if block.Cmp(big.NewInt(0)) == 0 {
-				err = db.SetValidatorsForBlock(block, currentValidators, chainID)
+				err = db.SetValidatorsForBlock(block, prevValidators, chainID)
 				if err != nil {
 					errChn <- fmt.Errorf("error on set validators to db: %w", err)
 					return
 				}
 			} else {
 				// If block is not zero, then it is last block of epoch, so
-				err = db.SetValidatorsForBlock(block, currentValidators, chainID)
+				err = db.SetValidatorsForBlock(block, prevValidators, chainID)
 				if err != nil {
 					errChn <- fmt.Errorf("error on set validators to db: %w", err)
 					return
 				}
 			}
 			// Current validators for next epoch, will be set for next last epoch block and applied with its diff
-			prevValidators = append(make([]*istanbul.ValidatorData, 0), currentValidators...)
 			block.Add(block, big.NewInt(0).SetUint64(epochSize))
 		}
 	}
