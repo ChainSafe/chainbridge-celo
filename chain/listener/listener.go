@@ -55,7 +55,7 @@ type Blockstorer interface {
 }
 
 type ValidatorsAggregator interface {
-	GetAggPKForBlock(block *big.Int, chainID uint8) ([]byte, error)
+	GetAggPKForBlock(block *big.Int, chainID uint8, epochSize uint64) ([]byte, error)
 }
 
 func NewListener(cfg *config.CeloChainConfig, client client.LogFilterWithLatestBlock, bs Blockstorer, stop <-chan struct{}, sysErr chan<- error, syncer BlockSyncer, router IRouter, valsAggr ValidatorsAggregator) *listener {
@@ -201,7 +201,7 @@ func (l *listener) getDepositEventsAndProofsForBlock(latestBlock *big.Int) error
 		if err != nil {
 			return err
 		}
-		pubKey, err := l.valsAggr.GetAggPKForBlock(latestBlock, uint8(l.cfg.ID))
+		pubKey, err := l.valsAggr.GetAggPKForBlock(latestBlock, uint8(l.cfg.ID), l.cfg.EpochSize)
 		if err != nil {
 			return err
 		}

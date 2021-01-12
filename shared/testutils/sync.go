@@ -48,7 +48,7 @@ func Sync(ctx *cli.Context) error {
 	}
 	store := validatorsync.NewValidatorsStore(db)
 
-	go validatorsync.StoreBlockValidators(stopChn, errChn, chainClient, store, 1)
+	go validatorsync.StoreBlockValidators(stopChn, errChn, chainClient, store, 1, 12)
 
 	sysErr := make(chan os.Signal, 1)
 	signal.Notify(sysErr,

@@ -36,30 +36,6 @@ func (s *SyncerDBTestSuite) TearDownTest() {
 	os.RemoveAll("./test")
 }
 
-func (s *SyncerDBTestSuite) TestPutAndGetLatestKnownBlock() {
-	chainID := uint8(1)
-	err := s.syncer.setLatestKnownBlock(big.NewInt(420), chainID)
-	s.Nil(err)
-	b, err := s.syncer.GetLatestKnownBlock(chainID)
-	s.Nil(err)
-	s.Equal(0, b.Cmp(big.NewInt(420)))
-}
-
-func (s *SyncerDBTestSuite) TestPutAndGetLatestKnownValidators() {
-	chainID := uint8(1)
-	startVals := make([]*istanbul.ValidatorData, 3)
-	startVals[0] = &istanbul.ValidatorData{Address: common.Address{0x0f}, BLSPublicKey: blscrypto.SerializedPublicKey{}}
-	startVals[1] = &istanbul.ValidatorData{Address: common.Address{0x1f}, BLSPublicKey: blscrypto.SerializedPublicKey{}}
-	startVals[2] = &istanbul.ValidatorData{Address: common.Address{0x2f}, BLSPublicKey: blscrypto.SerializedPublicKey{}}
-	err := s.syncer.setLatestKnownValidators(startVals, chainID)
-	s.Nil(err)
-
-	v, err := s.syncer.GetLatestKnownValidators(chainID)
-	s.Nil(err)
-	s.Equal(3, len(v))
-	s.Equal(common.Address{0x0f}, v[0].Address)
-}
-
 func (s *SyncerDBTestSuite) TestSetValidatorsForBlock() {
 	chainID := uint8(1)
 	startVals := make([]*istanbul.ValidatorData, 3)
@@ -68,11 +44,11 @@ func (s *SyncerDBTestSuite) TestSetValidatorsForBlock() {
 	startVals[2] = &istanbul.ValidatorData{Address: common.Address{0x2f}, BLSPublicKey: blscrypto.SerializedPublicKey{}}
 	err := s.syncer.SetValidatorsForBlock(big.NewInt(420), startVals, chainID)
 	s.Nil(err)
-	v, err := s.syncer.GetLatestKnownValidators(chainID)
+	v, err := s.syncer.GetValidatorsForBlock(big.NewInt(420), chainID)
 	s.Nil(err)
 	s.Equal(3, len(v))
 	s.Equal(common.Address{0x0f}, v[0].Address)
-	b, err := s.syncer.GetLatestKnownBlock(chainID)
+	b, err := s.syncer.GetLatestKnownEpochLastBlock(chainID)
 	s.Nil(err)
 	s.Equal(0, b.Cmp(big.NewInt(420)))
 
@@ -85,16 +61,9 @@ func (s *SyncerDBTestSuite) TestSetValidatorsForBlock() {
 
 func (s *SyncerDBTestSuite) TestGetLatestKnownBlockWithEmptyDB() {
 	chainID := uint8(1)
-	v, err := s.syncer.GetLatestKnownBlock(chainID)
+	v, err := s.syncer.GetLatestKnownEpochLastBlock(chainID)
 	s.Nil(err)
 	s.Equal(0, v.Cmp(big.NewInt(0)))
-}
-
-func (s *SyncerDBTestSuite) TestGetLatestKnownValidatorsFromEmptyDB() {
-	chainID := uint8(1)
-	v, err := s.syncer.GetLatestKnownValidators(chainID)
-	s.Nil(err)
-	s.Equal(0, len(v))
 }
 
 func (s *SyncerDBTestSuite) TestTestSetValidatorsForBlockForDifferentChains() {
@@ -113,11 +82,11 @@ func (s *SyncerDBTestSuite) TestTestSetValidatorsForBlockForDifferentChains() {
 	err = s.syncer.SetValidatorsForBlock(big.NewInt(420), startVals2, chainID2)
 	s.Nil(err)
 
-	v, err := s.syncer.GetLatestKnownValidators(chainID1)
+	v, err := s.syncer.GetValidatorsForBlock(big.NewInt(420), chainID1)
 	s.Nil(err)
 	s.Equal(3, len(v))
 	s.Equal(common.Address{0x0f}, v[0].Address)
-	b, err := s.syncer.GetLatestKnownBlock(chainID1)
+	b, err := s.syncer.GetLatestKnownEpochLastBlock(chainID1)
 	s.Nil(err)
 	s.Equal(0, b.Cmp(big.NewInt(420)))
 
@@ -126,11 +95,11 @@ func (s *SyncerDBTestSuite) TestTestSetValidatorsForBlockForDifferentChains() {
 	s.Equal(3, len(validators))
 	s.Equal(common.Address{0x0f}, validators[0].Address)
 
-	v, err = s.syncer.GetLatestKnownValidators(chainID2)
+	v, err = s.syncer.GetValidatorsForBlock(big.NewInt(420), chainID2)
 	s.Nil(err)
 	s.Equal(2, len(v))
 	s.Equal(common.Address{0x3f}, v[0].Address)
-	b, err = s.syncer.GetLatestKnownBlock(chainID2)
+	b, err = s.syncer.GetLatestKnownEpochLastBlock(chainID2)
 	s.Nil(err)
 	s.Equal(0, b.Cmp(big.NewInt(420)))
 

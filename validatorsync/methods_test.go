@@ -26,17 +26,20 @@ func (s *WriterTestSuite) TearDownSuite() {}
 func (s *WriterTestSuite) SetupTest()     {}
 func (s *WriterTestSuite) TearDownTest()  {}
 
-func (s *WriterTestSuite) TestBitSetToTrue() {
-	i := big.NewInt(4)
-	s.True(bitSetToTrue(2, i))
-	s.False(bitSetToTrue(0, i))
-
-	i = big.NewInt(3)
-	s.True(bitSetToTrue(0, i))
-	s.False(bitSetToTrue(2, i))
-
-	i = big.NewInt(3)
-	s.True(bitSetToTrue(1, i))
+func (s *WriterTestSuite) TestApplyValidatorsDiffOnlyAdd() {
+	startVals := make([]*istanbul.ValidatorData, 2)
+	startVals[0] = &istanbul.ValidatorData{Address: common.Address{0x0f}, BLSPublicKey: blscrypto.SerializedPublicKey{}}
+	startVals[1] = &istanbul.ValidatorData{Address: common.Address{0x1f}, BLSPublicKey: blscrypto.SerializedPublicKey{}}
+	addedAddresses := []common.Address{{0x3f}}
+	extra := &types.IstanbulExtra{
+		AddedValidators:           addedAddresses,
+		RemovedValidators:         big.NewInt(0),
+		AddedValidatorsPublicKeys: []blscrypto.SerializedPublicKey{{0x3f}},
+	}
+	resVals, err := applyValidatorsDiff(extra, startVals)
+	s.Nil(err)
+	s.Equal(3, len(resVals))
+	s.Equal(resVals[2].BLSPublicKey, blscrypto.SerializedPublicKey{0x3f})
 }
 
 func (s *WriterTestSuite) TestApplyValidatorsDiff() {
@@ -85,4 +88,13 @@ func (s *WriterTestSuite) TestApplyValidatorsDiffWithRemovedOnEmptyVals() {
 	s.Nil(resVals)
 	s.NotNil(err)
 	s.Equal(err, ErrorWrongInitialValidators)
+}
+
+func (s *WriterTestSuite) TestDefineBlocksEpochLastBlockNumber() {
+	s.Equal(defineBlocksEpochLastBlockNumber(big.NewInt(0), 2335), big.NewInt(0))
+
+	s.Equal(defineBlocksEpochLastBlockNumber(big.NewInt(11), 12), big.NewInt(12))
+
+	s.Equal(defineBlocksEpochLastBlockNumber(big.NewInt(251), 12), big.NewInt(252))
+
 }

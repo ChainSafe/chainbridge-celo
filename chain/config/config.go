@@ -38,6 +38,7 @@ type CeloChainConfig struct {
 	StartBlock             *big.Int
 	LatestBlock            bool
 	Insecure               bool
+	EpochSize              uint64 // Size of chain epoch. eg. The number of blocks after which to checkpoint and reset the pending votes
 }
 
 func (cfg *CeloChainConfig) EnsureContractsHaveBytecode(conn *client.Client) error {
@@ -96,6 +97,16 @@ func ParseChainConfig(rawCfg *cfg.RawChainConfig, ctx *cli.Context) (*CeloChainC
 		StartBlock:             big.NewInt(0),
 		Insecure:               insecure,
 	}
+
+	epochSize, ok := rawCfg.Opts["epochSize"]
+	if !ok {
+		return nil, errors.New("Set epochSize")
+	}
+	epochSizeUint, err := strconv.ParseUint(epochSize, 10, 64)
+	if err != nil {
+		return nil, err
+	}
+	config.EpochSize = epochSizeUint
 
 	if contract, ok := rawCfg.Opts["bridge"]; ok && contract != "" {
 		config.BridgeContract = common.HexToAddress(contract)

@@ -3,10 +3,10 @@
 package validatorsync
 
 import (
-	"github.com/ChainSafe/chainbridge-celo/validatorsync/mock"
 	"os"
 	"testing"
 
+	"github.com/ChainSafe/chainbridge-celo/validatorsync/mock"
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/suite"
 	"github.com/syndtr/goleveldb/leveldb"

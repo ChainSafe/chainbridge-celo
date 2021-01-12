@@ -3,13 +3,13 @@
 package validatorsync
 
 import (
-	"github.com/pkg/errors"
 	"math/big"
 
 	"github.com/celo-org/celo-bls-go/bls"
 	"github.com/ethereum/go-ethereum/consensus/istanbul"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/crypto/bls"
+	"github.com/pkg/errors"
 )
 
 var (
@@ -22,28 +22,22 @@ func applyValidatorsDiff(extra *types.IstanbulExtra, validators []*istanbul.Vali
 		addedValidators = append(addedValidators, &istanbul.ValidatorData{Address: addr, BLSPublicKey: extra.AddedValidatorsPublicKeys[i]})
 	}
 
-	for i := 0; i < extra.RemovedValidators.BitLen(); i++ {
-		if len(validators) <= i {
-			return nil, ErrorWrongInitialValidators
-		}
-		if bitSetToTrue(i, extra.RemovedValidators) {
-			validators[i] = nil
+	if extra.RemovedValidators.BitLen() > len(validators) {
+		return nil, ErrorWrongInitialValidators
+	}
+	var newValidators []*istanbul.ValidatorData
+	if extra.RemovedValidators.BitLen() == 0 {
+		newValidators = append(make([]*istanbul.ValidatorData, 0), validators...)
+	} else {
+		for i := 0; i < extra.RemovedValidators.BitLen(); i++ {
+			if extra.RemovedValidators.Bit(i) == 1 {
+				continue
+			}
+			newValidators = append(newValidators, validators[i])
 		}
 	}
-	validators = append(validators, addedValidators...)
-	newValidators := make([]*istanbul.ValidatorData, 0)
-	for _, v := range validators {
-		if v != nil {
-			newValidators = append(newValidators, v)
-		}
-	}
+	newValidators = append(newValidators, addedValidators...)
 	return newValidators, nil
-}
-
-func bitSetToTrue(index int, bits *big.Int) bool {
-	andY := big.NewInt(0).Exp(big.NewInt(2), big.NewInt(int64(index)), nil)
-	andRes := big.NewInt(0).And(bits, andY)
-	return andRes.Cmp(big.NewInt(0)) > 0
 }
 
 func aggregatePublicKeys(validators []*istanbul.ValidatorData) (*bls.PublicKey, error) {
@@ -68,4 +62,10 @@ func aggregatePublicKeys(validators []*istanbul.ValidatorData) (*bls.PublicKey, 
 	defer apk.Destroy()
 
 	return apk, nil
+}
+
+func defineBlocksEpochLastBlockNumber(block *big.Int, epochSize uint64) *big.Int {
+	epochNumber := istanbul.GetEpochNumber(block.Uint64(), epochSize)
+	lastBlock := istanbul.GetEpochLastBlockNumber(epochNumber, epochSize)
+	return big.NewInt(0).SetUint64(lastBlock)
 }

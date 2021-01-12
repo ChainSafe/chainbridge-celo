@@ -299,7 +299,7 @@ func (s *ListenerTestSuite) TestGetDepositEventsAndProofsForBlockerERC20() {
 
 	destID := msg.ChainId(logs[0].Topics[1].Big().Uint64())
 	pk := []byte{0x1f}
-	s.validatorsAggregatorMock.EXPECT().GetAggPKForBlock(gomock.Any(), gomock.Any()).Return([]byte{0x1f}, nil)
+	s.validatorsAggregatorMock.EXPECT().GetAggPKForBlock(gomock.Any(), gomock.Any(), gomock.Any()).Return([]byte{0x1f}, nil)
 
 	message := msg.NewFungibleTransfer(
 		listener.cfg.ID,
@@ -380,7 +380,7 @@ func (s *ListenerTestSuite) TestGetDepositEventsAndProofsForBlockerERC721() {
 
 	destID := msg.ChainId(logs[0].Topics[1].Big().Uint64())
 	pk := []byte{0x1f}
-	s.validatorsAggregatorMock.EXPECT().GetAggPKForBlock(gomock.Any(), gomock.Any()).Return(pk, nil)
+	s.validatorsAggregatorMock.EXPECT().GetAggPKForBlock(gomock.Any(), gomock.Any(), gomock.Any()).Return(pk, nil)
 	message := msg.NewNonFungibleTransfer(
 		listener.cfg.ID,
 		destID,
@@ -459,7 +459,7 @@ func (s *ListenerTestSuite) TestGetDepositEventsAndProofsForBlockerGeneric() {
 
 	destID := msg.ChainId(logs[0].Topics[1].Big().Uint64())
 	pk := []byte{0x1f}
-	s.validatorsAggregatorMock.EXPECT().GetAggPKForBlock(gomock.Any(), gomock.Any()).Return(pk, nil)
+	s.validatorsAggregatorMock.EXPECT().GetAggPKForBlock(gomock.Any(), gomock.Any(), gomock.Any()).Return(pk, nil)
 
 	message := msg.NewGenericTransfer(
 		listener.cfg.ID,
