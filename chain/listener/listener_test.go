@@ -269,6 +269,16 @@ func (s *ListenerTestSuite) TestGetDepositEventsAndProofsForBlockerERC20() {
 				crypto.Keccak256Hash(big.NewInt(1).Bytes()),
 			},
 			Data: []byte{},
+		}, {
+			Address: listener.cfg.Erc20HandlerContract,
+			// list of topics provided by the contract.
+			Topics: []common.Hash{
+				utils.Deposit.GetTopic(),
+				crypto.Keccak256Hash(big.NewInt(1).Bytes()),
+				address.Hash(),
+				crypto.Keccak256Hash(big.NewInt(1).Bytes()),
+			},
+			Data: []byte{},
 		},
 	}
 
@@ -303,6 +313,17 @@ func (s *ListenerTestSuite) TestGetDepositEventsAndProofsForBlockerERC20() {
 	)
 
 	s.routerMock.EXPECT().Send(message).Times(1).Return(nil)
+
+	transactions := GetTransactions()
+	txRoox, _ := GetTxRoot(transactions)
+
+	header := &types.Header{
+		TxHash: txRoox,
+	}
+
+	block := types.NewBlock(header, transactions, nil, nil)
+
+	s.clientMock.EXPECT().BlockByNumber(context.TODO(), gomock.Any()).Return(block, nil)
 
 	err := listener.getDepositEventsAndProofsForBlock(big.NewInt(112233))
 

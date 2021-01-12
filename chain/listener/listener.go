@@ -12,7 +12,6 @@ import (
 
 	"github.com/ChainSafe/chainbridge-celo/chain/client"
 	"github.com/ChainSafe/chainbridge-celo/chain/config"
-	celoTrie "github.com/ChainSafe/chainbridge-celo/chain/trie"
 	"github.com/ChainSafe/chainbridge-celo/msg"
 	utils "github.com/ChainSafe/chainbridge-celo/shared/ethereum"
 	eth "github.com/ethereum/go-ethereum"
@@ -176,11 +175,21 @@ func (l *listener) getDepositEventsAndProofsForBlock(latestBlock *big.Int) error
 		return nil
 	}
 
-	block, err := getBlock(logs[0].BlockNumber, l.client.BlockByNumber)
+	blockNumber := big.NewInt(int64(logs[0].BlockNumber))
+
+	block, err := l.client.BlockByNumber(context.Background(), blockNumber)
 
 	if err != nil {
 		return err
 	}
+
+	trie, db, err := getTrie(block.TxHash(), block.Transactions())
+
+	if err != nil {
+		return err
+	}
+
+	defer db.Close()
 
 	// read through the log events and handle their deposit event if handler is recognized
 	for _, eventLog := range logs {
@@ -210,9 +219,7 @@ func (l *listener) getDepositEventsAndProofsForBlock(latestBlock *big.Int) error
 			return err
 		}
 
-		celoTrie := celoTrie.NewCeloTrie()
-
-		proof, err := celoTrie.GetProof(block.TxHash(), block.Transactions(), eventLog.TxIndex)
+		proof, err := getTrieProof(block.TxHash(), trie, eventLog.TxIndex)
 
 		if err != nil {
 			return err
