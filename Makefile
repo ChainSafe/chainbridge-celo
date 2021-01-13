@@ -19,7 +19,9 @@ lint: $(GOLANGCI)
 	./bin/golangci-lint run ./... --timeout 5m0s
 
 test:
-	go test ./... 
+	go test -coverpkg=./... -coverprofile=cover.out -p=1 ./...
+	go tool cover -func cover.out | grep total | awk '{print $3}'
+
 
 test-cover:
 	go test -v -coverprofile=coverage.out ./...

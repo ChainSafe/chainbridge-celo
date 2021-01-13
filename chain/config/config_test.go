@@ -82,10 +82,6 @@ func TestParseConfig(t *testing.T) {
 		t.Errorf("expected %v got %v ", chainID, config.ID)
 	}
 
-	if config.ID != msg.ChainId(chainID) {
-		t.Errorf("expected %v got %v ", chainID, config.ID)
-	}
-
 	if config.MaxGasPrice.Int64() != int64(maxGasPrice) {
 		t.Errorf("expected %v got %v ", maxGasPrice, config.MaxGasPrice)
 	}
