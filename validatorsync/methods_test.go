@@ -91,10 +91,10 @@ func (s *WriterTestSuite) TestApplyValidatorsDiffWithRemovedOnEmptyVals() {
 }
 
 func (s *WriterTestSuite) TestDefineBlocksEpochLastBlockNumber() {
-	s.Equal(defineBlocksEpochLastBlockNumber(big.NewInt(0), 2335), big.NewInt(0))
+	s.Equal(computeLastBlockOfEpochForProvidedBlock(big.NewInt(0), 2335), big.NewInt(0))
 
-	s.Equal(defineBlocksEpochLastBlockNumber(big.NewInt(11), 12), big.NewInt(12))
+	s.Equal(computeLastBlockOfEpochForProvidedBlock(big.NewInt(11), 12), big.NewInt(12))
 
-	s.Equal(defineBlocksEpochLastBlockNumber(big.NewInt(251), 12), big.NewInt(252))
+	s.Equal(computeLastBlockOfEpochForProvidedBlock(big.NewInt(251), 12), big.NewInt(252))
 
 }

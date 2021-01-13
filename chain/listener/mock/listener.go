@@ -145,17 +145,17 @@ func (m *MockValidatorsAggregator) EXPECT() *MockValidatorsAggregatorMockRecorde
 	return m.recorder
 }
 
-// GetAggPKForBlock mocks base method
-func (m *MockValidatorsAggregator) GetAggPKForBlock(block *big.Int, chainID uint8, epochSize uint64) ([]byte, error) {
+// GetAPKForBlock mocks base method
+func (m *MockValidatorsAggregator) GetAPKForBlock(block *big.Int, chainID uint8, epochSize uint64) ([]byte, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetAggPKForBlock", block, chainID, epochSize)
+	ret := m.ctrl.Call(m, "GetAPKForBlock", block, chainID, epochSize)
 	ret0, _ := ret[0].([]byte)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
-// GetAggPKForBlock indicates an expected call of GetAggPKForBlock
-func (mr *MockValidatorsAggregatorMockRecorder) GetAggPKForBlock(block, chainID, epochSize interface{}) *gomock.Call {
+// GetAPKForBlock indicates an expected call of GetAPKForBlock
+func (mr *MockValidatorsAggregatorMockRecorder) GetAPKForBlock(block, chainID, epochSize interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAggPKForBlock", reflect.TypeOf((*MockValidatorsAggregator)(nil).GetAggPKForBlock), block, chainID, epochSize)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAPKForBlock", reflect.TypeOf((*MockValidatorsAggregator)(nil).GetAPKForBlock), block, chainID, epochSize)
 }

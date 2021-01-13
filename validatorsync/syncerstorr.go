@@ -15,7 +15,7 @@ import (
 )
 
 const (
-	latestKnowBlockKey = "latestKnownBlock"
+	latestKnownBlockKey = "latestKnownBlock"
 )
 
 func NewValidatorsStore(db *leveldb.DB) *ValidatorsStore {
@@ -34,7 +34,7 @@ func (db *ValidatorsStore) GetLatestKnownEpochLastBlock(chainID uint8) (*big.Int
 	if err != nil {
 		return nil, err
 	}
-	key.WriteString(latestKnowBlockKey)
+	key.WriteString(latestKnownBlockKey)
 	data, err := db.db.Get(key.Bytes(), nil)
 	if err != nil {
 		if errors.Is(err, leveldb.ErrNotFound) {
@@ -112,7 +112,7 @@ func (db *ValidatorsStore) setLatestKnownEpochLastBlockWithTransaction(block *bi
 	if err != nil {
 		return err
 	}
-	key.WriteString(latestKnowBlockKey)
+	key.WriteString(latestKnownBlockKey)
 	err = transaction.Put(key.Bytes(), block.Bytes(), nil)
 	if err != nil {
 		return err
@@ -122,8 +122,8 @@ func (db *ValidatorsStore) setLatestKnownEpochLastBlockWithTransaction(block *bi
 
 var ErrNoBlockInStore = errors.New("no corresponding validators for provided block number")
 
-func (db *ValidatorsStore) GetAggPKForBlock(block *big.Int, chainID uint8, epochSize uint64) ([]byte, error) {
-	vals, err := db.GetValidatorsForBlock(defineBlocksEpochLastBlockNumber(block, epochSize), chainID)
+func (db *ValidatorsStore) GetAPKForBlock(block *big.Int, chainID uint8, epochSize uint64) ([]byte, error) {
+	vals, err := db.GetValidatorsForBlock(computeLastBlockOfEpochForProvidedBlock(block, epochSize), chainID)
 	if err != nil {
 		if errors.Is(err, leveldb.ErrNotFound) {
 			return nil, ErrNoBlockInStore

@@ -64,7 +64,7 @@ func aggregatePublicKeys(validators []*istanbul.ValidatorData) (*bls.PublicKey, 
 	return apk, nil
 }
 
-func defineBlocksEpochLastBlockNumber(block *big.Int, epochSize uint64) *big.Int {
+func computeLastBlockOfEpochForProvidedBlock(block *big.Int, epochSize uint64) *big.Int {
 	epochNumber := istanbul.GetEpochNumber(block.Uint64(), epochSize)
 	lastBlock := istanbul.GetEpochLastBlockNumber(epochNumber, epochSize)
 	return big.NewInt(0).SetUint64(lastBlock)

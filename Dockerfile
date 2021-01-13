@@ -1,9 +1,9 @@
 # Copyright 2020 ChainSafe Systems
 # SPDX-License-Identifier: LGPL-3.0-only
 
-FROM  golang:1.15.6-alpine AS builder
+FROM golang:1.14-alpine as builder
 
-RUN apk add --no-cache make gcc musl-dev linux-headers git build-base
+RUN apk add --no-cache make gcc musl-dev linux-headers git
 
 ADD . /src
 
@@ -12,15 +12,11 @@ ENV GOPROXY=https://proxy.golang.org
 
 WORKDIR /src
 RUN go mod tidy
-RUN go build -o build/chainbridge-celo .
+RUN CGO_ENABLED=1 GOOS=linux go build -o build/chainbridge-celo .
 
 # # final stage
-FROM debian:stretch-slim
-RUN apt-get -y update && apt-get -y upgrade && apt-get install ca-certificates wget -y
-RUN wget -P /usr/local/bin/ https://chainbridge.ams3.digitaloceanspaces.com/subkey-rc6 \
-  && mv /usr/local/bin/subkey-rc6 /usr/local/bin/subkey \
-  && chmod +x /usr/local/bin/subkey
-RUN subkey --version
+FROM alpine
+RUN apk update && apk add ca-certificates && rm -rf /var/cache/apk/*
 
 COPY --from=builder /build ./
 RUN chmod +x ./build

@@ -58,12 +58,6 @@ func (s *ListenerTestSuite) SetupTest() {
 	s.erc20Handler = mock_listener.NewMockIERC20Handler(gomockController)
 	s.erc721Handler = mock_listener.NewMockIERC721Handler(gomockController)
 	s.genericHandler = mock_listener.NewMockIGenericHandler(gomockController)
-	//db, err := leveldb.OpenFile("./test/db", nil)
-	//if err != nil {
-	//	s.Fail(err.Error())
-	//}
-	//syncer := validatorsync.NewSyncerStorr(db)
-	//s.syncer = syncer
 	s.validatorsAggregatorMock = mock_listener.NewMockValidatorsAggregator(gomockController)
 }
 func (s *ListenerTestSuite) TearDownTest() {}
@@ -299,7 +293,7 @@ func (s *ListenerTestSuite) TestGetDepositEventsAndProofsForBlockerERC20() {
 
 	destID := msg.ChainId(logs[0].Topics[1].Big().Uint64())
 	pk := []byte{0x1f}
-	s.validatorsAggregatorMock.EXPECT().GetAggPKForBlock(gomock.Any(), gomock.Any(), gomock.Any()).Return([]byte{0x1f}, nil)
+	s.validatorsAggregatorMock.EXPECT().GetAPKForBlock(gomock.Any(), gomock.Any(), gomock.Any()).Return([]byte{0x1f}, nil)
 
 	message := msg.NewFungibleTransfer(
 		listener.cfg.ID,
@@ -380,7 +374,7 @@ func (s *ListenerTestSuite) TestGetDepositEventsAndProofsForBlockerERC721() {
 
 	destID := msg.ChainId(logs[0].Topics[1].Big().Uint64())
 	pk := []byte{0x1f}
-	s.validatorsAggregatorMock.EXPECT().GetAggPKForBlock(gomock.Any(), gomock.Any(), gomock.Any()).Return(pk, nil)
+	s.validatorsAggregatorMock.EXPECT().GetAPKForBlock(gomock.Any(), gomock.Any(), gomock.Any()).Return(pk, nil)
 	message := msg.NewNonFungibleTransfer(
 		listener.cfg.ID,
 		destID,
@@ -459,7 +453,7 @@ func (s *ListenerTestSuite) TestGetDepositEventsAndProofsForBlockerGeneric() {
 
 	destID := msg.ChainId(logs[0].Topics[1].Big().Uint64())
 	pk := []byte{0x1f}
-	s.validatorsAggregatorMock.EXPECT().GetAggPKForBlock(gomock.Any(), gomock.Any(), gomock.Any()).Return(pk, nil)
+	s.validatorsAggregatorMock.EXPECT().GetAPKForBlock(gomock.Any(), gomock.Any(), gomock.Any()).Return(pk, nil)
 
 	message := msg.NewGenericTransfer(
 		listener.cfg.ID,
