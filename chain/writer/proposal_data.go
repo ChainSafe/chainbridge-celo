@@ -51,7 +51,7 @@ func ConstructErc721ProposalData(tokenId []byte, recipient []byte, metadata []by
 func CreateProposalDataHash(data []byte, handler common.Address, mp *msg.MerkleProof, sv *msg.SignatureVerification) common.Hash {
 	b := bytes.NewBuffer(data)
 	b.Write(handler.Bytes())
-	b.Write(mp.RootHash[:])
+	b.Write(mp.TxRootHash[:])
 	b.Write(mp.Key)
 	b.Write(mp.Nodes)
 	b.Write(sv.AggregatePublicKey)

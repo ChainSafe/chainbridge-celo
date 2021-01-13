@@ -254,7 +254,7 @@ func (w *writer) executeProposal(m *msg.Message, data []byte, dataHash ethcommon
 				// TODO: Remove once G1 has been removed from contracts
 				[]byte{},
 				m.SVParams.BlockHash,
-				m.MPParams.RootHash,
+				m.MPParams.TxRootHash,
 				m.MPParams.Key,
 				m.MPParams.Nodes,
 			)
