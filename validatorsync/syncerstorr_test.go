@@ -3,8 +3,10 @@
 package validatorsync
 
 import (
+	"errors"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/consensus/istanbul"
+	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/ethereum/go-ethereum/crypto/bls"
 	"github.com/stretchr/testify/suite"
 	"github.com/syndtr/goleveldb/leveldb"
@@ -107,4 +109,43 @@ func (s *SyncerDBTestSuite) TestTestSetValidatorsForBlockForDifferentChains() {
 	s.Nil(err)
 	s.Equal(2, len(validators))
 	s.Equal(common.Address{0x3f}, validators[0].Address)
+}
+
+func (s *SyncerDBTestSuite) TestGetAPKForBlock() {
+	chainID := uint8(1)
+	startVals := make([]*istanbul.ValidatorData, 3)
+
+	testKey1, _ := crypto.HexToECDSA("b71c71a67e1177ad4e901695e1b4b9ee17ae16c6668d313eac2f96dbcda3f291")
+	testKey2, _ := crypto.HexToECDSA("b71c71a67e1177ad4e901695e1b4b9ee17ae16c6668d313eac2f96dbcda3f292")
+	testKey3, _ := crypto.HexToECDSA("b71c71a67e1177ad4e901695e1b4b9ee17ae16c6668d313eac2f96dbcda3f293")
+	blsPK1, _ := blscrypto.ECDSAToBLS(testKey1)
+	blsPK2, _ := blscrypto.ECDSAToBLS(testKey2)
+	blsPK3, _ := blscrypto.ECDSAToBLS(testKey3)
+	pubKey1, _ := blscrypto.PrivateToPublic(blsPK1)
+	pubKey2, _ := blscrypto.PrivateToPublic(blsPK2)
+	pubKey3, _ := blscrypto.PrivateToPublic(blsPK3)
+
+	startVals[0] = &istanbul.ValidatorData{Address: common.Address{0x0f}, BLSPublicKey: pubKey1}
+	startVals[1] = &istanbul.ValidatorData{Address: common.Address{0x1f}, BLSPublicKey: pubKey2}
+	startVals[2] = &istanbul.ValidatorData{Address: common.Address{0x2f}, BLSPublicKey: pubKey3}
+
+	err := s.syncer.SetValidatorsForBlock(big.NewInt(12), startVals, chainID)
+	s.Nil(err)
+	apk, err := s.syncer.GetAPKForBlock(big.NewInt(11), chainID, 12)
+	s.Nil(err)
+	s.NotNil(apk)
+}
+
+func (s *SyncerDBTestSuite) TestGetAPKForBlockNotExistsBlockErr() {
+	chainID := uint8(1)
+	startVals := make([]*istanbul.ValidatorData, 3)
+	startVals[0] = &istanbul.ValidatorData{Address: common.Address{0x0f}, BLSPublicKey: blscrypto.SerializedPublicKey{}}
+	startVals[1] = &istanbul.ValidatorData{Address: common.Address{0x1f}, BLSPublicKey: blscrypto.SerializedPublicKey{}}
+	startVals[2] = &istanbul.ValidatorData{Address: common.Address{0x2f}, BLSPublicKey: blscrypto.SerializedPublicKey{}}
+	err := s.syncer.SetValidatorsForBlock(big.NewInt(12), startVals, chainID)
+	s.Nil(err)
+	apk, err := s.syncer.GetAPKForBlock(big.NewInt(11), chainID, 13)
+	s.NotNil(err)
+	s.True(errors.Is(err, ErrNoBlockInStore))
+	s.Nil(apk)
 }
