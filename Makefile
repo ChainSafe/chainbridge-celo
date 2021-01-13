@@ -20,7 +20,8 @@ lint: $(GOLANGCI)
 
 test:
 	go test -coverpkg=./... -coverprofile=cover.out -p=1 ./...
-	go tool cover -func cover.out | grep total | awk '{print $3}'
+	cat cover.out | grep  -v 'generated\|bindata\|mock\|main.go\|bindings\|shared\|root.go' > filtered.cover.out
+	go tool cover -func filtered.cover.out | grep total | awk '{print $3}'
 
 
 test-cover:
