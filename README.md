@@ -37,9 +37,9 @@ A chain configurations take this form:
 
 See `config.json.example` for an example configuration.
 
-### Ethereum Options
+### Celo Options
 
-Ethereum chains support the following additional options:
+Celo chains support the following additional options:
 
 ```
 {
