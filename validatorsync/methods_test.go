@@ -6,6 +6,7 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/consensus/istanbul"
 	"github.com/ethereum/go-ethereum/core/types"
+	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/ethereum/go-ethereum/crypto/bls"
 	"math/big"
 	"testing"
@@ -97,4 +98,27 @@ func (s *WriterTestSuite) TestDefineBlocksEpochLastBlockNumber() {
 
 	s.Equal(computeLastBlockOfEpochForProvidedBlock(big.NewInt(251), 12), big.NewInt(252))
 
+}
+
+func (s *WriterTestSuite) TestAggregatePublicKeys() {
+	startVals := make([]*istanbul.ValidatorData, 3)
+	testKey1, _ := crypto.HexToECDSA("b71c71a67e1177ad4e901695e1b4b9ee17ae16c6668d313eac2f96dbcda3f291")
+	testKey2, _ := crypto.HexToECDSA("b71c71a67e1177ad4e901695e1b4b9ee17ae16c6668d313eac2f96dbcda3f292")
+	testKey3, _ := crypto.HexToECDSA("b71c71a67e1177ad4e901695e1b4b9ee17ae16c6668d313eac2f96dbcda3f293")
+	blsPK1, _ := blscrypto.ECDSAToBLS(testKey1)
+	blsPK2, _ := blscrypto.ECDSAToBLS(testKey2)
+	blsPK3, _ := blscrypto.ECDSAToBLS(testKey3)
+	pubKey1, _ := blscrypto.PrivateToPublic(blsPK1)
+	pubKey2, _ := blscrypto.PrivateToPublic(blsPK2)
+	pubKey3, _ := blscrypto.PrivateToPublic(blsPK3)
+
+	startVals[0] = &istanbul.ValidatorData{Address: common.Address{0x0f}, BLSPublicKey: pubKey1}
+	startVals[1] = &istanbul.ValidatorData{Address: common.Address{0x1f}, BLSPublicKey: pubKey2}
+	startVals[2] = &istanbul.ValidatorData{Address: common.Address{0x2f}, BLSPublicKey: pubKey3}
+	apk, err := aggregatePublicKeys(startVals)
+	s.Nil(err)
+	s.NotNil(apk)
+	// checking that function is clear
+	apk2, err := aggregatePublicKeys(startVals)
+	s.Equal(apk, apk2)
 }
