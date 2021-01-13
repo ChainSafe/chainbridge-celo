@@ -205,10 +205,7 @@ func (l *listener) getDepositEventsAndProofsForBlock(latestBlock *big.Int) error
 		if err != nil {
 			return err
 		}
-		if m.SVParams == nil {
-			m.SVParams = &msg.SignatureVerification{}
-		}
-		m.SVParams.AggregatePublicKey = pubKey
+		m.SVParams = &msg.SignatureVerification{AggregatePublicKey: pubKey}
 
 		err = l.router.Send(m)
 		if err != nil {
