@@ -71,6 +71,8 @@ genmocks:
 	mockgen -destination=./chain/writer/mock/writer.go -source=./chain/writer/writer.go
 	mockgen -destination=./chain/mock/chain.go -source=./chain/chain.go
 	mockgen -destination=./chain/client/mock/client.go -source=./chain/client/client.go
+	mockgen -destination=./validatorsync/mock/sync.go -source=./validatorsync/sync.go
+
 
 
 

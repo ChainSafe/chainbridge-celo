@@ -121,3 +121,41 @@ func (mr *MockBlockstorerMockRecorder) StoreBlock(arg0 interface{}) *gomock.Call
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "StoreBlock", reflect.TypeOf((*MockBlockstorer)(nil).StoreBlock), arg0)
 }
+
+// MockValidatorsAggregator is a mock of ValidatorsAggregator interface
+type MockValidatorsAggregator struct {
+	ctrl     *gomock.Controller
+	recorder *MockValidatorsAggregatorMockRecorder
+}
+
+// MockValidatorsAggregatorMockRecorder is the mock recorder for MockValidatorsAggregator
+type MockValidatorsAggregatorMockRecorder struct {
+	mock *MockValidatorsAggregator
+}
+
+// NewMockValidatorsAggregator creates a new mock instance
+func NewMockValidatorsAggregator(ctrl *gomock.Controller) *MockValidatorsAggregator {
+	mock := &MockValidatorsAggregator{ctrl: ctrl}
+	mock.recorder = &MockValidatorsAggregatorMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use
+func (m *MockValidatorsAggregator) EXPECT() *MockValidatorsAggregatorMockRecorder {
+	return m.recorder
+}
+
+// GetAPKForBlock mocks base method
+func (m *MockValidatorsAggregator) GetAPKForBlock(block *big.Int, chainID uint8, epochSize uint64) ([]byte, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetAPKForBlock", block, chainID, epochSize)
+	ret0, _ := ret[0].([]byte)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetAPKForBlock indicates an expected call of GetAPKForBlock
+func (mr *MockValidatorsAggregatorMockRecorder) GetAPKForBlock(block, chainID, epochSize interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAPKForBlock", reflect.TypeOf((*MockValidatorsAggregator)(nil).GetAPKForBlock), block, chainID, epochSize)
+}

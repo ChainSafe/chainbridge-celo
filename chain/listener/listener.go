@@ -13,7 +13,7 @@ import (
 	"github.com/ChainSafe/chainbridge-celo/chain/client"
 	"github.com/ChainSafe/chainbridge-celo/chain/config"
 	"github.com/ChainSafe/chainbridge-celo/msg"
-	utils "github.com/ChainSafe/chainbridge-celo/shared/ethereum"
+	"github.com/ChainSafe/chainbridge-celo/shared/ethereum"
 	eth "github.com/ethereum/go-ethereum"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	ethcommon "github.com/ethereum/go-ethereum/common"
@@ -39,7 +39,8 @@ type listener struct {
 	syncer                 BlockSyncer
 	//latestBlock            *metrics.LatestBlock
 	//metrics                *metrics.ChainMetrics
-	client client.LogFilterWithLatestBlock
+	client   client.LogFilterWithLatestBlock
+	valsAggr ValidatorsAggregator
 }
 
 type BlockSyncer interface {
@@ -53,7 +54,11 @@ type Blockstorer interface {
 	StoreBlock(*big.Int) error
 }
 
-func NewListener(cfg *config.CeloChainConfig, client client.LogFilterWithLatestBlock, bs Blockstorer, stop <-chan struct{}, sysErr chan<- error, syncer BlockSyncer, router IRouter) *listener {
+type ValidatorsAggregator interface {
+	GetAPKForBlock(block *big.Int, chainID uint8, epochSize uint64) ([]byte, error)
+}
+
+func NewListener(cfg *config.CeloChainConfig, client client.LogFilterWithLatestBlock, bs Blockstorer, stop <-chan struct{}, sysErr chan<- error, syncer BlockSyncer, router IRouter, valsAggr ValidatorsAggregator) *listener {
 	return &listener{
 		cfg:        cfg,
 		blockstore: bs,
@@ -62,6 +67,7 @@ func NewListener(cfg *config.CeloChainConfig, client client.LogFilterWithLatestB
 		syncer:     syncer,
 		router:     router,
 		client:     client,
+		valsAggr:   valsAggr,
 	}
 }
 
@@ -192,17 +198,20 @@ func (l *listener) getDepositEventsAndProofsForBlock(latestBlock *big.Int) error
 			log.Error().Err(err).Str("handler", addr.Hex()).Msg("event has unrecognized handler")
 			return nil
 		}
-
 		if err != nil {
 			return err
 		}
+		pubKey, err := l.valsAggr.GetAPKForBlock(latestBlock, uint8(l.cfg.ID), l.cfg.EpochSize)
+		if err != nil {
+			return err
+		}
+		m.SVParams = &msg.SignatureVerification{AggregatePublicKey: pubKey}
 
 		err = l.router.Send(m)
 		if err != nil {
 			log.Error().Err(err).Msg("subscription error: failed to route message")
 		}
 	}
-
 	return nil
 }
 
