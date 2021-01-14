@@ -299,9 +299,9 @@ func (s *WriterTestSuite) TestExecuteProposalNonceTooLowError() {
 	}
 
 	mp := &msg.MerkleProof{
-		RootHash: common.Hash{},
-		Key:      []byte{},
-		Nodes:    []byte{},
+		TxRootHash: common.Hash{},
+		Key:        []byte{},
+		Nodes:      []byte{},
 	}
 
 	message := message.NewFungibleTransfer(message.ChainId(1), 0, message.Nonce(555), [32]byte{1}, mp, sig, big.NewInt(10), make([]byte, 32))
@@ -358,9 +358,9 @@ func (s *WriterTestSuite) TestExecuteProposalCompleted() {
 	}
 
 	mp := &msg.MerkleProof{
-		RootHash: common.Hash{},
-		Key:      []byte{},
-		Nodes:    []byte{},
+		TxRootHash: common.Hash{},
+		Key:        []byte{},
+		Nodes:      []byte{},
 	}
 
 	message := message.NewFungibleTransfer(message.ChainId(1), 0, message.Nonce(555), [32]byte{1}, mp, sig, big.NewInt(10), make([]byte, 32))
@@ -417,9 +417,9 @@ func (s *WriterTestSuite) TestExecuteProposalProposalIsFinalizedError() {
 	}
 
 	mp := &msg.MerkleProof{
-		RootHash: common.Hash{},
-		Key:      []byte{},
-		Nodes:    []byte{},
+		TxRootHash: common.Hash{},
+		Key:        []byte{},
+		Nodes:      []byte{},
 	}
 
 	message := message.NewFungibleTransfer(message.ChainId(1), 0, message.Nonce(555), [32]byte{1}, mp, sig, big.NewInt(10), make([]byte, 32))
@@ -476,9 +476,9 @@ func (s *WriterTestSuite) TestExecuteProposalProposalStatusTransferred() {
 	}
 
 	mp := &msg.MerkleProof{
-		RootHash: common.Hash{},
-		Key:      []byte{},
-		Nodes:    []byte{},
+		TxRootHash: common.Hash{},
+		Key:        []byte{},
+		Nodes:      []byte{},
 	}
 
 	message := message.NewFungibleTransfer(message.ChainId(1), 0, message.Nonce(555), [32]byte{1}, mp, sig, big.NewInt(10), make([]byte, 32))
@@ -535,9 +535,9 @@ func (s *WriterTestSuite) TestExecuteProposalProposalStatusCancelled() {
 	}
 
 	mp := &msg.MerkleProof{
-		RootHash: common.Hash{},
-		Key:      []byte{},
-		Nodes:    []byte{},
+		TxRootHash: common.Hash{},
+		Key:        []byte{},
+		Nodes:      []byte{},
 	}
 
 	message := message.NewFungibleTransfer(message.ChainId(1), 0, message.Nonce(555), [32]byte{1}, mp, sig, big.NewInt(10), make([]byte, 32))

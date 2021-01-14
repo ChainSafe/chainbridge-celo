@@ -16,10 +16,7 @@ import (
 	"github.com/ChainSafe/chainbridge-celo/shared/ethereum"
 	eth "github.com/ethereum/go-ethereum"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
-	"github.com/ethereum/go-ethereum/common"
 	ethcommon "github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/core/types"
-	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/rs/zerolog/log"
 )
 
@@ -208,40 +205,20 @@ func (l *listener) getDepositEventsAndProofsForBlock(latestBlock *big.Int) error
 		if err != nil {
 			return err
 		}
-		m.SVParams = &msg.SignatureVerification{AggregatePublicKey: pubKey}
+		block, err := l.client.BlockByNumber(context.Background(), latestBlock)
+		if err != nil {
+			return err
+		}
 
-		//if m.SVParams == nil {
-		//	m.SVParams = &msg.SignatureVerification{}
-		//}
-		//if m.MPParams == nil {
-		//	m.MPParams = &msg.MerkleProof{}
-		//}
-		//m.SVParams.BlockHash =
-		//m.SVParams.Signature =
-		//m.MPParams.TxRootHash =
+		m.SVParams = &msg.SignatureVerification{AggregatePublicKey: pubKey, BlockHash: block.Header().Hash(), Signature: block.EpochSnarkData().Signature}
+		m.MPParams = &msg.MerkleProof{TxRootHash: block.TxHash()}
+
 		err = l.router.Send(m)
 		if err != nil {
 			log.Error().Err(err).Msg("subscription error: failed to route message")
 		}
 	}
 	return nil
-}
-
-func GetBlockParams(block *big.Int, chainClient *ethclient.Client) error {
-	header, err := chainClient.HeaderByNumber(context.Background(), block)
-	if err != nil {
-		return err
-	}
-	extra, err := types.ExtractIstanbulExtra(header)
-	if err != nil {
-		return err
-	}
-	var BlockHash common.Hash
-	var Signature []byte
-	var TxRootHash common.Hash
-	TxRootHash = header.TxHash
-	BlockHash = header.Hash()
-	Signature =
 }
 
 //TODO removenolint

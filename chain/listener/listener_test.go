@@ -62,6 +62,19 @@ func (s *ListenerTestSuite) SetupTest() {
 }
 func (s *ListenerTestSuite) TearDownTest() {}
 
+func dummyBlock(number int64) *types.Block {
+	header := &types.Header{
+		Number:  big.NewInt(number),
+		GasUsed: 123213,
+		Time:    100,
+		Extra:   []byte{01, 02},
+	}
+	feeCurrencyAddr := common.HexToAddress("02")
+	gatewayFeeRecipientAddr := common.HexToAddress("03")
+	tx := types.NewTransaction(1, common.HexToAddress("01"), big.NewInt(1), 10000, big.NewInt(10), &feeCurrencyAddr, &gatewayFeeRecipientAddr, big.NewInt(34), []byte{04})
+	return types.NewBlock(header, []*types.Transaction{tx}, nil, nil)
+}
+
 func (s *ListenerTestSuite) TestListenerStartStop() {
 	stopChn := make(chan struct{})
 	errChn := make(chan error)
@@ -294,15 +307,21 @@ func (s *ListenerTestSuite) TestGetDepositEventsAndProofsForBlockerERC20() {
 	destID := msg.ChainId(logs[0].Topics[1].Big().Uint64())
 	pk := []byte{0x1f}
 	s.validatorsAggregatorMock.EXPECT().GetAPKForBlock(gomock.Any(), gomock.Any(), gomock.Any()).Return([]byte{0x1f}, nil)
+	block := dummyBlock(123)
+	s.clientMock.EXPECT().BlockByNumber(gomock.Any(), gomock.Any()).Return(block, nil)
 
 	message := msg.NewFungibleTransfer(
 		listener.cfg.ID,
 		destID,
 		nonce,
 		prop.ResourceID,
-		nil,
+		&msg.MerkleProof{
+			TxRootHash: block.TxHash(),
+		},
 		&msg.SignatureVerification{
 			AggregatePublicKey: pk,
+			BlockHash:          block.Header().Hash(),
+			Signature:          block.EpochSnarkData().Signature,
 		},
 		prop.Amount,
 		prop.DestinationRecipientAddress,
@@ -375,14 +394,20 @@ func (s *ListenerTestSuite) TestGetDepositEventsAndProofsForBlockerERC721() {
 	destID := msg.ChainId(logs[0].Topics[1].Big().Uint64())
 	pk := []byte{0x1f}
 	s.validatorsAggregatorMock.EXPECT().GetAPKForBlock(gomock.Any(), gomock.Any(), gomock.Any()).Return(pk, nil)
+	block := dummyBlock(123)
+	s.clientMock.EXPECT().BlockByNumber(gomock.Any(), gomock.Any()).Return(block, nil)
 	message := msg.NewNonFungibleTransfer(
 		listener.cfg.ID,
 		destID,
 		nonce,
 		prop.ResourceID,
-		nil,
+		&msg.MerkleProof{
+			TxRootHash: block.TxHash(),
+		},
 		&msg.SignatureVerification{
 			AggregatePublicKey: pk,
+			BlockHash:          block.Header().Hash(),
+			Signature:          block.EpochSnarkData().Signature,
 		},
 		prop.TokenID,
 		prop.DestinationRecipientAddress,
@@ -454,15 +479,20 @@ func (s *ListenerTestSuite) TestGetDepositEventsAndProofsForBlockerGeneric() {
 	destID := msg.ChainId(logs[0].Topics[1].Big().Uint64())
 	pk := []byte{0x1f}
 	s.validatorsAggregatorMock.EXPECT().GetAPKForBlock(gomock.Any(), gomock.Any(), gomock.Any()).Return(pk, nil)
-
+	block := dummyBlock(123)
+	s.clientMock.EXPECT().BlockByNumber(gomock.Any(), gomock.Any()).Return(block, nil)
 	message := msg.NewGenericTransfer(
 		listener.cfg.ID,
 		destID,
 		nonce,
 		prop.ResourceID,
-		nil,
+		&msg.MerkleProof{
+			TxRootHash: block.TxHash(),
+		},
 		&msg.SignatureVerification{
 			AggregatePublicKey: pk,
+			BlockHash:          block.Header().Hash(),
+			Signature:          block.EpochSnarkData().Signature,
 		},
 		prop.MetaData,
 	)

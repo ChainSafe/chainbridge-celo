@@ -45,6 +45,7 @@ type Client struct {
 type LogFilterWithLatestBlock interface {
 	FilterLogs(ctx context.Context, q eth.FilterQuery) ([]types.Log, error)
 	LatestBlock() (*big.Int, error)
+	BlockByNumber(ctx context.Context, number *big.Int) (*types.Block, error)
 }
 
 // NewConnection returns an uninitialized connection, must call Client.Connect() before using.

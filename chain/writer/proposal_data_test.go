@@ -17,9 +17,9 @@ func TestCreateProposalDataHash(t *testing.T) {
 	data := []byte{}
 
 	mp := &msg.MerkleProof{
-		RootHash: common.BytesToHash([]byte{1, 2, 3}),
-		Key:      []byte{12, 3, 4},
-		Nodes:    []byte{1, 2, 3},
+		TxRootHash: common.BytesToHash([]byte{1, 2, 3}),
+		Key:        []byte{12, 3, 4},
+		Nodes:      []byte{1, 2, 3},
 	}
 
 	sv := &msg.SignatureVerification{
@@ -30,7 +30,7 @@ func TestCreateProposalDataHash(t *testing.T) {
 
 	b := bytes.NewBuffer(data)
 	b.Write(handler.Bytes())
-	b.Write(mp.RootHash[:])
+	b.Write(mp.TxRootHash[:])
 	b.Write(mp.Key)
 	b.Write(mp.Nodes)
 	b.Write(sv.AggregatePublicKey)
