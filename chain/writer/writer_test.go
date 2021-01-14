@@ -3,19 +3,19 @@
 package writer
 
 import (
-	"github.com/ChainSafe/chainbridge-celo/chain/config"
-	"github.com/pkg/errors"
 	"math/big"
 	"testing"
 	"time"
 
 	"github.com/ChainSafe/chainbridge-celo/bindings/Bridge"
+	"github.com/ChainSafe/chainbridge-celo/chain/config"
 	"github.com/ChainSafe/chainbridge-celo/chain/writer/mock"
 	message "github.com/ChainSafe/chainbridge-celo/msg"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/golang/mock/gomock"
+	"github.com/pkg/errors"
 	"github.com/stretchr/testify/suite"
 )
 

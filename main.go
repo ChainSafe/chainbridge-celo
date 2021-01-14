@@ -3,6 +3,7 @@
 package main
 
 import (
+	"github.com/ChainSafe/chainbridge-celo/shared/testutils"
 	"os"
 
 	"github.com/ChainSafe/chainbridge-celo/cmd"
@@ -79,6 +80,13 @@ var accountCommand = cli.Command{
 	},
 }
 
+// TODO: organize to subcommands under test command
+var validatorsSyncerCommands = cli.Command{
+	Name:   "syncer",
+	Action: testutils.Sync,
+	Flags:  append(cliFlags, devFlags...),
+}
+
 // init initializes CLI
 func init() {
 	app.Action = cmd.Run
@@ -90,6 +98,7 @@ func init() {
 	app.EnableBashCompletion = true
 	app.Commands = []*cli.Command{
 		&accountCommand,
+		&validatorsSyncerCommands,
 	}
 
 	app.Flags = append(app.Flags, cliFlags...)
