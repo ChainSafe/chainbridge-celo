@@ -14,6 +14,8 @@ github.com/Azure/go-autorest/logger v0.1.0/go.mod h1:oExouG+K6PryycPJfVSxi/koC6L
 github.com/Azure/go-autorest/tracing v0.5.0/go.mod h1:r/s2XiOKccPW3HrqB+W0TQzfbtp2fGCgRFtBroKn4Dk=
 github.com/BurntSushi/toml v0.3.1/go.mod h1:xHWCNGjB5oqiDr8zfno3MHue2Ht5sIBksp03qcyfWMU=
 github.com/BurntSushi/xgb v0.0.0-20160522181843-27f122750802/go.mod h1:IVnqGOEym/WlBOVXweHU+Q+/VP0lqqI8lqeDx9IjBqo=
+github.com/ChainSafe/chainbridge-ethereum-trie v0.0.0-20201207143128-d0f11e9efefc h1:bYuajU8B8cUtzvIyDIQNdWwzp3q9uQoaMZwKIXsjdwU=
+github.com/ChainSafe/chainbridge-ethereum-trie v0.0.0-20201207143128-d0f11e9efefc/go.mod h1:QWp/kFXx9AI69C+bojikhCjWvxd1f7GKdmn6GtNwxEc=
 github.com/ChainSafe/chainbridge-utils v1.0.3 h1:a8pa5N11uo2wzgzNV9QkSocFrbkO+HiWCiihKDnkuAg=
 github.com/ChainSafe/chainbridge-utils v1.0.3/go.mod h1:T5cOZhxdY4x0DrE0EqOnMwAPE8d4bNGqiPfN16o1rzc=
 github.com/ChainSafe/log15 v1.0.0 h1:vRDVtWtVwIH5uSCBvgTTZh6FA58UBJ6+QiiypaZfBf8=

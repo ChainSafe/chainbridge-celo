@@ -3,6 +3,9 @@
 package cmd
 
 import (
+	"github.com/ChainSafe/chainbridge-celo/flags"
+	"github.com/ChainSafe/chainbridge-celo/validatorsync"
+	"github.com/syndtr/goleveldb/leveldb"
 	"os"
 	"os/signal"
 	"syscall"
@@ -30,6 +33,14 @@ func Run(ctx *cli.Context) error {
 	errChn := make(chan error)
 	stopChn := make(chan struct{})
 	r := router.NewRouter()
+	pathToDB := ctx.String(flags.LevelDBPath.Name)
+	ldb, err := leveldb.OpenFile(pathToDB, nil)
+	if err != nil {
+		return err
+	}
+	validatorsStore := validatorsync.NewValidatorsStore(ldb)
+	defer validatorsStore.Close()
+
 	for _, c := range startConfig.Chains {
 		celoChainConfig, err := config.ParseChainConfig(&c, ctx)
 		if err != nil {
@@ -50,11 +61,10 @@ func Run(ctx *cli.Context) error {
 		if err != nil {
 			return err
 		}
-		// TODO  ValidatorSyncer
 		// TODO ChainMetrics
 		w := writer.NewWriter(chainClient, celoChainConfig, stopChn, errChn, nil)
 		r.Register(celoChainConfig.ID, w)
-		l := listener.NewListener(celoChainConfig, chainClient, bdb, stopChn, errChn, nil, r)
+		l := listener.NewListener(celoChainConfig, chainClient, bdb, stopChn, errChn, nil, r, validatorsStore)
 		newChain, err := chain.InitializeChain(celoChainConfig, chainClient, l, w, stopChn)
 		if err != nil {
 			return err
@@ -64,8 +74,9 @@ func Run(ctx *cli.Context) error {
 			log.Error().Interface("chain", newChain.ID()).Err(err).Msg("failed to start chain")
 			return err
 		}
-
+		go validatorsync.SyncBlockValidators(stopChn, errChn, chainClient, validatorsStore, uint8(celoChainConfig.ID), celoChainConfig.EpochSize)
 	}
+
 	sysErr := make(chan os.Signal, 1)
 	signal.Notify(sysErr,
 		syscall.SIGTERM,
