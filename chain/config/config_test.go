@@ -59,6 +59,7 @@ func TestParseConfig(t *testing.T) {
 			"gasLimit":       gasLimitStr,
 			"http":           http,
 			"startBlock":     startBlockStr,
+			"epochSize":      "12",
 		},
 	}
 
@@ -204,6 +205,7 @@ func TestParseConfigNoBridgeContract(t *testing.T) {
 			"gasLimit":       gasLimitStr,
 			"http":           http,
 			"startBlock":     startBlockStr,
+			"epochSize":      "12",
 		},
 	}
 
@@ -238,6 +240,7 @@ func TestParseConfigInvalidMaxGasPrice(t *testing.T) {
 			"gasLimit":       "3000",
 			"http":           "http://localhost:8080",
 			"startBlock":     "1",
+			"epochSize":      "12",
 		},
 	}
 
@@ -272,6 +275,7 @@ func TestParseConfigInvalidGasLimit(t *testing.T) {
 			"gasLimit":       gasLimit,
 			"http":           "http://localhost:8080",
 			"startBlock":     "1",
+			"epochSize":      "12",
 		},
 	}
 
@@ -306,6 +310,7 @@ func TestParseConfigInvalidStartBlock(t *testing.T) {
 			"gasLimit":       "210000",
 			"http":           "http://localhost:8080",
 			"startBlock":     startBlock,
+			"epochSize":      "12",
 		},
 	}
 
@@ -339,6 +344,7 @@ func TestParseConfigHttpFalseIsSet(t *testing.T) {
 			"gasLimit":       "30000",
 			"http":           http,
 			"startBlock":     "30000",
+			"epochSize":      "12",
 		},
 	}
 
@@ -375,6 +381,7 @@ func TestParseConfigInsecureKeyIsSetTrue(t *testing.T) {
 			"gasLimit":       "30000",
 			"http":           "false",
 			"startBlock":     "30000",
+			"epochSize":      "12",
 		},
 	}
 
@@ -414,6 +421,7 @@ func TestParseConfigInsecureKeyIsSetFalse(t *testing.T) {
 			"gasLimit":       "30000",
 			"http":           http,
 			"startBlock":     "30000",
+			"epochSize":      "12",
 		},
 	}
 
