@@ -120,5 +120,6 @@ func (s *WriterTestSuite) TestAggregatePublicKeys() {
 	s.NotNil(apk)
 	// checking that function is clear
 	apk2, err := aggregatePublicKeys(startVals)
+	s.Nil(err)
 	s.Equal(apk, apk2)
 }

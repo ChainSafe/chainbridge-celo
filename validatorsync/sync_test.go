@@ -107,10 +107,11 @@ func (s *SyncTestSuite) TestStoreBlockValidatorsWIthEmptyDB() {
 	SyncBlockValidators(stopChn, errChn, s.client, s.store, chainID, 12)
 
 	vals, err := s.store.GetValidatorsForBlock(big.NewInt(0), chainID)
+	s.Nil(err)
 	vals2, err := s.store.GetValidatorsForBlock(big.NewInt(12), chainID)
-
+	s.Nil(err)
 	vals4, err := s.store.GetValidatorsForBlock(big.NewInt(24), chainID)
-
+	s.Nil(err)
 	// zero epoch (2 validators
 	s.Equal(2, len(vals))
 
