@@ -152,6 +152,21 @@ func (mr *MockContractCallerMockRecorder) LatestBlock() *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "LatestBlock", reflect.TypeOf((*MockContractCaller)(nil).LatestBlock))
 }
 
+// BlockByNumber mocks base method
+func (m *MockContractCaller) BlockByNumber(ctx context.Context, number *big.Int) (*types.Block, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "BlockByNumber", ctx, number)
+	ret0, _ := ret[0].(*types.Block)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// BlockByNumber indicates an expected call of BlockByNumber
+func (mr *MockContractCallerMockRecorder) BlockByNumber(ctx, number interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "BlockByNumber", reflect.TypeOf((*MockContractCaller)(nil).BlockByNumber), ctx, number)
+}
+
 // CallOpts mocks base method
 func (m *MockContractCaller) CallOpts() *bind.CallOpts {
 	m.ctrl.T.Helper()

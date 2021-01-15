@@ -205,7 +205,13 @@ func (l *listener) getDepositEventsAndProofsForBlock(latestBlock *big.Int) error
 		if err != nil {
 			return err
 		}
-		m.SVParams = &msg.SignatureVerification{AggregatePublicKey: pubKey}
+		block, err := l.client.BlockByNumber(context.Background(), latestBlock)
+		if err != nil {
+			return err
+		}
+
+		m.SVParams = &msg.SignatureVerification{AggregatePublicKey: pubKey, BlockHash: block.Header().Hash(), Signature: block.EpochSnarkData().Signature}
+		m.MPParams = &msg.MerkleProof{TxRootHash: block.TxHash()}
 
 		err = l.router.Send(m)
 		if err != nil {
