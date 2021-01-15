@@ -4,32 +4,20 @@ import (
 	"github.com/ChainSafe/chainbridge-ethereum-trie/txtrie"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
-	"github.com/ethereum/go-ethereum/ethdb/leveldb"
 	"github.com/ethereum/go-ethereum/rlp"
 )
 
-const (
-	size   = 1
-	dbPath = "./trie-database"
-)
+func getTrie(txtRootHash common.Hash, transactions types.Transactions) (*txtrie.TxTries, error) {
 
-func getTrie(txtRootHash common.Hash, transactions types.Transactions) (*txtrie.TxTries, *leveldb.Database, error) {
+	tries := txtrie.NewTxTries()
 
-	tries := txtrie.NewTxTries(size)
-
-	db, err := getDb()
+	err := tries.CreateNewTrie(txtRootHash, transactions)
 
 	if err != nil {
-		return nil, nil, err
+		return nil, err
 	}
 
-	err = tries.AddNewTrie(txtRootHash, transactions, db)
-
-	if err != nil {
-		return nil, nil, err
-	}
-
-	return tries, db, nil
+	return tries, nil
 }
 
 func getTrieProof(txtRootHash common.Hash, tries *txtrie.TxTries, key uint) ([]byte, error) {
@@ -48,13 +36,4 @@ func getTrieProof(txtRootHash common.Hash, tries *txtrie.TxTries, key uint) ([]b
 
 	return proof, nil
 
-}
-
-func getDb() (*leveldb.Database, error) {
-
-	diskdb, err := leveldb.New(dbPath, 256, 0, "")
-	if err != nil {
-		return nil, err
-	}
-	return diskdb, nil
 }

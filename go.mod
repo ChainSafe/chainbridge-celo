@@ -10,7 +10,7 @@ require (
 	github.com/ChainSafe/chainbridge-ethereum-trie v0.0.0-20210112124933-e83f68cceafb
 	github.com/ChainSafe/chainbridge-utils v1.0.6
 	github.com/celo-org/celo-bls-go v0.1.4
-	github.com/ethereum/go-ethereum v1.9.17
+	github.com/ethereum/go-ethereum v1.9.24
 	github.com/golang/mock v1.1.1
 	github.com/pkg/errors v0.9.1
 	github.com/rs/zerolog v1.20.0
@@ -19,3 +19,5 @@ require (
 	github.com/urfave/cli/v2 v2.3.0
 	golang.org/x/net v0.0.0-20190628185345-da137c7871d7
 )
+
+replace github.com/ChainSafe/chainbridge-ethereum-trie v0.0.0-20210112124933-e83f68cceafb => /var/www/ChainSafe/chainbridge-ethereum-trie
