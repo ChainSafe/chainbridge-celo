@@ -7,6 +7,8 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/ChainSafe/chainbridge-ethereum-trie/txtrie"
+	"github.com/ethereum/go-ethereum/rlp"
 	"math/big"
 	"time"
 
@@ -175,19 +177,17 @@ func (l *listener) getDepositEventsAndProofsForBlock(latestBlock *big.Int) error
 	if err != nil {
 		return fmt.Errorf("unable to Filter Logs: %w", err)
 	}
-
 	if len(logs) == 0 {
 		return nil
 	}
 
 	blockData, err := l.client.BlockByNumber(context.Background(), latestBlock)
-
 	if err != nil {
 		return err
 	}
 
-	trie, err := getTrie(blockData.TxHash(), blockData.Transactions())
-
+	trie := txtrie.NewTxTries()
+	err = trie.CreateNewTrie(blockData.TxHash(), blockData.Transactions())
 	if err != nil {
 		return err
 	}
@@ -222,14 +222,24 @@ func (l *listener) getDepositEventsAndProofsForBlock(latestBlock *big.Int) error
 			return err
 		}
 
-		proof, err := getTrieProof(blockData.TxHash(), trie, eventLog.TxIndex)
+		keyRlp, err := rlp.EncodeToBytes(eventLog.TxIndex)
+
+		if err != nil {
+			return err
+		}
+
+		proof, err := trie.RetrieveEncodedProof(blockData.TxHash(), keyRlp)
+
+		if err != nil {
+			return err
+		}
 
 		if err != nil {
 			return err
 		}
 
 		m.SVParams = &msg.SignatureVerification{AggregatePublicKey: pubKey, BlockHash: blockData.Header().Hash(), Signature: blockData.EpochSnarkData().Signature}
-		m.MPParams = &msg.MerkleProof{TxRootHash: blockData.TxHash(), Nodes: proof}
+		m.MPParams = &msg.MerkleProof{TxRootHash: blockData.TxHash(), Nodes: proof, Key: keyRlp}
 		err = l.router.Send(m)
 
 		if err != nil {
