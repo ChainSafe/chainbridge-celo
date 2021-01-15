@@ -2,4 +2,8 @@
 /bin
 /build
 /solidity
-coverage.out
+.vscode
+
+
+# Output of the go coverage tool, specifically when used with LiteIDE
+*.out

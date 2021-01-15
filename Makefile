@@ -19,7 +19,16 @@ lint: $(GOLANGCI)
 	./bin/golangci-lint run ./... --timeout 5m0s
 
 test:
-	go test ./...
+	go test -coverpkg=./... -coverprofile=cover.out -p=1 ./...
+	cat cover.out | grep  -v 'generated\|bindata\|mock\|main.go\|bindings\|shared\|root.go' > filtered.cover.out
+	go tool cover -func filtered.cover.out | grep total | awk '{print $3}'
+
+
+test-cover:
+	go test -v -coverprofile=coverage.out ./...
+	go tool cover -func=coverage.out
+	go tool cover -html=coverage.out
+
 
 docker:
 	docker-compose -f ./docker-compose-chains.yml up -V
@@ -62,6 +71,8 @@ genmocks:
 	mockgen -destination=./chain/writer/mock/writer.go -source=./chain/writer/writer.go
 	mockgen -destination=./chain/mock/chain.go -source=./chain/chain.go
 	mockgen -destination=./chain/client/mock/client.go -source=./chain/client/client.go
+	mockgen -destination=./validatorsync/mock/sync.go -source=./validatorsync/sync.go
+
 
 
 

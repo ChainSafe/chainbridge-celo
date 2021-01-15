@@ -5,8 +5,9 @@ package msg
 
 import (
 	"fmt"
-	"github.com/ethereum/go-ethereum/common"
 	"math/big"
+
+	"github.com/ethereum/go-ethereum/common"
 )
 
 type ChainId uint8
@@ -40,9 +41,9 @@ type Message struct {
 }
 
 type MerkleProof struct {
-	RootHash common.Hash // Expected root of trie, in our case should be transactionsRoot from block
-	Key      []byte      // RLP encoding of tx index, for the tx we want to prove
-	Nodes    []byte      // The actual proof, all the nodes of the trie that between leaf value and root
+	TxRootHash common.Hash // Expected root of trie, in our case should be transactionsRoot from block
+	Key        []byte      // RLP encoding of tx index, for the tx we want to prove
+	Nodes      []byte      // The actual proof, all the nodes of the trie that between leaf value and root
 }
 
 type SignatureVerification struct {
@@ -58,8 +59,8 @@ func NewFungibleTransfer(source, dest ChainId, nonce Nonce, resourceId ResourceI
 		Type:         FungibleTransfer,
 		DepositNonce: nonce,
 		ResourceId:   resourceId,
-		MPParams: mp,
-		SVParams: sv,
+		MPParams:     mp,
+		SVParams:     sv,
 		Payload: []interface{}{
 			amount.Bytes(),
 			recipient,
@@ -74,8 +75,8 @@ func NewNonFungibleTransfer(source, dest ChainId, nonce Nonce, resourceId Resour
 		Type:         NonFungibleTransfer,
 		DepositNonce: nonce,
 		ResourceId:   resourceId,
-		MPParams: mp,
-		SVParams: sv,
+		MPParams:     mp,
+		SVParams:     sv,
 		Payload: []interface{}{
 			tokenId.Bytes(),
 			recipient,
@@ -84,15 +85,15 @@ func NewNonFungibleTransfer(source, dest ChainId, nonce Nonce, resourceId Resour
 	}
 }
 
-func NewGenericTransfer(source, dest ChainId, nonce Nonce, resourceId ResourceId, mp *MerkleProof, sv *SignatureVerification,metadata []byte) *Message {
+func NewGenericTransfer(source, dest ChainId, nonce Nonce, resourceId ResourceId, mp *MerkleProof, sv *SignatureVerification, metadata []byte) *Message {
 	return &Message{
 		Source:       source,
 		Destination:  dest,
 		Type:         GenericTransfer,
 		DepositNonce: nonce,
 		ResourceId:   resourceId,
-		MPParams: mp,
-		SVParams: sv,
+		MPParams:     mp,
+		SVParams:     sv,
 		Payload: []interface{}{
 			metadata,
 		},

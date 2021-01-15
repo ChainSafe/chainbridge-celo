@@ -6,10 +6,10 @@ import (
 	"math/big"
 	"testing"
 
-	mock_client "github.com/ChainSafe/chainbridge-celo/chain/client/mock"
+	"github.com/ChainSafe/chainbridge-celo/chain/client/mock"
 	"github.com/ChainSafe/chainbridge-celo/chain/config"
 	"github.com/ChainSafe/chainbridge-celo/msg"
-	utils "github.com/ChainSafe/chainbridge-celo/shared/ethereum"
+	"github.com/ChainSafe/chainbridge-celo/shared/ethereum"
 	eth "github.com/ethereum/go-ethereum"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
@@ -18,10 +18,10 @@ import (
 	"github.com/pkg/errors"
 	"golang.org/x/net/context"
 
-	ERC20Handler "github.com/ChainSafe/chainbridge-celo/bindings/ERC20Handler"
+	"github.com/ChainSafe/chainbridge-celo/bindings/ERC20Handler"
 	"github.com/ChainSafe/chainbridge-celo/bindings/ERC721Handler"
 	"github.com/ChainSafe/chainbridge-celo/bindings/GenericHandler"
-	mock_listener "github.com/ChainSafe/chainbridge-celo/chain/listener/mock"
+	"github.com/ChainSafe/chainbridge-celo/chain/listener/mock"
 	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/suite"
@@ -29,15 +29,16 @@ import (
 
 type ListenerTestSuite struct {
 	suite.Suite
-	syncerMock       *mock_listener.MockBlockSyncer
-	routerMock       *mock_listener.MockIRouter
-	clientMock       *mock_client.MockLogFilterWithLatestBlock
-	blockStorerMock  *mock_listener.MockBlockstorer
-	gomockController *gomock.Controller
-	bridge           *mock_listener.MockIBridge
-	erc20Handler     *mock_listener.MockIERC20Handler
-	erc721Handler    *mock_listener.MockIERC721Handler
-	genericHandler   *mock_listener.MockIGenericHandler
+	syncerMock               *mock_listener.MockBlockSyncer
+	routerMock               *mock_listener.MockIRouter
+	clientMock               *mock_client.MockLogFilterWithLatestBlock
+	blockStorerMock          *mock_listener.MockBlockstorer
+	gomockController         *gomock.Controller
+	bridge                   *mock_listener.MockIBridge
+	erc20Handler             *mock_listener.MockIERC20Handler
+	erc721Handler            *mock_listener.MockIERC721Handler
+	genericHandler           *mock_listener.MockIGenericHandler
+	validatorsAggregatorMock *mock_listener.MockValidatorsAggregator
 }
 
 func TestRunTestSuite(t *testing.T) {
@@ -57,14 +58,28 @@ func (s *ListenerTestSuite) SetupTest() {
 	s.erc20Handler = mock_listener.NewMockIERC20Handler(gomockController)
 	s.erc721Handler = mock_listener.NewMockIERC721Handler(gomockController)
 	s.genericHandler = mock_listener.NewMockIGenericHandler(gomockController)
+	s.validatorsAggregatorMock = mock_listener.NewMockValidatorsAggregator(gomockController)
 }
 func (s *ListenerTestSuite) TearDownTest() {}
+
+func dummyBlock(number int64) *types.Block {
+	header := &types.Header{
+		Number:  big.NewInt(number),
+		GasUsed: 123213,
+		Time:    100,
+		Extra:   []byte{01, 02},
+	}
+	feeCurrencyAddr := common.HexToAddress("02")
+	gatewayFeeRecipientAddr := common.HexToAddress("03")
+	tx := types.NewTransaction(1, common.HexToAddress("01"), big.NewInt(1), 10000, big.NewInt(10), &feeCurrencyAddr, &gatewayFeeRecipientAddr, big.NewInt(34), []byte{04})
+	return types.NewBlock(header, []*types.Transaction{tx}, nil, nil)
+}
 
 func (s *ListenerTestSuite) TestListenerStartStop() {
 	stopChn := make(chan struct{})
 	errChn := make(chan error)
 
-	l := NewListener(&config.CeloChainConfig{StartBlock: big.NewInt(1)}, s.clientMock, s.blockStorerMock, stopChn, errChn, s.syncerMock, s.routerMock)
+	l := NewListener(&config.CeloChainConfig{StartBlock: big.NewInt(1)}, s.clientMock, s.blockStorerMock, stopChn, errChn, s.syncerMock, s.routerMock, s.validatorsAggregatorMock)
 	close(stopChn)
 	s.NotNil(l.pollBlocks())
 }
@@ -73,7 +88,7 @@ func (s *ListenerTestSuite) TestLatestBlockUpdate() {
 	stopChn := make(chan struct{})
 	errChn := make(chan error)
 	cfg := &config.CeloChainConfig{StartBlock: big.NewInt(1), BridgeContract: common.Address{}}
-	l := NewListener(cfg, s.clientMock, s.blockStorerMock, stopChn, errChn, s.syncerMock, s.routerMock)
+	l := NewListener(cfg, s.clientMock, s.blockStorerMock, stopChn, errChn, s.syncerMock, s.routerMock, s.validatorsAggregatorMock)
 
 	s.clientMock.EXPECT().LatestBlock().Return(big.NewInt(555), nil)
 	s.syncerMock.EXPECT().Sync(gomock.Any()).Return(nil)
@@ -94,7 +109,7 @@ func (s *ListenerTestSuite) TestHandleErc20DepositedEventSucccess() {
 	stopChn := make(chan struct{})
 	errChn := make(chan error)
 	cfg := &config.CeloChainConfig{StartBlock: big.NewInt(1), BridgeContract: common.Address{}}
-	listener := NewListener(cfg, s.clientMock, s.blockStorerMock, stopChn, errChn, s.syncerMock, s.routerMock)
+	listener := NewListener(cfg, s.clientMock, s.blockStorerMock, stopChn, errChn, s.syncerMock, s.routerMock, s.validatorsAggregatorMock)
 
 	listener.SetContracts(s.bridge, s.erc20Handler, s.erc721Handler, s.genericHandler)
 
@@ -124,7 +139,7 @@ func (s *ListenerTestSuite) TestHandleErc20DepositedEventFailure() {
 	stopChn := make(chan struct{})
 	errChn := make(chan error)
 	cfg := &config.CeloChainConfig{StartBlock: big.NewInt(1), BridgeContract: common.Address{}}
-	listener := NewListener(cfg, s.clientMock, s.blockStorerMock, stopChn, errChn, s.syncerMock, s.routerMock)
+	listener := NewListener(cfg, s.clientMock, s.blockStorerMock, stopChn, errChn, s.syncerMock, s.routerMock, s.validatorsAggregatorMock)
 
 	listener.SetContracts(s.bridge, s.erc20Handler, s.erc721Handler, s.genericHandler)
 
@@ -142,7 +157,7 @@ func (s *ListenerTestSuite) TestHandleErc721DepositedEventSuccess() {
 	errChn := make(chan error)
 
 	cfg := &config.CeloChainConfig{StartBlock: big.NewInt(1), BridgeContract: common.Address{}}
-	listener := NewListener(cfg, s.clientMock, s.blockStorerMock, stopChn, errChn, s.syncerMock, s.routerMock)
+	listener := NewListener(cfg, s.clientMock, s.blockStorerMock, stopChn, errChn, s.syncerMock, s.routerMock, s.validatorsAggregatorMock)
 
 	listener.SetContracts(s.bridge, s.erc20Handler, s.erc721Handler, s.genericHandler)
 
@@ -174,7 +189,7 @@ func (s *ListenerTestSuite) TestHandleErc721DepositedEventFailure() {
 	errChn := make(chan error)
 
 	cfg := &config.CeloChainConfig{StartBlock: big.NewInt(1), BridgeContract: common.Address{}}
-	listener := NewListener(cfg, s.clientMock, s.blockStorerMock, stopChn, errChn, s.syncerMock, s.routerMock)
+	listener := NewListener(cfg, s.clientMock, s.blockStorerMock, stopChn, errChn, s.syncerMock, s.routerMock, s.validatorsAggregatorMock)
 
 	listener.SetContracts(s.bridge, s.erc20Handler, s.erc721Handler, s.genericHandler)
 
@@ -192,7 +207,7 @@ func (s *ListenerTestSuite) TestHandleGenericDepositedEventSuccess() {
 	errChn := make(chan error)
 
 	cfg := &config.CeloChainConfig{StartBlock: big.NewInt(1), BridgeContract: common.Address{}}
-	listener := NewListener(cfg, s.clientMock, s.blockStorerMock, stopChn, errChn, s.syncerMock, s.routerMock)
+	listener := NewListener(cfg, s.clientMock, s.blockStorerMock, stopChn, errChn, s.syncerMock, s.routerMock, s.validatorsAggregatorMock)
 
 	listener.SetContracts(s.bridge, s.erc20Handler, s.erc721Handler, s.genericHandler)
 
@@ -221,7 +236,7 @@ func (s *ListenerTestSuite) TestHandleGenericDepositedEventFailure() {
 	errChn := make(chan error)
 
 	cfg := &config.CeloChainConfig{StartBlock: big.NewInt(1), BridgeContract: common.Address{}}
-	listener := NewListener(cfg, s.clientMock, s.blockStorerMock, stopChn, errChn, s.syncerMock, s.routerMock)
+	listener := NewListener(cfg, s.clientMock, s.blockStorerMock, stopChn, errChn, s.syncerMock, s.routerMock, s.validatorsAggregatorMock)
 
 	listener.SetContracts(s.bridge, s.erc20Handler, s.erc721Handler, s.genericHandler)
 
@@ -252,7 +267,7 @@ func (s *ListenerTestSuite) TestGetDepositEventsAndProofsForBlockerERC20() {
 		BridgeContract:       bridgeContract,
 	}
 
-	listener := NewListener(cfg, s.clientMock, s.blockStorerMock, stopChn, errChn, s.syncerMock, s.routerMock)
+	listener := NewListener(cfg, s.clientMock, s.blockStorerMock, stopChn, errChn, s.syncerMock, s.routerMock, s.validatorsAggregatorMock)
 
 	listener.SetContracts(s.bridge, s.erc20Handler, s.erc721Handler, s.genericHandler)
 
@@ -300,14 +315,24 @@ func (s *ListenerTestSuite) TestGetDepositEventsAndProofsForBlockerERC20() {
 	nonce := msg.Nonce(logs[0].Topics[3].Big().Uint64())
 
 	destID := msg.ChainId(logs[0].Topics[1].Big().Uint64())
+	pk := []byte{0x1f}
+	s.validatorsAggregatorMock.EXPECT().GetAPKForBlock(gomock.Any(), gomock.Any(), gomock.Any()).Return([]byte{0x1f}, nil)
+	block := dummyBlock(123)
+	s.clientMock.EXPECT().BlockByNumber(gomock.Any(), gomock.Any()).Return(block, nil)
 
 	message := msg.NewFungibleTransfer(
 		listener.cfg.ID,
 		destID,
 		nonce,
 		prop.ResourceID,
-		nil,
-		nil,
+		&msg.MerkleProof{
+			TxRootHash: block.TxHash(),
+		},
+		&msg.SignatureVerification{
+			AggregatePublicKey: pk,
+			BlockHash:          block.Header().Hash(),
+			Signature:          block.EpochSnarkData().Signature,
+		},
 		prop.Amount,
 		prop.DestinationRecipientAddress,
 	)
@@ -328,7 +353,6 @@ func (s *ListenerTestSuite) TestGetDepositEventsAndProofsForBlockerERC20() {
 	err := listener.getDepositEventsAndProofsForBlock(big.NewInt(112233))
 
 	s.Nil(err)
-
 }
 
 func (s *ListenerTestSuite) TestGetDepositEventsAndProofsForBlockerERC721() {
@@ -350,7 +374,7 @@ func (s *ListenerTestSuite) TestGetDepositEventsAndProofsForBlockerERC721() {
 		BridgeContract:        bridgeContract,
 	}
 
-	listener := NewListener(cfg, s.clientMock, s.blockStorerMock, stopChn, errChn, s.syncerMock, s.routerMock)
+	listener := NewListener(cfg, s.clientMock, s.blockStorerMock, stopChn, errChn, s.syncerMock, s.routerMock, s.validatorsAggregatorMock)
 
 	listener.SetContracts(s.bridge, s.erc20Handler, s.erc721Handler, s.genericHandler)
 
@@ -389,14 +413,23 @@ func (s *ListenerTestSuite) TestGetDepositEventsAndProofsForBlockerERC721() {
 	nonce := msg.Nonce(logs[0].Topics[3].Big().Uint64())
 
 	destID := msg.ChainId(logs[0].Topics[1].Big().Uint64())
-
+	pk := []byte{0x1f}
+	s.validatorsAggregatorMock.EXPECT().GetAPKForBlock(gomock.Any(), gomock.Any(), gomock.Any()).Return(pk, nil)
+	block := dummyBlock(123)
+	s.clientMock.EXPECT().BlockByNumber(gomock.Any(), gomock.Any()).Return(block, nil)
 	message := msg.NewNonFungibleTransfer(
 		listener.cfg.ID,
 		destID,
 		nonce,
 		prop.ResourceID,
-		nil,
-		nil,
+		&msg.MerkleProof{
+			TxRootHash: block.TxHash(),
+		},
+		&msg.SignatureVerification{
+			AggregatePublicKey: pk,
+			BlockHash:          block.Header().Hash(),
+			Signature:          block.EpochSnarkData().Signature,
+		},
 		prop.TokenID,
 		prop.DestinationRecipientAddress,
 		prop.MetaData,
@@ -429,7 +462,7 @@ func (s *ListenerTestSuite) TestGetDepositEventsAndProofsForBlockerGeneric() {
 		BridgeContract:         bridgeContract,
 	}
 
-	listener := NewListener(cfg, s.clientMock, s.blockStorerMock, stopChn, errChn, s.syncerMock, s.routerMock)
+	listener := NewListener(cfg, s.clientMock, s.blockStorerMock, stopChn, errChn, s.syncerMock, s.routerMock, s.validatorsAggregatorMock)
 
 	listener.SetContracts(s.bridge, s.erc20Handler, s.erc721Handler, s.genericHandler)
 
@@ -465,14 +498,23 @@ func (s *ListenerTestSuite) TestGetDepositEventsAndProofsForBlockerGeneric() {
 	nonce := msg.Nonce(logs[0].Topics[3].Big().Uint64())
 
 	destID := msg.ChainId(logs[0].Topics[1].Big().Uint64())
-
+	pk := []byte{0x1f}
+	s.validatorsAggregatorMock.EXPECT().GetAPKForBlock(gomock.Any(), gomock.Any(), gomock.Any()).Return(pk, nil)
+	block := dummyBlock(123)
+	s.clientMock.EXPECT().BlockByNumber(gomock.Any(), gomock.Any()).Return(block, nil)
 	message := msg.NewGenericTransfer(
 		listener.cfg.ID,
 		destID,
 		nonce,
 		prop.ResourceID,
-		nil,
-		nil,
+		&msg.MerkleProof{
+			TxRootHash: block.TxHash(),
+		},
+		&msg.SignatureVerification{
+			AggregatePublicKey: pk,
+			BlockHash:          block.Header().Hash(),
+			Signature:          block.EpochSnarkData().Signature,
+		},
 		prop.MetaData,
 	)
 
@@ -508,7 +550,7 @@ func (s *ListenerTestSuite) TestGetDepositEventsAndProofsForBlockerFailure() {
 
 	//cfg := &chain.CeloChainConfig{StartBlock: startBlock, BridgeContract: bridgeContract}
 
-	listener := NewListener(cfg, s.clientMock, s.blockStorerMock, stopChn, errChn, s.syncerMock, s.routerMock)
+	listener := NewListener(cfg, s.clientMock, s.blockStorerMock, stopChn, errChn, s.syncerMock, s.routerMock, s.validatorsAggregatorMock)
 
 	listener.SetContracts(s.bridge, s.erc20Handler, s.erc721Handler, s.genericHandler)
 
