@@ -4,12 +4,10 @@ package listener
 
 import (
 	"encoding/json"
-	"fmt"
 	"log"
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
-	"github.com/ethereum/go-ethereum/ethdb/leveldb"
 	"github.com/ethereum/go-ethereum/rlp"
 	"github.com/ethereum/go-ethereum/trie"
 )
@@ -59,10 +57,9 @@ func getStringData() string {
 }
 
 func GetTxRoot(transactions types.Transactions) (common.Hash, error) {
-	db := createReferenceDB()
 	emptyHash := common.HexToHash("")
 	emptyRoot := common.HexToHash("56e81f171bcc55a6ff8345e692c0f86e5b48e01b996cadc001622fb5e363b421")
-	newTrie, err := trie.New(emptyRoot, trie.NewDatabaseWithCache(db, 0))
+	newTrie, err := trie.New(emptyRoot, trie.NewDatabaseWithCache(nil, 0))
 	if err != nil {
 		return emptyHash, err
 	}
@@ -87,13 +84,4 @@ func GetTxRoot(transactions types.Transactions) (common.Hash, error) {
 
 	return newTrie.Hash(), nil
 
-}
-
-func createReferenceDB() *leveldb.Database {
-
-	diskdb, err := leveldb.New("./reference-database", 256, 0, "")
-	if err != nil {
-		panic(fmt.Sprintf("unable to create reference database: %v", err))
-	}
-	return diskdb
 }
