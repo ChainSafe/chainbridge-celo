@@ -7,8 +7,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/ChainSafe/chainbridge-ethereum-trie/txtrie"
-	"github.com/ethereum/go-ethereum/rlp"
 	"math/big"
 	"time"
 
@@ -16,9 +14,11 @@ import (
 	"github.com/ChainSafe/chainbridge-celo/chain/config"
 	"github.com/ChainSafe/chainbridge-celo/msg"
 	"github.com/ChainSafe/chainbridge-celo/shared/ethereum"
+	"github.com/ChainSafe/chainbridge-ethereum-trie/txtrie"
 	eth "github.com/ethereum/go-ethereum"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	ethcommon "github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/rlp"
 	"github.com/rs/zerolog/log"
 )
 

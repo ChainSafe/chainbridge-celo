@@ -6,10 +6,8 @@ replace github.com/celo-org/celo-bls-go => github.com/celo-org/celo-bls-go v0.1.
 
 replace github.com/ethereum/go-ethereum => github.com/celo-org/celo-blockchain v0.0.0-20200612100840-bf2ba25426f9
 
-replace github.com/ChainSafe/chainbridge-ethereum-trie v0.0.0-20210112124933-e83f68cceafb => /var/www/ChainSafe/chainbridge-ethereum-trie
-
 require (
-	github.com/ChainSafe/chainbridge-ethereum-trie v0.0.0-20210112124933-e83f68cceafb
+	github.com/ChainSafe/chainbridge-ethereum-trie v0.0.0-20210116153300-65b5ba0cd092
 	github.com/ChainSafe/chainbridge-utils v1.0.6
 	github.com/celo-org/celo-bls-go v0.1.4
 	github.com/ethereum/go-ethereum v1.9.24
