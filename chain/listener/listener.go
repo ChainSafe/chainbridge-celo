@@ -14,9 +14,11 @@ import (
 	"github.com/ChainSafe/chainbridge-celo/chain/config"
 	"github.com/ChainSafe/chainbridge-celo/msg"
 	"github.com/ChainSafe/chainbridge-celo/shared/ethereum"
+	"github.com/ChainSafe/chainbridge-ethereum-trie/txtrie"
 	eth "github.com/ethereum/go-ethereum"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	ethcommon "github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/rlp"
 	"github.com/rs/zerolog/log"
 )
 
@@ -175,9 +177,23 @@ func (l *listener) getDepositEventsAndProofsForBlock(latestBlock *big.Int) error
 	if err != nil {
 		return fmt.Errorf("unable to Filter Logs: %w", err)
 	}
+	if len(logs) == 0 {
+		return nil
+	}
 
+	blockData, err := l.client.BlockByNumber(context.Background(), latestBlock)
+	if err != nil {
+		return err
+	}
+
+	trie := txtrie.NewTxTries()
+	err = trie.CreateNewTrie(blockData.TxHash(), blockData.Transactions())
+	if err != nil {
+		return err
+	}
 	// read through the log events and handle their deposit event if handler is recognized
 	for _, eventLog := range logs {
+
 		var m *msg.Message
 		destId := msg.ChainId(eventLog.Topics[1].Big().Uint64())
 		rId := msg.ResourceId(eventLog.Topics[2])
@@ -205,15 +221,27 @@ func (l *listener) getDepositEventsAndProofsForBlock(latestBlock *big.Int) error
 		if err != nil {
 			return err
 		}
-		block, err := l.client.BlockByNumber(context.Background(), latestBlock)
+
+		keyRlp, err := rlp.EncodeToBytes(eventLog.TxIndex)
+
 		if err != nil {
 			return err
 		}
 
-		m.SVParams = &msg.SignatureVerification{AggregatePublicKey: pubKey, BlockHash: block.Header().Hash(), Signature: block.EpochSnarkData().Signature}
-		m.MPParams = &msg.MerkleProof{TxRootHash: block.TxHash()}
+		proof, err := trie.RetrieveEncodedProof(blockData.TxHash(), keyRlp)
 
+		if err != nil {
+			return err
+		}
+
+		if err != nil {
+			return err
+		}
+
+		m.SVParams = &msg.SignatureVerification{AggregatePublicKey: pubKey, BlockHash: blockData.Header().Hash(), Signature: blockData.EpochSnarkData().Signature}
+		m.MPParams = &msg.MerkleProof{TxRootHash: blockData.TxHash(), Nodes: proof, Key: keyRlp}
 		err = l.router.Send(m)
+
 		if err != nil {
 			log.Error().Err(err).Msg("subscription error: failed to route message")
 		}
@@ -221,37 +249,6 @@ func (l *listener) getDepositEventsAndProofsForBlock(latestBlock *big.Int) error
 	return nil
 }
 
-//TODO removenolint
-//nolint
-//COMMENTED SINCE CURRENTLTY UNUSED. SEEMS TO BE USED FOR BLOCK PROOF BUILDING
-//func (l *listener) getBlockHashFromTransactionHash(txHash ethcommon.Hash) (blockHash ethcommon.Hash, err error) {
-//
-//	receipt, err := l.conn.Client().TransactionReceipt(context.Background(), txHash)
-//	if err != nil {
-//		return txHash, fmt.Errorf("unable to get BlockHash: %w", err)
-//	}
-//	return receipt.BlockHash, nil
-//}
-//
-////TODO removenolint
-////nolint
-//func (l *listener) getTransactionsFromBlockHash(blockHash ethcommon.Hash) (txHashes []ethcommon.Hash, txRoot ethcommon.Hash, err error) {
-//	block, err := l.conn.Client().BlockByHash(context.Background(), blockHash)
-//	if err != nil {
-//		return nil, ethcommon.Hash{}, fmt.Errorf("unable to get BlockHash: %w", err)
-//	}
-//
-//	var transactionHashes []ethcommon.Hash
-//
-//	transactions := block.Transactions()
-//	for _, transaction := range transactions {
-//		transactionHashes = append(transactionHashes, transaction.Hash())
-//	}
-//
-//	return transactionHashes, block.Root(), nil
-//}
-//
-//nolint
 // buildQuery constructs a query for the bridgeContract by hashing sig to get the event topic
 func buildQuery(contract ethcommon.Address, sig utils.EventSig, startBlock *big.Int, endBlock *big.Int) eth.FilterQuery {
 	query := eth.FilterQuery{

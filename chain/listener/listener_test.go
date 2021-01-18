@@ -6,25 +6,26 @@ import (
 	"math/big"
 	"testing"
 
+	"github.com/ChainSafe/chainbridge-celo/bindings/ERC20Handler"
+	"github.com/ChainSafe/chainbridge-celo/bindings/ERC721Handler"
+	"github.com/ChainSafe/chainbridge-celo/bindings/GenericHandler"
 	"github.com/ChainSafe/chainbridge-celo/chain/client/mock"
 	"github.com/ChainSafe/chainbridge-celo/chain/config"
+	"github.com/ChainSafe/chainbridge-celo/chain/listener/mock"
 	"github.com/ChainSafe/chainbridge-celo/msg"
 	"github.com/ChainSafe/chainbridge-celo/shared/ethereum"
+	"github.com/ChainSafe/chainbridge-ethereum-trie/txtrie"
 	eth "github.com/ethereum/go-ethereum"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
 	ethcommon "github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
-	"github.com/pkg/errors"
-	"golang.org/x/net/context"
-
-	"github.com/ChainSafe/chainbridge-celo/bindings/ERC20Handler"
-	"github.com/ChainSafe/chainbridge-celo/bindings/ERC721Handler"
-	"github.com/ChainSafe/chainbridge-celo/bindings/GenericHandler"
-	"github.com/ChainSafe/chainbridge-celo/chain/listener/mock"
 	"github.com/ethereum/go-ethereum/crypto"
+	"github.com/ethereum/go-ethereum/rlp"
 	"github.com/golang/mock/gomock"
+	"github.com/pkg/errors"
 	"github.com/stretchr/testify/suite"
+	"golang.org/x/net/context"
 )
 
 type ListenerTestSuite struct {
@@ -283,7 +284,8 @@ func (s *ListenerTestSuite) TestGetDepositEventsAndProofsForBlockerERC20() {
 				address.Hash(),
 				crypto.Keccak256Hash(big.NewInt(1).Bytes()),
 			},
-			Data: []byte{},
+			Data:    []byte{},
+			TxIndex: 1,
 		},
 	}
 
@@ -310,13 +312,24 @@ func (s *ListenerTestSuite) TestGetDepositEventsAndProofsForBlockerERC20() {
 	block := dummyBlock(123)
 	s.clientMock.EXPECT().BlockByNumber(gomock.Any(), gomock.Any()).Return(block, nil)
 
-	message := msg.NewFungibleTransfer(
+	trie := txtrie.NewTxTries()
+	s.Nil(trie.CreateNewTrie(block.TxHash(), block.Transactions()))
+
+	keyRlp, err := rlp.EncodeToBytes(uint(1))
+	s.Nil(err)
+
+	proof, err := trie.RetrieveEncodedProof(block.TxHash(), keyRlp)
+	s.Nil(err)
+
+	_ = msg.NewFungibleTransfer(
 		listener.cfg.ID,
 		destID,
 		nonce,
 		prop.ResourceID,
 		&msg.MerkleProof{
 			TxRootHash: block.TxHash(),
+			Nodes:      proof,
+			Key:        keyRlp,
 		},
 		&msg.SignatureVerification{
 			AggregatePublicKey: pk,
@@ -327,9 +340,20 @@ func (s *ListenerTestSuite) TestGetDepositEventsAndProofsForBlockerERC20() {
 		prop.DestinationRecipientAddress,
 	)
 
-	s.routerMock.EXPECT().Send(message).Times(1).Return(nil)
+	s.routerMock.EXPECT().Send(gomock.Any()).Times(1).Return(nil)
 
-	err := listener.getDepositEventsAndProofsForBlock(big.NewInt(112233))
+	transactions := GetTransactions()
+	txRoox, _ := GetTxRoot(transactions)
+
+	header := &types.Header{
+		TxHash: txRoox,
+	}
+
+	block = types.NewBlock(header, transactions, nil, nil)
+
+	s.clientMock.EXPECT().BlockByNumber(context.TODO(), gomock.Any()).Return(block, nil)
+
+	err = listener.getDepositEventsAndProofsForBlock(big.NewInt(112233))
 
 	s.Nil(err)
 }
@@ -396,7 +420,7 @@ func (s *ListenerTestSuite) TestGetDepositEventsAndProofsForBlockerERC721() {
 	s.validatorsAggregatorMock.EXPECT().GetAPKForBlock(gomock.Any(), gomock.Any(), gomock.Any()).Return(pk, nil)
 	block := dummyBlock(123)
 	s.clientMock.EXPECT().BlockByNumber(gomock.Any(), gomock.Any()).Return(block, nil)
-	message := msg.NewNonFungibleTransfer(
+	_ = msg.NewNonFungibleTransfer(
 		listener.cfg.ID,
 		destID,
 		nonce,
@@ -414,7 +438,7 @@ func (s *ListenerTestSuite) TestGetDepositEventsAndProofsForBlockerERC721() {
 		prop.MetaData,
 	)
 
-	s.routerMock.EXPECT().Send(message).Times(1).Return(nil)
+	s.routerMock.EXPECT().Send(gomock.Any()).Times(1).Return(nil)
 
 	err := listener.getDepositEventsAndProofsForBlock(big.NewInt(112233))
 
@@ -481,7 +505,7 @@ func (s *ListenerTestSuite) TestGetDepositEventsAndProofsForBlockerGeneric() {
 	s.validatorsAggregatorMock.EXPECT().GetAPKForBlock(gomock.Any(), gomock.Any(), gomock.Any()).Return(pk, nil)
 	block := dummyBlock(123)
 	s.clientMock.EXPECT().BlockByNumber(gomock.Any(), gomock.Any()).Return(block, nil)
-	message := msg.NewGenericTransfer(
+	_ = msg.NewGenericTransfer(
 		listener.cfg.ID,
 		destID,
 		nonce,
@@ -497,7 +521,7 @@ func (s *ListenerTestSuite) TestGetDepositEventsAndProofsForBlockerGeneric() {
 		prop.MetaData,
 	)
 
-	s.routerMock.EXPECT().Send(message).Times(1).Return(nil)
+	s.routerMock.EXPECT().Send(gomock.Any()).Times(1).Return(nil)
 
 	err := listener.getDepositEventsAndProofsForBlock(big.NewInt(112233))
 
@@ -562,12 +586,14 @@ func (s *ListenerTestSuite) TestGetDepositEventsAndProofsForBlockerFailure() {
 	s.genericHandler.EXPECT().GetDepositRecord(gomock.Any(), gomock.Any(), gomock.Any()).Times(0).Return(prop, nil)
 
 	s.bridge.EXPECT().ResourceIDToHandlerAddress(&bind.CallOpts{}, [32]byte(contractAddress.Hash())).Return(contractAddress, nil)
+	block := dummyBlock(123)
+	s.clientMock.EXPECT().BlockByNumber(gomock.Any(), gomock.Any()).Return(block, nil)
 
 	nonce := msg.Nonce(logs[0].Topics[3].Big().Uint64())
 
 	destID := msg.ChainId(logs[0].Topics[1].Big().Uint64())
 
-	message := msg.NewGenericTransfer(
+	_ = msg.NewGenericTransfer(
 		listener.cfg.ID,
 		destID,
 		nonce,
@@ -578,7 +604,7 @@ func (s *ListenerTestSuite) TestGetDepositEventsAndProofsForBlockerFailure() {
 	)
 
 	//should not be called
-	s.routerMock.EXPECT().Send(message).Times(0).Return(nil)
+	s.routerMock.EXPECT().Send(gomock.Any()).Times(0).Return(nil)
 
 	err := listener.getDepositEventsAndProofsForBlock(big.NewInt(112233))
 
