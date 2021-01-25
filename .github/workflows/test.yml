@@ -1,0 +1,54 @@
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+name: Lint & Test
+jobs:
+  test:
+    strategy:
+      matrix:
+        go-version: [1.15.x]
+        platform: [ubuntu-latest]
+    runs-on: ${{ matrix.platform }}
+    steps:
+      - name: Install Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: ${{ matrix.go-version }}
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - uses: actions/cache@v2
+        with:
+          path: ~/go/pkg/mod
+          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+          restore-keys: |
+            ${{ runner.os }}-go-
+      - name: Test
+        run: go test -coverpkg=./... -coverprofile=cover.out -p=1 ./...
+      - name: Exclude generated files from test
+        run: cat cover.out | grep  -v 'generated\|bindata\|mock\|main.go\|bindings\|shared\|root.go' > filtered.cover.out
+      - name: Cover
+        run:  echo "::set-output name=COVER::$(go tool cover -func filtered.cover.out | grep total | awk '{print $3}')"
+      - name: Create comment
+        uses: peter-evans/create-or-update-comment@v1
+        with:
+          issue-number: ${{github.event.number}}
+          body: |
+            Go Test coverage is ${{ env.COVER }}% :sparkles: :sparkles: :sparkles:
+  lint:
+    strategy:
+      matrix:
+        go-version: [1.15.x]
+        platform: [ubuntu-latest]
+    runs-on: ${{ matrix.platform }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Pulsar install
+        run: sudo ./.github/workflows/scripts/pulsar.sh
+      - name: golangci-lint
+        uses: golangci/golangci-lint-action@v1
+        with:
+          version: v1.29
+          args: --timeout=2m
+
