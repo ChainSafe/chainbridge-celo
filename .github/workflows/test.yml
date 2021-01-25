@@ -26,13 +26,13 @@ jobs:
       - name: Test
         run: make test
       - name: Cover
-        run:  echo "COVER=$(go tool cover -func filtered.cover.out | grep total | awk '{print substr($3, 1, length($3)-1)}')" >> $GITHUB_ENV
+        run:  echo "COVER=$(make coverage)" >> $GITHUB_ENV
       - name: Create comment
         uses: peter-evans/create-or-update-comment@v1
         with:
           issue-number: ${{github.event.number}}
           body: |
-            Go Test coverage is ${{env.COVER}} % :sparkles: :sparkles: :sparkles:
+            Go Test coverage is ${{env.COVER}} %\ :sparkles: :sparkles: :sparkles:
   lint:
     name: lint
     runs-on: ubuntu-latest
