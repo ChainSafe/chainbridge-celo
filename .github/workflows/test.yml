@@ -24,9 +24,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-go-
       - name: Test
-        run: go test -coverpkg=./... -coverprofile=cover.out -p=1 ./...
-      - name: Exclude generated files from test
-        run: make coverage
+        run: make test
       - name: Cover
         run:  echo "COVER=$(go tool cover -func filtered.cover.out | grep total | awk '{print substr($3, 1, length($3)-1)}')" >> $GITHUB_ENV
       - name: Create comment

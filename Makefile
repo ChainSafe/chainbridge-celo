@@ -18,13 +18,11 @@ $(GOLANGCI):
 lint: $(GOLANGCI)
 	./bin/golangci-lint run ./... --timeout 5m0s
 
-test:
-	go test -coverpkg=./... -coverprofile=cover.out -p=1 ./...
-	make coverage
+coverage:
 	go tool cover -func filtered.cover.out | grep total | awk '{print $3}'
 
-coverage:
-	cat cover.out | grep  -v 'generated\|bindata\|mock\|main.go\|bindings\|shared\|root.go' > filtered.cover.out
+test:
+	go test -coverpkg=./... -coverprofile=cover.out -p=1 $( go list ./... | grep -v 'generated\|bindata\|mock\|main.go\|bindings\|shared\|root.go')
 
 
 docker:
