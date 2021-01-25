@@ -34,7 +34,7 @@ jobs:
         with:
           issue-number: ${{github.event.number}}
           body: |
-            Go Test coverage is ${{COVER}} % :sparkles: :sparkles: :sparkles:
+            Go Test coverage is ${{env.COVER}} % :sparkles: :sparkles: :sparkles:
   lint:
     name: lint
     runs-on: ubuntu-latest
