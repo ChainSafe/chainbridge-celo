@@ -26,7 +26,7 @@ jobs:
       - name: Test
         run: go test -coverpkg=./... -coverprofile=cover.out -p=1 ./...
       - name: Exclude generated files from test
-        run: cat cover.out | grep  -v 'generated\|bindata\|mock\|main.go\|bindings\|shared\|root.go' > filtered.cover.out
+        run: make coverage
       - name: Cover
         run:  echo "COVER=$(go tool cover -func filtered.cover.out | grep total | awk '{print substr($3, 1, length($3)-1)}')" >> $GITHUB_ENV
       - name: Create comment

@@ -20,14 +20,11 @@ lint: $(GOLANGCI)
 
 test:
 	go test -coverpkg=./... -coverprofile=cover.out -p=1 ./...
-	cat cover.out | grep  -v 'generated\|bindata\|mock\|main.go\|bindings\|shared\|root.go' > filtered.cover.out
+	make coverage
 	go tool cover -func filtered.cover.out | grep total | awk '{print $3}'
 
-
-test-cover:
-	go test -v -coverprofile=coverage.out ./...
-	go tool cover -func=coverage.out
-	go tool cover -html=coverage.out
+coverage:
+	cat cover.out | grep  -v 'generated\|bindata\|mock\|main.go\|bindings\|shared\|root.go' > filtered.cover.out
 
 
 docker:
