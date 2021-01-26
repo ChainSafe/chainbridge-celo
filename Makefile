@@ -15,19 +15,15 @@ $(GOLANGCI):
 		wget -O - -q https://install.goreleaser.com/github.com/golangci/golangci-lint.sh | sh -s latest; \
 	fi;
 
+
 lint: $(GOLANGCI)
 	./bin/golangci-lint run ./... --timeout 5m0s
 
+coverage:
+	go tool cover -func cover.out | grep total | awk '{print $3}'
+
 test:
-	go test -coverpkg=./... -coverprofile=cover.out -p=1 ./...
-	cat cover.out | grep  -v 'generated\|bindata\|mock\|main.go\|bindings\|shared\|root.go' > filtered.cover.out
-	go tool cover -func filtered.cover.out | grep total | awk '{print $3}'
-
-
-test-cover:
-	go test -v -coverprofile=coverage.out ./...
-	go tool cover -func=coverage.out
-	go tool cover -html=coverage.out
+	./scripts/test.sh
 
 
 docker:
