@@ -38,15 +38,10 @@ type listener struct {
 	blockstore             Blockstorer
 	stop                   <-chan struct{}
 	sysErr                 chan<- error // Reports fatal error to core
-	syncer                 BlockSyncer
 	//latestBlock            *metrics.LatestBlock
 	//metrics                *metrics.ChainMetrics
 	client   client.LogFilterWithLatestBlock
 	valsAggr ValidatorsAggregator
-}
-
-type BlockSyncer interface {
-	Sync(latestBlock *big.Int) error
 }
 
 type IRouter interface {
@@ -60,13 +55,12 @@ type ValidatorsAggregator interface {
 	GetAPKForBlock(block *big.Int, chainID uint8, epochSize uint64) ([]byte, error)
 }
 
-func NewListener(cfg *config.CeloChainConfig, client client.LogFilterWithLatestBlock, bs Blockstorer, stop <-chan struct{}, sysErr chan<- error, syncer BlockSyncer, router IRouter, valsAggr ValidatorsAggregator) *listener {
+func NewListener(cfg *config.CeloChainConfig, client client.LogFilterWithLatestBlock, bs Blockstorer, stop <-chan struct{}, sysErr chan<- error, router IRouter, valsAggr ValidatorsAggregator) *listener {
 	return &listener{
 		cfg:        cfg,
 		blockstore: bs,
 		stop:       stop,
 		sysErr:     sysErr,
-		syncer:     syncer,
 		router:     router,
 		client:     client,
 		valsAggr:   valsAggr,
@@ -129,12 +123,6 @@ func (l *listener) pollBlocks() error {
 			if big.NewInt(0).Sub(latestBlock, currentBlock).Cmp(BlockDelay) == -1 {
 				log.Debug().Str("target", currentBlock.String()).Str("latest", latestBlock.String()).Msg("Block not ready, will retry")
 				time.Sleep(BlockRetryInterval)
-				continue
-			}
-
-			err = l.syncer.Sync(currentBlock)
-			if err != nil {
-				log.Error().Str("block", currentBlock.String()).Err(err).Msg("Failed to sync validators for block")
 				continue
 			}
 

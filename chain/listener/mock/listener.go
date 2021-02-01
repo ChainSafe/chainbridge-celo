@@ -11,43 +11,6 @@ import (
 	reflect "reflect"
 )
 
-// MockBlockSyncer is a mock of BlockSyncer interface
-type MockBlockSyncer struct {
-	ctrl     *gomock.Controller
-	recorder *MockBlockSyncerMockRecorder
-}
-
-// MockBlockSyncerMockRecorder is the mock recorder for MockBlockSyncer
-type MockBlockSyncerMockRecorder struct {
-	mock *MockBlockSyncer
-}
-
-// NewMockBlockSyncer creates a new mock instance
-func NewMockBlockSyncer(ctrl *gomock.Controller) *MockBlockSyncer {
-	mock := &MockBlockSyncer{ctrl: ctrl}
-	mock.recorder = &MockBlockSyncerMockRecorder{mock}
-	return mock
-}
-
-// EXPECT returns an object that allows the caller to indicate expected use
-func (m *MockBlockSyncer) EXPECT() *MockBlockSyncerMockRecorder {
-	return m.recorder
-}
-
-// Sync mocks base method
-func (m *MockBlockSyncer) Sync(latestBlock *big.Int) error {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Sync", latestBlock)
-	ret0, _ := ret[0].(error)
-	return ret0
-}
-
-// Sync indicates an expected call of Sync
-func (mr *MockBlockSyncerMockRecorder) Sync(latestBlock interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Sync", reflect.TypeOf((*MockBlockSyncer)(nil).Sync), latestBlock)
-}
-
 // MockIRouter is a mock of IRouter interface
 type MockIRouter struct {
 	ctrl     *gomock.Controller
