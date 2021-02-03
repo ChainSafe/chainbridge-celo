@@ -23,7 +23,6 @@ const (
 	ProposalEvent     EventSig = "ProposalEvent(uint8,uint64,uint8,bytes32,bytes32)"
 )
 
-
 type ProposalStatus int
 
 const (

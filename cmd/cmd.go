@@ -3,9 +3,6 @@
 package cmd
 
 import (
-	"github.com/ChainSafe/chainbridge-celo/flags"
-	"github.com/ChainSafe/chainbridge-celo/validatorsync"
-	"github.com/syndtr/goleveldb/leveldb"
 	"os"
 	"os/signal"
 	"syscall"
@@ -17,7 +14,11 @@ import (
 	"github.com/ChainSafe/chainbridge-celo/chain/listener"
 	"github.com/ChainSafe/chainbridge-celo/chain/writer"
 	"github.com/ChainSafe/chainbridge-celo/cmd/cfg"
+	"github.com/ChainSafe/chainbridge-celo/flags"
 	"github.com/ChainSafe/chainbridge-celo/router"
+	"github.com/ChainSafe/chainbridge-celo/validatorsync"
+	"github.com/pkg/errors"
+	"github.com/syndtr/goleveldb/leveldb"
 
 	"github.com/ChainSafe/chainbridge-utils/crypto/secp256k1"
 	"github.com/ChainSafe/chainbridge-utils/keystore"
@@ -36,7 +37,7 @@ func Run(ctx *cli.Context) error {
 	pathToDB := ctx.String(flags.LevelDBPath.Name)
 	ldb, err := leveldb.OpenFile(pathToDB, nil)
 	if err != nil {
-		return err
+		return errors.Wrap(err, "levelDB.OpenFile fail")
 	}
 	validatorsStore := validatorsync.NewValidatorsStore(ldb)
 	defer validatorsStore.Close()
@@ -74,7 +75,7 @@ func Run(ctx *cli.Context) error {
 			log.Error().Interface("chain", newChain.ID()).Err(err).Msg("failed to start chain")
 			return err
 		}
-		go validatorsync.SyncBlockValidators(stopChn, errChn, chainClient, validatorsStore, uint8(celoChainConfig.ID), celoChainConfig.EpochSize)
+		//go validatorsync.SyncBlockValidators(stopChn, errChn, chainClient, validatorsStore, uint8(celoChainConfig.ID), celoChainConfig.EpochSize)
 	}
 
 	sysErr := make(chan os.Signal, 1)
