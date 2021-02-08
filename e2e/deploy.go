@@ -4,15 +4,14 @@
 package e2e
 
 import (
-	"github.com/ChainSafe/chainbridge-celo/pkg"
-	"github.com/ChainSafe/chainbridge-celo/solidity/build/bindings/go/Bridge"
 	"math/big"
 
-	bridge "github.com/ChainSafe/chainbridge-celo/bindings/Bridge"
+	Bridge "github.com/ChainSafe/chainbridge-celo/bindings/Bridge"
 	erc20Handler "github.com/ChainSafe/chainbridge-celo/bindings/ERC20Handler"
 	erc20 "github.com/ChainSafe/chainbridge-celo/bindings/ERC20PresetMinterPauser"
 	erc721Handler "github.com/ChainSafe/chainbridge-celo/bindings/ERC721Handler"
 	"github.com/ChainSafe/chainbridge-celo/bindings/GenericHandler"
+	"github.com/ChainSafe/chainbridge-celo/pkg"
 	"github.com/ChainSafe/chainbridge-utils/keystore"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/rs/zerolog/log"
@@ -263,7 +262,7 @@ func deployBridge(client *Client, chainID uint8, relayerAddrs []common.Address, 
 		return common.Address{}, err
 	}
 
-	bridgeAddr, tx, _, err := bridge.DeployBridge(client.Opts, client.Client, chainID, relayerAddrs, initialRelayerThreshold, big.NewInt(0), big.NewInt(100))
+	bridgeAddr, tx, _, err := Bridge.DeployBridge(client.Opts, client.Client, chainID, relayerAddrs, initialRelayerThreshold, big.NewInt(0), big.NewInt(100))
 	if err != nil {
 		return common.Address{}, err
 	}
