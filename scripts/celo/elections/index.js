@@ -197,6 +197,7 @@ async function wait(condition, sleepMs = 500) {
     0, // patch
     1000000, // _gasForNonGoldCurrencies
     30000000, // gasLimit
+    6, // lookbackWindow
   ).encodeABI();
   await sendTransaction({
     data: blockchainParamsInit,
