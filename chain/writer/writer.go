@@ -9,7 +9,7 @@ import (
 	"github.com/ChainSafe/chainbridge-celo/bindings/Bridge"
 	"github.com/ChainSafe/chainbridge-celo/chain/client"
 	"github.com/ChainSafe/chainbridge-celo/chain/config"
-	"github.com/ChainSafe/chainbridge-celo/msg"
+	"github.com/ChainSafe/chainbridge-celo/pkg"
 	metrics "github.com/ChainSafe/chainbridge-utils/metrics/types"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
@@ -66,19 +66,19 @@ func (w *writer) SetBridge(bridge Bridger) {
 // ResolveMessage handles any given message based on type
 // A bool is returned to indicate failure/success
 // this should be ignored except for within tests.
-func (w *writer) ResolveMessage(m *msg.Message) bool {
+func (w *writer) ResolveMessage(m *pkg.Message) bool {
 	log.Info().Str("type", string(m.Type)).Interface("src", m.Source).Interface("dst", m.Destination).Interface("nonce", m.DepositNonce).Str("rId", m.ResourceId.Hex()).Msg("Attempting to resolve message")
 	var data []byte
 	var handlerContract common.Address
 	var err error
 	switch m.Type {
-	case msg.FungibleTransfer:
+	case pkg.FungibleTransfer:
 		data, err = w.createERC20ProposalData(m)
 		handlerContract = w.cfg.Erc20HandlerContract
-	case msg.NonFungibleTransfer:
+	case pkg.NonFungibleTransfer:
 		data, err = w.createErc721ProposalData(m)
 		handlerContract = w.cfg.Erc721HandlerContract
-	case msg.GenericTransfer:
+	case pkg.GenericTransfer:
 		data, err = w.createGenericDepositProposalData(m)
 		handlerContract = w.cfg.GenericHandlerContract
 	default:

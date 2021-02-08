@@ -6,9 +6,9 @@ import (
 	"os"
 
 	"github.com/ChainSafe/chainbridge-celo/cmd"
+	"github.com/ChainSafe/chainbridge-celo/cmdutils/testutils"
 	"github.com/ChainSafe/chainbridge-celo/e2e"
 	"github.com/ChainSafe/chainbridge-celo/flags"
-	"github.com/ChainSafe/chainbridge-celo/shared/testutils"
 	"github.com/rs/zerolog/log"
 	"github.com/urfave/cli/v2"
 )

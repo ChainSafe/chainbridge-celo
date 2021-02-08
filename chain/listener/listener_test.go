@@ -12,8 +12,7 @@ import (
 	"github.com/ChainSafe/chainbridge-celo/chain/client/mock"
 	"github.com/ChainSafe/chainbridge-celo/chain/config"
 	"github.com/ChainSafe/chainbridge-celo/chain/listener/mock"
-	"github.com/ChainSafe/chainbridge-celo/msg"
-	"github.com/ChainSafe/chainbridge-celo/shared/ethereum"
+	"github.com/ChainSafe/chainbridge-celo/pkg"
 	"github.com/ChainSafe/chainbridge-ethereum-trie/txtrie"
 	eth "github.com/ethereum/go-ethereum"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
@@ -269,14 +268,14 @@ func (s *ListenerTestSuite) TestGetDepositEventsAndProofsForBlockerERC20() {
 
 	listener.SetContracts(s.bridge, s.erc20Handler, s.erc721Handler, s.genericHandler)
 
-	query := buildQuery(address, utils.Deposit, startBlock, startBlock)
+	query := buildQuery(address, pkg.Deposit, startBlock, startBlock)
 
 	logs := []types.Log{
 		{
 			Address: listener.cfg.Erc20HandlerContract,
 			// list of topics provided by the contract.
 			Topics: []common.Hash{
-				utils.Deposit.GetTopic(),
+				pkg.Deposit.GetTopic(),
 				crypto.Keccak256Hash(big.NewInt(1).Bytes()),
 				address.Hash(),
 				crypto.Keccak256Hash(big.NewInt(1).Bytes()),
@@ -301,9 +300,9 @@ func (s *ListenerTestSuite) TestGetDepositEventsAndProofsForBlockerERC20() {
 
 	s.bridge.EXPECT().ResourceIDToHandlerAddress(&bind.CallOpts{}, [32]byte(listener.cfg.Erc20HandlerContract.Hash())).Return(listener.cfg.Erc20HandlerContract, nil)
 
-	nonce := msg.Nonce(logs[0].Topics[3].Big().Uint64())
+	nonce := pkg.Nonce(logs[0].Topics[3].Big().Uint64())
 
-	destID := msg.ChainId(logs[0].Topics[1].Big().Uint64())
+	destID := pkg.ChainId(logs[0].Topics[1].Big().Uint64())
 	pk := []byte{0x1f}
 	s.validatorsAggregatorMock.EXPECT().GetAPKForBlock(gomock.Any(), gomock.Any(), gomock.Any()).Return([]byte{0x1f}, nil)
 	block := dummyBlock(123)
@@ -318,17 +317,17 @@ func (s *ListenerTestSuite) TestGetDepositEventsAndProofsForBlockerERC20() {
 	proof, err := trie.RetrieveEncodedProof(block.TxHash(), keyRlp)
 	s.Nil(err)
 
-	_ = msg.NewFungibleTransfer(
+	_ = pkg.NewFungibleTransfer(
 		listener.cfg.ID,
 		destID,
 		nonce,
 		prop.ResourceID,
-		&msg.MerkleProof{
+		&pkg.MerkleProof{
 			TxRootHash: block.TxHash(),
 			Nodes:      proof,
 			Key:        keyRlp,
 		},
-		&msg.SignatureVerification{
+		&pkg.SignatureVerification{
 			AggregatePublicKey: pk,
 			BlockHash:          block.Header().Hash(),
 			Signature:          block.EpochSnarkData().Signature,
@@ -378,14 +377,14 @@ func (s *ListenerTestSuite) TestGetDepositEventsAndProofsForBlockerERC721() {
 
 	listener.SetContracts(s.bridge, s.erc20Handler, s.erc721Handler, s.genericHandler)
 
-	query := buildQuery(address, utils.Deposit, startBlock, startBlock)
+	query := buildQuery(address, pkg.Deposit, startBlock, startBlock)
 
 	logs := []types.Log{
 		{
 			Address: listener.cfg.Erc721HandlerContract,
 			// list of topics provided by the contract.
 			Topics: []common.Hash{
-				utils.Deposit.GetTopic(),
+				pkg.Deposit.GetTopic(),
 				crypto.Keccak256Hash(big.NewInt(1).Bytes()),
 				address.Hash(),
 				crypto.Keccak256Hash(big.NewInt(1).Bytes()),
@@ -410,22 +409,22 @@ func (s *ListenerTestSuite) TestGetDepositEventsAndProofsForBlockerERC721() {
 
 	s.bridge.EXPECT().ResourceIDToHandlerAddress(&bind.CallOpts{}, [32]byte(listener.cfg.Erc721HandlerContract.Hash())).Return(listener.cfg.Erc721HandlerContract, nil)
 
-	nonce := msg.Nonce(logs[0].Topics[3].Big().Uint64())
+	nonce := pkg.Nonce(logs[0].Topics[3].Big().Uint64())
 
-	destID := msg.ChainId(logs[0].Topics[1].Big().Uint64())
+	destID := pkg.ChainId(logs[0].Topics[1].Big().Uint64())
 	pk := []byte{0x1f}
 	s.validatorsAggregatorMock.EXPECT().GetAPKForBlock(gomock.Any(), gomock.Any(), gomock.Any()).Return(pk, nil)
 	block := dummyBlock(123)
 	s.clientMock.EXPECT().BlockByNumber(gomock.Any(), gomock.Any()).Return(block, nil)
-	_ = msg.NewNonFungibleTransfer(
+	_ = pkg.NewNonFungibleTransfer(
 		listener.cfg.ID,
 		destID,
 		nonce,
 		prop.ResourceID,
-		&msg.MerkleProof{
+		&pkg.MerkleProof{
 			TxRootHash: block.TxHash(),
 		},
-		&msg.SignatureVerification{
+		&pkg.SignatureVerification{
 			AggregatePublicKey: pk,
 			BlockHash:          block.Header().Hash(),
 			Signature:          block.EpochSnarkData().Signature,
@@ -466,14 +465,14 @@ func (s *ListenerTestSuite) TestGetDepositEventsAndProofsForBlockerGeneric() {
 
 	listener.SetContracts(s.bridge, s.erc20Handler, s.erc721Handler, s.genericHandler)
 
-	query := buildQuery(address, utils.Deposit, startBlock, startBlock)
+	query := buildQuery(address, pkg.Deposit, startBlock, startBlock)
 
 	logs := []types.Log{
 		{
 			Address: listener.cfg.GenericHandlerContract,
 			// list of topics provided by the contract.
 			Topics: []common.Hash{
-				utils.Deposit.GetTopic(),
+				pkg.Deposit.GetTopic(),
 				crypto.Keccak256Hash(big.NewInt(1).Bytes()),
 				address.Hash(),
 				crypto.Keccak256Hash(big.NewInt(1).Bytes()),
@@ -495,22 +494,22 @@ func (s *ListenerTestSuite) TestGetDepositEventsAndProofsForBlockerGeneric() {
 
 	s.bridge.EXPECT().ResourceIDToHandlerAddress(&bind.CallOpts{}, [32]byte(listener.cfg.GenericHandlerContract.Hash())).Return(listener.cfg.GenericHandlerContract, nil)
 
-	nonce := msg.Nonce(logs[0].Topics[3].Big().Uint64())
+	nonce := pkg.Nonce(logs[0].Topics[3].Big().Uint64())
 
-	destID := msg.ChainId(logs[0].Topics[1].Big().Uint64())
+	destID := pkg.ChainId(logs[0].Topics[1].Big().Uint64())
 	pk := []byte{0x1f}
 	s.validatorsAggregatorMock.EXPECT().GetAPKForBlock(gomock.Any(), gomock.Any(), gomock.Any()).Return(pk, nil)
 	block := dummyBlock(123)
 	s.clientMock.EXPECT().BlockByNumber(gomock.Any(), gomock.Any()).Return(block, nil)
-	_ = msg.NewGenericTransfer(
+	_ = pkg.NewGenericTransfer(
 		listener.cfg.ID,
 		destID,
 		nonce,
 		prop.ResourceID,
-		&msg.MerkleProof{
+		&pkg.MerkleProof{
 			TxRootHash: block.TxHash(),
 		},
-		&msg.SignatureVerification{
+		&pkg.SignatureVerification{
 			AggregatePublicKey: pk,
 			BlockHash:          block.Header().Hash(),
 			Signature:          block.EpochSnarkData().Signature,
@@ -554,14 +553,14 @@ func (s *ListenerTestSuite) TestGetDepositEventsAndProofsForBlockerFailure() {
 
 	listener.SetContracts(s.bridge, s.erc20Handler, s.erc721Handler, s.genericHandler)
 
-	query := buildQuery(contractAddress, utils.Deposit, startBlock, startBlock)
+	query := buildQuery(contractAddress, pkg.Deposit, startBlock, startBlock)
 
 	logs := []types.Log{
 		{
 			Address: contractAddress,
 			// list of topics provided by the contract.
 			Topics: []common.Hash{
-				utils.Deposit.GetTopic(),
+				pkg.Deposit.GetTopic(),
 				crypto.Keccak256Hash(big.NewInt(1).Bytes()),
 				contractAddress.Hash(),
 				crypto.Keccak256Hash(big.NewInt(1).Bytes()),
@@ -586,11 +585,11 @@ func (s *ListenerTestSuite) TestGetDepositEventsAndProofsForBlockerFailure() {
 	block := dummyBlock(123)
 	s.clientMock.EXPECT().BlockByNumber(gomock.Any(), gomock.Any()).Return(block, nil)
 
-	nonce := msg.Nonce(logs[0].Topics[3].Big().Uint64())
+	nonce := pkg.Nonce(logs[0].Topics[3].Big().Uint64())
 
-	destID := msg.ChainId(logs[0].Topics[1].Big().Uint64())
+	destID := pkg.ChainId(logs[0].Topics[1].Big().Uint64())
 
-	_ = msg.NewGenericTransfer(
+	_ = pkg.NewGenericTransfer(
 		listener.cfg.ID,
 		destID,
 		nonce,
@@ -620,11 +619,11 @@ func (s *ListenerTestSuite) TestBuildQuery() {
 		ToBlock:   startBlock,
 		Addresses: []common.Address{contractAddress},
 		Topics: [][]ethcommon.Hash{
-			{utils.Deposit.GetTopic()},
+			{pkg.Deposit.GetTopic()},
 		},
 	}
 
-	actual := buildQuery(contractAddress, utils.Deposit, startBlock, startBlock)
+	actual := buildQuery(contractAddress, pkg.Deposit, startBlock, startBlock)
 
 	s.Equal(expected, actual)
 

@@ -75,7 +75,7 @@ func Run(ctx *cli.Context) error {
 			log.Error().Interface("chain", newChain.ID()).Err(err).Msg("failed to start chain")
 			return err
 		}
-		//go validatorsync.SyncBlockValidators(stopChn, errChn, chainClient, validatorsStore, uint8(celoChainConfig.ID), celoChainConfig.EpochSize)
+		go validatorsync.SyncBlockValidators(stopChn, errChn, chainClient, validatorsStore, uint8(celoChainConfig.ID), celoChainConfig.EpochSize)
 	}
 
 	sysErr := make(chan os.Signal, 1)

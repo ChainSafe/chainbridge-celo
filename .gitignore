@@ -3,6 +3,7 @@
 /build
 /solidity
 .vscode
+lvldb
 
 
 # Output of the go coverage tool, specifically when used with LiteIDE

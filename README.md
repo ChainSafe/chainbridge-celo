@@ -69,7 +69,7 @@ Celo chains support the following additional options:
 To build the Docker image locally run:
 
 ```
-docker build . -t chainsafe/chainbridge-celo .
+docker build -t chainsafe/chainbridge-celo .
 ```
 
 To start ChainBridge:

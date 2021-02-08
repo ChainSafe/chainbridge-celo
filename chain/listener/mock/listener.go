@@ -5,7 +5,7 @@
 package mock_listener
 
 import (
-	msg "github.com/ChainSafe/chainbridge-celo/msg"
+	msg "github.com/ChainSafe/chainbridge-celo/pkg"
 	gomock "github.com/golang/mock/gomock"
 	big "math/big"
 	reflect "reflect"

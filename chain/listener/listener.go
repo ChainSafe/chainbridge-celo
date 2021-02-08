@@ -7,13 +7,12 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/ChainSafe/chainbridge-celo/pkg"
 	"math/big"
 	"time"
 
 	"github.com/ChainSafe/chainbridge-celo/chain/client"
 	"github.com/ChainSafe/chainbridge-celo/chain/config"
-	"github.com/ChainSafe/chainbridge-celo/msg"
-	"github.com/ChainSafe/chainbridge-celo/shared/ethereum"
 	"github.com/ChainSafe/chainbridge-ethereum-trie/txtrie"
 	eth "github.com/ethereum/go-ethereum"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
@@ -45,7 +44,7 @@ type listener struct {
 }
 
 type IRouter interface {
-	Send(msg *msg.Message) error
+	Send(msg *pkg.Message) error
 }
 type Blockstorer interface {
 	StoreBlock(*big.Int) error
@@ -121,7 +120,6 @@ func (l *listener) pollBlocks() error {
 
 			// Sleep if the difference is less than BlockDelay; (latest - current) < BlockDelay
 			if big.NewInt(0).Sub(latestBlock, currentBlock).Cmp(BlockDelay) == -1 {
-				log.Debug().Str("target", currentBlock.String()).Str("latest", latestBlock.String()).Msg("Block not ready, will retry")
 				time.Sleep(BlockRetryInterval)
 				continue
 			}
@@ -155,10 +153,8 @@ func (l *listener) pollBlocks() error {
 	}
 }
 
-// TODO: Proof construction.
 func (l *listener) getDepositEventsAndProofsForBlock(latestBlock *big.Int) error {
-	log.Debug().Str("block", latestBlock.String()).Msg("Querying block for deposit events")
-	query := buildQuery(l.cfg.BridgeContract, utils.Deposit, latestBlock, latestBlock)
+	query := buildQuery(l.cfg.BridgeContract, pkg.Deposit, latestBlock, latestBlock)
 
 	// querying for logs
 	logs, err := l.client.FilterLogs(context.Background(), query)
@@ -182,10 +178,10 @@ func (l *listener) getDepositEventsAndProofsForBlock(latestBlock *big.Int) error
 	// read through the log events and handle their deposit event if handler is recognized
 	for _, eventLog := range logs {
 
-		var m *msg.Message
-		destId := msg.ChainId(eventLog.Topics[1].Big().Uint64())
-		rId := msg.ResourceId(eventLog.Topics[2])
-		nonce := msg.Nonce(eventLog.Topics[3].Big().Uint64())
+		var m *pkg.Message
+		destId := pkg.ChainId(eventLog.Topics[1].Big().Uint64())
+		rId := pkg.ResourceId(eventLog.Topics[2])
+		nonce := pkg.Nonce(eventLog.Topics[3].Big().Uint64())
 
 		addr, err := l.bridgeContract.ResourceIDToHandlerAddress(&bind.CallOpts{}, rId)
 		if err != nil {
@@ -217,17 +213,27 @@ func (l *listener) getDepositEventsAndProofsForBlock(latestBlock *big.Int) error
 		}
 
 		proof, err := trie.RetrieveEncodedProof(blockData.TxHash(), keyRlp)
-
 		if err != nil {
 			return err
 		}
+		//
+		//p, err := trie.RetrieveProof(blockData.TxHash(), keyRlp)
+		//if err != nil {
+		//	return err
+		//}
+		//rootIndex, err := rlp.EncodeToBytes(uint(1))
+		//if err != nil {
+		//	panic(err)
+		//}
+		//root, err := p.Get(rootIndex)
+		//if err != nil {
+		//	panic(err)
+		//}
+		//log.Debug().Msgf("GENERATED ROOT HASH %s", hexutils.BytesToHex(root))
+		//log.Debug().Msgf("REAL ROOT HASH %s", blockData.TxHash().String())
 
-		if err != nil {
-			return err
-		}
-
-		m.SVParams = &msg.SignatureVerification{AggregatePublicKey: pubKey, BlockHash: blockData.Header().Hash(), Signature: blockData.EpochSnarkData().Signature}
-		m.MPParams = &msg.MerkleProof{TxRootHash: blockData.TxHash(), Nodes: proof, Key: keyRlp}
+		m.SVParams = &pkg.SignatureVerification{AggregatePublicKey: pubKey, BlockHash: blockData.Header().Hash(), Signature: blockData.EpochSnarkData().Signature}
+		m.MPParams = &pkg.MerkleProof{TxRootHash: blockData.TxHash(), Nodes: proof, Key: keyRlp}
 		err = l.router.Send(m)
 
 		if err != nil {
@@ -238,7 +244,7 @@ func (l *listener) getDepositEventsAndProofsForBlock(latestBlock *big.Int) error
 }
 
 // buildQuery constructs a query for the bridgeContract by hashing sig to get the event topic
-func buildQuery(contract ethcommon.Address, sig utils.EventSig, startBlock *big.Int, endBlock *big.Int) eth.FilterQuery {
+func buildQuery(contract ethcommon.Address, sig pkg.EventSig, startBlock *big.Int, endBlock *big.Int) eth.FilterQuery {
 	query := eth.FilterQuery{
 		FromBlock: startBlock,
 		ToBlock:   endBlock,

@@ -9,8 +9,7 @@ import (
 	"math/big"
 	"time"
 
-	"github.com/ChainSafe/chainbridge-celo/msg"
-	utils "github.com/ChainSafe/chainbridge-celo/shared/ethereum"
+	"github.com/ChainSafe/chainbridge-celo/pkg"
 	eth "github.com/ethereum/go-ethereum"
 	ethcommon "github.com/ethereum/go-ethereum/common"
 	"github.com/rs/zerolog/log"
@@ -31,7 +30,7 @@ var ErrFatalTx = errors.New("submission of transaction failed")
 var ErrFatalQuery = errors.New("query of chain state failed")
 
 // proposalIsComplete returns true if the proposal state is either Passed, Transferred or Cancelled
-func (w *writer) proposalIsComplete(srcId msg.ChainId, nonce msg.Nonce, dataHash ethcommon.Hash) bool {
+func (w *writer) proposalIsComplete(srcId pkg.ChainId, nonce pkg.Nonce, dataHash ethcommon.Hash) bool {
 	prop, err := w.bridgeContract.GetProposal(w.client.CallOpts(), uint8(srcId), uint64(nonce), dataHash)
 	if err != nil {
 		log.Error().Err(err).Msg("Failed to check proposal existence")
@@ -41,7 +40,7 @@ func (w *writer) proposalIsComplete(srcId msg.ChainId, nonce msg.Nonce, dataHash
 }
 
 // proposalIsFinalized returns true if the proposal state is Transferred or Cancelled
-func (w *writer) proposalIsFinalized(srcId msg.ChainId, nonce msg.Nonce, dataHash ethcommon.Hash) bool {
+func (w *writer) proposalIsFinalized(srcId pkg.ChainId, nonce pkg.Nonce, dataHash ethcommon.Hash) bool {
 	prop, err := w.bridgeContract.GetProposal(w.client.CallOpts(), uint8(srcId), uint64(nonce), dataHash)
 
 	if err != nil {
@@ -52,8 +51,8 @@ func (w *writer) proposalIsFinalized(srcId msg.ChainId, nonce msg.Nonce, dataHas
 }
 
 // hasVoted checks if this relayer has already voted
-func (w *writer) hasVoted(srcId msg.ChainId, nonce msg.Nonce, dataHash ethcommon.Hash) bool {
-	hasVoted, err := w.bridgeContract.HasVotedOnProposal(w.client.CallOpts(), utils.IDAndNonce(srcId, nonce), dataHash, w.client.Opts().From)
+func (w *writer) hasVoted(srcId pkg.ChainId, nonce pkg.Nonce, dataHash ethcommon.Hash) bool {
+	hasVoted, err := w.bridgeContract.HasVotedOnProposal(w.client.CallOpts(), idAndNonce(srcId, nonce), dataHash, w.client.Opts().From)
 
 	if err != nil {
 		log.Error().Err(err).Msg("Failed to check proposal existence")
@@ -62,7 +61,14 @@ func (w *writer) hasVoted(srcId msg.ChainId, nonce msg.Nonce, dataHash ethcommon
 	return hasVoted
 }
 
-func (w *writer) shouldVote(m *msg.Message, dataHash ethcommon.Hash) bool {
+func idAndNonce(srcId pkg.ChainId, nonce pkg.Nonce) *big.Int {
+	var data []byte
+	data = append(data, nonce.Big().Bytes()...)
+	data = append(data, uint8(srcId))
+	return big.NewInt(0).SetBytes(data)
+}
+
+func (w *writer) shouldVote(m *pkg.Message, dataHash ethcommon.Hash) bool {
 	// Check if proposal has passed and skip if Passed or Transferred
 	if w.proposalIsComplete(m.Source, m.DepositNonce, dataHash) {
 		log.Info().Interface("src", m.Source).Interface("nonce", m.DepositNonce).Msg("Proposal complete, not voting")
@@ -77,7 +83,7 @@ func (w *writer) shouldVote(m *msg.Message, dataHash ethcommon.Hash) bool {
 	return true
 }
 
-func (w *writer) createERC20ProposalData(m *msg.Message) ([]byte, error) {
+func (w *writer) createERC20ProposalData(m *pkg.Message) ([]byte, error) {
 	log.Info().Interface("src", m.Source).Interface("nonce", m.DepositNonce).Msg("Creating erc20 proposal")
 	if len(m.Payload) != 2 {
 		return nil, errors.New("malformed payload. Len  of payload should be 2")
@@ -95,7 +101,7 @@ func (w *writer) createERC20ProposalData(m *msg.Message) ([]byte, error) {
 	return data, nil
 }
 
-func (w *writer) createErc721ProposalData(m *msg.Message) ([]byte, error) {
+func (w *writer) createErc721ProposalData(m *pkg.Message) ([]byte, error) {
 	log.Info().Interface("src", m.Source).Interface("nonce", m.DepositNonce).Msg("Creating erc721 proposal")
 	if len(m.Payload) != 3 {
 		return nil, errors.New("malformed payload. Len  of payload should be 3")
@@ -115,7 +121,7 @@ func (w *writer) createErc721ProposalData(m *msg.Message) ([]byte, error) {
 	return ConstructErc721ProposalData(tokenID, recipient, metadata), nil
 }
 
-func (w *writer) createGenericDepositProposalData(m *msg.Message) ([]byte, error) {
+func (w *writer) createGenericDepositProposalData(m *pkg.Message) ([]byte, error) {
 	log.Info().Interface("src", m.Source).Interface("nonce", m.DepositNonce).Msg("Creating generic proposal")
 	if len(m.Payload) != 1 {
 		return nil, errors.New("malformed payload. Len  of payload should be 1")
@@ -128,7 +134,7 @@ func (w *writer) createGenericDepositProposalData(m *msg.Message) ([]byte, error
 }
 
 // watchThenExecute watches for the latest block and executes once the matching finalized event is found
-func (w *writer) watchThenExecute(m *msg.Message, data []byte, dataHash ethcommon.Hash, latestBlock *big.Int) {
+func (w *writer) watchThenExecute(m *pkg.Message, data []byte, dataHash ethcommon.Hash, latestBlock *big.Int) {
 	log.Info().Interface("src", m.Source).Interface("nonce", m.DepositNonce).Msg("Watching for finalization event")
 
 	// watching for the latest block, querying and matching the finalized event will be retried up to ExecuteBlockWatchLimit times
@@ -154,7 +160,7 @@ func (w *writer) watchThenExecute(m *msg.Message, data []byte, dataHash ethcommo
 			}
 
 			// query for logs
-			query := buildQuery(w.cfg.BridgeContract, utils.ProposalEvent, latestBlock, latestBlock)
+			query := buildQuery(w.cfg.BridgeContract, pkg.ProposalEvent, latestBlock, latestBlock)
 			evts, err := w.client.FilterLogs(context.Background(), query)
 			if err != nil {
 				log.Error().Err(err).Msg("Failed to fetch logs")
@@ -167,13 +173,13 @@ func (w *writer) watchThenExecute(m *msg.Message, data []byte, dataHash ethcommo
 				depositNonce := evt.Topics[2].Big().Uint64()
 				status := evt.Topics[3].Big().Uint64()
 
-				if m.Source == msg.ChainId(sourceId) &&
+				if m.Source == pkg.ChainId(sourceId) &&
 					m.DepositNonce.Big().Uint64() == depositNonce &&
-					utils.IsFinalized(uint8(status)) {
+					pkg.IsPassed(uint8(status)) {
 					w.executeProposal(m, data, dataHash)
 					return
 				} else {
-					log.Trace().Interface("src", sourceId).Interface("nonce", depositNonce).Msg("Ignoring event")
+					log.Trace().Interface("src", sourceId).Interface("nonce", depositNonce).Uint64("status", status).Msg("Ignoring event")
 				}
 			}
 			log.Trace().Interface("block", latestBlock).Interface("src", m.Source).Interface("nonce", m.DepositNonce).Msg("No finalization event found in current block")
@@ -185,7 +191,7 @@ func (w *writer) watchThenExecute(m *msg.Message, data []byte, dataHash ethcommo
 
 // voteProposal submits a vote proposal
 // a vote proposal will try to be submitted up to the TxRetryLimit times
-func (w *writer) voteProposal(m *msg.Message, dataHash ethcommon.Hash) {
+func (w *writer) voteProposal(m *pkg.Message, dataHash ethcommon.Hash) {
 	for i := 0; i < TxRetryLimit; i++ {
 		select {
 		case <-w.stop:
@@ -230,7 +236,7 @@ func (w *writer) voteProposal(m *msg.Message, dataHash ethcommon.Hash) {
 }
 
 // executeProposal executes the proposal
-func (w *writer) executeProposal(m *msg.Message, data []byte, dataHash ethcommon.Hash) {
+func (w *writer) executeProposal(m *pkg.Message, data []byte, dataHash ethcommon.Hash) {
 	for i := 0; i < TxRetryLimit; i++ {
 		select {
 		case <-w.stop:
@@ -248,7 +254,6 @@ func (w *writer) executeProposal(m *msg.Message, data []byte, dataHash ethcommon
 				uint64(m.DepositNonce),
 				data,
 				m.ResourceId,
-				//
 				m.SVParams.Signature,
 				m.SVParams.AggregatePublicKey,
 				// TODO: Remove once G1 has been removed from contracts
@@ -284,7 +289,7 @@ func (w *writer) executeProposal(m *msg.Message, data []byte, dataHash ethcommon
 }
 
 // buildQuery constructs a query for the bridgeContract by hashing sig to get the event topic
-func buildQuery(contract ethcommon.Address, sig utils.EventSig, startBlock *big.Int, endBlock *big.Int) eth.FilterQuery {
+func buildQuery(contract ethcommon.Address, sig pkg.EventSig, startBlock *big.Int, endBlock *big.Int) eth.FilterQuery {
 	query := eth.FilterQuery{
 		FromBlock: startBlock,
 		ToBlock:   endBlock,

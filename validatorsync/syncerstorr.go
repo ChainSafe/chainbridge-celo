@@ -10,7 +10,6 @@ import (
 	"math/big"
 
 	"github.com/ethereum/go-ethereum/consensus/istanbul"
-	"github.com/rs/zerolog/log"
 	"github.com/syndtr/goleveldb/leveldb"
 )
 
@@ -80,7 +79,6 @@ func (db *ValidatorsStore) SetValidatorsForBlock(block *big.Int, validators []*i
 		tx.Discard()
 		return err
 	}
-	log.Info().Int64("block", block.Int64()).Msgf("New validators set for block")
 	return nil
 }
 
