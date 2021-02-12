@@ -7,7 +7,6 @@ import (
 	"encoding/binary"
 	"encoding/gob"
 	"errors"
-	"github.com/rs/zerolog/log"
 	"math/big"
 
 	"github.com/ethereum/go-ethereum/consensus/istanbul"
@@ -122,23 +121,21 @@ func (db *ValidatorsStore) setLatestKnownEpochLastBlockWithTransaction(block *bi
 var ErrNoBlockInStore = errors.New("no corresponding validators for provided block number")
 
 func (db *ValidatorsStore) GetAPKForBlock(block *big.Int, chainID uint8, epochSize uint64) ([]byte, error) {
-	vals, err := db.GetValidatorsForBlock(computeLastBlockOfEpochForProvidedBlock(block, epochSize), chainID)
-	if err != nil {
-		if errors.Is(err, leveldb.ErrNotFound) {
-			latest, err := db.GetLatestKnownEpochLastBlock(chainID)
-			if err != nil {
-				err = errors.New(err.Error())
+	for i := 0; i <= 10; i++ {
+		vals, err := db.GetValidatorsForBlock(computeLastBlockOfEpochForProvidedBlock(block, epochSize), chainID)
+		if err != nil {
+			if errors.Is(err, leveldb.ErrNotFound) {
+				continue
 			}
-			log.Debug().Msgf("Latest known block is %v", latest)
-			return nil, ErrNoBlockInStore
+			return nil, err
 		}
-		return nil, err
+		pk, err := aggregatePublicKeys(vals)
+		if err != nil {
+			return nil, err
+		}
+		return pk.Serialize()
 	}
-	pk, err := aggregatePublicKeys(vals)
-	if err != nil {
-		return nil, err
-	}
-	return pk.Serialize()
+	return nil, leveldb.ErrNotFound
 }
 
 // Closes connection to underlying DB backend

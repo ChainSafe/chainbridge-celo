@@ -12,8 +12,6 @@ import (
 	"github.com/ethereum/go-ethereum/ethdb/memorydb"
 	"github.com/ethereum/go-ethereum/rlp"
 	ethtrie "github.com/ethereum/go-ethereum/trie"
-	"github.com/rs/zerolog/log"
-	"github.com/status-im/keycard-go/hexutils"
 )
 
 var (
@@ -48,43 +46,29 @@ func CreateNewTrie(root common.Hash, transactions types.Transactions) (*ethtrie.
 }
 
 func RetrieveProof(trie *ethtrie.Trie, key []byte) ([]byte, []byte, error) {
-	//RetrieveProof(trie, key)
-	iterator := trie.NodeIterator(key)
-	it2 := ethtrie.NewIterator(iterator)
-
-	proof := make([][][]byte, 1)
-	for it2.Next() {
-		log.Debug().Msgf("KEY %s", hexutils.BytesToHex(it2.Key))
-		value := it2.Prove()
-		log.Debug().Msgf("VALUE %s  %s", hexutils.BytesToHex(value[0]), hexutils.BytesToHex(value[0]))
-		proof[0] = value
-		proof123 := make([][][]byte, 0)
+	nodeIterator := trie.NodeIterator(key)
+	trieIterator := ethtrie.NewIterator(nodeIterator)
+	proof := make([][][]byte, 0)
+	for trieIterator.Next() {
+		value := trieIterator.Prove()
 		for _, v := range value {
 			n := make([][]byte, 0, 17)
 			err := rlp.DecodeBytes(v, &n)
 			if err != nil {
 				panic(err)
 			}
-			proof123 = append(proof123, n)
+			proof = append(proof, n)
 		}
 		buf := &bytes.Buffer{}
-		rlp.Encode(buf, proof123)
-		log.Debug().Msgf("ITERATOR LEAF PATH %s", hexutils.BytesToHex(keybytesToHex(iterator.LeafKey())))
-		key := keybytesToHex(iterator.LeafKey())
+		err := rlp.Encode(buf, proof)
+		if err != nil {
+			return nil, nil, err
+		}
+		key := keybytesToHex(nodeIterator.LeafKey())
 		key = key[:len(key)-1]
 		return buf.Bytes(), key, nil
 	}
-	//log.Debug().Msgf("IS THE LEAF %v", iterator.Leaf())
-	//for iterator.Next(true) {
-	//	if iterator.Leaf() {
-	//		log.Debug().Msgf("ITERATOR LEAF PATH %s", hexutils.BytesToHex(iterator.LeafKey()))
-	//		log.Debug().Msgf("ITERATOR LEAF PROOF %s", hexutils.BytesToHex(iterator.LeafProof()[0]))
-	//	}
-	//log.Debug().Msgf("IS THE LEAF %v", iterator.Leaf())
-	//}
-	//log.Debug().Msgf("IS THE LEAF %v", iterator.Leaf())
-	//log.Debug().Msgf("%s", hexutils.BytesToHex(iterator.LeafProof()[0]))
-	return iterator.Path(), nil, nil
+	return nil, nil, errors.New("no leaf node found")
 }
 
 func keybytesToHex(str []byte) []byte {

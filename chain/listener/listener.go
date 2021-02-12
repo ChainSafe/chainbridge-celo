@@ -19,7 +19,6 @@ import (
 	ethcommon "github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/rlp"
 	"github.com/rs/zerolog/log"
-	"github.com/status-im/keycard-go/hexutils"
 )
 
 var BlockDelay = big.NewInt(10)
@@ -201,7 +200,7 @@ func (l *listener) getDepositEventsAndProofsForBlock(latestBlock *big.Int) error
 		if err != nil {
 			return err
 		}
-		pubKey, err := l.valsAggr.GetAPKForBlock(latestBlock, uint8(l.cfg.ID), l.cfg.EpochSize)
+		apk, err := l.valsAggr.GetAPKForBlock(latestBlock, uint8(l.cfg.ID), l.cfg.EpochSize)
 		if err != nil {
 			return err
 
@@ -210,22 +209,12 @@ func (l *listener) getDepositEventsAndProofsForBlock(latestBlock *big.Int) error
 		if err != nil {
 			return fmt.Errorf("encoding TxIndex to rlp: %w", err)
 		}
-
-		//proof, key, err := txtrie.RetrieveNewProof2(trie, keyRlp)
-		//if err != nil {
-		//	return err
-		//}
 		proof, key, err := txtrie.RetrieveProof(trie, keyRlp)
 		if err != nil {
 			return err
 		}
 
-		log.Debug().Msgf("KEY %s", hexutils.BytesToHex(key))
-		log.Debug().Msgf("Transaction: %s", eventLog.TxHash.String())
-		log.Debug().Msgf("PROOOF: %s", hexutils.BytesToHex(proof))
-		log.Debug().Msgf("ROOOOT: %s", hexutils.BytesToHex(blockData.TxHash().Bytes()))
-
-		m.SVParams = &pkg.SignatureVerification{AggregatePublicKey: pubKey, BlockHash: blockData.Header().Hash(), Signature: blockData.EpochSnarkData().Signature}
+		m.SVParams = &pkg.SignatureVerification{AggregatePublicKey: apk, BlockHash: blockData.Header().Hash(), Signature: blockData.EpochSnarkData().Signature}
 		m.MPParams = &pkg.MerkleProof{TxRootHash: pkg.SliceTo32Bytes(blockData.TxHash().Bytes()), Nodes: proof, Key: key}
 		err = l.router.Send(m)
 
