@@ -14,7 +14,7 @@ type ChainId uint8
 type TransferType string
 type ResourceId [32]byte
 
-func (r ResourceId) Hex() string {
+func (r *ResourceId) Hex() string {
 	return fmt.Sprintf("%x", r)
 }
 
@@ -41,9 +41,9 @@ type Message struct {
 }
 
 type MerkleProof struct {
-	TxRootHash common.Hash // Expected root of trie, in our case should be transactionsRoot from block
-	Key        []byte      // RLP encoding of tx index, for the tx we want to prove
-	Nodes      []byte      // The actual proof, all the nodes of the trie that between leaf value and root
+	TxRootHash [32]byte // Expected root of trie, in our case should be transactionsRoot from block
+	Key        []byte   // RLP encoding of tx index, for the tx we want to prove
+	Nodes      []byte   // The actual proof, all the nodes of the trie that between leaf value and root
 }
 
 type SignatureVerification struct {

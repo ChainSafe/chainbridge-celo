@@ -9,8 +9,8 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/ChainSafe/chainbridge-celo/chain/client"
 	"github.com/ChainSafe/chainbridge-celo/chain/config"
+	"github.com/ChainSafe/chainbridge-celo/chain/sender"
 	"github.com/ChainSafe/chainbridge-celo/cmd/cfg"
 	"github.com/ChainSafe/chainbridge-celo/validatorsync"
 	"github.com/ChainSafe/chainbridge-utils/crypto/secp256k1"
@@ -39,7 +39,7 @@ func Sync(ctx *cli.Context) error {
 	}
 	kp, _ := kpI.(*secp256k1.Keypair)
 
-	chainClient, err := client.NewClient(celoChainConfig.Endpoint, celoChainConfig.Http, kp, celoChainConfig.GasLimit, celoChainConfig.MaxGasPrice)
+	chainClient, err := sender.NewClient(celoChainConfig.Endpoint, celoChainConfig.Http, kp, celoChainConfig.GasLimit, celoChainConfig.MaxGasPrice)
 	if err != nil {
 		return err
 	}

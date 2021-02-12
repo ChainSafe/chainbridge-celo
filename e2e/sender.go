@@ -22,14 +22,14 @@ const DefaultGasPrice = 20000000000
 
 var ExpectedBlockTime = time.Second
 
-type Client struct {
+type Sender struct {
 	Client    *ethclient.Client
 	Opts      *bind.TransactOpts
 	CallOpts  *bind.CallOpts
 	nonceLock sync.Mutex
 }
 
-func NewClient(endpoint string, kp *secp256k1.Keypair) (*Client, error) {
+func NewSender(endpoint string, kp *secp256k1.Keypair) (*Sender, error) {
 	ctx := context.Background()
 	rpcClient, err := rpc.DialWebsocket(ctx, endpoint, "/ws")
 	if err != nil {
@@ -44,7 +44,7 @@ func NewClient(endpoint string, kp *secp256k1.Keypair) (*Client, error) {
 	opts.GasPrice = big.NewInt(DefaultGasPrice)
 	opts.Context = ctx
 
-	return &Client{
+	return &Sender{
 		Client: client,
 		Opts:   opts,
 		CallOpts: &bind.CallOpts{
@@ -53,7 +53,7 @@ func NewClient(endpoint string, kp *secp256k1.Keypair) (*Client, error) {
 	}, nil
 }
 
-func (c *Client) LockNonceAndUpdate() error {
+func (c *Sender) LockNonceAndUpdate() error {
 	c.nonceLock.Lock()
 	nonce, err := c.Client.PendingNonceAt(context.Background(), c.Opts.From)
 	if err != nil {
@@ -64,13 +64,13 @@ func (c *Client) LockNonceAndUpdate() error {
 	return nil
 }
 
-func (c *Client) UnlockNonce() {
+func (c *Sender) UnlockNonce() {
 	c.nonceLock.Unlock()
 }
 
 // WaitForTx will query the chain at ExpectedBlockTime intervals, until a receipt is returned.
 // Returns an error if the tx failed.
-func WaitForTx(client *Client, tx *ethtypes.Transaction) error {
+func WaitForTx(client *Sender, tx *ethtypes.Transaction) error {
 	retry := 10
 	for retry > 0 {
 		receipt, err := client.Client.TransactionReceipt(context.Background(), tx.Hash())

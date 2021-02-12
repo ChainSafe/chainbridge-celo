@@ -7,8 +7,8 @@ import (
 	"math/big"
 
 	"github.com/ChainSafe/chainbridge-celo/bindings/Bridge"
-	"github.com/ChainSafe/chainbridge-celo/chain/client"
 	"github.com/ChainSafe/chainbridge-celo/chain/config"
+	"github.com/ChainSafe/chainbridge-celo/chain/sender"
 	"github.com/ChainSafe/chainbridge-celo/pkg"
 	metrics "github.com/ChainSafe/chainbridge-utils/metrics/types"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
@@ -39,7 +39,7 @@ type Bridger interface {
 }
 
 type ContractCaller interface {
-	client.LogFilterWithLatestBlock
+	sender.LogFilterWithLatestBlock
 	CallOpts() *bind.CallOpts
 	Opts() *bind.TransactOpts
 	LockAndUpdateOpts() error

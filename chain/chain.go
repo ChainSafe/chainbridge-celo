@@ -8,9 +8,9 @@ import (
 	erc20Handler "github.com/ChainSafe/chainbridge-celo/bindings/ERC20Handler"
 	erc721Handler "github.com/ChainSafe/chainbridge-celo/bindings/ERC721Handler"
 	"github.com/ChainSafe/chainbridge-celo/bindings/GenericHandler"
-	"github.com/ChainSafe/chainbridge-celo/chain/client"
 	"github.com/ChainSafe/chainbridge-celo/chain/config"
 	"github.com/ChainSafe/chainbridge-celo/chain/listener"
+	"github.com/ChainSafe/chainbridge-celo/chain/sender"
 	"github.com/ChainSafe/chainbridge-celo/chain/writer"
 	"github.com/ChainSafe/chainbridge-celo/pkg"
 	"github.com/pkg/errors"
@@ -33,11 +33,11 @@ type Chain struct {
 	cfg      *config.CeloChainConfig // The config of the chain
 	listener Listener                // The listener of this chain
 	writer   Writer                  // The writer of the chain
-	client   *client.Client
+	client   *sender.Sender
 	stopChn  <-chan struct{}
 }
 
-func InitializeChain(cc *config.CeloChainConfig, c *client.Client, listener Listener, writer Writer, stopChn <-chan struct{}) (*Chain, error) {
+func InitializeChain(cc *config.CeloChainConfig, c *sender.Sender, listener Listener, writer Writer, stopChn <-chan struct{}) (*Chain, error) {
 
 	bridgeContract, err := bridgeHandler.NewBridge(cc.BridgeContract, c)
 	if err != nil {

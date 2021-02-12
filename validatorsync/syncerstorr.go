@@ -7,6 +7,7 @@ import (
 	"encoding/binary"
 	"encoding/gob"
 	"errors"
+	"github.com/rs/zerolog/log"
 	"math/big"
 
 	"github.com/ethereum/go-ethereum/consensus/istanbul"
@@ -124,6 +125,11 @@ func (db *ValidatorsStore) GetAPKForBlock(block *big.Int, chainID uint8, epochSi
 	vals, err := db.GetValidatorsForBlock(computeLastBlockOfEpochForProvidedBlock(block, epochSize), chainID)
 	if err != nil {
 		if errors.Is(err, leveldb.ErrNotFound) {
+			latest, err := db.GetLatestKnownEpochLastBlock(chainID)
+			if err != nil {
+				err = errors.New(err.Error())
+			}
+			log.Debug().Msgf("Latest known block is %v", latest)
 			return nil, ErrNoBlockInStore
 		}
 		return nil, err

@@ -7,18 +7,19 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/ChainSafe/chainbridge-celo/pkg"
 	"math/big"
 	"time"
 
-	"github.com/ChainSafe/chainbridge-celo/chain/client"
 	"github.com/ChainSafe/chainbridge-celo/chain/config"
-	"github.com/ChainSafe/chainbridge-ethereum-trie/txtrie"
+	"github.com/ChainSafe/chainbridge-celo/chain/sender"
+	"github.com/ChainSafe/chainbridge-celo/pkg"
+	"github.com/ChainSafe/chainbridge-celo/txtrie"
 	eth "github.com/ethereum/go-ethereum"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	ethcommon "github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/rlp"
 	"github.com/rs/zerolog/log"
+	"github.com/status-im/keycard-go/hexutils"
 )
 
 var BlockDelay = big.NewInt(10)
@@ -39,7 +40,7 @@ type listener struct {
 	sysErr                 chan<- error // Reports fatal error to core
 	//latestBlock            *metrics.LatestBlock
 	//metrics                *metrics.ChainMetrics
-	client   client.LogFilterWithLatestBlock
+	client   sender.LogFilterWithLatestBlock
 	valsAggr ValidatorsAggregator
 }
 
@@ -54,7 +55,7 @@ type ValidatorsAggregator interface {
 	GetAPKForBlock(block *big.Int, chainID uint8, epochSize uint64) ([]byte, error)
 }
 
-func NewListener(cfg *config.CeloChainConfig, client client.LogFilterWithLatestBlock, bs Blockstorer, stop <-chan struct{}, sysErr chan<- error, router IRouter, valsAggr ValidatorsAggregator) *listener {
+func NewListener(cfg *config.CeloChainConfig, client sender.LogFilterWithLatestBlock, bs Blockstorer, stop <-chan struct{}, sysErr chan<- error, router IRouter, valsAggr ValidatorsAggregator) *listener {
 	return &listener{
 		cfg:        cfg,
 		blockstore: bs,
@@ -170,8 +171,7 @@ func (l *listener) getDepositEventsAndProofsForBlock(latestBlock *big.Int) error
 		return err
 	}
 
-	trie := txtrie.NewTxTries()
-	err = trie.CreateNewTrie(blockData.TxHash(), blockData.Transactions())
+	trie, err := txtrie.CreateNewTrie(blockData.TxHash(), blockData.Transactions())
 	if err != nil {
 		return err
 	}
@@ -204,36 +204,29 @@ func (l *listener) getDepositEventsAndProofsForBlock(latestBlock *big.Int) error
 		pubKey, err := l.valsAggr.GetAPKForBlock(latestBlock, uint8(l.cfg.ID), l.cfg.EpochSize)
 		if err != nil {
 			return err
-		}
 
+		}
 		keyRlp, err := rlp.EncodeToBytes(eventLog.TxIndex)
-
 		if err != nil {
-			return err
+			return fmt.Errorf("encoding TxIndex to rlp: %w", err)
 		}
 
-		proof, err := trie.RetrieveEncodedProof(blockData.TxHash(), keyRlp)
-		if err != nil {
-			return err
-		}
-		//
-		//p, err := trie.RetrieveProof(blockData.TxHash(), keyRlp)
+		//proof, key, err := txtrie.RetrieveNewProof2(trie, keyRlp)
 		//if err != nil {
 		//	return err
 		//}
-		//rootIndex, err := rlp.EncodeToBytes(uint(1))
-		//if err != nil {
-		//	panic(err)
-		//}
-		//root, err := p.Get(rootIndex)
-		//if err != nil {
-		//	panic(err)
-		//}
-		//log.Debug().Msgf("GENERATED ROOT HASH %s", hexutils.BytesToHex(root))
-		//log.Debug().Msgf("REAL ROOT HASH %s", blockData.TxHash().String())
+		proof, key, err := txtrie.RetrieveProof(trie, keyRlp)
+		if err != nil {
+			return err
+		}
+
+		log.Debug().Msgf("KEY %s", hexutils.BytesToHex(key))
+		log.Debug().Msgf("Transaction: %s", eventLog.TxHash.String())
+		log.Debug().Msgf("PROOOF: %s", hexutils.BytesToHex(proof))
+		log.Debug().Msgf("ROOOOT: %s", hexutils.BytesToHex(blockData.TxHash().Bytes()))
 
 		m.SVParams = &pkg.SignatureVerification{AggregatePublicKey: pubKey, BlockHash: blockData.Header().Hash(), Signature: blockData.EpochSnarkData().Signature}
-		m.MPParams = &pkg.MerkleProof{TxRootHash: blockData.TxHash(), Nodes: proof, Key: keyRlp}
+		m.MPParams = &pkg.MerkleProof{TxRootHash: pkg.SliceTo32Bytes(blockData.TxHash().Bytes()), Nodes: proof, Key: key}
 		err = l.router.Send(m)
 
 		if err != nil {

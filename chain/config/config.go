@@ -7,7 +7,7 @@ import (
 	"math/big"
 	"strconv"
 
-	"github.com/ChainSafe/chainbridge-celo/chain/client"
+	"github.com/ChainSafe/chainbridge-celo/chain/sender"
 	"github.com/ChainSafe/chainbridge-celo/cmd/cfg"
 	"github.com/ChainSafe/chainbridge-celo/flags"
 	"github.com/ChainSafe/chainbridge-celo/pkg"
@@ -40,7 +40,7 @@ type CeloChainConfig struct {
 	EpochSize              uint64 // Size of chain epoch. eg. The number of blocks after which to checkpoint and reset the pending votes
 }
 
-func (cfg *CeloChainConfig) EnsureContractsHaveBytecode(conn *client.Client) error {
+func (cfg *CeloChainConfig) EnsureContractsHaveBytecode(conn *sender.Sender) error {
 	err := conn.EnsureHasBytecode(cfg.BridgeContract)
 	if err != nil {
 		return err

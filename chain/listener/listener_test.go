@@ -9,11 +9,11 @@ import (
 	"github.com/ChainSafe/chainbridge-celo/bindings/ERC20Handler"
 	"github.com/ChainSafe/chainbridge-celo/bindings/ERC721Handler"
 	"github.com/ChainSafe/chainbridge-celo/bindings/GenericHandler"
-	"github.com/ChainSafe/chainbridge-celo/chain/client/mock"
 	"github.com/ChainSafe/chainbridge-celo/chain/config"
 	"github.com/ChainSafe/chainbridge-celo/chain/listener/mock"
+	"github.com/ChainSafe/chainbridge-celo/chain/sender/mock"
 	"github.com/ChainSafe/chainbridge-celo/pkg"
-	"github.com/ChainSafe/chainbridge-ethereum-trie/txtrie"
+	"github.com/ChainSafe/chainbridge-celo/txtrie"
 	eth "github.com/ethereum/go-ethereum"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
@@ -308,13 +308,14 @@ func (s *ListenerTestSuite) TestGetDepositEventsAndProofsForBlockerERC20() {
 	block := dummyBlock(123)
 	s.clientMock.EXPECT().BlockByNumber(gomock.Any(), gomock.Any()).Return(block, nil)
 
-	trie := txtrie.NewTxTries()
-	s.Nil(trie.CreateNewTrie(block.TxHash(), block.Transactions()))
+	trie, err := txtrie.CreateNewTrie(block.TxHash(), block.Transactions())
+	s.Nil(err)
+	//s.Nil(trie.CreateNewTrie(block.TxHash(), block.Transactions()))
 
 	keyRlp, err := rlp.EncodeToBytes(uint(1))
 	s.Nil(err)
 
-	proof, err := trie.RetrieveEncodedProof(block.TxHash(), keyRlp)
+	proof, err := txtrie.RetrieveEncodedProof(trie, block.TxHash(), keyRlp)
 	s.Nil(err)
 
 	_ = pkg.NewFungibleTransfer(
