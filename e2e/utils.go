@@ -45,7 +45,7 @@ func makeErc20Deposit(client *sender.Sender, bridge *Bridge.Bridge, erc20Contrac
 	if err != nil {
 		return nil, err
 	}
-	client.UnlockNonce()
+	client.UnlockOpts()
 	return tx, nil
 }
 
@@ -148,7 +148,7 @@ func transfer(client *sender.Sender, erc20 *erc20.ERC20PresetMinterPauser, recip
 	if err != nil {
 		return nil, err
 	}
-	client.UnlockNonce()
+	client.UnlockOpts()
 	return tx, nil
 }
 
@@ -175,6 +175,7 @@ func sendOneWei(sender *sender.Sender) (*types.Transaction, error) {
 	if err != nil {
 		return nil, err
 	}
+	sender.UnlockOpts()
 	err = WaitForTx(sender, signedTx)
 	if err != nil {
 		return nil, err
