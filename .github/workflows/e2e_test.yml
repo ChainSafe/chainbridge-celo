@@ -25,7 +25,7 @@ jobs:
             ${{ runner.os }}-go-
       - name: Run nodes
         run: docker-compose -f ./docker-compose-e2e.yml up -d
-      - name: Build brdige
+      - name: Build bridge-
         run: go build -o build/chainbridge-celo .
       - name: Run chainbridge
         run: ./scripts/start_bridge.sh
