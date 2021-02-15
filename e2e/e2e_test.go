@@ -1,7 +1,9 @@
+//nolint
 package e2e
 
 import (
 	"context"
+	"github.com/ChainSafe/chainbridge-celo/chain/sender"
 	"math/big"
 	"testing"
 	"time"
@@ -17,8 +19,8 @@ import (
 type IntegrationTestSuite struct {
 	suite.Suite
 	//contracts *DeployedContracts
-	sender            *Sender
-	sender2           *Sender
+	sender            *sender.Sender
+	sender2           *sender.Sender
 	bridgeAddr        common.Address
 	erc20HandlerAddr  common.Address
 	erc721Addr        common.Address
@@ -26,20 +28,20 @@ type IntegrationTestSuite struct {
 	erc20ContractAddr common.Address
 }
 
-func TestRunTestSuite(t *testing.T) {
+func TestRunE2ETests(t *testing.T) {
 	suite.Run(t, new(IntegrationTestSuite))
 }
 
 func (s *IntegrationTestSuite) SetupSuite()    {}
 func (s *IntegrationTestSuite) TearDownSuite() {}
 func (s *IntegrationTestSuite) SetupTest() {
-	client, err := NewSender(TestEndpoint, AliceKp)
+	client, err := sender.NewSender(TestEndpoint, false, AliceKp, big.NewInt(DefaultGasLimit), big.NewInt(DefaultGasPrice))
 	if err != nil {
 		panic(err)
 	}
 	s.sender = client
 
-	client2, err := NewSender(TestEndpoint2, AliceKp)
+	client2, err := sender.NewSender(TestEndpoint2, false, AliceKp, big.NewInt(DefaultGasLimit), big.NewInt(DefaultGasPrice))
 	if err != nil {
 		panic(err)
 	}
@@ -62,9 +64,9 @@ func (s *IntegrationTestSuite) TestDeposit() {
 	s.Nil(err)
 	erc20Contract2, err := erc20.NewERC20PresetMinterPauser(s.erc20ContractAddr, s.sender2.Client)
 	s.Nil(err)
-	senderBalBefore, err := erc20Contract.BalanceOf(s.sender.CallOpts, AliceKp.CommonAddress())
+	senderBalBefore, err := erc20Contract.BalanceOf(s.sender.CallOpts(), AliceKp.CommonAddress())
 	s.Nil(err)
-	destBalanceBefor, err := erc20Contract2.BalanceOf(s.sender2.CallOpts, dstAddr)
+	destBalanceBefor, err := erc20Contract2.BalanceOf(s.sender2.CallOpts(), dstAddr)
 	s.Nil(err)
 
 	amountToDeposit := big.NewInt(1000000)
@@ -88,7 +90,7 @@ func (s *IntegrationTestSuite) TestDeposit() {
 	}
 	s.True(passedEventFound)
 
-	senderBalAfter, err := erc20Contract.BalanceOf(s.sender.CallOpts, AliceKp.CommonAddress())
+	senderBalAfter, err := erc20Contract.BalanceOf(s.sender.CallOpts(), AliceKp.CommonAddress())
 	s.Nil(err)
 	s.Equal(senderBalBefore.Cmp(big.NewInt(0).Add(senderBalAfter, amountToDeposit)), 0)
 
@@ -105,14 +107,14 @@ func (s *IntegrationTestSuite) TestDeposit() {
 	}
 	s.True(executedEventFound)
 
-	destBalanceAfter, err := erc20Contract2.BalanceOf(s.sender2.CallOpts, dstAddr)
+	destBalanceAfter, err := erc20Contract2.BalanceOf(s.sender2.CallOpts(), dstAddr)
 	s.Nil(err)
 	//Balance has increased
 	s.Equal(destBalanceAfter.Cmp(destBalanceBefor), 1)
 }
 
 func (s *IntegrationTestSuite) TestMultipleTransactionsInBlock() {
-	eveSender, err := NewSender(TestEndpoint, EveKp)
+	eveSender, err := sender.NewSender(TestEndpoint, false, EveKp, big.NewInt(DefaultGasLimit), big.NewInt(DefaultGasPrice))
 	s.Nil(err)
 
 	dstAddr := BobKp.CommonAddress()
@@ -122,9 +124,9 @@ func (s *IntegrationTestSuite) TestMultipleTransactionsInBlock() {
 	s.Nil(err)
 	erc20Contract2, err := erc20.NewERC20PresetMinterPauser(s.erc20ContractAddr, s.sender2.Client)
 	s.Nil(err)
-	senderBalBefore, err := erc20Contract.BalanceOf(s.sender.CallOpts, AliceKp.CommonAddress())
+	senderBalBefore, err := erc20Contract.BalanceOf(s.sender.CallOpts(), AliceKp.CommonAddress())
 	s.Nil(err)
-	destBalanceBefor, err := erc20Contract2.BalanceOf(s.sender2.CallOpts, dstAddr)
+	destBalanceBefor, err := erc20Contract2.BalanceOf(s.sender2.CallOpts(), dstAddr)
 	s.Nil(err)
 
 	amountToDeposit := big.NewInt(1000000)
@@ -152,7 +154,7 @@ func (s *IntegrationTestSuite) TestMultipleTransactionsInBlock() {
 	}
 	s.True(passedEventFound)
 
-	senderBalAfter, err := erc20Contract.BalanceOf(s.sender.CallOpts, AliceKp.CommonAddress())
+	senderBalAfter, err := erc20Contract.BalanceOf(s.sender.CallOpts(), AliceKp.CommonAddress())
 	s.Nil(err)
 	s.Equal(senderBalBefore.Cmp(big.NewInt(0).Add(senderBalAfter, amountToDeposit)), 0)
 
@@ -169,7 +171,7 @@ func (s *IntegrationTestSuite) TestMultipleTransactionsInBlock() {
 	}
 	s.True(executedEventFound)
 
-	destBalanceAfter, err := erc20Contract2.BalanceOf(s.sender2.CallOpts, dstAddr)
+	destBalanceAfter, err := erc20Contract2.BalanceOf(s.sender2.CallOpts(), dstAddr)
 	s.Nil(err)
 	//Balance has increased
 	s.Equal(destBalanceAfter.Cmp(destBalanceBefor), 1)

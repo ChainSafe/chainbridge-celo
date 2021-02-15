@@ -60,18 +60,23 @@ func TestAddSingleTrieUpdate(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	trie, err := CreateNewTrie(root, types.Transactions(vals))
+	tr, err := CreateNewTrie(root, types.Transactions(vals))
 	if err != nil {
 		t.Fatal(err)
 	}
-	keyRlp, err := rlp.EncodeToBytes(0)
-	proof, key, err := RetrieveProof(trie, keyRlp)
+	keyRlp, err := rlp.EncodeToBytes(uint(0))
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+	proof, key, err := RetrieveProof(tr, keyRlp)
+	if err != nil {
+		t.Fatal(err.Error())
+	}
 
 	if proof == nil {
 		t.Fatal("proof is nil")
 	}
-
-	if hexutils.BytesToHex(key) != "0001" {
+	if hexutils.BytesToHex(key) != "0800" {
 		t.Fatal(fmt.Sprintf("wrong RLP key is %s", hexutils.BytesToHex(key)))
 	}
 

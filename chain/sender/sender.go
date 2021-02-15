@@ -49,7 +49,7 @@ type LogFilterWithLatestBlock interface {
 }
 
 // NewConnection returns an uninitialized connection, must call Sender.Connect() before using.
-func NewClient(endpoint string, http bool, kp *secp256k1.Keypair, gasLimit *big.Int, gasPrice *big.Int) (*Sender, error) {
+func NewSender(endpoint string, http bool, kp *secp256k1.Keypair, gasLimit *big.Int, gasPrice *big.Int) (*Sender, error) {
 	c := &Sender{
 		endpoint:    endpoint,
 		http:        http,

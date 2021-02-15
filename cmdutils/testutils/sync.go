@@ -39,7 +39,7 @@ func Sync(ctx *cli.Context) error {
 	}
 	kp, _ := kpI.(*secp256k1.Keypair)
 
-	chainClient, err := sender.NewClient(celoChainConfig.Endpoint, celoChainConfig.Http, kp, celoChainConfig.GasLimit, celoChainConfig.MaxGasPrice)
+	chainClient, err := sender.NewSender(celoChainConfig.Endpoint, celoChainConfig.Http, kp, celoChainConfig.GasLimit, celoChainConfig.MaxGasPrice)
 	if err != nil {
 		return err
 	}

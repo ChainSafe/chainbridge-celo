@@ -30,7 +30,7 @@ import (
 type ListenerTestSuite struct {
 	suite.Suite
 	routerMock               *mock_listener.MockIRouter
-	clientMock               *mock_client.MockLogFilterWithLatestBlock
+	clientMock               *mock_sender.MockLogFilterWithLatestBlock
 	blockStorerMock          *mock_listener.MockBlockstorer
 	gomockController         *gomock.Controller
 	bridge                   *mock_listener.MockIBridge
@@ -49,7 +49,7 @@ func (s *ListenerTestSuite) TearDownSuite() {}
 func (s *ListenerTestSuite) SetupTest() {
 	gomockController := gomock.NewController(s.T())
 	s.routerMock = mock_listener.NewMockIRouter(gomockController)
-	s.clientMock = mock_client.NewMockLogFilterWithLatestBlock(gomockController)
+	s.clientMock = mock_sender.NewMockLogFilterWithLatestBlock(gomockController)
 	s.blockStorerMock = mock_listener.NewMockBlockstorer(gomockController)
 	s.gomockController = gomockController
 	s.bridge = mock_listener.NewMockIBridge(gomockController)
@@ -315,7 +315,7 @@ func (s *ListenerTestSuite) TestGetDepositEventsAndProofsForBlockerERC20() {
 	keyRlp, err := rlp.EncodeToBytes(uint(1))
 	s.Nil(err)
 
-	proof, err := txtrie.RetrieveEncodedProof(trie, block.TxHash(), keyRlp)
+	proof, key, err := txtrie.RetrieveProof(trie, keyRlp)
 	s.Nil(err)
 
 	_ = pkg.NewFungibleTransfer(
@@ -326,7 +326,7 @@ func (s *ListenerTestSuite) TestGetDepositEventsAndProofsForBlockerERC20() {
 		&pkg.MerkleProof{
 			TxRootHash: block.TxHash(),
 			Nodes:      proof,
-			Key:        keyRlp,
+			Key:        key,
 		},
 		&pkg.SignatureVerification{
 			AggregatePublicKey: pk,

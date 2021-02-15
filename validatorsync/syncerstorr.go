@@ -135,7 +135,7 @@ func (db *ValidatorsStore) GetAPKForBlock(block *big.Int, chainID uint8, epochSi
 		}
 		return pk.Serialize()
 	}
-	return nil, leveldb.ErrNotFound
+	return nil, ErrNoBlockInStore
 }
 
 // Closes connection to underlying DB backend

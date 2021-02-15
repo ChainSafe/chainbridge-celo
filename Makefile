@@ -25,6 +25,8 @@ coverage:
 test:
 	./scripts/test.sh
 
+e2e-test:
+	go test -p=1 $(go list ./... | grep 'e2e')
 
 docker:
 	docker-compose -f ./docker-compose-chains.yml up -V

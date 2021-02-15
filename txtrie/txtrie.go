@@ -49,26 +49,24 @@ func RetrieveProof(trie *ethtrie.Trie, key []byte) ([]byte, []byte, error) {
 	nodeIterator := trie.NodeIterator(key)
 	trieIterator := ethtrie.NewIterator(nodeIterator)
 	proof := make([][][]byte, 0)
-	for trieIterator.Next() {
-		value := trieIterator.Prove()
-		for _, v := range value {
-			n := make([][]byte, 0, 17)
-			err := rlp.DecodeBytes(v, &n)
-			if err != nil {
-				panic(err)
-			}
-			proof = append(proof, n)
-		}
-		buf := &bytes.Buffer{}
-		err := rlp.Encode(buf, proof)
+	trieIterator.Next()
+	value := trieIterator.Prove()
+	for _, v := range value {
+		n := make([][]byte, 0, 17)
+		err := rlp.DecodeBytes(v, &n)
 		if err != nil {
 			return nil, nil, err
 		}
-		key := keybytesToHex(nodeIterator.LeafKey())
-		key = key[:len(key)-1]
-		return buf.Bytes(), key, nil
+		proof = append(proof, n)
 	}
-	return nil, nil, errors.New("no leaf node found")
+	buf := &bytes.Buffer{}
+	err := rlp.Encode(buf, proof)
+	if err != nil {
+		return nil, nil, err
+	}
+	leafKey := keybytesToHex(nodeIterator.LeafKey())
+	leafKey = leafKey[:len(leafKey)-1]
+	return buf.Bytes(), leafKey, nil
 }
 
 func keybytesToHex(str []byte) []byte {

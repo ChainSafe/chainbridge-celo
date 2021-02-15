@@ -4,7 +4,9 @@
 package e2e
 
 import (
+	"github.com/ChainSafe/chainbridge-celo/chain/sender"
 	"math/big"
+	"time"
 
 	Bridge "github.com/ChainSafe/chainbridge-celo/bindings/Bridge"
 	erc20Handler "github.com/ChainSafe/chainbridge-celo/bindings/ERC20Handler"
@@ -45,8 +47,16 @@ type DeployedContracts struct {
 	ERC20TokenAddress     common.Address
 }
 
+const DefaultGasLimit = 6721975
+const DefaultGasPrice = 20000000000
+
+var ExpectedBlockTime = time.Second
+
 func Deploy(ctx *cli.Context) error {
-	client, err := NewSender(TestEndpoint, AliceKp)
+	client, err := sender.NewSender(TestEndpoint, false, AliceKp, big.NewInt(DefaultGasLimit), big.NewInt(DefaultGasPrice))
+	if err != nil {
+		return err
+	}
 
 	dpc, err := DeployContracts(client, 1, big.NewInt(1))
 	if err != nil {
@@ -67,14 +77,24 @@ func Deploy(ctx *cli.Context) error {
 	tenTokens := big.NewInt(0).Mul(big.NewInt(10), big.NewInt(0).Exp(big.NewInt(10), big.NewInt(18), nil))
 
 	err = Erc20Approve(client, dpc.ERC20TokenAddress, dpc.ERC20HandlerAddress, tenTokens)
+	if err != nil {
+		return err
+	}
 
 	err = Erc20AddMinter(client, dpc.ERC20TokenAddress, dpc.ERC20HandlerAddress)
+	if err != nil {
+		return err
+	}
 
 	err = SetBurnable(client, dpc.BridgeAddress, dpc.ERC20HandlerAddress, dpc.ERC20TokenAddress)
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
-func Erc20AddMinter(client *Sender, erc20Contract, handler common.Address) error {
-	err := client.LockNonceAndUpdate()
+func Erc20AddMinter(client *sender.Sender, erc20Contract, handler common.Address) error {
+	err := client.LockAndUpdateOpts()
 	if err != nil {
 		return err
 	}
@@ -84,12 +104,12 @@ func Erc20AddMinter(client *Sender, erc20Contract, handler common.Address) error
 		return err
 	}
 
-	role, err := instance.MINTERROLE(client.CallOpts)
+	role, err := instance.MINTERROLE(client.CallOpts())
 	if err != nil {
 		return err
 	}
 
-	tx, err := instance.GrantRole(client.Opts, role, handler)
+	tx, err := instance.GrantRole(client.Opts(), role, handler)
 	if err != nil {
 		return err
 	}
@@ -104,18 +124,18 @@ func Erc20AddMinter(client *Sender, erc20Contract, handler common.Address) error
 	return nil
 }
 
-func SetBurnable(client *Sender, bridge, handler, contract common.Address) error {
+func SetBurnable(client *sender.Sender, bridge, handler, contract common.Address) error {
 	instance, err := Bridge.NewBridge(bridge, client.Client)
 	if err != nil {
 		return err
 	}
 
-	err = client.LockNonceAndUpdate()
+	err = client.LockAndUpdateOpts()
 	if err != nil {
 		return err
 	}
 
-	tx, err := instance.AdminSetBurnable(client.Opts, handler, contract)
+	tx, err := instance.AdminSetBurnable(client.Opts(), handler, contract)
 	if err != nil {
 		return err
 	}
@@ -130,8 +150,8 @@ func SetBurnable(client *Sender, bridge, handler, contract common.Address) error
 	return nil
 }
 
-func Erc20Approve(client *Sender, erc20Contract, target common.Address, amount *big.Int) error {
-	err := client.LockNonceAndUpdate()
+func Erc20Approve(client *sender.Sender, erc20Contract, target common.Address, amount *big.Int) error {
+	err := client.LockAndUpdateOpts()
 	if err != nil {
 		return err
 	}
@@ -141,7 +161,7 @@ func Erc20Approve(client *Sender, erc20Contract, target common.Address, amount *
 		return err
 	}
 
-	tx, err := instance.Approve(client.Opts, target, amount)
+	tx, err := instance.Approve(client.Opts(), target, amount)
 	if err != nil {
 		return err
 	}
@@ -156,18 +176,18 @@ func Erc20Approve(client *Sender, erc20Contract, target common.Address, amount *
 	return nil
 }
 
-func RegisterResource(client *Sender, bridge, handler common.Address, rId [32]byte, addr common.Address) error {
+func RegisterResource(client *sender.Sender, bridge, handler common.Address, rId [32]byte, addr common.Address) error {
 	instance, err := Bridge.NewBridge(bridge, client.Client)
 	if err != nil {
 		return err
 	}
 
-	err = client.LockNonceAndUpdate()
+	err = client.LockAndUpdateOpts()
 	if err != nil {
 		return err
 	}
 
-	tx, err := instance.AdminSetResource(client.Opts, handler, rId, addr)
+	tx, err := instance.AdminSetResource(client.Opts(), handler, rId, addr)
 	if err != nil {
 		return err
 	}
@@ -182,17 +202,17 @@ func RegisterResource(client *Sender, bridge, handler common.Address, rId [32]by
 	return nil
 }
 
-func MintTokens(client *Sender, erc20Addr common.Address) error {
+func MintTokens(client *sender.Sender, erc20Addr common.Address) error {
 	erc20Contract, err := erc20.NewERC20PresetMinterPauser(erc20Addr, client.Client)
 	if err != nil {
 		return err
 	}
-	err = client.LockNonceAndUpdate()
+	err = client.LockAndUpdateOpts()
 	if err != nil {
 		return err
 	}
 	tenTokens := big.NewInt(0).Mul(big.NewInt(10), big.NewInt(0).Exp(big.NewInt(10), big.NewInt(18), nil))
-	mintTx, err := erc20Contract.Mint(client.Opts, AliceKp.CommonAddress(), tenTokens)
+	mintTx, err := erc20Contract.Mint(client.Opts(), AliceKp.CommonAddress(), tenTokens)
 	if err != nil {
 		return err
 	}
@@ -206,7 +226,7 @@ func MintTokens(client *Sender, erc20Addr common.Address) error {
 }
 
 // DeployContracts deploys Bridge, Relayer, ERC20Handler, ERC721Handler and CentrifugeAssetHandler and returns the addresses
-func DeployContracts(client *Sender, chainID uint8, initialRelayerThreshold *big.Int) (*DeployedContracts, error) {
+func DeployContracts(client *sender.Sender, chainID uint8, initialRelayerThreshold *big.Int) (*DeployedContracts, error) {
 	bridgeAddr, err := deployBridge(client, chainID, RelayerAddresses, initialRelayerThreshold)
 	if err != nil {
 		return nil, err
@@ -228,6 +248,9 @@ func DeployContracts(client *Sender, chainID uint8, initialRelayerThreshold *big
 	}
 
 	erc20Token, err := deployERC20Token(client)
+	if err != nil {
+		return nil, err
+	}
 
 	dpc := &DeployedContracts{bridgeAddr, erc20HandlerAddr, erc721HandlerAddr, genericHandlerAddr, erc20Token}
 	log.Debug().Msgf("Bridge %s \r\nerc20 handler %s \r\nerc721 handler %s \r\ngeneric handler %s \r\nerc20Contract %s", dpc.BridgeAddress.Hex(), dpc.ERC20HandlerAddress.Hex(), dpc.ERC721HandlerAddress.Hex(), dpc.GenericHandlerAddress.Hex(), dpc.ERC20TokenAddress.String())
@@ -236,13 +259,13 @@ func DeployContracts(client *Sender, chainID uint8, initialRelayerThreshold *big
 
 }
 
-func deployERC20Token(client *Sender) (common.Address, error) {
-	err := client.LockNonceAndUpdate()
+func deployERC20Token(client *sender.Sender) (common.Address, error) {
+	err := client.LockAndUpdateOpts()
 	if err != nil {
 		return common.Address{}, err
 	}
 
-	bridgeAddr, tx, _, err := erc20.DeployERC20PresetMinterPauser(client.Opts, client.Client, "test", "TST")
+	bridgeAddr, tx, _, err := erc20.DeployERC20PresetMinterPauser(client.Opts(), client.Client, "test", "TST")
 	if err != nil {
 		return common.Address{}, err
 	}
@@ -257,13 +280,13 @@ func deployERC20Token(client *Sender) (common.Address, error) {
 	return bridgeAddr, nil
 }
 
-func deployBridge(client *Sender, chainID uint8, relayerAddrs []common.Address, initialRelayerThreshold *big.Int) (common.Address, error) {
-	err := client.LockNonceAndUpdate()
+func deployBridge(client *sender.Sender, chainID uint8, relayerAddrs []common.Address, initialRelayerThreshold *big.Int) (common.Address, error) {
+	err := client.LockAndUpdateNonce()
 	if err != nil {
 		return common.Address{}, err
 	}
 
-	bridgeAddr, tx, _, err := Bridge.DeployBridge(client.Opts, client.Client, chainID, relayerAddrs, initialRelayerThreshold, big.NewInt(0), big.NewInt(100))
+	bridgeAddr, tx, _, err := Bridge.DeployBridge(client.Opts(), client.Client, chainID, relayerAddrs, initialRelayerThreshold, big.NewInt(0), big.NewInt(100))
 	if err != nil {
 		return common.Address{}, err
 	}
@@ -279,13 +302,13 @@ func deployBridge(client *Sender, chainID uint8, relayerAddrs []common.Address, 
 
 }
 
-func deployERC20Handler(client *Sender, bridgeAddress common.Address) (common.Address, error) {
-	err := client.LockNonceAndUpdate()
+func deployERC20Handler(client *sender.Sender, bridgeAddress common.Address) (common.Address, error) {
+	err := client.LockAndUpdateOpts()
 	if err != nil {
 		return common.Address{}, err
 	}
 
-	erc20HandlerAddr, tx, _, err := erc20Handler.DeployERC20Handler(client.Opts, client.Client, bridgeAddress, [][32]byte{}, []common.Address{}, []common.Address{})
+	erc20HandlerAddr, tx, _, err := erc20Handler.DeployERC20Handler(client.Opts(), client.Client, bridgeAddress, [][32]byte{}, []common.Address{}, []common.Address{})
 	if err != nil {
 		return common.Address{}, err
 	}
@@ -300,13 +323,13 @@ func deployERC20Handler(client *Sender, bridgeAddress common.Address) (common.Ad
 	return erc20HandlerAddr, nil
 }
 
-func deployERC721Handler(client *Sender, bridgeAddress common.Address) (common.Address, error) {
-	err := client.LockNonceAndUpdate()
+func deployERC721Handler(client *sender.Sender, bridgeAddress common.Address) (common.Address, error) {
+	err := client.LockAndUpdateOpts()
 	if err != nil {
 		return common.Address{}, err
 	}
 
-	erc721HandlerAddr, tx, _, err := erc721Handler.DeployERC721Handler(client.Opts, client.Client, bridgeAddress, [][32]byte{}, []common.Address{}, []common.Address{})
+	erc721HandlerAddr, tx, _, err := erc721Handler.DeployERC721Handler(client.Opts(), client.Client, bridgeAddress, [][32]byte{}, []common.Address{}, []common.Address{})
 	if err != nil {
 		return common.Address{}, err
 	}
@@ -320,13 +343,13 @@ func deployERC721Handler(client *Sender, bridgeAddress common.Address) (common.A
 	return erc721HandlerAddr, nil
 }
 
-func deployGenericHandler(client *Sender, bridgeAddress common.Address) (common.Address, error) {
-	err := client.LockNonceAndUpdate()
+func deployGenericHandler(client *sender.Sender, bridgeAddress common.Address) (common.Address, error) {
+	err := client.LockAndUpdateOpts()
 	if err != nil {
 		return common.Address{}, err
 	}
 
-	addr, tx, _, err := GenericHandler.DeployGenericHandler(client.Opts, client.Client, bridgeAddress, [][32]byte{}, []common.Address{}, [][4]byte{}, [][4]byte{})
+	addr, tx, _, err := GenericHandler.DeployGenericHandler(client.Opts(), client.Client, bridgeAddress, [][32]byte{}, []common.Address{}, [][4]byte{}, [][4]byte{})
 	if err != nil {
 		return common.Address{}, err
 	}

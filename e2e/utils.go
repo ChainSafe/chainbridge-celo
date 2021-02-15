@@ -5,6 +5,7 @@ import (
 	"encoding/hex"
 	"errors"
 	"fmt"
+	"github.com/ChainSafe/chainbridge-celo/chain/sender"
 	"math/big"
 	"math/rand"
 	"time"
@@ -31,16 +32,16 @@ import (
 //{"level":"trace","src":1,"nonce":1,"time":"2021-02-05T12:51:06+02:00","message":"Ignoring event"}
 //{"level":"info","source":1,"dest":1,"nonce":1,"tx":"0xbd7a6e74c3c57bde06464bc3997397d5bbc8f44095ed4654486e06b17e838d26","time":"2021-02-05T12:51:06+02:00","message":"Submitted proposal execution"}
 
-func makeErc20Deposit(client *Sender, bridge *Bridge.Bridge, erc20ContractAddr, dest common.Address, amount *big.Int) (*types.Transaction, error) {
+func makeErc20Deposit(client *sender.Sender, bridge *Bridge.Bridge, erc20ContractAddr, dest common.Address, amount *big.Int) (*types.Transaction, error) {
 	data := constructErc20DepositData(dest.Bytes(), amount)
-	err := client.LockNonceAndUpdate()
+	err := client.LockAndUpdateOpts()
 	if err != nil {
 		return nil, err
 	}
 
 	src := pkg.ChainId(5)
 	resourceID := pkg.SliceTo32Bytes(append(common.LeftPadBytes(erc20ContractAddr.Bytes(), 31), uint8(src)))
-	tx, err := bridge.Deposit(client.Opts, 1, resourceID, data)
+	tx, err := bridge.Deposit(client.Opts(), 1, resourceID, data)
 	if err != nil {
 		return nil, err
 	}
@@ -56,7 +57,8 @@ func constructErc20DepositData(destRecipient []byte, amount *big.Int) []byte {
 	return data
 }
 
-func simulate(client *Sender, block *big.Int, txHash common.Hash, from common.Address) ([]byte, error) {
+//nolint
+func simulate(client *sender.Sender, block *big.Int, txHash common.Hash, from common.Address) ([]byte, error) {
 	tx, _, err := client.Client.TransactionByHash(context.TODO(), txHash)
 	if err != nil {
 		return nil, err
@@ -98,7 +100,27 @@ func buildQuery(contract common.Address, sig pkg.EventSig, startBlock *big.Int, 
 
 // WaitForTx will query the chain at ExpectedBlockTime intervals, until a receipt is returned.
 // Returns an error if the tx failed.
-func waitAndReturnTxReceipt(client *Sender, tx *types.Transaction) (*types.Receipt, error) {
+func WaitForTx(client *sender.Sender, tx *types.Transaction) error {
+	retry := 10
+	for retry > 0 {
+		receipt, err := client.Client.TransactionReceipt(context.Background(), tx.Hash())
+		if err != nil {
+			retry--
+			time.Sleep(ExpectedBlockTime)
+			continue
+		}
+
+		if receipt.Status != 1 {
+			return fmt.Errorf("transaction failed on chain")
+		}
+		return nil
+	}
+	return nil
+}
+
+// WaitForTx will query the chain at ExpectedBlockTime intervals, until a receipt is returned.
+// Returns an error if the tx failed.
+func waitAndReturnTxReceipt(client *sender.Sender, tx *types.Transaction) (*types.Receipt, error) {
 	retry := 10
 	for retry > 0 {
 		receipt, err := client.Client.TransactionReceipt(context.Background(), tx.Hash())
@@ -115,13 +137,14 @@ func waitAndReturnTxReceipt(client *Sender, tx *types.Transaction) (*types.Recei
 	return nil, errors.New("Tx do not appear")
 }
 
-func transfer(client *Sender, erc20 *erc20.ERC20PresetMinterPauser, recipient common.Address, amount *big.Int) (*types.Transaction, error) {
-	err := client.LockNonceAndUpdate()
+//nolint
+func transfer(client *sender.Sender, erc20 *erc20.ERC20PresetMinterPauser, recipient common.Address, amount *big.Int) (*types.Transaction, error) {
+	err := client.LockAndUpdateOpts()
 	if err != nil {
 		return nil, err
 	}
 
-	tx, err := erc20.Transfer(client.Opts, recipient, amount)
+	tx, err := erc20.Transfer(client.Opts(), recipient, amount)
 	if err != nil {
 		return nil, err
 	}
@@ -129,21 +152,21 @@ func transfer(client *Sender, erc20 *erc20.ERC20PresetMinterPauser, recipient co
 	return tx, nil
 }
 
-func sendOneWeiWithDelay(sender *Sender) (*types.Transaction, error) {
+func sendOneWeiWithDelay(sender *sender.Sender) (*types.Transaction, error) {
 	r := rand.Intn(700) + 300
 	time.Sleep(time.Duration(r) * time.Millisecond)
 	return sendOneWei(sender)
 }
 
-func sendOneWei(sender *Sender) (*types.Transaction, error) {
-	err := sender.LockNonceAndUpdate()
+func sendOneWei(sender *sender.Sender) (*types.Transaction, error) {
+	err := sender.LockAndUpdateOpts()
 	if err != nil {
 		return nil, err
 	}
-	tx := types.NewTransaction(sender.Opts.Nonce.Uint64(), AliceKp.CommonAddress(), big.NewInt(1), sender.Opts.GasLimit, sender.Opts.GasPrice, sender.Opts.FeeCurrency, sender.Opts.GatewayFeeRecipient, sender.Opts.GatewayFee, nil)
+	tx := types.NewTransaction(sender.Opts().Nonce.Uint64(), AliceKp.CommonAddress(), big.NewInt(1), sender.Opts().GasLimit, sender.Opts().GasPrice, sender.Opts().FeeCurrency, sender.Opts().GatewayFeeRecipient, sender.Opts().GatewayFee, nil)
 
 	// Final Step
-	signedTx, err := sender.Opts.Signer(types.HomesteadSigner{}, sender.Opts.From, tx)
+	signedTx, err := sender.Opts().Signer(types.HomesteadSigner{}, sender.Opts().From, tx)
 	if err != nil {
 		return nil, err
 	}
