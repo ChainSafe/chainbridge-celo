@@ -2,7 +2,7 @@ on:
   pull_request:
     types: [opened, synchronize, reopened]
 
-name: e2e tests
+name: E2E tests
 jobs:
   test:
     strategy:
@@ -24,11 +24,11 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-go-
 
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v1
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v1
-#      - name: Login to DockerHub
+#      - name: Set up QEMU
+#        uses: docker/setup-qemu-action@v1
+#      - name: Set up Docker Buildx
+#        uses: docker/setup-buildx-action@v1
+##      - name: Login to DockerHub
 #        uses: docker/login-action@v1
 #        with:
 #          username: ${{ secrets.DOCKERHUB_USERNAME }}
@@ -36,4 +36,6 @@ jobs:
       - name: Run nodes
         run: docker-compose -f ./docker-compose-e2e.yml up -d
       - name: Run chainbridge
+        run: start_bridge.sh
       - name: Run tests
+        run: go test -p=1 $(go list ./... | grep 'e2e')

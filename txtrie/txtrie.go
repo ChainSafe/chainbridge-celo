@@ -80,34 +80,6 @@ func keybytesToHex(str []byte) []byte {
 	return nibbles
 }
 
-//func RetrieveNewProof(trie *ethtrie.Trie, root common.Hash, key []byte) ([]byte, error) {
-//	proofDB, err := RetrieveProof(trie, key)
-//	if err != nil {
-//		return nil, err
-//	}
-//	iterator := proofDB.NewIterator()
-//
-//	iterator.Next()
-//
-//	buf := &bytes.Buffer{}
-//	byteByteArr := make([][][]byte, 1)
-//
-//	n := make([][]byte, 2)
-//	err = rlp.DecodeBytes(iterator.Value(), &n)
-//	if err != nil {
-//		return nil, err
-//	}
-//	iterator.
-//
-//	byteByteArr[0] = n
-//
-//	err = rlp.Encode(buf, byteByteArr)
-//	if err != nil {
-//		return nil, err
-//	}
-//	return buf.Bytes(), nil
-//}
-
 // VerifyProof verifies merkle proof on path key against the provided root
 func VerifyProof(root common.Hash, key []byte, proof ethdb.KeyValueStore) (bool, error) {
 	exists, _, err := ethtrie.VerifyProof(root, key, proof)
