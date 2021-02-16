@@ -30,4 +30,4 @@ jobs:
       - name: Run chainbridge
         run: ./scripts/start_bridge.sh
       - name: Run tests
-        run: go test -p=1 $(go list ./... | grep 'e2e')
+        run: make e2e-test
