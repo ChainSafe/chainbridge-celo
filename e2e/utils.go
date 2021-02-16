@@ -21,16 +21,6 @@ import (
 	"github.com/status-im/keycard-go/hexutils"
 )
 
-//
-//{"level":"trace","src":1,"dest":1,"nonce":1,"rId":"000000000000000000000021605f71845f372a9ed84253d2d024b7b10999f405","time":"2021-02-05T12:51:01+02:00","message":"Routing message"}
-//{"level":"info","type":"FungibleTransfer","src":1,"dst":1,"nonce":1,"rId":"000000000000000000000021605f71845f372a9ed84253d2d024b7b10999f405","time":"2021-02-05T12:51:01+02:00","message":"Attempting to resolve message"}
-//{"level":"info","src":1,"nonce":1,"time":"2021-02-05T12:51:01+02:00","message":"Creating erc20 proposal"}
-//{"level":"info","src":1,"nonce":1,"time":"2021-02-05T12:51:01+02:00","message":"Watching for finalization event"}
-//{"level":"trace","block":737,"src":1,"nonce":1,"time":"2021-02-05T12:51:01+02:00","message":"No finalization event found in current block"}
-//{"level":"trace","target":738,"current":737,"time":"2021-02-05T12:51:01+02:00","message":"Block not ready, waiting"}
-//{"level":"info","tx":"0xe8fdc387d8a51bfe9c62d501aedd9f270647bc83895c1a683a0673b7539db834","src":1,"depositNonce":1,"time":"2021-02-05T12:51:01+02:00","message":"Submitted proposal vote"}
-//{"level":"trace","src":1,"nonce":1,"time":"2021-02-05T12:51:06+02:00","message":"Ignoring event"}
-//{"level":"info","source":1,"dest":1,"nonce":1,"tx":"0xbd7a6e74c3c57bde06464bc3997397d5bbc8f44095ed4654486e06b17e838d26","time":"2021-02-05T12:51:06+02:00","message":"Submitted proposal execution"}
 
 func makeErc20Deposit(client *sender.Sender, bridge *Bridge.Bridge, erc20ContractAddr, dest common.Address, amount *big.Int) (*types.Transaction, error) {
 	data := constructErc20DepositData(dest.Bytes(), amount)
