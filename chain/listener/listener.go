@@ -154,6 +154,7 @@ func (l *listener) pollBlocks() error {
 }
 
 func (l *listener) getDepositEventsAndProofsForBlock(latestBlock *big.Int) error {
+	log.Debug().Str("block", latestBlock.String()).Msg("Querying block for deposit events")
 	query := buildQuery(l.cfg.BridgeContract, pkg.Deposit, latestBlock, latestBlock)
 
 	// querying for logs
