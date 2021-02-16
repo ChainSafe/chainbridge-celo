@@ -37,7 +37,7 @@ func (l *listener) handleErc721DepositedEvent(destId pkg.ChainId, nonce pkg.Nonc
 		log.Error().Err(err).Msg("Error Unpacking ERC721 Deposit Record")
 		return nil, err
 	}
-	log.Info().Interface("dest", destId).Interface("nonce", nonce).Str("resourceID", hexutils.BytesToHex(record.ResourceID[:])).Msg("Handling nonfungible deposit even")
+	log.Info().Interface("dest", destId).Interface("nonce", nonce).Str("resourceID", hexutils.BytesToHex(record.ResourceID[:])).Msg("Handling nonfungible deposit event")
 	return pkg.NewNonFungibleTransfer(
 		l.cfg.ID,
 		destId,
