@@ -76,10 +76,14 @@ func (s *IntegrationTestSuite) TestDeposit() {
 	s.Nil(err)
 	log.Debug().Msg(tx.Hash().String())
 
-	time.Sleep(20 * time.Second)
+	//Wait 30 seconds for relayer vote
+	time.Sleep(30 * time.Second)
+
+	lp, err := s.sender2.LatestBlock()
+	s.Nil(err)
 
 	// wait for vote log event
-	query := buildQuery(s.bridgeAddr, pkg.ProposalEvent, receipt.BlockNumber, big.NewInt(0).Add(receipt.BlockNumber, big.NewInt(20)))
+	query := buildQuery(s.bridgeAddr, pkg.ProposalEvent, receipt.BlockNumber, lp)
 	evts, err := s.sender2.Client.FilterLogs(context.Background(), query)
 	var passedEventFound bool
 	for _, evt := range evts {
@@ -94,8 +98,11 @@ func (s *IntegrationTestSuite) TestDeposit() {
 	s.Nil(err)
 	s.Equal(senderBalBefore.Cmp(big.NewInt(0).Add(senderBalAfter, amountToDeposit)), 0)
 
-	//wait for execution event
-	queryExecute := buildQuery(s.bridgeAddr, pkg.ProposalEvent, big.NewInt(0).Add(receipt.BlockNumber, big.NewInt(1)), big.NewInt(0).Add(receipt.BlockNumber, big.NewInt(20)))
+	//Wait 30 seconds for relayer to execute
+	time.Sleep(30 * time.Second)
+	lp, err = s.sender2.LatestBlock()
+	s.Nil(err)
+	queryExecute := buildQuery(s.bridgeAddr, pkg.ProposalEvent, receipt.BlockNumber, lp)
 	s.Nil(err)
 	evts2, err := s.sender2.Client.FilterLogs(context.Background(), queryExecute)
 	var executedEventFound bool
@@ -140,10 +147,13 @@ func (s *IntegrationTestSuite) TestMultipleTransactionsInBlock() {
 	s.Nil(err)
 	log.Debug().Msg(tx.Hash().String())
 
-	time.Sleep(20 * time.Second)
+	//Wait 30 seconds for relayer vote
+	time.Sleep(30 * time.Second)
 
+	lp, err := s.sender2.LatestBlock()
+	s.Nil(err)
 	// wait for vote log event
-	query := buildQuery(s.bridgeAddr, pkg.ProposalEvent, receipt.BlockNumber, big.NewInt(0).Add(receipt.BlockNumber, big.NewInt(20)))
+	query := buildQuery(s.bridgeAddr, pkg.ProposalEvent, receipt.BlockNumber, lp)
 	evts, err := s.sender2.Client.FilterLogs(context.Background(), query)
 	var passedEventFound bool
 	for _, evt := range evts {
@@ -158,8 +168,11 @@ func (s *IntegrationTestSuite) TestMultipleTransactionsInBlock() {
 	s.Nil(err)
 	s.Equal(senderBalBefore.Cmp(big.NewInt(0).Add(senderBalAfter, amountToDeposit)), 0)
 
-	//wait for execution event
-	queryExecute := buildQuery(s.bridgeAddr, pkg.ProposalEvent, big.NewInt(0).Add(receipt.BlockNumber, big.NewInt(1)), big.NewInt(0).Add(receipt.BlockNumber, big.NewInt(20)))
+	//Wait 30 seconds for relayer to execute
+	time.Sleep(30 * time.Second)
+	lp, err = s.sender2.LatestBlock()
+	s.Nil(err)
+	queryExecute := buildQuery(s.bridgeAddr, pkg.ProposalEvent, receipt.BlockNumber, lp)
 	s.Nil(err)
 	evts2, err := s.sender2.Client.FilterLogs(context.Background(), queryExecute)
 	var executedEventFound bool

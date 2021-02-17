@@ -131,6 +131,10 @@ func (l *listener) pollBlocks() error {
 				retry--
 				continue
 			}
+			if currentBlock.Int64()%20 == 0 {
+				// Logging process every 20 bocks to exclude spam
+				log.Debug().Str("block", currentBlock.String()).Msg("Queried block for deposit events")
+			}
 
 			// Write to block store. Not a critical operation, no need to retry
 			err = l.blockstore.StoreBlock(currentBlock)
@@ -154,10 +158,8 @@ func (l *listener) pollBlocks() error {
 }
 
 func (l *listener) getDepositEventsAndProofsForBlock(latestBlock *big.Int) error {
-	log.Debug().Str("block", latestBlock.String()).Msg("Querying block for deposit events")
-	query := buildQuery(l.cfg.BridgeContract, pkg.Deposit, latestBlock, latestBlock)
-
 	// querying for logs
+	query := buildQuery(l.cfg.BridgeContract, pkg.Deposit, latestBlock, latestBlock)
 	logs, err := l.client.FilterLogs(context.Background(), query)
 	if err != nil {
 		return fmt.Errorf("unable to Filter Logs: %w", err)
@@ -165,12 +167,10 @@ func (l *listener) getDepositEventsAndProofsForBlock(latestBlock *big.Int) error
 	if len(logs) == 0 {
 		return nil
 	}
-
 	blockData, err := l.client.BlockByNumber(context.Background(), latestBlock)
 	if err != nil {
 		return err
 	}
-
 	trie, err := txtrie.CreateNewTrie(blockData.TxHash(), blockData.Transactions())
 	if err != nil {
 		return err
@@ -187,7 +187,6 @@ func (l *listener) getDepositEventsAndProofsForBlock(latestBlock *big.Int) error
 		if err != nil {
 			return fmt.Errorf("failed to get handler from resource ID %x, reason: %w", rId, err)
 		}
-
 		if addr == l.cfg.Erc20HandlerContract {
 			m, err = l.handleErc20DepositedEvent(destId, nonce)
 		} else if addr == l.cfg.Erc721HandlerContract {
@@ -214,7 +213,6 @@ func (l *listener) getDepositEventsAndProofsForBlock(latestBlock *big.Int) error
 		if err != nil {
 			return err
 		}
-
 		m.SVParams = &pkg.SignatureVerification{AggregatePublicKey: apk, BlockHash: blockData.Header().Hash(), Signature: blockData.EpochSnarkData().Signature}
 		m.MPParams = &pkg.MerkleProof{TxRootHash: pkg.SliceTo32Bytes(blockData.TxHash().Bytes()), Nodes: proof, Key: key}
 		err = l.router.Send(m)
