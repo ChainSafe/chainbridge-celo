@@ -49,15 +49,6 @@ services:
       - BOOTNODE=enode://47eccabfa6fa81f7ae7d8c094485fd521789e22e529916a2409970b6e99b1d1b6c590ad71bd08f182071313b2e03d319f4f6b625b28b6ab7768bb2de3f2a6eed@celo1-1:30303
       - DATADIR=celo-dump3
       - NETWORKID=333
-#  celo-elections1:
-#    image: "chainsafe/chainbridge-celo-elections:latest"
-#    networks:
-#      - celo1
-#    container_name: celo-elections1
-#    depends_on:
-#      - celo1-1
-#    environment:
-#      - RPC_HOST=celo1-1
 
   # SECOND CHAIN
   celo2-1:
@@ -105,15 +96,6 @@ services:
       - BOOTNODE=enode://47eccabfa6fa81f7ae7d8c094485fd521789e22e529916a2409970b6e99b1d1b6c590ad71bd08f182071313b2e03d319f4f6b625b28b6ab7768bb2de3f2a6eed@celo2-1:30303
       - DATADIR=celo-dump3
       - NETWORKID=444
-#  celo-elections2:
-#    image: "chainsafe/chainbridge-celo-elections:latest"
-#    networks:
-#      - celo2
-#    container_name: celo-elections2
-#    depends_on:
-#      - celo2-1
-#    environment:
-#      - RPC_HOST=celo2-1
 
 networks:
   celo1:
