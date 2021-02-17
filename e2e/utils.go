@@ -5,7 +5,7 @@ import (
 	"encoding/hex"
 	"errors"
 	"fmt"
-	"github.com/ChainSafe/chainbridge-celo/chain/sender"
+	"github.com/ChainSafe/chainbridge-celo/chain/client"
 	"math/big"
 	"math/rand"
 	"time"
@@ -21,7 +21,7 @@ import (
 	"github.com/status-im/keycard-go/hexutils"
 )
 
-func makeErc20Deposit(client *sender.Sender, bridge *Bridge.Bridge, erc20ContractAddr, dest common.Address, amount *big.Int) (*types.Transaction, error) {
+func makeErc20Deposit(client *client.Client, bridge *Bridge.Bridge, erc20ContractAddr, dest common.Address, amount *big.Int) (*types.Transaction, error) {
 	data := constructErc20DepositData(dest.Bytes(), amount)
 	err := client.LockAndUpdateOpts()
 	if err != nil {
@@ -47,7 +47,7 @@ func constructErc20DepositData(destRecipient []byte, amount *big.Int) []byte {
 }
 
 //nolint
-func simulate(client *sender.Sender, block *big.Int, txHash common.Hash, from common.Address) ([]byte, error) {
+func simulate(client *client.Client, block *big.Int, txHash common.Hash, from common.Address) ([]byte, error) {
 	tx, _, err := client.Client.TransactionByHash(context.TODO(), txHash)
 	if err != nil {
 		return nil, err
@@ -89,7 +89,7 @@ func buildQuery(contract common.Address, sig utils.EventSig, startBlock *big.Int
 
 // WaitForTx will query the chain at ExpectedBlockTime intervals, until a receipt is returned.
 // Returns an error if the tx failed.
-func WaitForTx(client *sender.Sender, tx *types.Transaction) error {
+func WaitForTx(client *client.Client, tx *types.Transaction) error {
 	retry := 10
 	for retry > 0 {
 		receipt, err := client.Client.TransactionReceipt(context.Background(), tx.Hash())
@@ -109,7 +109,7 @@ func WaitForTx(client *sender.Sender, tx *types.Transaction) error {
 
 // WaitForTx will query the chain at ExpectedBlockTime intervals, until a receipt is returned.
 // Returns an error if the tx failed.
-func waitAndReturnTxReceipt(client *sender.Sender, tx *types.Transaction) (*types.Receipt, error) {
+func waitAndReturnTxReceipt(client *client.Client, tx *types.Transaction) (*types.Receipt, error) {
 	retry := 10
 	for retry > 0 {
 		receipt, err := client.Client.TransactionReceipt(context.Background(), tx.Hash())
@@ -127,7 +127,7 @@ func waitAndReturnTxReceipt(client *sender.Sender, tx *types.Transaction) (*type
 }
 
 //nolint
-func transfer(client *sender.Sender, erc20 *erc20.ERC20PresetMinterPauser, recipient common.Address, amount *big.Int) (*types.Transaction, error) {
+func transfer(client *client.Client, erc20 *erc20.ERC20PresetMinterPauser, recipient common.Address, amount *big.Int) (*types.Transaction, error) {
 	err := client.LockAndUpdateOpts()
 	if err != nil {
 		return nil, err
@@ -141,13 +141,13 @@ func transfer(client *sender.Sender, erc20 *erc20.ERC20PresetMinterPauser, recip
 	return tx, nil
 }
 
-func sendOneWeiWithDelay(sender *sender.Sender) (*types.Transaction, error) {
+func sendOneWeiWithDelay(sender *client.Client) (*types.Transaction, error) {
 	r := rand.Intn(700) + 300
 	time.Sleep(time.Duration(r) * time.Millisecond)
 	return sendOneWei(sender)
 }
 
-func sendOneWei(sender *sender.Sender) (*types.Transaction, error) {
+func sendOneWei(sender *client.Client) (*types.Transaction, error) {
 	err := sender.LockAndUpdateOpts()
 	if err != nil {
 		return nil, err

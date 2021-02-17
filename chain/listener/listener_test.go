@@ -9,9 +9,9 @@ import (
 	"github.com/ChainSafe/chainbridge-celo/bindings/ERC20Handler"
 	"github.com/ChainSafe/chainbridge-celo/bindings/ERC721Handler"
 	"github.com/ChainSafe/chainbridge-celo/bindings/GenericHandler"
+	"github.com/ChainSafe/chainbridge-celo/chain/client/mock"
 	"github.com/ChainSafe/chainbridge-celo/chain/config"
 	"github.com/ChainSafe/chainbridge-celo/chain/listener/mock"
-	"github.com/ChainSafe/chainbridge-celo/chain/sender/mock"
 	"github.com/ChainSafe/chainbridge-celo/txtrie"
 	"github.com/ChainSafe/chainbridge-celo/utils"
 	eth "github.com/ethereum/go-ethereum"
@@ -30,7 +30,7 @@ import (
 type ListenerTestSuite struct {
 	suite.Suite
 	routerMock               *mock_listener.MockIRouter
-	clientMock               *mock_sender.MockLogFilterWithLatestBlock
+	clientMock               *mock_client.MockLogFilterWithLatestBlock
 	blockStorerMock          *mock_listener.MockBlockstorer
 	gomockController         *gomock.Controller
 	bridge                   *mock_listener.MockIBridge
@@ -49,7 +49,7 @@ func (s *ListenerTestSuite) TearDownSuite() {}
 func (s *ListenerTestSuite) SetupTest() {
 	gomockController := gomock.NewController(s.T())
 	s.routerMock = mock_listener.NewMockIRouter(gomockController)
-	s.clientMock = mock_sender.NewMockLogFilterWithLatestBlock(gomockController)
+	s.clientMock = mock_client.NewMockLogFilterWithLatestBlock(gomockController)
 	s.blockStorerMock = mock_listener.NewMockBlockstorer(gomockController)
 	s.gomockController = gomockController
 	s.bridge = mock_listener.NewMockIBridge(gomockController)

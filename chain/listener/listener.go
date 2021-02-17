@@ -10,8 +10,8 @@ import (
 	"math/big"
 	"time"
 
+	"github.com/ChainSafe/chainbridge-celo/chain/client"
 	"github.com/ChainSafe/chainbridge-celo/chain/config"
-	"github.com/ChainSafe/chainbridge-celo/chain/sender"
 	"github.com/ChainSafe/chainbridge-celo/txtrie"
 	"github.com/ChainSafe/chainbridge-celo/utils"
 	eth "github.com/ethereum/go-ethereum"
@@ -39,7 +39,7 @@ type listener struct {
 	sysErr                 chan<- error // Reports fatal error to core
 	//latestBlock            *metrics.LatestBlock
 	//metrics                *metrics.ChainMetrics
-	client   sender.LogFilterWithLatestBlock
+	client   client.LogFilterWithLatestBlock
 	valsAggr ValidatorsAggregator
 }
 
@@ -54,7 +54,7 @@ type ValidatorsAggregator interface {
 	GetAPKForBlock(block *big.Int, chainID uint8, epochSize uint64) ([]byte, error)
 }
 
-func NewListener(cfg *config.CeloChainConfig, client sender.LogFilterWithLatestBlock, bs Blockstorer, stop <-chan struct{}, sysErr chan<- error, router IRouter, valsAggr ValidatorsAggregator) *listener {
+func NewListener(cfg *config.CeloChainConfig, client client.LogFilterWithLatestBlock, bs Blockstorer, stop <-chan struct{}, sysErr chan<- error, router IRouter, valsAggr ValidatorsAggregator) *listener {
 	return &listener{
 		cfg:        cfg,
 		blockstore: bs,
