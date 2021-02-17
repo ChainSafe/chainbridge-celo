@@ -26,7 +26,7 @@ test:
 	./scripts/test.sh
 
 e2e-test:
-	./scripts/int_test.sh
+	./scripts/int_tests.sh
 
 docker:
 	docker-compose -f ./docker-compose-chains.yml up -V
