@@ -45,7 +45,7 @@ func (s *IntegrationTestSuite) SetupTest() {
 	if err != nil {
 		panic(err)
 	}
-	s.client = client2
+	s.client2 = client2
 
 	s.bridgeAddr = common.HexToAddress("0x62877dDCd49aD22f5eDfc6ac108e9a4b5D2bD88B")
 	s.erc20HandlerAddr = common.HexToAddress("0x3167776db165D8eA0f51790CA2bbf44Db5105ADF")
