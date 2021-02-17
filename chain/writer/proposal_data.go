@@ -5,7 +5,7 @@ package writer
 
 import (
 	"bytes"
-	"github.com/ChainSafe/chainbridge-celo/pkg"
+	"github.com/ChainSafe/chainbridge-celo/utils"
 	"math/big"
 
 	"github.com/ethereum/go-ethereum/common"
@@ -48,7 +48,7 @@ func ConstructErc721ProposalData(tokenId []byte, recipient []byte, metadata []by
 
 // CreateProposalDataHash constructs and returns proposal data hash
 // https://github.com/ChainSafe/chainbridge-celo-solidity/blob/1fae9c66a07139c277b03a09877414024867a8d9/contracts/Bridge.sol#L452-L454
-func CreateProposalDataHash(data []byte, handler common.Address, mp *pkg.MerkleProof, sv *pkg.SignatureVerification) common.Hash {
+func CreateProposalDataHash(data []byte, handler common.Address, mp *utils.MerkleProof, sv *utils.SignatureVerification) common.Hash {
 	b := bytes.NewBuffer(handler.Bytes())
 	b.Write(data)
 	b.Write(mp.TxRootHash[:])

@@ -12,7 +12,7 @@ import (
 
 	"github.com/ChainSafe/chainbridge-celo/bindings/Bridge"
 	erc20 "github.com/ChainSafe/chainbridge-celo/bindings/ERC20PresetMinterPauser"
-	"github.com/ChainSafe/chainbridge-celo/pkg"
+	"github.com/ChainSafe/chainbridge-celo/utils"
 	eth "github.com/ethereum/go-ethereum"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/math"
@@ -21,7 +21,6 @@ import (
 	"github.com/status-im/keycard-go/hexutils"
 )
 
-
 func makeErc20Deposit(client *sender.Sender, bridge *Bridge.Bridge, erc20ContractAddr, dest common.Address, amount *big.Int) (*types.Transaction, error) {
 	data := constructErc20DepositData(dest.Bytes(), amount)
 	err := client.LockAndUpdateOpts()
@@ -29,8 +28,8 @@ func makeErc20Deposit(client *sender.Sender, bridge *Bridge.Bridge, erc20Contrac
 		return nil, err
 	}
 
-	src := pkg.ChainId(5)
-	resourceID := pkg.SliceTo32Bytes(append(common.LeftPadBytes(erc20ContractAddr.Bytes(), 31), uint8(src)))
+	src := utils.ChainId(5)
+	resourceID := utils.SliceTo32Bytes(append(common.LeftPadBytes(erc20ContractAddr.Bytes(), 31), uint8(src)))
 	tx, err := bridge.Deposit(client.Opts(), 1, resourceID, data)
 	if err != nil {
 		return nil, err
@@ -76,7 +75,7 @@ func simulate(client *sender.Sender, block *big.Int, txHash common.Hash, from co
 	return nil, nil
 }
 
-func buildQuery(contract common.Address, sig pkg.EventSig, startBlock *big.Int, endBlock *big.Int) eth.FilterQuery {
+func buildQuery(contract common.Address, sig utils.EventSig, startBlock *big.Int, endBlock *big.Int) eth.FilterQuery {
 	query := eth.FilterQuery{
 		FromBlock: startBlock,
 		ToBlock:   endBlock,

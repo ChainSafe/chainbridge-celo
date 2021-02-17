@@ -12,7 +12,7 @@ import (
 	"github.com/ChainSafe/chainbridge-celo/chain/listener"
 	"github.com/ChainSafe/chainbridge-celo/chain/sender"
 	"github.com/ChainSafe/chainbridge-celo/chain/writer"
-	"github.com/ChainSafe/chainbridge-celo/pkg"
+	"github.com/ChainSafe/chainbridge-celo/utils"
 	"github.com/pkg/errors"
 	"github.com/rs/zerolog/log"
 )
@@ -96,7 +96,7 @@ func (c *Chain) Start() error {
 	return nil
 }
 
-func (c *Chain) ID() pkg.ChainId {
+func (c *Chain) ID() utils.ChainId {
 	return c.cfg.ID
 }
 

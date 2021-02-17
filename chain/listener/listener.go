@@ -12,8 +12,8 @@ import (
 
 	"github.com/ChainSafe/chainbridge-celo/chain/config"
 	"github.com/ChainSafe/chainbridge-celo/chain/sender"
-	"github.com/ChainSafe/chainbridge-celo/pkg"
 	"github.com/ChainSafe/chainbridge-celo/txtrie"
+	"github.com/ChainSafe/chainbridge-celo/utils"
 	eth "github.com/ethereum/go-ethereum"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	ethcommon "github.com/ethereum/go-ethereum/common"
@@ -44,7 +44,7 @@ type listener struct {
 }
 
 type IRouter interface {
-	Send(msg *pkg.Message) error
+	Send(msg *utils.Message) error
 }
 type Blockstorer interface {
 	StoreBlock(*big.Int) error
@@ -159,7 +159,7 @@ func (l *listener) pollBlocks() error {
 
 func (l *listener) getDepositEventsAndProofsForBlock(latestBlock *big.Int) error {
 	// querying for logs
-	query := buildQuery(l.cfg.BridgeContract, pkg.Deposit, latestBlock, latestBlock)
+	query := buildQuery(l.cfg.BridgeContract, utils.Deposit, latestBlock, latestBlock)
 	logs, err := l.client.FilterLogs(context.Background(), query)
 	if err != nil {
 		return fmt.Errorf("unable to Filter Logs: %w", err)
@@ -178,10 +178,10 @@ func (l *listener) getDepositEventsAndProofsForBlock(latestBlock *big.Int) error
 	// read through the log events and handle their deposit event if handler is recognized
 	for _, eventLog := range logs {
 
-		var m *pkg.Message
-		destId := pkg.ChainId(eventLog.Topics[1].Big().Uint64())
-		rId := pkg.ResourceId(eventLog.Topics[2])
-		nonce := pkg.Nonce(eventLog.Topics[3].Big().Uint64())
+		var m *utils.Message
+		destId := utils.ChainId(eventLog.Topics[1].Big().Uint64())
+		rId := utils.ResourceId(eventLog.Topics[2])
+		nonce := utils.Nonce(eventLog.Topics[3].Big().Uint64())
 
 		addr, err := l.bridgeContract.ResourceIDToHandlerAddress(&bind.CallOpts{}, rId)
 		if err != nil {
@@ -213,8 +213,8 @@ func (l *listener) getDepositEventsAndProofsForBlock(latestBlock *big.Int) error
 		if err != nil {
 			return err
 		}
-		m.SVParams = &pkg.SignatureVerification{AggregatePublicKey: apk, BlockHash: blockData.Header().Hash(), Signature: blockData.EpochSnarkData().Signature}
-		m.MPParams = &pkg.MerkleProof{TxRootHash: pkg.SliceTo32Bytes(blockData.TxHash().Bytes()), Nodes: proof, Key: key}
+		m.SVParams = &utils.SignatureVerification{AggregatePublicKey: apk, BlockHash: blockData.Header().Hash(), Signature: blockData.EpochSnarkData().Signature}
+		m.MPParams = &utils.MerkleProof{TxRootHash: utils.SliceTo32Bytes(blockData.TxHash().Bytes()), Nodes: proof, Key: key}
 		err = l.router.Send(m)
 
 		if err != nil {
@@ -225,7 +225,7 @@ func (l *listener) getDepositEventsAndProofsForBlock(latestBlock *big.Int) error
 }
 
 // buildQuery constructs a query for the bridgeContract by hashing sig to get the event topic
-func buildQuery(contract ethcommon.Address, sig pkg.EventSig, startBlock *big.Int, endBlock *big.Int) eth.FilterQuery {
+func buildQuery(contract ethcommon.Address, sig utils.EventSig, startBlock *big.Int, endBlock *big.Int) eth.FilterQuery {
 	query := eth.FilterQuery{
 		FromBlock: startBlock,
 		ToBlock:   endBlock,

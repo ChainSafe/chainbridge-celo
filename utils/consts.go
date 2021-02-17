@@ -1,4 +1,4 @@
-package pkg
+package utils
 
 const (
 	Deposit       EventSig = "Deposit(uint8,bytes32,uint64)"

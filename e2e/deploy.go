@@ -13,7 +13,7 @@ import (
 	erc20 "github.com/ChainSafe/chainbridge-celo/bindings/ERC20PresetMinterPauser"
 	erc721Handler "github.com/ChainSafe/chainbridge-celo/bindings/ERC721Handler"
 	"github.com/ChainSafe/chainbridge-celo/bindings/GenericHandler"
-	"github.com/ChainSafe/chainbridge-celo/pkg"
+	"github.com/ChainSafe/chainbridge-celo/utils"
 	"github.com/ChainSafe/chainbridge-utils/keystore"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/rs/zerolog/log"
@@ -62,8 +62,8 @@ func Deploy(ctx *cli.Context) error {
 	if err != nil {
 		return err
 	}
-	src := pkg.ChainId(5)
-	resourceID := pkg.SliceTo32Bytes(append(common.LeftPadBytes(dpc.ERC20TokenAddress.Bytes(), 31), uint8(src)))
+	src := utils.ChainId(5)
+	resourceID := utils.SliceTo32Bytes(append(common.LeftPadBytes(dpc.ERC20TokenAddress.Bytes(), 31), uint8(src)))
 	err = RegisterResource(client, dpc.BridgeAddress, dpc.ERC20HandlerAddress, resourceID, dpc.ERC20TokenAddress)
 	if err != nil {
 		return err

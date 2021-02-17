@@ -10,7 +10,7 @@ import (
 
 	"github.com/ChainSafe/chainbridge-celo/bindings/Bridge"
 	erc20 "github.com/ChainSafe/chainbridge-celo/bindings/ERC20PresetMinterPauser"
-	"github.com/ChainSafe/chainbridge-celo/pkg"
+	"github.com/ChainSafe/chainbridge-celo/utils"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/rs/zerolog/log"
 	"github.com/stretchr/testify/suite"
@@ -83,12 +83,12 @@ func (s *IntegrationTestSuite) TestDeposit() {
 	s.Nil(err)
 
 	// wait for vote log event
-	query := buildQuery(s.bridgeAddr, pkg.ProposalEvent, receipt.BlockNumber, lp)
+	query := buildQuery(s.bridgeAddr, utils.ProposalEvent, receipt.BlockNumber, lp)
 	evts, err := s.sender2.Client.FilterLogs(context.Background(), query)
 	var passedEventFound bool
 	for _, evt := range evts {
 		status := evt.Topics[3].Big().Uint64()
-		if pkg.IsPassed(uint8(status)) {
+		if utils.IsPassed(uint8(status)) {
 			passedEventFound = true
 		}
 	}
@@ -102,13 +102,13 @@ func (s *IntegrationTestSuite) TestDeposit() {
 	time.Sleep(30 * time.Second)
 	lp, err = s.sender2.LatestBlock()
 	s.Nil(err)
-	queryExecute := buildQuery(s.bridgeAddr, pkg.ProposalEvent, receipt.BlockNumber, lp)
+	queryExecute := buildQuery(s.bridgeAddr, utils.ProposalEvent, receipt.BlockNumber, lp)
 	s.Nil(err)
 	evts2, err := s.sender2.Client.FilterLogs(context.Background(), queryExecute)
 	var executedEventFound bool
 	for _, evt := range evts2 {
 		status := evt.Topics[3].Big().Uint64()
-		if pkg.IsExecuted(uint8(status)) {
+		if utils.IsExecuted(uint8(status)) {
 			executedEventFound = true
 		}
 	}
@@ -153,12 +153,12 @@ func (s *IntegrationTestSuite) TestMultipleTransactionsInBlock() {
 	lp, err := s.sender2.LatestBlock()
 	s.Nil(err)
 	// wait for vote log event
-	query := buildQuery(s.bridgeAddr, pkg.ProposalEvent, receipt.BlockNumber, lp)
+	query := buildQuery(s.bridgeAddr, utils.ProposalEvent, receipt.BlockNumber, lp)
 	evts, err := s.sender2.Client.FilterLogs(context.Background(), query)
 	var passedEventFound bool
 	for _, evt := range evts {
 		status := evt.Topics[3].Big().Uint64()
-		if pkg.IsPassed(uint8(status)) {
+		if utils.IsPassed(uint8(status)) {
 			passedEventFound = true
 		}
 	}
@@ -172,13 +172,13 @@ func (s *IntegrationTestSuite) TestMultipleTransactionsInBlock() {
 	time.Sleep(30 * time.Second)
 	lp, err = s.sender2.LatestBlock()
 	s.Nil(err)
-	queryExecute := buildQuery(s.bridgeAddr, pkg.ProposalEvent, receipt.BlockNumber, lp)
+	queryExecute := buildQuery(s.bridgeAddr, utils.ProposalEvent, receipt.BlockNumber, lp)
 	s.Nil(err)
 	evts2, err := s.sender2.Client.FilterLogs(context.Background(), queryExecute)
 	var executedEventFound bool
 	for _, evt := range evts2 {
 		status := evt.Topics[3].Big().Uint64()
-		if pkg.IsExecuted(uint8(status)) {
+		if utils.IsExecuted(uint8(status)) {
 			executedEventFound = true
 		}
 	}
