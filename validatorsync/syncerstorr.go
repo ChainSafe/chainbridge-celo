@@ -10,7 +10,6 @@ import (
 	"math/big"
 
 	"github.com/ethereum/go-ethereum/consensus/istanbul"
-	"github.com/rs/zerolog/log"
 	"github.com/syndtr/goleveldb/leveldb"
 )
 
@@ -80,7 +79,6 @@ func (db *ValidatorsStore) SetValidatorsForBlock(block *big.Int, validators []*i
 		tx.Discard()
 		return err
 	}
-	log.Info().Int64("block", block.Int64()).Msgf("New validators set for block")
 	return nil
 }
 
@@ -123,18 +121,21 @@ func (db *ValidatorsStore) setLatestKnownEpochLastBlockWithTransaction(block *bi
 var ErrNoBlockInStore = errors.New("no corresponding validators for provided block number")
 
 func (db *ValidatorsStore) GetAPKForBlock(block *big.Int, chainID uint8, epochSize uint64) ([]byte, error) {
-	vals, err := db.GetValidatorsForBlock(computeLastBlockOfEpochForProvidedBlock(block, epochSize), chainID)
-	if err != nil {
-		if errors.Is(err, leveldb.ErrNotFound) {
-			return nil, ErrNoBlockInStore
+	for i := 0; i <= 10; i++ {
+		vals, err := db.GetValidatorsForBlock(computeLastBlockOfEpochForProvidedBlock(block, epochSize), chainID)
+		if err != nil {
+			if errors.Is(err, leveldb.ErrNotFound) {
+				continue
+			}
+			return nil, err
 		}
-		return nil, err
+		pk, err := aggregatePublicKeys(vals)
+		if err != nil {
+			return nil, err
+		}
+		return pk.Serialize()
 	}
-	pk, err := aggregatePublicKeys(vals)
-	if err != nil {
-		return nil, err
-	}
-	return pk.Serialize()
+	return nil, ErrNoBlockInStore
 }
 
 // Closes connection to underlying DB backend

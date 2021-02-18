@@ -3,10 +3,11 @@
 package main
 
 import (
-	"github.com/ChainSafe/chainbridge-celo/shared/testutils"
 	"os"
 
 	"github.com/ChainSafe/chainbridge-celo/cmd"
+	"github.com/ChainSafe/chainbridge-celo/cmdutils/testutils"
+	"github.com/ChainSafe/chainbridge-celo/e2e"
 	"github.com/ChainSafe/chainbridge-celo/flags"
 	"github.com/rs/zerolog/log"
 	"github.com/urfave/cli/v2"
@@ -23,6 +24,7 @@ var cliFlags = []cli.Flag{
 	flags.LatestBlockFlag,    // latest block to start listen from. Used on chain initialization
 	flags.MetricsFlag,
 	flags.MetricsPort,
+	flags.LevelDBPath,
 }
 
 //
@@ -84,7 +86,11 @@ var accountCommand = cli.Command{
 var validatorsSyncerCommands = cli.Command{
 	Name:   "syncer",
 	Action: testutils.Sync,
-	Flags:  append(cliFlags, devFlags...),
+}
+
+var deployerTestCommands = cli.Command{
+	Name:   "deploy",
+	Action: e2e.Deploy,
 }
 
 // init initializes CLI
@@ -99,6 +105,7 @@ func init() {
 	app.Commands = []*cli.Command{
 		&accountCommand,
 		&validatorsSyncerCommands,
+		&deployerTestCommands,
 	}
 
 	app.Flags = append(app.Flags, cliFlags...)

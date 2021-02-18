@@ -12,9 +12,8 @@ import (
 
 	"github.com/ChainSafe/chainbridge-celo/chain/client"
 	"github.com/ChainSafe/chainbridge-celo/chain/config"
-	"github.com/ChainSafe/chainbridge-celo/msg"
-	"github.com/ChainSafe/chainbridge-celo/shared/ethereum"
-	"github.com/ChainSafe/chainbridge-ethereum-trie/txtrie"
+	"github.com/ChainSafe/chainbridge-celo/txtrie"
+	"github.com/ChainSafe/chainbridge-celo/utils"
 	eth "github.com/ethereum/go-ethereum"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	ethcommon "github.com/ethereum/go-ethereum/common"
@@ -45,7 +44,7 @@ type listener struct {
 }
 
 type IRouter interface {
-	Send(msg *msg.Message) error
+	Send(msg *utils.Message) error
 }
 type Blockstorer interface {
 	StoreBlock(*big.Int) error
@@ -121,7 +120,6 @@ func (l *listener) pollBlocks() error {
 
 			// Sleep if the difference is less than BlockDelay; (latest - current) < BlockDelay
 			if big.NewInt(0).Sub(latestBlock, currentBlock).Cmp(BlockDelay) == -1 {
-				log.Debug().Str("target", currentBlock.String()).Str("latest", latestBlock.String()).Msg("Block not ready, will retry")
 				time.Sleep(BlockRetryInterval)
 				continue
 			}
@@ -132,6 +130,10 @@ func (l *listener) pollBlocks() error {
 				log.Error().Str("block", currentBlock.String()).Err(err).Msg("Failed to get events for block")
 				retry--
 				continue
+			}
+			if currentBlock.Int64()%20 == 0 {
+				// Logging process every 20 bocks to exclude spam
+				log.Debug().Str("block", currentBlock.String()).Msg("Queried block for deposit events")
 			}
 
 			// Write to block store. Not a critical operation, no need to retry
@@ -155,12 +157,9 @@ func (l *listener) pollBlocks() error {
 	}
 }
 
-// TODO: Proof construction.
 func (l *listener) getDepositEventsAndProofsForBlock(latestBlock *big.Int) error {
-	log.Debug().Str("block", latestBlock.String()).Msg("Querying block for deposit events")
-	query := buildQuery(l.cfg.BridgeContract, utils.Deposit, latestBlock, latestBlock)
-
 	// querying for logs
+	query := buildQuery(l.cfg.BridgeContract, utils.Deposit, latestBlock, latestBlock)
 	logs, err := l.client.FilterLogs(context.Background(), query)
 	if err != nil {
 		return fmt.Errorf("unable to Filter Logs: %w", err)
@@ -168,30 +167,26 @@ func (l *listener) getDepositEventsAndProofsForBlock(latestBlock *big.Int) error
 	if len(logs) == 0 {
 		return nil
 	}
-
 	blockData, err := l.client.BlockByNumber(context.Background(), latestBlock)
 	if err != nil {
 		return err
 	}
-
-	trie := txtrie.NewTxTries()
-	err = trie.CreateNewTrie(blockData.TxHash(), blockData.Transactions())
+	trie, err := txtrie.CreateNewTrie(blockData.TxHash(), blockData.Transactions())
 	if err != nil {
 		return err
 	}
 	// read through the log events and handle their deposit event if handler is recognized
 	for _, eventLog := range logs {
 
-		var m *msg.Message
-		destId := msg.ChainId(eventLog.Topics[1].Big().Uint64())
-		rId := msg.ResourceId(eventLog.Topics[2])
-		nonce := msg.Nonce(eventLog.Topics[3].Big().Uint64())
+		var m *utils.Message
+		destId := utils.ChainId(eventLog.Topics[1].Big().Uint64())
+		rId := utils.ResourceId(eventLog.Topics[2])
+		nonce := utils.Nonce(eventLog.Topics[3].Big().Uint64())
 
 		addr, err := l.bridgeContract.ResourceIDToHandlerAddress(&bind.CallOpts{}, rId)
 		if err != nil {
 			return fmt.Errorf("failed to get handler from resource ID %x, reason: %w", rId, err)
 		}
-
 		if addr == l.cfg.Erc20HandlerContract {
 			m, err = l.handleErc20DepositedEvent(destId, nonce)
 		} else if addr == l.cfg.Erc721HandlerContract {
@@ -205,29 +200,21 @@ func (l *listener) getDepositEventsAndProofsForBlock(latestBlock *big.Int) error
 		if err != nil {
 			return err
 		}
-		pubKey, err := l.valsAggr.GetAPKForBlock(latestBlock, uint8(l.cfg.ID), l.cfg.EpochSize)
+		apk, err := l.valsAggr.GetAPKForBlock(latestBlock, uint8(l.cfg.ID), l.cfg.EpochSize)
 		if err != nil {
 			return err
-		}
 
+		}
 		keyRlp, err := rlp.EncodeToBytes(eventLog.TxIndex)
-
+		if err != nil {
+			return fmt.Errorf("encoding TxIndex to rlp: %w", err)
+		}
+		proof, key, err := txtrie.RetrieveProof(trie, keyRlp)
 		if err != nil {
 			return err
 		}
-
-		proof, err := trie.RetrieveEncodedProof(blockData.TxHash(), keyRlp)
-
-		if err != nil {
-			return err
-		}
-
-		if err != nil {
-			return err
-		}
-
-		m.SVParams = &msg.SignatureVerification{AggregatePublicKey: pubKey, BlockHash: blockData.Header().Hash(), Signature: blockData.EpochSnarkData().Signature}
-		m.MPParams = &msg.MerkleProof{TxRootHash: blockData.TxHash(), Nodes: proof, Key: keyRlp}
+		m.SVParams = &utils.SignatureVerification{AggregatePublicKey: apk, BlockHash: blockData.Header().Hash(), Signature: blockData.EpochSnarkData().Signature}
+		m.MPParams = &utils.MerkleProof{TxRootHash: utils.SliceTo32Bytes(blockData.TxHash().Bytes()), Nodes: proof, Key: key}
 		err = l.router.Send(m)
 
 		if err != nil {

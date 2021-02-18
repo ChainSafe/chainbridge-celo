@@ -6,7 +6,7 @@ import (
 	"bytes"
 	"testing"
 
-	"github.com/ChainSafe/chainbridge-celo/msg"
+	"github.com/ChainSafe/chainbridge-celo/utils"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/crypto"
 )
@@ -16,13 +16,13 @@ func TestCreateProposalDataHash(t *testing.T) {
 	handler := common.HexToAddress("0x18DfB0f9B4138d70d3EFe504A4D716D483Cfa201")
 	data := []byte{}
 
-	mp := &msg.MerkleProof{
+	mp := &utils.MerkleProof{
 		TxRootHash: common.BytesToHash([]byte{1, 2, 3}),
 		Key:        []byte{12, 3, 4},
 		Nodes:      []byte{1, 2, 3},
 	}
 
-	sv := &msg.SignatureVerification{
+	sv := &utils.SignatureVerification{
 		AggregatePublicKey: []byte{1, 2, 3},
 		BlockHash:          common.BytesToHash([]byte{1, 2, 3}),
 		Signature:          []byte{2, 3, 4},

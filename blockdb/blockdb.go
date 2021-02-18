@@ -9,10 +9,10 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/ChainSafe/chainbridge-celo/msg"
+	"github.com/ChainSafe/chainbridge-celo/utils"
 )
 
-func NewBlockStoreDB(relayerAddress string, blockstorePath string, chainID msg.ChainId, freshStart bool, startBlock *big.Int) (*Blockstore, error) {
+func NewBlockStoreDB(relayerAddress string, blockstorePath string, chainID utils.ChainId, freshStart bool, startBlock *big.Int) (*Blockstore, error) {
 	bs, err := NewBlockstore(blockstorePath, chainID, relayerAddress)
 	if err != nil {
 		return nil, err
@@ -35,11 +35,11 @@ const PathPostfix = ".chainbridge/blockstore"
 type Blockstore struct {
 	path     string // Path excluding filename
 	fullPath string
-	chain    msg.ChainId
+	chain    utils.ChainId
 	relayer  string
 }
 
-func NewBlockstore(path string, chain msg.ChainId, relayer string) (*Blockstore, error) {
+func NewBlockstore(path string, chain utils.ChainId, relayer string) (*Blockstore, error) {
 	fileName := getFileName(chain, relayer)
 	if path == "" {
 		def, err := getDefaultPath()
@@ -96,7 +96,7 @@ func (b *Blockstore) TryLoadLatestBlock() (*big.Int, error) {
 	return big.NewInt(0), nil
 }
 
-func getFileName(chain msg.ChainId, relayer string) string {
+func getFileName(chain utils.ChainId, relayer string) string {
 	return fmt.Sprintf("%s-%d.block", relayer, chain)
 }
 

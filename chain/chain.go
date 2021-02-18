@@ -4,16 +4,15 @@ package chain
 
 import (
 	"fmt"
-
 	bridgeHandler "github.com/ChainSafe/chainbridge-celo/bindings/Bridge"
 	erc20Handler "github.com/ChainSafe/chainbridge-celo/bindings/ERC20Handler"
 	erc721Handler "github.com/ChainSafe/chainbridge-celo/bindings/ERC721Handler"
 	"github.com/ChainSafe/chainbridge-celo/bindings/GenericHandler"
 	"github.com/ChainSafe/chainbridge-celo/chain/client"
 	"github.com/ChainSafe/chainbridge-celo/chain/config"
-	listener "github.com/ChainSafe/chainbridge-celo/chain/listener"
+	"github.com/ChainSafe/chainbridge-celo/chain/listener"
 	"github.com/ChainSafe/chainbridge-celo/chain/writer"
-	"github.com/ChainSafe/chainbridge-celo/msg"
+	"github.com/ChainSafe/chainbridge-celo/utils"
 	"github.com/pkg/errors"
 	"github.com/rs/zerolog/log"
 )
@@ -97,7 +96,7 @@ func (c *Chain) Start() error {
 	return nil
 }
 
-func (c *Chain) ID() msg.ChainId {
+func (c *Chain) ID() utils.ChainId {
 	return c.cfg.ID
 }
 

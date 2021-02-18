@@ -10,8 +10,7 @@ import (
 	"github.com/ChainSafe/chainbridge-celo/chain/client"
 	"github.com/ChainSafe/chainbridge-celo/cmd/cfg"
 	"github.com/ChainSafe/chainbridge-celo/flags"
-	"github.com/ChainSafe/chainbridge-celo/msg"
-	utils "github.com/ChainSafe/chainbridge-celo/shared/ethereum"
+	"github.com/ChainSafe/chainbridge-celo/utils"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/pkg/errors"
 	"github.com/urfave/cli/v2"
@@ -21,11 +20,11 @@ const DefaultGasLimit = 6721975
 const DefaultGasPrice = 20000000000
 
 type CeloChainConfig struct {
-	ID                     msg.ChainId // ChainID
-	Name                   string      // Human-readable chain name
-	Endpoint               string      // url for rpc endpoint
-	From                   string      // address of key to use // TODO: name should be changed
-	KeystorePath           string      // Location of keyfiles
+	ID                     utils.ChainId // ChainID
+	Name                   string        // Human-readable chain name
+	Endpoint               string        // url for rpc endpoint
+	From                   string        // address of key to use // TODO: name should be changed
+	KeystorePath           string        // Location of keyfiles
 	BlockstorePath         string
 	FreshStart             bool // Disables loading from blockstore at start
 	BridgeContract         common.Address
@@ -80,17 +79,17 @@ func ParseChainConfig(rawCfg *cfg.RawChainConfig, ctx *cli.Context) (*CeloChainC
 
 	config := &CeloChainConfig{
 		Name:                   rawCfg.Name,
-		ID:                     msg.ChainId(chainId),
+		ID:                     utils.ChainId(chainId),
 		Endpoint:               rawCfg.Endpoint,
 		From:                   rawCfg.From,
 		KeystorePath:           ks,
 		BlockstorePath:         ctx.String(flags.BlockstorePathFlag.Name),
 		FreshStart:             ctx.Bool(flags.FreshStartFlag.Name),
 		LatestBlock:            ctx.Bool(flags.LatestBlockFlag.Name),
-		BridgeContract:         utils.ZeroAddress,
-		Erc20HandlerContract:   utils.ZeroAddress,
-		Erc721HandlerContract:  utils.ZeroAddress,
-		GenericHandlerContract: utils.ZeroAddress,
+		BridgeContract:         common.Address{},
+		Erc20HandlerContract:   common.Address{},
+		Erc721HandlerContract:  common.Address{},
+		GenericHandlerContract: common.Address{},
 		GasLimit:               big.NewInt(DefaultGasLimit),
 		MaxGasPrice:            big.NewInt(DefaultGasPrice),
 		Http:                   false,

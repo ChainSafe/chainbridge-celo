@@ -7,30 +7,30 @@ import (
 	"fmt"
 	"sync"
 
-	"github.com/ChainSafe/chainbridge-celo/msg"
+	"github.com/ChainSafe/chainbridge-celo/utils"
 	"github.com/rs/zerolog/log"
 )
 
 // Writer consumes a message and makes the requried on-chain interactions.
 type MessageResolver interface {
-	ResolveMessage(message *msg.Message) bool
+	ResolveMessage(message *utils.Message) bool
 }
 
 // BaseRouter forwards messages from their source to their destination
 type BaseRouter struct {
-	registry map[msg.ChainId]MessageResolver
+	registry map[utils.ChainId]MessageResolver
 	lock     *sync.RWMutex
 }
 
 func NewRouter() *BaseRouter {
 	return &BaseRouter{
-		registry: make(map[msg.ChainId]MessageResolver),
+		registry: make(map[utils.ChainId]MessageResolver),
 		lock:     &sync.RWMutex{},
 	}
 }
 
 // Send passes a message to the destination Writer if it exists
-func (r *BaseRouter) Send(msg *msg.Message) error {
+func (r *BaseRouter) Send(msg *utils.Message) error {
 	r.lock.Lock()
 	defer r.lock.Unlock()
 
@@ -45,7 +45,7 @@ func (r *BaseRouter) Send(msg *msg.Message) error {
 }
 
 // Register registers a Writer with a ChainId which BaseRouter.Send can then use to propagate messages
-func (r *BaseRouter) Register(id msg.ChainId, w MessageResolver) {
+func (r *BaseRouter) Register(id utils.ChainId, w MessageResolver) {
 	r.lock.Lock()
 	defer r.lock.Unlock()
 	log.Debug().Interface("id", id).Msg("Registering new chain in router")

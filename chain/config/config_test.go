@@ -8,7 +8,7 @@ import (
 	"testing"
 
 	"github.com/ChainSafe/chainbridge-celo/cmd/cfg"
-	"github.com/ChainSafe/chainbridge-celo/msg"
+	"github.com/ChainSafe/chainbridge-celo/utils"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/urfave/cli/v2"
 )
@@ -79,7 +79,7 @@ func TestParseConfig(t *testing.T) {
 		t.Error(err)
 	}
 
-	if config.ID != msg.ChainId(chainID) {
+	if config.ID != utils.ChainId(chainID) {
 		t.Errorf("expected %v got %v ", chainID, config.ID)
 	}
 
