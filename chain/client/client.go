@@ -123,17 +123,6 @@ func (c *Client) CallOpts() *bind.CallOpts {
 	return c.callOpts
 }
 
-func (c *Client) LockAndUpdateNonce() error {
-	c.nonceLock.Lock()
-	nonce, err := c.PendingNonceAt(context.Background(), c.opts.From)
-	if err != nil {
-		c.nonceLock.Unlock()
-		return err
-	}
-	c.opts.Nonce.SetUint64(nonce)
-	return nil
-}
-
 func (c *Client) UnlockNonce() {
 	c.nonceLock.Unlock()
 }
@@ -201,6 +190,17 @@ func (c *Client) LockAndUpdateOpts() error {
 	nonce, err := c.PendingNonceAt(context.Background(), c.opts.From)
 	if err != nil {
 		c.optsLock.Unlock()
+		return err
+	}
+	c.opts.Nonce.SetUint64(nonce)
+	return nil
+}
+
+func (c *Client) LockAndUpdateNonce() error {
+	c.nonceLock.Lock()
+	nonce, err := c.PendingNonceAt(context.Background(), c.opts.From)
+	if err != nil {
+		c.nonceLock.Unlock()
 		return err
 	}
 	c.opts.Nonce.SetUint64(nonce)

@@ -35,13 +35,13 @@ func TestRunE2ETests(t *testing.T) {
 func (s *IntegrationTestSuite) SetupSuite()    {}
 func (s *IntegrationTestSuite) TearDownSuite() {}
 func (s *IntegrationTestSuite) SetupTest() {
-	chainClient, err := client.NewClient(TestEndpoint, false, AliceKp, big.NewInt(DefaultGasLimit), big.NewInt(DefaultGasPrice))
+	chainClient, err := client.NewClient(TestEndpoint, false, utils.AliceKp, big.NewInt(utils.DefaultGasLimit), big.NewInt(utils.DefaultGasPrice))
 	if err != nil {
 		panic(err)
 	}
 	s.client = chainClient
 
-	client2, err := client.NewClient(TestEndpoint2, false, AliceKp, big.NewInt(DefaultGasLimit), big.NewInt(DefaultGasPrice))
+	client2, err := client.NewClient(TestEndpoint2, false, utils.AliceKp, big.NewInt(utils.DefaultGasLimit), big.NewInt(utils.DefaultGasPrice))
 	if err != nil {
 		panic(err)
 	}
@@ -57,14 +57,14 @@ func (s *IntegrationTestSuite) TearDownTest() {}
 
 // Deposit hash: 0x42782f963df86c5f31f94d9c610445b72d388bd60f788e2cd8ea4bff17824426
 func (s *IntegrationTestSuite) TestDeposit() {
-	dstAddr := BobKp.CommonAddress()
+	dstAddr := utils.BobKp.CommonAddress()
 	bridgeContract, err := Bridge.NewBridge(s.bridgeAddr, s.client.Client)
 	s.Nil(err)
 	erc20Contract, err := erc20.NewERC20PresetMinterPauser(s.erc20ContractAddr, s.client.Client)
 	s.Nil(err)
 	erc20Contract2, err := erc20.NewERC20PresetMinterPauser(s.erc20ContractAddr, s.client2.Client)
 	s.Nil(err)
-	senderBalBefore, err := erc20Contract.BalanceOf(s.client.CallOpts(), AliceKp.CommonAddress())
+	senderBalBefore, err := erc20Contract.BalanceOf(s.client.CallOpts(), utils.AliceKp.CommonAddress())
 	s.Nil(err)
 	destBalanceBefor, err := erc20Contract2.BalanceOf(s.client2.CallOpts(), dstAddr)
 	s.Nil(err)
@@ -72,7 +72,7 @@ func (s *IntegrationTestSuite) TestDeposit() {
 	amountToDeposit := big.NewInt(1000000)
 	tx, err := makeErc20Deposit(s.client, bridgeContract, s.erc20ContractAddr, dstAddr, amountToDeposit)
 	s.Nil(err)
-	receipt, err := waitAndReturnTxReceipt(s.client, tx)
+	receipt, err := utils.WaitAndReturnTxReceipt(s.client, tx)
 	s.Nil(err)
 	log.Debug().Msg(tx.Hash().String())
 
@@ -94,7 +94,7 @@ func (s *IntegrationTestSuite) TestDeposit() {
 	}
 	s.True(passedEventFound)
 
-	senderBalAfter, err := erc20Contract.BalanceOf(s.client.CallOpts(), AliceKp.CommonAddress())
+	senderBalAfter, err := erc20Contract.BalanceOf(s.client.CallOpts(), utils.AliceKp.CommonAddress())
 	s.Nil(err)
 	s.Equal(senderBalBefore.Cmp(big.NewInt(0).Add(senderBalAfter, amountToDeposit)), 0)
 
@@ -121,17 +121,17 @@ func (s *IntegrationTestSuite) TestDeposit() {
 }
 
 func (s *IntegrationTestSuite) TestMultipleTransactionsInBlock() {
-	eveSender, err := client.NewClient(TestEndpoint, false, EveKp, big.NewInt(DefaultGasLimit), big.NewInt(DefaultGasPrice))
+	eveSender, err := client.NewClient(TestEndpoint, false, utils.EveKp, big.NewInt(utils.DefaultGasLimit), big.NewInt(utils.DefaultGasPrice))
 	s.Nil(err)
 
-	dstAddr := BobKp.CommonAddress()
+	dstAddr := utils.BobKp.CommonAddress()
 	bridgeContract, err := Bridge.NewBridge(s.bridgeAddr, s.client.Client)
 	s.Nil(err)
 	erc20Contract, err := erc20.NewERC20PresetMinterPauser(s.erc20ContractAddr, s.client.Client)
 	s.Nil(err)
 	erc20Contract2, err := erc20.NewERC20PresetMinterPauser(s.erc20ContractAddr, s.client2.Client)
 	s.Nil(err)
-	senderBalBefore, err := erc20Contract.BalanceOf(s.client.CallOpts(), AliceKp.CommonAddress())
+	senderBalBefore, err := erc20Contract.BalanceOf(s.client.CallOpts(), utils.AliceKp.CommonAddress())
 	s.Nil(err)
 	destBalanceBefor, err := erc20Contract2.BalanceOf(s.client2.CallOpts(), dstAddr)
 	s.Nil(err)
@@ -143,7 +143,7 @@ func (s *IntegrationTestSuite) TestMultipleTransactionsInBlock() {
 	}
 	tx, err := makeErc20Deposit(s.client, bridgeContract, s.erc20ContractAddr, dstAddr, amountToDeposit)
 	s.Nil(err)
-	receipt, err := waitAndReturnTxReceipt(s.client, tx)
+	receipt, err := utils.WaitAndReturnTxReceipt(s.client, tx)
 	s.Nil(err)
 	log.Debug().Msg(tx.Hash().String())
 
@@ -164,7 +164,7 @@ func (s *IntegrationTestSuite) TestMultipleTransactionsInBlock() {
 	}
 	s.True(passedEventFound)
 
-	senderBalAfter, err := erc20Contract.BalanceOf(s.client.CallOpts(), AliceKp.CommonAddress())
+	senderBalAfter, err := erc20Contract.BalanceOf(s.client.CallOpts(), utils.AliceKp.CommonAddress())
 	s.Nil(err)
 	s.Equal(senderBalBefore.Cmp(big.NewInt(0).Add(senderBalAfter, amountToDeposit)), 0)
 

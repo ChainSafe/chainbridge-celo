@@ -3,8 +3,6 @@ package e2e
 import (
 	"context"
 	"encoding/hex"
-	"errors"
-	"fmt"
 	"github.com/ChainSafe/chainbridge-celo/chain/client"
 	"math/big"
 	"math/rand"
@@ -87,45 +85,6 @@ func buildQuery(contract common.Address, sig utils.EventSig, startBlock *big.Int
 	return query
 }
 
-// WaitForTx will query the chain at ExpectedBlockTime intervals, until a receipt is returned.
-// Returns an error if the tx failed.
-func WaitForTx(client *client.Client, tx *types.Transaction) error {
-	retry := 10
-	for retry > 0 {
-		receipt, err := client.Client.TransactionReceipt(context.Background(), tx.Hash())
-		if err != nil {
-			retry--
-			time.Sleep(ExpectedBlockTime)
-			continue
-		}
-
-		if receipt.Status != 1 {
-			return fmt.Errorf("transaction failed on chain")
-		}
-		return nil
-	}
-	return nil
-}
-
-// WaitForTx will query the chain at ExpectedBlockTime intervals, until a receipt is returned.
-// Returns an error if the tx failed.
-func waitAndReturnTxReceipt(client *client.Client, tx *types.Transaction) (*types.Receipt, error) {
-	retry := 10
-	for retry > 0 {
-		receipt, err := client.Client.TransactionReceipt(context.Background(), tx.Hash())
-		if err != nil {
-			retry--
-			time.Sleep(ExpectedBlockTime)
-			continue
-		}
-		if receipt.Status != 1 {
-			return receipt, fmt.Errorf("transaction failed on chain")
-		}
-		return receipt, nil
-	}
-	return nil, errors.New("Tx do not appear")
-}
-
 //nolint
 func transfer(client *client.Client, erc20 *erc20.ERC20PresetMinterPauser, recipient common.Address, amount *big.Int) (*types.Transaction, error) {
 	err := client.LockAndUpdateOpts()
@@ -152,7 +111,7 @@ func sendOneWei(sender *client.Client) (*types.Transaction, error) {
 	if err != nil {
 		return nil, err
 	}
-	tx := types.NewTransaction(sender.Opts().Nonce.Uint64(), AliceKp.CommonAddress(), big.NewInt(1), sender.Opts().GasLimit, sender.Opts().GasPrice, sender.Opts().FeeCurrency, sender.Opts().GatewayFeeRecipient, sender.Opts().GatewayFee, nil)
+	tx := types.NewTransaction(sender.Opts().Nonce.Uint64(), utils.AliceKp.CommonAddress(), big.NewInt(1), sender.Opts().GasLimit, sender.Opts().GasPrice, sender.Opts().FeeCurrency, sender.Opts().GatewayFeeRecipient, sender.Opts().GatewayFee, nil)
 
 	// Final Step
 	signedTx, err := sender.Opts().Signer(types.HomesteadSigner{}, sender.Opts().From, tx)
@@ -165,7 +124,7 @@ func sendOneWei(sender *client.Client) (*types.Transaction, error) {
 		return nil, err
 	}
 	sender.UnlockOpts()
-	err = WaitForTx(sender, signedTx)
+	err = utils.WaitForTx(sender, signedTx)
 	if err != nil {
 		return nil, err
 	}

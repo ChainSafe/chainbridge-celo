@@ -3,6 +3,7 @@
 package main
 
 import (
+	"github.com/ChainSafe/chainbridge-celo/cbcli"
 	"os"
 
 	"github.com/ChainSafe/chainbridge-celo/cmd"
@@ -93,6 +94,117 @@ var deployerTestCommands = cli.Command{
 	Action: e2e.Deploy,
 }
 
+var cliCmd = cli.Command{
+	Name:        "cli",
+	Description: "This CLI supports on-chain interactions with components of ChainBridge",
+	Flags: []cli.Flag{
+		&cli.StringFlag{
+			Name:  "url",
+			Value: "http://localhost:8545",
+			Usage: "RPC url of blockchain node",
+		},
+		&cli.Int64Flag{
+			Name:  "gasLimit",
+			Value: 6721975,
+			Usage: "gasLimit used in transactions",
+		},
+		&cli.Int64Flag{
+			Name:  "gasPrice",
+			Value: 20000000000,
+			Usage: "gasPrice used for transactions",
+		},
+		&cli.Int64Flag{
+			Name:  "networkID",
+			Value: 0,
+			Usage: "networkID",
+		},
+		&cli.StringFlag{
+			Name:  "privateKey",
+			Value: "",
+			Usage: "Private key to use",
+		},
+		&cli.PathFlag{
+			Name:  "jsonWallet",
+			Value: "",
+			Usage: "Encrypted JSON wallet",
+		},
+		&cli.StringFlag{
+			Name:  "jsonWalletPassword",
+			Value: "",
+			Usage: "Password for encrypted JSON wallet",
+		},
+	},
+	Subcommands: []*cli.Command{
+		{
+			Name:        "deploy",
+			Description: "This command can be used to deploy all or some of the contracts required for bridging. Selection of contracts can be made by either specifying --all or a subset of flags",
+			Action:      cbcli.Deploy,
+			Flags: []cli.Flag{
+				&cli.StringFlag{
+					Name:  "bridge",
+					Value: "bridge",
+					Usage: "deploy bridge",
+				},
+				&cli.StringFlag{
+					Name:  "erc20Handler",
+					Value: "erc20Handler",
+					Usage: "deploy erc20Handler",
+				},
+				&cli.StringFlag{
+					Name:  "erc721Handler",
+					Value: "erc721Handler",
+					Usage: "deploy erc721Handler",
+				},
+				&cli.StringFlag{
+					Name:  "genericHandler",
+					Value: "genericHandler",
+					Usage: "deploy genericHandler",
+				},
+				&cli.StringFlag{
+					Name:  "erc20",
+					Value: "erc20",
+					Usage: "deploy erc20",
+				},
+				&cli.StringFlag{
+					Name:  "erc721",
+					Value: "erc721",
+					Usage: "deploy erc721",
+				},
+				&cli.StringFlag{
+					Name:  "all",
+					Value: "all",
+					Usage: "deploy all contracts",
+				},
+				&cli.Int64Flag{
+					Name:  "relayerThreshold",
+					Value: 1,
+					Usage: "deploy all contracts",
+				},
+				&cli.Uint64Flag{
+					Name:  "chainId",
+					Value: 1,
+					Usage: "deploy all contracts",
+				},
+				&cli.StringSliceFlag{
+					Name:  "relayers",
+					Value: cli.NewStringSlice(),
+					Usage: "deploy all contracts",
+				},
+				&cli.Int64Flag{
+					Name:  "fee",
+					Value: 0,
+					Usage: "deploy all contracts",
+				},
+				&cli.StringFlag{
+					Name:  "bridgeAddress",
+					Value: "",
+					Usage: "deploy all contracts",
+				},
+			},
+		},
+	},
+}
+
 // init initializes CLI
 func init() {
 	app.Action = cmd.Run
@@ -106,6 +218,7 @@ func init() {
 		&accountCommand,
 		&validatorsSyncerCommands,
 		&deployerTestCommands,
+		&cliCmd,
 	}
 
 	app.Flags = append(app.Flags, cliFlags...)

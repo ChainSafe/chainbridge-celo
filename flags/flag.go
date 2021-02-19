@@ -50,9 +50,8 @@ var (
 	}
 
 	LevelDBPath = &cli.StringFlag{
-		Name:     "leveldb",
-		Usage:    "sets path to leveldb database",
-		Required: true,
+		Name:  "leveldb",
+		Usage: "sets path to leveldb database",
 	}
 )
 
