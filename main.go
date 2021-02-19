@@ -140,39 +140,32 @@ var cliCmd = cli.Command{
 			Description: "This command can be used to deploy all or some of the contracts required for bridging. Selection of contracts can be made by either specifying --all or a subset of flags",
 			Action:      cbcli.Deploy,
 			Flags: []cli.Flag{
-				&cli.StringFlag{
+				&cli.BoolFlag{
 					Name:  "bridge",
-					Value: "bridge",
 					Usage: "deploy bridge",
 				},
-				&cli.StringFlag{
+				&cli.BoolFlag{
 					Name:  "erc20Handler",
-					Value: "erc20Handler",
 					Usage: "deploy erc20Handler",
 				},
-				&cli.StringFlag{
+				&cli.BoolFlag{
 					Name:  "erc721Handler",
-					Value: "erc721Handler",
 					Usage: "deploy erc721Handler",
 				},
-				&cli.StringFlag{
+				&cli.BoolFlag{
 					Name:  "genericHandler",
-					Value: "genericHandler",
 					Usage: "deploy genericHandler",
 				},
-				&cli.StringFlag{
+				&cli.BoolFlag{
 					Name:  "erc20",
-					Value: "erc20",
 					Usage: "deploy erc20",
 				},
-				&cli.StringFlag{
+				&cli.BoolFlag{
 					Name:  "erc721",
-					Value: "erc721",
 					Usage: "deploy erc721",
 				},
-				&cli.StringFlag{
+				&cli.BoolFlag{
 					Name:  "all",
-					Value: "all",
 					Usage: "deploy all contracts",
 				},
 				&cli.Int64Flag{
@@ -199,6 +192,29 @@ var cliCmd = cli.Command{
 					Name:  "bridgeAddress",
 					Value: "",
 					Usage: "deploy all contracts",
+				},
+			},
+		},
+		{
+			Name:        "register-resource",
+			Description: "Register a resource ID with a contract address for a handler.",
+			Action:      cbcli.RegisterResource,
+			Flags: []cli.Flag{
+				&cli.StringFlag{
+					Name:  "bridge",
+					Usage: "Bridge contract address",
+				},
+				&cli.StringFlag{
+					Name:  "handler",
+					Usage: "Handler address",
+				},
+				&cli.StringFlag{
+					Name:  "targetContract",
+					Usage: "Contract address to be registered",
+				},
+				&cli.StringFlag{
+					Name:  "resourceId",
+					Usage: "Resource ID to be registered",
 				},
 			},
 		},

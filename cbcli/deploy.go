@@ -62,25 +62,25 @@ func Deploy(cctx *cli.Context) error {
 	}
 
 	deployments := make([]string, 0)
-	if cctx.String("all") != "" {
+	if cctx.Bool("all") {
 		deployments = append(deployments, []string{"bridge", "erc20Handler", "erc721Handler", "genericHandler", "erc20", "erc721"}...)
 	} else {
-		if cctx.String("bridge") != "" {
+		if cctx.Bool("bridge") {
 			deployments = append(deployments, "bridge")
 		}
-		if cctx.String("erc20Handler") != "" {
+		if cctx.Bool("erc20Handler") {
 			deployments = append(deployments, "erc20Handler")
 		}
-		if cctx.String("erc721Handler") != "" {
+		if cctx.Bool("erc721Handler") {
 			deployments = append(deployments, "erc721Handler")
 		}
-		if cctx.String("genericHandler") != "" {
+		if cctx.Bool("genericHandler") {
 			deployments = append(deployments, "genericHandler")
 		}
-		if cctx.String("erc20") != "" {
+		if cctx.Bool("erc20") {
 			deployments = append(deployments, "erc20")
 		}
-		if cctx.String("erc721") != "" {
+		if cctx.Bool("erc721") {
 			deployments = append(deployments, "erc721")
 		}
 	}
@@ -96,6 +96,7 @@ func Deploy(cctx *cli.Context) error {
 		switch v {
 		case "bridge":
 			bridgeAddress, err = utils.DeployBridge(ethClient, uint8(chainID), relayerAddresses, big.NewInt(relayerThreshold))
+			deployedContracts["bridge"] = bridgeAddress.String()
 		case "erc20Handler":
 			if bridgeAddress.String() == "" {
 				return errors.New("bridge flag or bridgeAddress param should be set for contracts deployments")
