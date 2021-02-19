@@ -3,6 +3,7 @@ package utils
 import (
 	"context"
 	"fmt"
+	"github.com/ChainSafe/chainbridge-utils/msg"
 	"github.com/pkg/errors"
 	"math/big"
 	"time"
@@ -151,6 +152,27 @@ func RegisterResource(client *client.Client, bridge, handler common.Address, rId
 
 	client.UnlockOpts()
 
+	return nil
+}
+
+func RegisterGenericResource(client *client.Client, bridge, handler common.Address, rId msg.ResourceId, addr common.Address, depositSig, executeSig [4]byte) error {
+	instance, err := Bridge.NewBridge(bridge, client.Client)
+	if err != nil {
+		return err
+	}
+	err = client.LockAndUpdateOpts()
+	if err != nil {
+		return err
+	}
+	tx, err := instance.AdminSetGenericResource(client.Opts(), handler, rId, addr, depositSig, executeSig)
+	if err != nil {
+		return err
+	}
+	err = WaitForTx(client, tx)
+	if err != nil {
+		return err
+	}
+	client.UnlockOpts()
 	return nil
 }
 

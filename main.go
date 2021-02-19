@@ -218,6 +218,43 @@ var cliCmd = cli.Command{
 				},
 			},
 		},
+		{
+			Name:        "register-generic-resource",
+			Description: "Register a resource ID with a contract address for a generic handler..",
+			Action:      cbcli.RegisterGenericResource,
+			Flags: []cli.Flag{
+				&cli.StringFlag{
+					Name:  "bridge",
+					Usage: "Bridge contract address",
+				},
+				&cli.StringFlag{
+					Name:  "handler",
+					Usage: "Handler address",
+				},
+				&cli.StringFlag{
+					Name:  "targetContract",
+					Usage: "Contract address to be registered",
+				},
+				&cli.StringFlag{
+					Name:  "resourceId",
+					Usage: "Resource ID to be registered",
+				},
+				&cli.StringFlag{
+					Name:  "deposit",
+					Usage: "Deposit function signature",
+					Value: "0x00000000",
+				},
+				&cli.StringFlag{
+					Name:  "execute",
+					Usage: "Execute proposal function signature",
+					Value: "0x00000000",
+				},
+				&cli.BoolFlag{
+					Name:  "hash",
+					Usage: "Treat signature inputs as function prototype strings, hash and take the first 4 bytes ",
+				},
+			},
+		},
 	},
 }
 
