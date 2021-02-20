@@ -176,7 +176,7 @@ func RegisterGenericResource(client *client.Client, bridge, handler common.Addre
 	return nil
 }
 
-func MintTokens(client *client.Client, erc20Addr common.Address) error {
+func MintTokens(client *client.Client, erc20Addr common.Address, amount *big.Int) error {
 	erc20Contract, err := erc20.NewERC20PresetMinterPauser(erc20Addr, client.Client)
 	if err != nil {
 		return err
@@ -185,8 +185,7 @@ func MintTokens(client *client.Client, erc20Addr common.Address) error {
 	if err != nil {
 		return err
 	}
-	tenTokens := big.NewInt(0).Mul(big.NewInt(10), big.NewInt(0).Exp(big.NewInt(10), big.NewInt(18), nil))
-	mintTx, err := erc20Contract.Mint(client.Opts(), AliceKp.CommonAddress(), tenTokens)
+	mintTx, err := erc20Contract.Mint(client.Opts(), AliceKp.CommonAddress(), amount)
 	if err != nil {
 		return err
 	}
@@ -353,6 +352,46 @@ func DeployGenericHandler(client *client.Client, bridgeAddress common.Address) (
 	client.UnlockOpts()
 
 	return addr, nil
+}
+
+func CancelProposal(client *client.Client, bridgeAddress common.Address, chainID uint8, depositNonce uint64, dataHash [32]byte) error {
+	bridgeInstance, err := Bridge.NewBridge(bridgeAddress, client.Client)
+	if err != nil {
+		return err
+	}
+	err = client.LockAndUpdateOpts()
+	if err != nil {
+		return err
+	}
+	tx, err := bridgeInstance.CancelProposal(client.Opts(), chainID, depositNonce, dataHash)
+	if err != nil {
+		return err
+	}
+	err = WaitForTx(client, tx)
+	if err != nil {
+		return err
+	}
+
+	client.UnlockOpts()
+	return nil
+}
+
+func QueryProposal(client *client.Client, bridgeAddress common.Address, chainID uint8, depositNonce uint64, dataHash [32]byte) (*Bridge.BridgeProposal, error) {
+	bridgeInstance, err := Bridge.NewBridge(bridgeAddress, client.Client)
+	if err != nil {
+		return nil, err
+	}
+	err = client.LockAndUpdateOpts()
+	if err != nil {
+		return nil, err
+	}
+	prop, err := bridgeInstance.GetProposal(client.CallOpts(), chainID, depositNonce, dataHash)
+	if err != nil {
+		return nil, err
+	}
+
+	client.UnlockOpts()
+	return &prop, nil
 }
 
 var ExpectedBlockTime = 2 * time.Second

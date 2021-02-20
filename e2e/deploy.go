@@ -31,13 +31,11 @@ func Deploy(ctx *cli.Context) error {
 		return err
 	}
 
-	err = utils.MintTokens(client, dpc.ERC20TokenAddress)
+	tenTokens := big.NewInt(0).Mul(big.NewInt(10), big.NewInt(0).Exp(big.NewInt(10), big.NewInt(18), nil))
+	err = utils.MintTokens(client, dpc.ERC20TokenAddress, tenTokens)
 	if err != nil {
 		return err
 	}
-
-	tenTokens := big.NewInt(0).Mul(big.NewInt(10), big.NewInt(0).Exp(big.NewInt(10), big.NewInt(18), nil))
-
 	err = utils.Erc20Approve(client, dpc.ERC20TokenAddress, dpc.ERC20HandlerAddress, tenTokens)
 	if err != nil {
 		return err

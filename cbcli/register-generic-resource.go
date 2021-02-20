@@ -59,7 +59,7 @@ func RegisterGenericResource(cctx *cli.Context) error {
 	}
 	targetContractAddress := common.HexToAddress(targetContract)
 	resourceId := cctx.String("resourceId")
-	resourceIdBytes := hexutils.HexToBytes(targetContract)
+	resourceIdBytes := hexutils.HexToBytes(resourceId)
 	resourceIdBytesArr := utils.SliceTo32Bytes(resourceIdBytes)
 
 	fmt.Printf("Registering contract %s with resource ID %s on handler %s", targetContract, resourceId, handler)

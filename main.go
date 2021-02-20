@@ -103,17 +103,17 @@ var cliCmd = cli.Command{
 			Value: "http://localhost:8545",
 			Usage: "RPC url of blockchain node",
 		},
-		&cli.Int64Flag{
+		&cli.Uint64Flag{
 			Name:  "gasLimit",
 			Value: 6721975,
 			Usage: "gasLimit used in transactions",
 		},
-		&cli.Int64Flag{
+		&cli.Uint64Flag{
 			Name:  "gasPrice",
 			Value: 20000000000,
 			Usage: "gasPrice used for transactions",
 		},
-		&cli.Int64Flag{
+		&cli.Uint64Flag{
 			Name:  "networkID",
 			Value: 0,
 			Usage: "networkID",
@@ -271,6 +271,52 @@ var cliCmd = cli.Command{
 				&cli.StringFlag{
 					Name:  "tokenContract",
 					Usage: "Token contract to be registered",
+				},
+			},
+		},
+		{
+			Name:        "cancel-proposal",
+			Description: "Cancels an expired proposal.",
+			Action:      cbcli.CancelProposal,
+			Flags: []cli.Flag{
+				&cli.StringFlag{
+					Name:  "bridge",
+					Usage: "Bridge contract address",
+				},
+				&cli.Uint64Flag{
+					Name:  "chainId",
+					Usage: "Chain ID of proposal to cancel",
+				},
+				&cli.Uint64Flag{
+					Name:  "depositNonce",
+					Usage: "Deposit nonce of proposal to cancel",
+				},
+				&cli.StringFlag{
+					Name:  "dataHash",
+					Usage: "Hash of proposal metadata",
+				},
+			},
+		},
+		{
+			Name:        "query-proposal",
+			Description: "Queries an inbound proposal.",
+			Action:      cbcli.QueryProposal,
+			Flags: []cli.Flag{
+				&cli.StringFlag{
+					Name:  "bridge",
+					Usage: "Bridge contract address",
+				},
+				&cli.Uint64Flag{
+					Name:  "chainId",
+					Usage: "Source chain ID of proposal",
+				},
+				&cli.Uint64Flag{
+					Name:  "depositNonce",
+					Usage: "Deposit nonce of proposal",
+				},
+				&cli.StringFlag{
+					Name:  "dataHash",
+					Usage: "Hash of proposal metadata",
 				},
 			},
 		},

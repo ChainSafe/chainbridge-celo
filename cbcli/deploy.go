@@ -96,6 +96,9 @@ func Deploy(cctx *cli.Context) error {
 		switch v {
 		case "bridge":
 			bridgeAddress, err = utils.DeployBridge(ethClient, uint8(chainID), relayerAddresses, big.NewInt(relayerThreshold))
+			if err != nil {
+				return err
+			}
 			deployedContracts["bridge"] = bridgeAddress.String()
 		case "erc20Handler":
 			if bridgeAddress.String() == "" {
