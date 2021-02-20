@@ -255,6 +255,25 @@ var cliCmd = cli.Command{
 				},
 			},
 		},
+		{
+			Name:        "set-burn",
+			Description: "Set a token contract as mintable/burnable in a handler.",
+			Action:      cbcli.SetBurn,
+			Flags: []cli.Flag{
+				&cli.StringFlag{
+					Name:  "bridge",
+					Usage: "Bridge contract address",
+				},
+				&cli.StringFlag{
+					Name:  "handler",
+					Usage: "ERC20 handler contract address",
+				},
+				&cli.StringFlag{
+					Name:  "tokenContract",
+					Usage: "Token contract to be registered",
+				},
+			},
+		},
 	},
 }
 

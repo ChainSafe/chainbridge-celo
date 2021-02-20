@@ -3,19 +3,17 @@ package cbcli
 import (
 	"bytes"
 	"fmt"
-	"github.com/ethereum/go-ethereum/crypto"
 	"math/big"
 
 	"github.com/ChainSafe/chainbridge-celo/chain/client"
 	"github.com/ChainSafe/chainbridge-celo/utils"
 	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/pkg/errors"
 	"github.com/status-im/keycard-go/hexutils"
 	"github.com/urfave/cli/v2"
 )
 
-//sig
-//ethers.utils.keccak256(ethers.utils.hexlify(ethers.utils.toUtf8Bytes(sig))).substr(0, 10)
 func getFunctionBytes(in string) [4]byte {
 	res := crypto.Keccak256(bytes.NewBufferString(in).Bytes())
 	return utils.SliceTo4Bytes(res)
@@ -74,6 +72,5 @@ func RegisterGenericResource(cctx *cli.Context) error {
 		return err
 	}
 	fmt.Println("Resource registered")
-
 	return nil
 }

@@ -2,8 +2,9 @@ package cbcli
 
 import (
 	"fmt"
-	"github.com/status-im/keycard-go/hexutils"
 	"testing"
+
+	"github.com/status-im/keycard-go/hexutils"
 )
 
 func TestGetFunctionBytes(t *testing.T) {
