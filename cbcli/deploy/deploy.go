@@ -1,12 +1,12 @@
-package cbcli
+package deploy
 
 import (
 	"fmt"
+	"github.com/ChainSafe/chainbridge-celo/cbcli/cliutils"
 	"math/big"
 
 	"github.com/ChainSafe/chainbridge-celo/chain/client"
 	"github.com/ChainSafe/chainbridge-celo/utils"
-	"github.com/ChainSafe/chainbridge-utils/crypto/secp256k1"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/pkg/errors"
 	"github.com/urfave/cli/v2"
@@ -14,31 +14,13 @@ import (
 
 var ErrNoDeploymentFalgsProvided = errors.New("provide at least one deployment flag. For help use help.")
 
-func defineSender(cctx *cli.Context) (*secp256k1.Keypair, error) {
-	privateKey := cctx.String("privateKey")
-	//jsonWallet := cctx.Path("jsonWallet")
-	//jsonWalletPassword := cctx.String("jsonWalletPassword")
-
-	if privateKey != "" {
-		kp, err := secp256k1.NewKeypairFromString(privateKey)
-		if err != nil {
-			return nil, err
-		}
-		return kp, nil
-	}
-	//if jsonWallet != "" {
-	//
-	//}
-	return utils.AliceKp, nil
-}
-
 func deploy(cctx *cli.Context) error {
 	url := cctx.String("url")
 	gasLimit := cctx.Int64("gasLimit")
 	gasPrice := cctx.Int64("gasPrice")
 	//networkID := cctx.String("networkID")
 
-	sender, err := defineSender(cctx)
+	sender, err := cliutils.DefineSender(cctx)
 	if err != nil {
 		return err
 	}
@@ -145,7 +127,7 @@ func deploy(cctx *cli.Context) error {
 	return nil
 }
 
-var deployCMD = &cli.Command{
+var DeployCMD = &cli.Command{
 	Name:        "deploy",
 	Description: "This command can be used to deploy all or some of the contracts required for bridging. Selection of contracts can be made by either specifying --all or a subset of flags",
 	Action:      deploy,

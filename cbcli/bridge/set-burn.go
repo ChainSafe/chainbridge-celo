@@ -1,6 +1,7 @@
-package cbcli
+package bridge
 
 import (
+	"github.com/ChainSafe/chainbridge-celo/cbcli/cliutils"
 	"math/big"
 
 	"github.com/ChainSafe/chainbridge-celo/chain/client"
@@ -31,7 +32,7 @@ func setBurn(cctx *cli.Context) error {
 	handlerAddress := common.HexToAddress(handler)
 	tokenContractAddress := common.HexToAddress(tokenContract)
 
-	sender, err := defineSender(cctx)
+	sender, err := cliutils.DefineSender(cctx)
 	if err != nil {
 		return err
 	}

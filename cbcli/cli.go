@@ -1,6 +1,11 @@
 package cbcli
 
-import "github.com/urfave/cli/v2"
+import (
+	"github.com/ChainSafe/chainbridge-celo/cbcli/admin"
+	"github.com/ChainSafe/chainbridge-celo/cbcli/bridge"
+	"github.com/ChainSafe/chainbridge-celo/cbcli/deploy"
+	"github.com/urfave/cli/v2"
+)
 
 var CLICMD = cli.Command{
 	Name:        "cli",
@@ -42,12 +47,9 @@ var CLICMD = cli.Command{
 			Usage: "Password for encrypted JSON wallet",
 		},
 	},
-	Subcommands: []*cli.Command{deployCMD,
-		registerResourceCMD,
-		registerGenericResourceCMD,
-		setBurnCMD,
-		cancelProposalCMD,
-		queryProposalCMD,
-		queryResourceCMD,
-		isRelayerCMD},
+	Subcommands: []*cli.Command{
+		deploy.DeployCMD,
+		bridge.BridgeCLICMDS,
+		admin.AdminCLICMDS,
+	},
 }

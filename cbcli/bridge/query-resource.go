@@ -1,7 +1,8 @@
-package cbcli
+package bridge
 
 import (
 	"errors"
+	"github.com/ChainSafe/chainbridge-celo/cbcli/cliutils"
 	"math/big"
 
 	"github.com/ChainSafe/chainbridge-celo/chain/client"
@@ -15,7 +16,7 @@ func queryResource(cctx *cli.Context) error {
 	url := cctx.String("url")
 	gasLimit := cctx.Uint64("gasLimit")
 	gasPrice := cctx.Uint64("gasPrice")
-	sender, err := defineSender(cctx)
+	sender, err := cliutils.DefineSender(cctx)
 	if err != nil {
 		return err
 	}

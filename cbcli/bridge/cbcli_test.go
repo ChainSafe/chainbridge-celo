@@ -1,4 +1,4 @@
-package cbcli
+package bridge
 
 import (
 	"fmt"
