@@ -11,7 +11,7 @@ import (
 	"github.com/urfave/cli/v2"
 )
 
-func CancelProposal(cctx *cli.Context) error {
+func cancelProposal(cctx *cli.Context) error {
 	url := cctx.String("url")
 	gasLimit := cctx.Uint64("gasLimit")
 	gasPrice := cctx.Uint64("gasPrice")
@@ -45,7 +45,7 @@ func CancelProposal(cctx *cli.Context) error {
 var cancelProposalCMD = &cli.Command{
 	Name:        "cancel-proposal",
 	Description: "Cancels an expired proposal.",
-	Action:      CancelProposal,
+	Action:      cancelProposal,
 	Flags: []cli.Flag{
 		&cli.StringFlag{
 			Name:  "bridge",

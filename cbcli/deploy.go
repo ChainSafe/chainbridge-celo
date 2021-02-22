@@ -32,7 +32,7 @@ func defineSender(cctx *cli.Context) (*secp256k1.Keypair, error) {
 	return utils.AliceKp, nil
 }
 
-func Deploy(cctx *cli.Context) error {
+func deploy(cctx *cli.Context) error {
 	url := cctx.String("url")
 	gasLimit := cctx.Int64("gasLimit")
 	gasPrice := cctx.Int64("gasPrice")
@@ -148,7 +148,7 @@ func Deploy(cctx *cli.Context) error {
 var deployCMD = &cli.Command{
 	Name:        "deploy",
 	Description: "This command can be used to deploy all or some of the contracts required for bridging. Selection of contracts can be made by either specifying --all or a subset of flags",
-	Action:      Deploy,
+	Action:      deploy,
 	Flags: []cli.Flag{
 		&cli.BoolFlag{
 			Name:  "bridge",

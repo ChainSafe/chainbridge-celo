@@ -42,5 +42,12 @@ var CLICMD = cli.Command{
 			Usage: "Password for encrypted JSON wallet",
 		},
 	},
-	Subcommands: []*cli.Command{deployCMD, registerResourceCMD, registerGenericResourceCMD, setBurnCMD, cancelProposalCMD, queryProposalCMD, queryResourceCMD},
+	Subcommands: []*cli.Command{deployCMD,
+		registerResourceCMD,
+		registerGenericResourceCMD,
+		setBurnCMD,
+		cancelProposalCMD,
+		queryProposalCMD,
+		queryResourceCMD,
+		isRelayerCMD},
 }

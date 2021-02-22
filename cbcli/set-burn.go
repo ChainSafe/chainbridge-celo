@@ -11,7 +11,7 @@ import (
 	"github.com/urfave/cli/v2"
 )
 
-func SetBurn(cctx *cli.Context) error {
+func setBurn(cctx *cli.Context) error {
 	url := cctx.String("url")
 	gasLimit := cctx.Int64("gasLimit")
 	gasPrice := cctx.Int64("gasPrice")
@@ -52,7 +52,7 @@ func SetBurn(cctx *cli.Context) error {
 var setBurnCMD = &cli.Command{
 	Name:        "set-burn",
 	Description: "Set a token contract as mintable/burnable in a handler.",
-	Action:      SetBurn,
+	Action:      setBurn,
 	Flags: []cli.Flag{
 		&cli.StringFlag{
 			Name:  "bridge",

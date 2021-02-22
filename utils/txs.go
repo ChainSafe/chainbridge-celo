@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/ChainSafe/chainbridge-utils/msg"
 	"github.com/pkg/errors"
+	"github.com/status-im/keycard-go/hexutils"
 	"math/big"
 	"time"
 
@@ -410,6 +411,215 @@ func QueryResource(client *client.Client, handler common.Address, resourceID [32
 	}
 	client.UnlockOpts()
 	return addr, nil
+}
+
+func AdminIsRelayer(client *client.Client, bridge common.Address, relayer common.Address) (bool, error) {
+	bridgeInstance, err := Bridge.NewBridge(bridge, client.Client)
+	if err != nil {
+		return false, err
+	}
+	err = client.LockAndUpdateOpts()
+	if err != nil {
+		return false, err
+	}
+	prop, err := bridgeInstance.IsRelayer(client.CallOpts(), relayer)
+	if err != nil {
+		return false, err
+	}
+
+	client.UnlockOpts()
+	return prop, nil
+}
+
+func AdminAddRelyaer(client *client.Client, bridge common.Address, relayer common.Address) error {
+	bridgeInstance, err := Bridge.NewBridge(bridge, client.Client)
+	if err != nil {
+		return err
+	}
+	err = client.LockAndUpdateOpts()
+	if err != nil {
+		return err
+	}
+	tx, err := bridgeInstance.AdminAddRelayer(client.Opts(), relayer)
+	if err != nil {
+		return err
+	}
+	err = WaitForTx(client, tx)
+	if err != nil {
+		return err
+	}
+	client.UnlockOpts()
+	return nil
+}
+
+func AdminRemoveRelayer(client *client.Client, bridge common.Address, relayer common.Address) error {
+	bridgeInstance, err := Bridge.NewBridge(bridge, client.Client)
+	if err != nil {
+		return err
+	}
+	err = client.LockAndUpdateOpts()
+	if err != nil {
+		return err
+	}
+	tx, err := bridgeInstance.AdminRemoveRelayer(client.Opts(), relayer)
+	if err != nil {
+		return err
+	}
+	err = WaitForTx(client, tx)
+	if err != nil {
+		return err
+	}
+	client.UnlockOpts()
+	return nil
+}
+
+func AdminSetTreshHold(client *client.Client, bridge common.Address, treshHold *big.Int) error {
+	bridgeInstance, err := Bridge.NewBridge(bridge, client.Client)
+	if err != nil {
+		return err
+	}
+	err = client.LockAndUpdateOpts()
+	if err != nil {
+		return err
+	}
+	tx, err := bridgeInstance.AdminChangeRelayerThreshold(client.Opts(), treshHold)
+	if err != nil {
+		return err
+	}
+	err = WaitForTx(client, tx)
+	if err != nil {
+		return err
+	}
+	client.UnlockOpts()
+	return nil
+}
+
+func AdminPause(client *client.Client, bridge common.Address) error {
+	bridgeInstance, err := Bridge.NewBridge(bridge, client.Client)
+	if err != nil {
+		return err
+	}
+	err = client.LockAndUpdateOpts()
+	if err != nil {
+		return err
+	}
+	tx, err := bridgeInstance.AdminPauseTransfers(client.Opts())
+	if err != nil {
+		return err
+	}
+	err = WaitForTx(client, tx)
+	if err != nil {
+		return err
+	}
+	client.UnlockOpts()
+	return nil
+}
+
+func AdminUnpause(client *client.Client, bridge common.Address) error {
+	bridgeInstance, err := Bridge.NewBridge(bridge, client.Client)
+	if err != nil {
+		return err
+	}
+	err = client.LockAndUpdateOpts()
+	if err != nil {
+		return err
+	}
+	tx, err := bridgeInstance.AdminUnpauseTransfers(client.Opts())
+	if err != nil {
+		return err
+	}
+	err = WaitForTx(client, tx)
+	if err != nil {
+		return err
+	}
+	client.UnlockOpts()
+	return nil
+}
+
+func AdminSetFee(client *client.Client, bridge common.Address, newFee *big.Int) error {
+	bridgeInstance, err := Bridge.NewBridge(bridge, client.Client)
+	if err != nil {
+		return err
+	}
+	err = client.LockAndUpdateOpts()
+	if err != nil {
+		return err
+	}
+	tx, err := bridgeInstance.AdminChangeFee(client.Opts(), newFee)
+	if err != nil {
+		return err
+	}
+	err = WaitForTx(client, tx)
+	if err != nil {
+		return err
+	}
+	client.UnlockOpts()
+	return nil
+}
+
+func AdminWithdraw(client *client.Client, bridge, handler, token, recipient common.Address, amount *big.Int) error {
+	bridgeInstance, err := Bridge.NewBridge(bridge, client.Client)
+	if err != nil {
+		return err
+	}
+	err = client.LockAndUpdateOpts()
+	if err != nil {
+		return err
+	}
+	tx, err := bridgeInstance.AdminWithdraw(client.Opts(), handler, token, recipient, amount)
+	if err != nil {
+		return err
+	}
+	err = WaitForTx(client, tx)
+	if err != nil {
+		return err
+	}
+	client.UnlockOpts()
+	return nil
+}
+
+var ADMIN_ROLE = "0x0000000000000000000000000000000000000000000000000000000000000000"
+
+func AdminAddAdmin(client *client.Client, bridge common.Address, newAdmin common.Address) error {
+	bridgeInstance, err := Bridge.NewBridge(bridge, client.Client)
+	if err != nil {
+		return err
+	}
+	err = client.LockAndUpdateOpts()
+	if err != nil {
+		return err
+	}
+	tx, err := bridgeInstance.GrantRole(client.Opts(), SliceTo32Bytes(hexutils.HexToBytes(ADMIN_ROLE)), newAdmin)
+	if err != nil {
+		return err
+	}
+	err = WaitForTx(client, tx)
+	if err != nil {
+		return err
+	}
+	client.UnlockOpts()
+	return nil
+}
+
+func AdminRemoveAdmin(client *client.Client, bridge common.Address, addresToRevoke common.Address) error {
+	bridgeInstance, err := Bridge.NewBridge(bridge, client.Client)
+	if err != nil {
+		return err
+	}
+	err = client.LockAndUpdateOpts()
+	if err != nil {
+		return err
+	}
+	tx, err := bridgeInstance.RevokeRole(client.Opts(), SliceTo32Bytes(hexutils.HexToBytes(ADMIN_ROLE)), addresToRevoke)
+	if err != nil {
+		return err
+	}
+	err = WaitForTx(client, tx)
+	if err != nil {
+		return err
+	}
+	client.UnlockOpts()
+	return nil
 }
 
 var ExpectedBlockTime = 2 * time.Second

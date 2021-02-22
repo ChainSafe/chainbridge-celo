@@ -11,7 +11,7 @@ import (
 	"github.com/urfave/cli/v2"
 )
 
-func QueryResource(cctx *cli.Context) error {
+func queryResource(cctx *cli.Context) error {
 	url := cctx.String("url")
 	gasLimit := cctx.Uint64("gasLimit")
 	gasPrice := cctx.Uint64("gasPrice")
@@ -41,7 +41,7 @@ func QueryResource(cctx *cli.Context) error {
 var queryResourceCMD = &cli.Command{
 	Name:        "query-resource",
 	Description: "Queries the contract address associated with the provided resource ID for a specific handler contract.",
-	Action:      QueryResource,
+	Action:      queryResource,
 	Flags: []cli.Flag{
 		&cli.StringFlag{
 			Name:  "handler",

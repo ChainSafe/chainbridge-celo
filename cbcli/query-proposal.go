@@ -11,7 +11,7 @@ import (
 	"github.com/urfave/cli/v2"
 )
 
-func QueryProposal(cctx *cli.Context) error {
+func queryProposal(cctx *cli.Context) error {
 	url := cctx.String("url")
 	gasLimit := cctx.Uint64("gasLimit")
 	gasPrice := cctx.Uint64("gasPrice")
@@ -46,7 +46,7 @@ func QueryProposal(cctx *cli.Context) error {
 var queryProposalCMD = &cli.Command{
 	Name:        "query-proposal",
 	Description: "Queries an inbound proposal.",
-	Action:      QueryProposal,
+	Action:      queryProposal,
 	Flags: []cli.Flag{
 		&cli.StringFlag{
 			Name:  "bridge",

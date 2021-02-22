@@ -12,7 +12,7 @@ import (
 	"github.com/urfave/cli/v2"
 )
 
-func RegisterResource(cctx *cli.Context) error {
+func registerResource(cctx *cli.Context) error {
 	url := cctx.String("url")
 	gasLimit := cctx.Int64("gasLimit")
 	gasPrice := cctx.Int64("gasPrice")
@@ -59,7 +59,7 @@ func RegisterResource(cctx *cli.Context) error {
 var registerResourceCMD = &cli.Command{
 	Name:        "register-resource",
 	Description: "Register a resource ID with a contract address for a handler.",
-	Action:      RegisterResource,
+	Action:      registerResource,
 	Flags: []cli.Flag{
 		&cli.StringFlag{
 			Name:  "bridge",

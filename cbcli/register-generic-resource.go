@@ -19,7 +19,7 @@ func getFunctionBytes(in string) [4]byte {
 	return utils.SliceTo4Bytes(res)
 }
 
-func RegisterGenericResource(cctx *cli.Context) error {
+func registerGenericResource(cctx *cli.Context) error {
 	url := cctx.String("url")
 	gasLimit := cctx.Int64("gasLimit")
 	gasPrice := cctx.Int64("gasPrice")
@@ -78,7 +78,7 @@ func RegisterGenericResource(cctx *cli.Context) error {
 var registerGenericResourceCMD = &cli.Command{
 	Name:        "register-generic-resource",
 	Description: "Register a resource ID with a contract address for a generic handler..",
-	Action:      RegisterGenericResource,
+	Action:      registerGenericResource,
 	Flags: []cli.Flag{
 		&cli.StringFlag{
 			Name:  "bridge",
