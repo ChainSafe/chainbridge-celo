@@ -320,6 +320,21 @@ var cliCmd = cli.Command{
 				},
 			},
 		},
+		{
+			Name:        "query-resource",
+			Description: "Queries the contract address associated with the provided resource ID for a specific handler contract.",
+			Action:      cbcli.QueryResource,
+			Flags: []cli.Flag{
+				&cli.StringFlag{
+					Name:  "handler",
+					Usage: "Handler contract address",
+				},
+				&cli.StringFlag{
+					Name:  "resourceId",
+					Usage: "ResourceID to query",
+				},
+			},
+		},
 	},
 }
 

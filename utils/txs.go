@@ -14,6 +14,7 @@ import (
 	erc721Handler "github.com/ChainSafe/chainbridge-celo/bindings/ERC721Handler"
 	"github.com/ChainSafe/chainbridge-celo/bindings/ERC721MinterBurnerPauser"
 	"github.com/ChainSafe/chainbridge-celo/bindings/GenericHandler"
+	handlerHelper "github.com/ChainSafe/chainbridge-celo/bindings/HandlerHelpers"
 	"github.com/ChainSafe/chainbridge-celo/chain/client"
 	"github.com/ChainSafe/chainbridge-utils/keystore"
 	"github.com/ethereum/go-ethereum/common"
@@ -392,6 +393,23 @@ func QueryProposal(client *client.Client, bridgeAddress common.Address, chainID 
 
 	client.UnlockOpts()
 	return &prop, nil
+}
+
+func QueryResource(client *client.Client, handler common.Address, resourceID [32]byte) (common.Address, error) {
+	handlerInstance, err := handlerHelper.NewHandlerHelpersCaller(handler, client.Client)
+	if err != nil {
+		return common.Address{}, err
+	}
+	err = client.LockAndUpdateOpts()
+	if err != nil {
+		return common.Address{}, err
+	}
+	addr, err := handlerInstance.ResourceIDToTokenContractAddress(client.CallOpts(), resourceID)
+	if err != nil {
+		return common.Address{}, err
+	}
+	client.UnlockOpts()
+	return addr, nil
 }
 
 var ExpectedBlockTime = 2 * time.Second
