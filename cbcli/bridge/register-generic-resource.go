@@ -1,7 +1,6 @@
 package bridge
 
 import (
-	"bytes"
 	"fmt"
 	"github.com/ChainSafe/chainbridge-celo/cbcli/cliutils"
 	"math/big"
@@ -9,16 +8,10 @@ import (
 	"github.com/ChainSafe/chainbridge-celo/chain/client"
 	"github.com/ChainSafe/chainbridge-celo/utils"
 	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/pkg/errors"
 	"github.com/status-im/keycard-go/hexutils"
 	"github.com/urfave/cli/v2"
 )
-
-func getFunctionBytes(in string) [4]byte {
-	res := crypto.Keccak256(bytes.NewBufferString(in).Bytes())
-	return utils.SliceTo4Bytes(res)
-}
 
 func registerGenericResource(cctx *cli.Context) error {
 	url := cctx.String("url")
@@ -34,8 +27,8 @@ func registerGenericResource(cctx *cli.Context) error {
 	executeSigBytesArr := utils.SliceTo4Bytes(executeSigBytes)
 
 	if cctx.Bool("hash") {
-		depositSigBytesArr = getFunctionBytes(depositSig)
-		executeSigBytesArr = getFunctionBytes(executeSig)
+		depositSigBytesArr = utils.GetSolidityFunctionSig(depositSig)
+		executeSigBytesArr = utils.GetSolidityFunctionSig(executeSig)
 	}
 
 	sender, err := cliutils.DefineSender(cctx)

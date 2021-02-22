@@ -12,23 +12,27 @@ import (
 	"github.com/urfave/cli/v2"
 )
 
-var mintCMD = &cli.Command{
-	Name:        "mint",
+var approveCMD = &cli.Command{
+	Name:        "approve",
 	Description: "Sets a new relayer vote threshold.",
-	Action:      mint,
+	Action:      approve,
 	Flags: []cli.Flag{
 		&cli.StringFlag{
-			Name:  "amount",
-			Usage: "Amount to mint fee (in wei)",
+			Name:  "recipient",
+			Usage: "Recipient",
 		},
 		&cli.StringFlag{
 			Name:  "erc20Address",
-			Usage: "Bridge contract address",
+			Usage: "erc20 contract address",
+		},
+		&cli.StringFlag{
+			Name:  "amount",
+			Usage: "Amount to grant allowance",
 		},
 	},
 }
 
-func mint(cctx *cli.Context) error {
+func approve(cctx *cli.Context) error {
 	url := cctx.String("url")
 	gasLimit := cctx.Uint64("gasLimit")
 	gasPrice := cctx.Uint64("gasPrice")
@@ -43,6 +47,12 @@ func mint(cctx *cli.Context) error {
 	}
 	erc20Address := common.HexToAddress(erc20)
 
+	recipient := cctx.String("recipient")
+	if !common.IsHexAddress(recipient) {
+		return errors.New("invalid minter address")
+	}
+	recipientAddress := common.HexToAddress(recipient)
+
 	amount := cctx.String("amount")
 
 	realAmount, err := utils.UserAmountToReal(amount, decimals)
@@ -54,10 +64,10 @@ func mint(cctx *cli.Context) error {
 	if err != nil {
 		return err
 	}
-	err = utils.ERC20Mint(ethClient, realAmount, erc20Address, sender.CommonAddress())
+	err = utils.Erc20Approve(ethClient, erc20Address, recipientAddress, realAmount)
 	if err != nil {
 		return err
 	}
-	log.Info().Msgf("%v tokens minted", amount)
+	log.Info().Msgf("%s account granted allowance on %v tokens of %s", recipientAddress.String(), amount, sender.CommonAddress().String())
 	return nil
 }

@@ -70,7 +70,7 @@ func (s *IntegrationTestSuite) TestDeposit() {
 	s.Nil(err)
 
 	amountToDeposit := big.NewInt(1000000)
-	tx, err := makeErc20Deposit(s.client, bridgeContract, s.erc20ContractAddr, dstAddr, amountToDeposit)
+	tx, err := utils.MakeErc20Deposit(s.client, bridgeContract, s.erc20ContractAddr, dstAddr, amountToDeposit)
 	s.Nil(err)
 	receipt, err := utils.WaitAndReturnTxReceipt(s.client, tx)
 	s.Nil(err)

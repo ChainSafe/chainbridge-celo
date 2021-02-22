@@ -2,8 +2,11 @@ package utils
 
 import (
 	"context"
+	"encoding/hex"
 	"fmt"
 	"github.com/ChainSafe/chainbridge-utils/msg"
+	"github.com/ethereum/go-ethereum"
+	"github.com/ethereum/go-ethereum/common/math"
 	"github.com/pkg/errors"
 	"github.com/status-im/keycard-go/hexutils"
 	"math/big"
@@ -831,6 +834,21 @@ func ERC721Approve(client *client.Client, erc721Address, recipient common.Addres
 	return nil
 }
 
+//nolint
+func ERC20Transfer(client *client.Client, erc20 *erc20.ERC20PresetMinterPauser, recipient common.Address, amount *big.Int) (*types.Transaction, error) {
+	err := client.LockAndUpdateOpts()
+	if err != nil {
+		return nil, err
+	}
+
+	tx, err := erc20.Transfer(client.Opts(), recipient, amount)
+	if err != nil {
+		return nil, err
+	}
+	client.UnlockOpts()
+	return tx, nil
+}
+
 var ExpectedBlockTime = 2 * time.Second
 
 // WaitForTx will query the chain at ExpectedBlockTime intervals, until a receipt is returned.
@@ -870,4 +888,92 @@ func WaitAndReturnTxReceipt(client *client.Client, tx *types.Transaction) (*type
 		return receipt, nil
 	}
 	return nil, errors.New("Tx do not appear")
+}
+
+func MakeErc20Deposit(client *client.Client, bridge *Bridge.Bridge, erc20ContractAddr, dest common.Address, amount *big.Int) (*types.Transaction, error) {
+	data := ConstructErc20DepositData(dest.Bytes(), amount)
+	err := client.LockAndUpdateOpts()
+	if err != nil {
+		return nil, err
+	}
+
+	src := ChainId(5)
+	resourceID := SliceTo32Bytes(append(common.LeftPadBytes(erc20ContractAddr.Bytes(), 31), uint8(src)))
+	tx, err := bridge.Deposit(client.Opts(), 1, resourceID, data)
+	if err != nil {
+		return nil, err
+	}
+	client.UnlockOpts()
+	return tx, nil
+}
+
+func MakeDeposit(client *client.Client, bridgeAddress common.Address, recipient common.Address, amount *big.Int, resourceID [32]byte, destChainID uint8) error {
+	data := ConstructErc20DepositData(recipient.Bytes(), amount)
+	err := client.LockAndUpdateOpts()
+	if err != nil {
+		return err
+	}
+	bridgeInstance, err := Bridge.NewBridge(bridgeAddress, client.Client)
+	if err != nil {
+		return err
+	}
+	tx, err := bridgeInstance.Deposit(client.Opts(), destChainID, resourceID, data)
+	if err != nil {
+		return err
+	}
+	err = WaitForTx(client, tx)
+	if err != nil {
+		return err
+	}
+	client.UnlockOpts()
+	return nil
+}
+
+func ConstructErc20DepositData(destRecipient []byte, amount *big.Int) []byte {
+	var data []byte
+	data = append(data, math.PaddedBigBytes(amount, 32)...)
+	data = append(data, math.PaddedBigBytes(big.NewInt(int64(len(destRecipient))), 32)...)
+	data = append(data, destRecipient...)
+	return data
+}
+
+//nolint
+func Simulate(client *client.Client, block *big.Int, txHash common.Hash, from common.Address) ([]byte, error) {
+	tx, _, err := client.Client.TransactionByHash(context.TODO(), txHash)
+	if err != nil {
+		return nil, err
+	}
+	msg := ethereum.CallMsg{
+		From:                from,
+		To:                  tx.To(),
+		Gas:                 tx.Gas(),
+		FeeCurrency:         tx.FeeCurrency(),
+		GatewayFeeRecipient: tx.GatewayFeeRecipient(),
+		GatewayFee:          tx.GatewayFee(),
+		GasPrice:            tx.GasPrice(),
+		Value:               tx.Value(),
+		Data:                tx.Data(),
+	}
+	res, err := client.Client.CallContract(context.TODO(), msg, block)
+	if err != nil {
+		return nil, err
+	}
+	bs, err := hex.DecodeString(hexutils.BytesToHex(res))
+	if err != nil {
+		panic(err)
+	}
+	log.Debug().Msg(string(bs))
+	return nil, nil
+}
+
+func BuildQuery(contract common.Address, sig EventSig, startBlock *big.Int, endBlock *big.Int) ethereum.FilterQuery {
+	query := ethereum.FilterQuery{
+		FromBlock: startBlock,
+		ToBlock:   endBlock,
+		Addresses: []common.Address{contract},
+		Topics: [][]common.Hash{
+			{sig.GetTopic()},
+		},
+	}
+	return query
 }
