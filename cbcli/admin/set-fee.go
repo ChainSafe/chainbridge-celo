@@ -46,7 +46,7 @@ func setFee(cctx *cli.Context) error {
 	if err != nil {
 		return err
 	}
-	err = utils.AdminSetTreshHold(ethClient, bridgeAddress, big.NewInt(0).SetUint64(fee))
+	err = utils.AdminSetFee(ethClient, bridgeAddress, big.NewInt(0).SetUint64(fee))
 	if err != nil {
 		return err
 	}

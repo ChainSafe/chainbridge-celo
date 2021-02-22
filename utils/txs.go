@@ -578,7 +578,7 @@ func AdminWithdraw(client *client.Client, bridge, handler, token, recipient comm
 	return nil
 }
 
-var ADMIN_ROLE = "0x0000000000000000000000000000000000000000000000000000000000000000"
+var AdminRole = "0x0000000000000000000000000000000000000000000000000000000000000000"
 
 func AdminAddAdmin(client *client.Client, bridge common.Address, newAdmin common.Address) error {
 	bridgeInstance, err := Bridge.NewBridge(bridge, client.Client)
@@ -589,7 +589,7 @@ func AdminAddAdmin(client *client.Client, bridge common.Address, newAdmin common
 	if err != nil {
 		return err
 	}
-	tx, err := bridgeInstance.GrantRole(client.Opts(), SliceTo32Bytes(hexutils.HexToBytes(ADMIN_ROLE)), newAdmin)
+	tx, err := bridgeInstance.GrantRole(client.Opts(), SliceTo32Bytes(hexutils.HexToBytes(AdminRole)), newAdmin)
 	if err != nil {
 		return err
 	}
@@ -610,7 +610,216 @@ func AdminRemoveAdmin(client *client.Client, bridge common.Address, addresToRevo
 	if err != nil {
 		return err
 	}
-	tx, err := bridgeInstance.RevokeRole(client.Opts(), SliceTo32Bytes(hexutils.HexToBytes(ADMIN_ROLE)), addresToRevoke)
+	tx, err := bridgeInstance.RevokeRole(client.Opts(), SliceTo32Bytes(hexutils.HexToBytes(AdminRole)), addresToRevoke)
+	if err != nil {
+		return err
+	}
+	err = WaitForTx(client, tx)
+	if err != nil {
+		return err
+	}
+	client.UnlockOpts()
+	return nil
+}
+
+func ERC20Mint(client *client.Client, amount *big.Int, erc20Address, recipient common.Address) error {
+	erc20Instance, err := erc20.NewERC20PresetMinterPauser(erc20Address, client.Client)
+	if err != nil {
+		return err
+	}
+	err = client.LockAndUpdateOpts()
+	if err != nil {
+		return err
+	}
+	tx, err := erc20Instance.Mint(client.Opts(), recipient, amount)
+	if err != nil {
+		return err
+	}
+	err = WaitForTx(client, tx)
+	if err != nil {
+		return err
+	}
+	client.UnlockOpts()
+	return nil
+}
+
+func ERC20MinterRole(client *client.Client, erc20Address common.Address) ([32]byte, error) {
+	erc20Instance, err := erc20.NewERC20PresetMinterPauser(erc20Address, client.Client)
+	if err != nil {
+		return [32]byte{}, err
+	}
+	err = client.LockAndUpdateOpts()
+	if err != nil {
+		return [32]byte{}, err
+	}
+	res, err := erc20Instance.MINTERROLE(client.CallOpts())
+	if err != nil {
+		return [32]byte{}, err
+	}
+	client.UnlockOpts()
+	return res, nil
+}
+
+func ERC20AddMinter(client *client.Client, erc20Address, minter common.Address) error {
+	erc20Instance, err := erc20.NewERC20PresetMinterPauser(erc20Address, client.Client)
+	if err != nil {
+		return err
+	}
+	err = client.LockAndUpdateOpts()
+	if err != nil {
+		return err
+	}
+	role, err := ERC20MinterRole(client, erc20Address)
+	if err != nil {
+		return nil
+	}
+
+	tx, err := erc20Instance.GrantRole(client.Opts(), role, minter)
+	if err != nil {
+		return err
+	}
+	err = WaitForTx(client, tx)
+	if err != nil {
+		return err
+	}
+	client.UnlockOpts()
+	return nil
+}
+
+func ERC20Approve(client *client.Client, erc20Address, spender common.Address, amount *big.Int) error {
+	erc20Instance, err := erc20.NewERC20PresetMinterPauser(erc20Address, client.Client)
+	if err != nil {
+		return err
+	}
+	err = client.LockAndUpdateOpts()
+	if err != nil {
+		return err
+	}
+
+	tx, err := erc20Instance.Approve(client.Opts(), spender, amount)
+	if err != nil {
+		return err
+	}
+	err = WaitForTx(client, tx)
+	if err != nil {
+		return err
+	}
+	client.UnlockOpts()
+	return nil
+}
+
+func BridgeDeposit(client *client.Client, bridge common.Address, destChainID uint8, resourceID [32]byte, data []byte) error {
+	bridgeInstance, err := Bridge.NewBridge(bridge, client.Client)
+	if err != nil {
+		return err
+	}
+	err = client.LockAndUpdateOpts()
+	if err != nil {
+		return err
+	}
+	tx, err := bridgeInstance.Deposit(client.Opts(), destChainID, resourceID, data)
+	if err != nil {
+		return err
+	}
+	err = WaitForTx(client, tx)
+	if err != nil {
+		return err
+	}
+	client.UnlockOpts()
+	return nil
+}
+
+func ERC20BalanceOf(client *client.Client, erc20Address, dest common.Address) (*big.Int, error) {
+	erc20Instance, err := erc20.NewERC20PresetMinterPauser(erc20Address, client.Client)
+	if err != nil {
+		return nil, err
+	}
+	err = client.LockAndUpdateOpts()
+	if err != nil {
+		return nil, err
+	}
+
+	balance, err := erc20Instance.BalanceOf(client.CallOpts(), dest)
+	if err != nil {
+		return nil, err
+	}
+	client.UnlockOpts()
+	return balance, nil
+}
+
+func ERC721Mint(client *client.Client, erc721Address, to common.Address, id *big.Int, metadata string) error {
+	erc721Instance, err := ERC721MinterBurnerPauser.NewERC721MinterBurnerPauser(erc721Address, client.Client)
+	if err != nil {
+		return err
+	}
+	err = client.LockAndUpdateOpts()
+	if err != nil {
+		return err
+	}
+	tx, err := erc721Instance.Mint(client.Opts(), to, id, metadata)
+	if err != nil {
+		return err
+	}
+	err = WaitForTx(client, tx)
+	if err != nil {
+		return err
+	}
+	client.UnlockOpts()
+	return nil
+}
+
+func ERC721MinterRole(client *client.Client, erc721Address common.Address) ([32]byte, error) {
+	erc721Instance, err := ERC721MinterBurnerPauser.NewERC721MinterBurnerPauser(erc721Address, client.Client)
+	if err != nil {
+		return [32]byte{}, err
+	}
+	err = client.LockAndUpdateOpts()
+	if err != nil {
+		return [32]byte{}, err
+	}
+	res, err := erc721Instance.MINTERROLE(client.CallOpts())
+	if err != nil {
+		return [32]byte{}, err
+	}
+	client.UnlockOpts()
+	return res, nil
+}
+
+func ERC721AddMinter(client *client.Client, erc721Address, minter common.Address) error {
+	erc721Instance, err := ERC721MinterBurnerPauser.NewERC721MinterBurnerPauser(erc721Address, client.Client)
+	if err != nil {
+		return err
+	}
+	err = client.LockAndUpdateOpts()
+	if err != nil {
+		return err
+	}
+	role, err := ERC721MinterRole(client, erc721Address)
+	if err != nil {
+		return err
+	}
+	tx, err := erc721Instance.GrantRole(client.Opts(), role, minter)
+	if err != nil {
+		return err
+	}
+	err = WaitForTx(client, tx)
+	if err != nil {
+		return err
+	}
+	client.UnlockOpts()
+	return nil
+}
+
+func ERC721Approve(client *client.Client, erc721Address, recipient common.Address, id *big.Int) error {
+	erc721Instance, err := ERC721MinterBurnerPauser.NewERC721MinterBurnerPauser(erc721Address, client.Client)
+	if err != nil {
+		return err
+	}
+	err = client.LockAndUpdateOpts()
+	if err != nil {
+		return err
+	}
+	tx, err := erc721Instance.Approve(client.Opts(), recipient, id)
 	if err != nil {
 		return err
 	}

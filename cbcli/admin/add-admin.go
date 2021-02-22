@@ -1,9 +1,9 @@
 package admin
 
 import (
-	"github.com/ChainSafe/chainbridge-celo/cbcli/cliutils"
 	"math/big"
 
+	"github.com/ChainSafe/chainbridge-celo/cbcli/cliutils"
 	"github.com/ChainSafe/chainbridge-celo/chain/client"
 	"github.com/ChainSafe/chainbridge-celo/utils"
 	"github.com/ethereum/go-ethereum/common"
