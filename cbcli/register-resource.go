@@ -55,3 +55,27 @@ func RegisterResource(cctx *cli.Context) error {
 
 	return nil
 }
+
+var registerResourceCMD = &cli.Command{
+	Name:        "register-resource",
+	Description: "Register a resource ID with a contract address for a handler.",
+	Action:      RegisterResource,
+	Flags: []cli.Flag{
+		&cli.StringFlag{
+			Name:  "bridge",
+			Usage: "Bridge contract address",
+		},
+		&cli.StringFlag{
+			Name:  "handler",
+			Usage: "Handler address",
+		},
+		&cli.StringFlag{
+			Name:  "targetContract",
+			Usage: "Contract address to be registered",
+		},
+		&cli.StringFlag{
+			Name:  "resourceId",
+			Usage: "Resource ID to be registered",
+		},
+	},
+}

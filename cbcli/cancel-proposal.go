@@ -41,3 +41,27 @@ func CancelProposal(cctx *cli.Context) error {
 	log.Info().Msgf("Setting proposal with chain ID %v and deposit nonce %v status to 'Cancelled", chainID, depositNonce)
 	return nil
 }
+
+var cancelProposalCMD = &cli.Command{
+	Name:        "cancel-proposal",
+	Description: "Cancels an expired proposal.",
+	Action:      CancelProposal,
+	Flags: []cli.Flag{
+		&cli.StringFlag{
+			Name:  "bridge",
+			Usage: "Bridge contract address",
+		},
+		&cli.Uint64Flag{
+			Name:  "chainId",
+			Usage: "Chain ID of proposal to cancel",
+		},
+		&cli.Uint64Flag{
+			Name:  "depositNonce",
+			Usage: "Deposit nonce of proposal to cancel",
+		},
+		&cli.StringFlag{
+			Name:  "dataHash",
+			Usage: "Hash of proposal metadata",
+		},
+	},
+}

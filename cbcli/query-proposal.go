@@ -42,3 +42,27 @@ func QueryProposal(cctx *cli.Context) error {
 	log.Info().Msgf("proposal with chainID %v and depositNonce %v queried. %+v", chainID, depositNonce, prop)
 	return nil
 }
+
+var queryProposalCMD = &cli.Command{
+	Name:        "query-proposal",
+	Description: "Queries an inbound proposal.",
+	Action:      QueryProposal,
+	Flags: []cli.Flag{
+		&cli.StringFlag{
+			Name:  "bridge",
+			Usage: "Bridge contract address",
+		},
+		&cli.Uint64Flag{
+			Name:  "chainId",
+			Usage: "Source chain ID of proposal",
+		},
+		&cli.Uint64Flag{
+			Name:  "depositNonce",
+			Usage: "Deposit nonce of proposal",
+		},
+		&cli.StringFlag{
+			Name:  "dataHash",
+			Usage: "Hash of proposal metadata",
+		},
+	},
+}

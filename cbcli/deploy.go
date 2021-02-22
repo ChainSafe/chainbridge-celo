@@ -144,3 +144,64 @@ func Deploy(cctx *cli.Context) error {
 	fmt.Printf("%+v", deployedContracts)
 	return nil
 }
+
+var deployCMD = &cli.Command{
+	Name:        "deploy",
+	Description: "This command can be used to deploy all or some of the contracts required for bridging. Selection of contracts can be made by either specifying --all or a subset of flags",
+	Action:      Deploy,
+	Flags: []cli.Flag{
+		&cli.BoolFlag{
+			Name:  "bridge",
+			Usage: "deploy bridge",
+		},
+		&cli.BoolFlag{
+			Name:  "erc20Handler",
+			Usage: "deploy erc20Handler",
+		},
+		&cli.BoolFlag{
+			Name:  "erc721Handler",
+			Usage: "deploy erc721Handler",
+		},
+		&cli.BoolFlag{
+			Name:  "genericHandler",
+			Usage: "deploy genericHandler",
+		},
+		&cli.BoolFlag{
+			Name:  "erc20",
+			Usage: "deploy erc20",
+		},
+		&cli.BoolFlag{
+			Name:  "erc721",
+			Usage: "deploy erc721",
+		},
+		&cli.BoolFlag{
+			Name:  "all",
+			Usage: "deploy all contracts",
+		},
+		&cli.Int64Flag{
+			Name:  "relayerThreshold",
+			Value: 1,
+			Usage: "deploy all contracts",
+		},
+		&cli.Uint64Flag{
+			Name:  "chainId",
+			Value: 1,
+			Usage: "deploy all contracts",
+		},
+		&cli.StringSliceFlag{
+			Name:  "relayers",
+			Value: cli.NewStringSlice(),
+			Usage: "deploy all contracts",
+		},
+		&cli.Int64Flag{
+			Name:  "fee",
+			Value: 0,
+			Usage: "deploy all contracts",
+		},
+		&cli.StringFlag{
+			Name:  "bridgeAddress",
+			Value: "",
+			Usage: "deploy all contracts",
+		},
+	},
+}

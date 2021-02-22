@@ -48,3 +48,23 @@ func SetBurn(cctx *cli.Context) error {
 	log.Info().Msg("Burnable set")
 	return nil
 }
+
+var setBurnCMD = &cli.Command{
+	Name:        "set-burn",
+	Description: "Set a token contract as mintable/burnable in a handler.",
+	Action:      SetBurn,
+	Flags: []cli.Flag{
+		&cli.StringFlag{
+			Name:  "bridge",
+			Usage: "Bridge contract address",
+		},
+		&cli.StringFlag{
+			Name:  "handler",
+			Usage: "ERC20 handler contract address",
+		},
+		&cli.StringFlag{
+			Name:  "tokenContract",
+			Usage: "Token contract to be registered",
+		},
+	},
+}
