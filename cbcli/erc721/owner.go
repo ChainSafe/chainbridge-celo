@@ -52,6 +52,6 @@ func owner(cctx *cli.Context) error {
 	if err != nil {
 		return err
 	}
-	log.Info().Msgf("owner of token %s is ", big.NewInt(id).String(), addr.String())
+	log.Info().Msgf("owner of token %s is %s", big.NewInt(id).String(), addr.String())
 	return nil
 }

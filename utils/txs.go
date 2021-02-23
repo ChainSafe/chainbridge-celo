@@ -689,6 +689,27 @@ func ERC20AddMinter(client *client.Client, erc20Address, minter common.Address) 
 	return nil
 }
 
+func ERC20IsMinter(client *client.Client, erc20Address, minter common.Address) (bool, error) {
+	erc20Instance, err := erc20.NewERC20PresetMinterPauser(erc20Address, client.Client)
+	if err != nil {
+		return false, err
+	}
+	err = client.LockAndUpdateOpts()
+	if err != nil {
+		return false, err
+	}
+	role, err := ERC20MinterRole(client, erc20Address)
+	if err != nil {
+		return false, nil
+	}
+	res, err := erc20Instance.HasRole(client.CallOpts(), role, minter)
+	if err != nil {
+		return false, err
+	}
+	client.UnlockOpts()
+	return res, nil
+}
+
 func ERC20Approve(client *client.Client, erc20Address, spender common.Address, amount *big.Int) error {
 	erc20Instance, err := erc20.NewERC20PresetMinterPauser(erc20Address, client.Client)
 	if err != nil {
