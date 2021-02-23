@@ -1,7 +1,6 @@
 package erc20
 
 import (
-	"github.com/status-im/keycard-go/hexutils"
 	"math/big"
 
 	"github.com/ChainSafe/chainbridge-celo/cbcli/cliutils"
@@ -10,12 +9,13 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/pkg/errors"
 	"github.com/rs/zerolog/log"
+	"github.com/status-im/keycard-go/hexutils"
 	"github.com/urfave/cli/v2"
 )
 
 var depositCMD = &cli.Command{
 	Name:        "deposit",
-	Description: "Sets a new relayer vote threshold.",
+	Description: "Initiate a transfer of ERC20 tokens.",
 	Action:      deposit,
 	Flags: []cli.Flag{
 		&cli.StringFlag{

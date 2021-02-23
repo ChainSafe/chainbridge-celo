@@ -14,7 +14,7 @@ import (
 
 var approveCMD = &cli.Command{
 	Name:        "approve",
-	Description: "Sets a new relayer vote threshold.",
+	Description: "Approve tokens in an ERC20 contract for transfer.",
 	Action:      approve,
 	Flags: []cli.Flag{
 		&cli.StringFlag{

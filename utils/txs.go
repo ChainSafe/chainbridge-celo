@@ -750,6 +750,24 @@ func ERC20BalanceOf(client *client.Client, erc20Address, dest common.Address) (*
 	return balance, nil
 }
 
+func ERC20Allowance(client *client.Client, erc20Address, spender, owner common.Address) (*big.Int, error) {
+	erc20Instance, err := erc20.NewERC20PresetMinterPauser(erc20Address, client.Client)
+	if err != nil {
+		return nil, err
+	}
+	err = client.LockAndUpdateOpts()
+	if err != nil {
+		return nil, err
+	}
+
+	balance, err := erc20Instance.Allowance(client.CallOpts(), owner, spender)
+	if err != nil {
+		return nil, err
+	}
+	client.UnlockOpts()
+	return balance, nil
+}
+
 func ERC721Mint(client *client.Client, erc721Address, to common.Address, id *big.Int, metadata string) error {
 	erc721Instance, err := ERC721MinterBurnerPauser.NewERC721MinterBurnerPauser(erc721Address, client.Client)
 	if err != nil {

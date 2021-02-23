@@ -14,7 +14,7 @@ import (
 
 var addMinterCMD = &cli.Command{
 	Name:        "add-minter",
-	Description: "Sets a new relayer vote threshold.",
+	Description: "Add a minter to an ERC20 mintable contact",
 	Action:      addMinter,
 	Flags: []cli.Flag{
 		&cli.StringFlag{
@@ -32,7 +32,6 @@ func addMinter(cctx *cli.Context) error {
 	url := cctx.String("url")
 	gasLimit := cctx.Uint64("gasLimit")
 	gasPrice := cctx.Uint64("gasPrice")
-	decimals := big.NewInt(0).SetUint64(cctx.Uint64("decimals"))
 	sender, err := cliutils.DefineSender(cctx)
 	if err != nil {
 		return err

@@ -15,5 +15,7 @@ var ERC20CLICMDS = &cli.Command{
 		addMinterCMD,
 		approveCMD,
 		depositCMD,
+		balanceCMD,
+		allowanceCMD,
 	},
 }
