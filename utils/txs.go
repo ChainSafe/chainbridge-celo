@@ -806,6 +806,23 @@ func ERC721MinterRole(client *client.Client, erc721Address common.Address) ([32]
 	return res, nil
 }
 
+func ERC721OwnerOf(client *client.Client, erc721Address common.Address, id *big.Int) (common.Address, error) {
+	erc721Instance, err := ERC721MinterBurnerPauser.NewERC721MinterBurnerPauser(erc721Address, client.Client)
+	if err != nil {
+		return common.Address{}, err
+	}
+	err = client.LockAndUpdateOpts()
+	if err != nil {
+		return common.Address{}, err
+	}
+	res, err := erc721Instance.OwnerOf(client.CallOpts(), id)
+	if err != nil {
+		return common.Address{}, err
+	}
+	client.UnlockOpts()
+	return res, nil
+}
+
 func ERC721AddMinter(client *client.Client, erc721Address, minter common.Address) error {
 	erc721Instance, err := ERC721MinterBurnerPauser.NewERC721MinterBurnerPauser(erc721Address, client.Client)
 	if err != nil {
@@ -925,7 +942,7 @@ func MakeErc20Deposit(client *client.Client, bridge *Bridge.Bridge, erc20Contrac
 	return tx, nil
 }
 
-func MakeDeposit(client *client.Client, bridgeAddress common.Address, recipient common.Address, amount *big.Int, resourceID [32]byte, destChainID uint8) error {
+func MakeAndSendERC20Deposit(client *client.Client, bridgeAddress common.Address, recipient common.Address, amount *big.Int, resourceID [32]byte, destChainID uint8) error {
 	data := ConstructErc20DepositData(recipient.Bytes(), amount)
 	err := client.LockAndUpdateOpts()
 	if err != nil {
@@ -952,6 +969,46 @@ func ConstructErc20DepositData(destRecipient []byte, amount *big.Int) []byte {
 	data = append(data, math.PaddedBigBytes(amount, 32)...)
 	data = append(data, math.PaddedBigBytes(big.NewInt(int64(len(destRecipient))), 32)...)
 	data = append(data, destRecipient...)
+	return data
+}
+
+func MakeAndSendERC721Deposit(client *client.Client, bridgeAddress common.Address, recipient common.Address, id *big.Int, resourceID [32]byte, destChainID uint8) error {
+	data := ConstructErc721DepositData(id, recipient.Bytes())
+	err := client.LockAndUpdateOpts()
+	if err != nil {
+		return err
+	}
+	bridgeInstance, err := Bridge.NewBridge(bridgeAddress, client.Client)
+	if err != nil {
+		return err
+	}
+	tx, err := bridgeInstance.Deposit(client.Opts(), destChainID, resourceID, data)
+	if err != nil {
+		return err
+	}
+	err = WaitForTx(client, tx)
+	if err != nil {
+		return err
+	}
+	client.UnlockOpts()
+	return nil
+}
+
+// constructErc20Data constructs the data field to be passed into an erc721 deposit call
+func ConstructErc721DepositData(tokenId *big.Int, destRecipient []byte) []byte {
+	var data []byte
+	data = append(data, math.PaddedBigBytes(tokenId, 32)...)                               // Resource Id + Token Id
+	data = append(data, math.PaddedBigBytes(big.NewInt(int64(len(destRecipient))), 32)...) // Length of recipient
+	data = append(data, destRecipient...)                                                  // Recipient
+
+	return data
+}
+
+func ConstructGenericDepositData(metadata []byte) []byte {
+	var data []byte
+	data = append(data, math.PaddedBigBytes(big.NewInt(int64(len(metadata))), 32)...)
+	data = append(data, metadata...)
+
 	return data
 }
 

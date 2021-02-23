@@ -3,7 +3,7 @@ package erc20
 import "github.com/urfave/cli/v2"
 
 var ERC20CLICMDS = &cli.Command{
-	Name: "admin",
+	Name: "erc20",
 	Flags: []cli.Flag{
 		&cli.Uint64Flag{
 			Name:  "decimals",

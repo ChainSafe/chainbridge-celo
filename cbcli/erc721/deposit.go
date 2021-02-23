@@ -1,4 +1,4 @@
-package erc20
+package erc721
 
 import (
 	"math/big"
@@ -15,7 +15,7 @@ import (
 
 var depositCMD = &cli.Command{
 	Name:        "deposit",
-	Description: "Initiate a transfer of ERC20 tokens.",
+	Description: "Approve token in an ERC721 contract for transfer.",
 	Action:      deposit,
 	Flags: []cli.Flag{
 		&cli.StringFlag{
@@ -26,9 +26,9 @@ var depositCMD = &cli.Command{
 			Name:  "bridge",
 			Usage: "bridge contract address",
 		},
-		&cli.StringFlag{
-			Name:  "amount",
-			Usage: "Amount to deposit",
+		&cli.Int64Flag{
+			Name:  "id",
+			Usage: "ERC721 token id",
 		},
 		&cli.StringFlag{
 			Name:  "dest",
@@ -45,7 +45,6 @@ func deposit(cctx *cli.Context) error {
 	url := cctx.String("url")
 	gasLimit := cctx.Uint64("gasLimit")
 	gasPrice := cctx.Uint64("gasPrice")
-	decimals := big.NewInt(0).SetUint64(cctx.Uint64("decimals"))
 
 	sender, err := cliutils.DefineSender(cctx)
 	if err != nil {
@@ -62,16 +61,8 @@ func deposit(cctx *cli.Context) error {
 		return errors.New("invalid minter address")
 	}
 	recipientAddress := common.HexToAddress(recipient)
-
-	amount := cctx.String("amount")
-
-	realAmount, err := utils.UserAmountToReal(amount, decimals)
-	if err != nil {
-		return err
-	}
-
+	id := cctx.Int64("id")
 	dest := cctx.Uint64("dest")
-
 	resourceId := cctx.String("resourceId")
 	resourceIDBytes := utils.SliceTo32Bytes(hexutils.HexToBytes(resourceId))
 
@@ -79,10 +70,10 @@ func deposit(cctx *cli.Context) error {
 	if err != nil {
 		return err
 	}
-	err = utils.MakeAndSendERC20Deposit(ethClient, bridgeAddress, recipientAddress, realAmount, resourceIDBytes, uint8(dest))
+	err = utils.MakeAndSendERC721Deposit(ethClient, bridgeAddress, recipientAddress, big.NewInt(id), resourceIDBytes, uint8(dest))
 	if err != nil {
 		return err
 	}
-	log.Info().Msgf("%s account granted allowance on %v tokens of %s", recipientAddress.String(), amount, sender.CommonAddress().String())
+	log.Info().Msgf("TokenID %s deposited to recipient address %s", big.NewInt(id).String(), recipientAddress.String())
 	return nil
 }

@@ -83,7 +83,7 @@ func (s *IntegrationTestSuite) TestDeposit() {
 	s.Nil(err)
 
 	// wait for vote log event
-	query := buildQuery(s.bridgeAddr, utils.ProposalEvent, receipt.BlockNumber, lp)
+	query := utils.BuildQuery(s.bridgeAddr, utils.ProposalEvent, receipt.BlockNumber, lp)
 	evts, err := s.client2.Client.FilterLogs(context.Background(), query)
 	var passedEventFound bool
 	for _, evt := range evts {
@@ -102,7 +102,7 @@ func (s *IntegrationTestSuite) TestDeposit() {
 	time.Sleep(30 * time.Second)
 	lp, err = s.client2.LatestBlock()
 	s.Nil(err)
-	queryExecute := buildQuery(s.bridgeAddr, utils.ProposalEvent, receipt.BlockNumber, lp)
+	queryExecute := utils.BuildQuery(s.bridgeAddr, utils.ProposalEvent, receipt.BlockNumber, lp)
 	s.Nil(err)
 	evts2, err := s.client2.Client.FilterLogs(context.Background(), queryExecute)
 	var executedEventFound bool
@@ -141,7 +141,7 @@ func (s *IntegrationTestSuite) TestMultipleTransactionsInBlock() {
 	for i := 0; i <= 20; i += 1 {
 		go sendOneWeiWithDelay(eveSender)
 	}
-	tx, err := makeErc20Deposit(s.client, bridgeContract, s.erc20ContractAddr, dstAddr, amountToDeposit)
+	tx, err := utils.MakeErc20Deposit(s.client, bridgeContract, s.erc20ContractAddr, dstAddr, amountToDeposit)
 	s.Nil(err)
 	receipt, err := utils.WaitAndReturnTxReceipt(s.client, tx)
 	s.Nil(err)
@@ -153,7 +153,7 @@ func (s *IntegrationTestSuite) TestMultipleTransactionsInBlock() {
 	lp, err := s.client2.LatestBlock()
 	s.Nil(err)
 	// wait for vote log event
-	query := buildQuery(s.bridgeAddr, utils.ProposalEvent, receipt.BlockNumber, lp)
+	query := utils.BuildQuery(s.bridgeAddr, utils.ProposalEvent, receipt.BlockNumber, lp)
 	evts, err := s.client2.Client.FilterLogs(context.Background(), query)
 	var passedEventFound bool
 	for _, evt := range evts {
@@ -172,7 +172,7 @@ func (s *IntegrationTestSuite) TestMultipleTransactionsInBlock() {
 	time.Sleep(30 * time.Second)
 	lp, err = s.client2.LatestBlock()
 	s.Nil(err)
-	queryExecute := buildQuery(s.bridgeAddr, utils.ProposalEvent, receipt.BlockNumber, lp)
+	queryExecute := utils.BuildQuery(s.bridgeAddr, utils.ProposalEvent, receipt.BlockNumber, lp)
 	s.Nil(err)
 	evts2, err := s.client2.Client.FilterLogs(context.Background(), queryExecute)
 	var executedEventFound bool

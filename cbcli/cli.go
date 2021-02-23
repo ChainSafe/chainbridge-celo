@@ -5,6 +5,7 @@ import (
 	"github.com/ChainSafe/chainbridge-celo/cbcli/bridge"
 	"github.com/ChainSafe/chainbridge-celo/cbcli/deploy"
 	"github.com/ChainSafe/chainbridge-celo/cbcli/erc20"
+	"github.com/ChainSafe/chainbridge-celo/cbcli/erc721"
 	"github.com/urfave/cli/v2"
 )
 
@@ -53,5 +54,6 @@ var CLICMD = cli.Command{
 		bridge.BridgeCLICMDS,
 		admin.AdminCLICMDS,
 		erc20.ERC20CLICMDS,
+		erc721.ERC721CLICMDS,
 	},
 }
