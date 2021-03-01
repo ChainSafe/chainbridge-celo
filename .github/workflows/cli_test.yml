@@ -28,4 +28,4 @@ jobs:
       - name: Install bridge
         run: make install
       - name: Run CLI tests
-        run: popd && ./cbcli/cli_test.sh
+        run: ./cbcli/cli_test.sh
