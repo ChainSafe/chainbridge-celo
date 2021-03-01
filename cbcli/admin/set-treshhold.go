@@ -13,7 +13,7 @@ import (
 )
 
 var setTresholdCMD = &cli.Command{
-	Name:        "set-treshold",
+	Name:        "set-threshold",
 	Description: "Sets a new relayer vote threshold.",
 	Action:      setTreshold,
 	Flags: []cli.Flag{
