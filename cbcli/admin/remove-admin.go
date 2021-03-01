@@ -13,7 +13,7 @@ import (
 )
 
 var removeAdminCMD = &cli.Command{
-	Name:        "add-admin",
+	Name:        "remove-admin",
 	Description: "Removes an existing admin.",
 	Action:      removeAdmin,
 	Flags: []cli.Flag{
