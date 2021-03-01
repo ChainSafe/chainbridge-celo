@@ -20,7 +20,7 @@ func Deploy(ctx *cli.Context) error {
 		return err
 	}
 
-	dpc, err := utils.DeployContracts(client, 1, big.NewInt(1), utils.DefaultRelayerAddresses)
+	dpc, err := utils.DeployContracts(client, 1, big.NewInt(1), utils.DefaultRelayerAddresses, "test", "TST")
 	if err != nil {
 		return err
 	}
