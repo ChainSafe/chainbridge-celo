@@ -7,7 +7,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/ChainSafe/chainbridge-celo/bindings/Bridge"
 	erc20 "github.com/ChainSafe/chainbridge-celo/bindings/ERC20PresetMinterPauser"
 	"github.com/ChainSafe/chainbridge-celo/chain/client"
 	"github.com/ChainSafe/chainbridge-celo/utils"
@@ -58,8 +57,6 @@ func (s *IntegrationTestSuite) TearDownTest() {}
 // Deposit hash: 0x42782f963df86c5f31f94d9c610445b72d388bd60f788e2cd8ea4bff17824426
 func (s *IntegrationTestSuite) TestDeposit() {
 	dstAddr := utils.BobKp.CommonAddress()
-	bridgeContract, err := Bridge.NewBridge(s.bridgeAddr, s.client.Client)
-	s.Nil(err)
 	erc20Contract, err := erc20.NewERC20PresetMinterPauser(s.erc20ContractAddr, s.client.Client)
 	s.Nil(err)
 	erc20Contract2, err := erc20.NewERC20PresetMinterPauser(s.erc20ContractAddr, s.client2.Client)
@@ -70,7 +67,8 @@ func (s *IntegrationTestSuite) TestDeposit() {
 	s.Nil(err)
 
 	amountToDeposit := big.NewInt(1000000)
-	tx, err := utils.MakeErc20Deposit(s.client, bridgeContract, s.erc20ContractAddr, dstAddr, amountToDeposit)
+	resourceID := utils.SliceTo32Bytes(append(common.LeftPadBytes(s.erc20ContractAddr.Bytes(), 31), uint8(5)))
+	tx, err := utils.MakeErc20Deposit(s.client, s.bridgeAddr, dstAddr, amountToDeposit, resourceID, 0)
 	s.Nil(err)
 	receipt, err := utils.WaitAndReturnTxReceipt(s.client, tx)
 	s.Nil(err)
@@ -125,7 +123,6 @@ func (s *IntegrationTestSuite) TestMultipleTransactionsInBlock() {
 	s.Nil(err)
 
 	dstAddr := utils.BobKp.CommonAddress()
-	bridgeContract, err := Bridge.NewBridge(s.bridgeAddr, s.client.Client)
 	s.Nil(err)
 	erc20Contract, err := erc20.NewERC20PresetMinterPauser(s.erc20ContractAddr, s.client.Client)
 	s.Nil(err)
@@ -141,7 +138,9 @@ func (s *IntegrationTestSuite) TestMultipleTransactionsInBlock() {
 	for i := 0; i <= 20; i += 1 {
 		go sendOneWeiWithDelay(eveSender)
 	}
-	tx, err := utils.MakeErc20Deposit(s.client, bridgeContract, s.erc20ContractAddr, dstAddr, amountToDeposit)
+
+	resourceID := utils.SliceTo32Bytes(append(common.LeftPadBytes(s.erc20ContractAddr.Bytes(), 31), uint8(5)))
+	tx, err := utils.MakeErc20Deposit(s.client, s.bridgeAddr, dstAddr, amountToDeposit, resourceID, 0)
 	s.Nil(err)
 	receipt, err := utils.WaitAndReturnTxReceipt(s.client, tx)
 	s.Nil(err)
