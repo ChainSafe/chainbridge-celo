@@ -15,7 +15,7 @@ var CLICMD = &cli.Command{
 	Flags: []cli.Flag{
 		&cli.StringFlag{
 			Name:  "url",
-			Value: "http://localhost:8545",
+			Value: "ws://localhost:8545",
 			Usage: "RPC url of blockchain node",
 		},
 		&cli.Uint64Flag{
