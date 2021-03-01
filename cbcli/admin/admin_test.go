@@ -2,7 +2,6 @@ package admin
 
 import (
 	"flag"
-	"github.com/urfave/cli/v2"
 	"math/big"
 	"testing"
 
@@ -10,6 +9,7 @@ import (
 	"github.com/ChainSafe/chainbridge-celo/utils"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/stretchr/testify/suite"
+	"github.com/urfave/cli/v2"
 )
 
 const TestEndpoint = "ws://localhost:8545"

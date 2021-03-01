@@ -43,15 +43,13 @@ func GetSolidityFunctionSig(in string) [4]byte {
 	return SliceTo4Bytes(res)
 }
 
-func UserAmountToReal(amount string, decimal *big.Int) (*big.Int, error) {
+// UserAmountToWei converts decimal user friendly representation of token amount to 'Wei' representation with provided amount of decimal places
+// eg 1,5 => 100000
+func UserAmountToWei(amount string, decimal *big.Int) (*big.Int, error) {
 	amountFloat, ok := big.NewFloat(0).SetString(amount)
 	if !ok {
 		return nil, errors.New("wrong amount format")
 	}
-	//deimcalFloat, ok := big.NewFloat(0).SetString(decimal.String())
-	//if !ok {
-	//	return nil, errors.New("wrong decimal format")
-	//}
 	powerTo := big.NewInt(0).Exp(big.NewInt(10), decimal, nil)
 
 	powerToFloat, ok := big.NewFloat(0).SetString(powerTo.String())
@@ -64,14 +62,3 @@ func UserAmountToReal(amount string, decimal *big.Int) (*big.Int, error) {
 
 	return resInt, nil
 }
-
-//
-//func RealAmountToUser(amount *big.Int, decimals *big.Int, result *big.Float) {
-//	one := big.NewFloat(1)
-//	oneDivisor := big.NewInt(0)
-//	r := big.NewInt(0)
-//	oneDivisor.Exp(bigTen, decimals, nil).String()
-//	log.Debug().Msgf("%s", oneDivisor.String())
-//	log.Debug().Msgf("%s", r.Div(one, oneDivisor).())
-//	result.Mul(amount, one.Div(one, bigTen.Exp(bigTen, decimals, nil)))
-//}

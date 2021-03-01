@@ -20,11 +20,23 @@ func TestGetFunctionBytes(t *testing.T) {
 func TestUserAmountToReal(t *testing.T) {
 	amount := big.NewInt(100)
 	decimal := big.NewInt(5)
-	res, err := UserAmountToReal(amount.String(), decimal)
+	res, err := UserAmountToWei(amount.String(), decimal)
 	if err != nil {
 		t.Fatal(err.Error())
 	}
 	if res.Cmp(big.NewInt(10000000)) != 0 {
+		t.Fail()
+	}
+}
+
+func TestUserAmountToRealFloat(t *testing.T) {
+	amount := big.NewFloat(1.2345)
+	decimal := big.NewInt(5)
+	res, err := UserAmountToWei(amount.String(), decimal)
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+	if res.Cmp(big.NewInt(123450)) != 0 {
 		t.Fail()
 	}
 }

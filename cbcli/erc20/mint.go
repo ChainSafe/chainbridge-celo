@@ -45,7 +45,7 @@ func mint(cctx *cli.Context) error {
 
 	amount := cctx.String("amount")
 
-	realAmount, err := utils.UserAmountToReal(amount, decimals)
+	realAmount, err := utils.UserAmountToWei(amount, decimals)
 	if err != nil {
 		return err
 	}
