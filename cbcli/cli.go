@@ -9,7 +9,7 @@ import (
 	"github.com/urfave/cli/v2"
 )
 
-var CLICMD = cli.Command{
+var CLICMD = &cli.Command{
 	Name:        "cli",
 	Description: "This CLI supports on-chain interactions with components of ChainBridge",
 	Flags: []cli.Flag{
