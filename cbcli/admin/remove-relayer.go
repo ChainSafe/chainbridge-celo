@@ -13,7 +13,7 @@ import (
 )
 
 var removeRelayerCMD = &cli.Command{
-	Name:        "is-relayer",
+	Name:        "remove-relayer",
 	Description: "Removes a relayer.",
 	Action:      removeRelayer,
 	Flags: []cli.Flag{
