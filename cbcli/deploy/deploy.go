@@ -110,7 +110,12 @@ func deploy(cctx *cli.Context) error {
 				return err
 			}
 		case "erc20":
-			erc20Token, err := utils.DeployERC20Token(ethClient)
+			name := cctx.String("erc20Name")
+			symbol := cctx.String("erc20Symbol")
+			if name == "" || symbol == "" {
+				return errors.New("erc20Name and erc20Symbol flags should be provided")
+			}
+			erc20Token, err := utils.DeployERC20Token(ethClient, name, symbol)
 			deployedContracts["erc20Token"] = erc20Token.String()
 			if err != nil {
 				return err
@@ -184,6 +189,16 @@ var DeployCMD = &cli.Command{
 			Name:  "bridgeAddress",
 			Value: "",
 			Usage: "deploy all contracts",
+		},
+		&cli.StringFlag{
+			Name:  "erc20Symbol",
+			Value: "",
+			Usage: "erc20 contract symbol",
+		},
+		&cli.StringFlag{
+			Name:  "erc20Name",
+			Value: "",
+			Usage: "contract name",
 		},
 	},
 }

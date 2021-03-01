@@ -200,7 +200,7 @@ func MintTokens(client *client.Client, erc20Addr common.Address, amount *big.Int
 }
 
 // DeployContracts deploys Bridge, Relayer, ERC20Handler, ERC721Handler and CentrifugeAssetHandler and returns the addresses
-func DeployContracts(client *client.Client, chainID uint8, initialRelayerThreshold *big.Int, relayerAddresses []common.Address) (*DeployedContracts, error) {
+func DeployContracts(client *client.Client, chainID uint8, initialRelayerThreshold *big.Int, relayerAddresses []common.Address, erc20Name, erc20Symbol string) (*DeployedContracts, error) {
 	bridgeAddr, err := DeployBridge(client, chainID, relayerAddresses, initialRelayerThreshold)
 	if err != nil {
 		return nil, err
@@ -221,7 +221,7 @@ func DeployContracts(client *client.Client, chainID uint8, initialRelayerThresho
 		return nil, err
 	}
 
-	erc20Token, err := DeployERC20Token(client)
+	erc20Token, err := DeployERC20Token(client, erc20Name, erc20Symbol)
 	if err != nil {
 		return nil, err
 	}
@@ -231,13 +231,13 @@ func DeployContracts(client *client.Client, chainID uint8, initialRelayerThresho
 	return dpc, nil
 }
 
-func DeployERC20Token(client *client.Client) (common.Address, error) {
+func DeployERC20Token(client *client.Client, name, symbol string) (common.Address, error) {
 	err := client.LockAndUpdateOpts()
 	if err != nil {
 		return common.Address{}, err
 	}
 
-	bridgeAddr, tx, _, err := erc20.DeployERC20PresetMinterPauser(client.Opts(), client.Client, "test", "TST")
+	bridgeAddr, tx, _, err := erc20.DeployERC20PresetMinterPauser(client.Opts(), client.Client, name, symbol)
 	if err != nil {
 		return common.Address{}, err
 	}
