@@ -13,8 +13,8 @@ import (
 )
 
 var setFeeCMD = &cli.Command{
-	Name:        "is-relayer",
-	Description: "Sets a new relayer vote threshold.",
+	Name:        "set-fee",
+	Description: "Sets a new fee for deposits.",
 	Action:      setFee,
 	Flags: []cli.Flag{
 		&cli.Uint64Flag{
