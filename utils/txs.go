@@ -2,28 +2,24 @@ package utils
 
 import (
 	"context"
-	"encoding/hex"
 	"fmt"
-	"github.com/ChainSafe/chainbridge-utils/msg"
-	"github.com/ethereum/go-ethereum"
-	"github.com/ethereum/go-ethereum/common/math"
-	"github.com/pkg/errors"
-	"github.com/status-im/keycard-go/hexutils"
 	"math/big"
 	"time"
 
-	Bridge "github.com/ChainSafe/chainbridge-celo/bindings/Bridge"
+	"github.com/ChainSafe/chainbridge-celo/bindings/Bridge"
 	erc20Handler "github.com/ChainSafe/chainbridge-celo/bindings/ERC20Handler"
 	erc20 "github.com/ChainSafe/chainbridge-celo/bindings/ERC20PresetMinterPauser"
 	erc721Handler "github.com/ChainSafe/chainbridge-celo/bindings/ERC721Handler"
 	"github.com/ChainSafe/chainbridge-celo/bindings/ERC721MinterBurnerPauser"
 	"github.com/ChainSafe/chainbridge-celo/bindings/GenericHandler"
-	handlerHelper "github.com/ChainSafe/chainbridge-celo/bindings/HandlerHelpers"
 	"github.com/ChainSafe/chainbridge-celo/chain/client"
 	"github.com/ChainSafe/chainbridge-utils/keystore"
+	"github.com/ChainSafe/chainbridge-utils/msg"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
+	"github.com/pkg/errors"
 	"github.com/rs/zerolog/log"
+	"github.com/status-im/keycard-go/hexutils"
 )
 
 var AliceKp = keystore.TestKeyRing.EthereumKeys[keystore.AliceKey]
@@ -381,59 +377,6 @@ func CancelProposal(client *client.Client, bridgeAddress common.Address, chainID
 	return nil
 }
 
-func QueryProposal(client *client.Client, bridgeAddress common.Address, chainID uint8, depositNonce uint64, dataHash [32]byte) (*Bridge.BridgeProposal, error) {
-	bridgeInstance, err := Bridge.NewBridge(bridgeAddress, client.Client)
-	if err != nil {
-		return nil, err
-	}
-	err = client.LockAndUpdateOpts()
-	if err != nil {
-		return nil, err
-	}
-	prop, err := bridgeInstance.GetProposal(client.CallOpts(), chainID, depositNonce, dataHash)
-	if err != nil {
-		return nil, err
-	}
-
-	client.UnlockOpts()
-	return &prop, nil
-}
-
-func QueryResource(client *client.Client, handler common.Address, resourceID [32]byte) (common.Address, error) {
-	handlerInstance, err := handlerHelper.NewHandlerHelpersCaller(handler, client.Client)
-	if err != nil {
-		return common.Address{}, err
-	}
-	err = client.LockAndUpdateOpts()
-	if err != nil {
-		return common.Address{}, err
-	}
-	addr, err := handlerInstance.ResourceIDToTokenContractAddress(client.CallOpts(), resourceID)
-	if err != nil {
-		return common.Address{}, err
-	}
-	client.UnlockOpts()
-	return addr, nil
-}
-
-func AdminIsRelayer(client *client.Client, bridge common.Address, relayer common.Address) (bool, error) {
-	bridgeInstance, err := Bridge.NewBridge(bridge, client.Client)
-	if err != nil {
-		return false, err
-	}
-	err = client.LockAndUpdateOpts()
-	if err != nil {
-		return false, err
-	}
-	prop, err := bridgeInstance.IsRelayer(client.CallOpts(), relayer)
-	if err != nil {
-		return false, err
-	}
-
-	client.UnlockOpts()
-	return prop, nil
-}
-
 func AdminAddRelyaer(client *client.Client, bridge common.Address, relayer common.Address) error {
 	bridgeInstance, err := Bridge.NewBridge(bridge, client.Client)
 	if err != nil {
@@ -476,7 +419,7 @@ func AdminRemoveRelayer(client *client.Client, bridge common.Address, relayer co
 	return nil
 }
 
-func AdminSetTreshHold(client *client.Client, bridge common.Address, treshHold *big.Int) error {
+func AdminSetThreshHold(client *client.Client, bridge common.Address, treshHold *big.Int) error {
 	bridgeInstance, err := Bridge.NewBridge(bridge, client.Client)
 	if err != nil {
 		return err
@@ -646,23 +589,6 @@ func ERC20Mint(client *client.Client, amount *big.Int, erc20Address, recipient c
 	return nil
 }
 
-func ERC20MinterRole(client *client.Client, erc20Address common.Address) ([32]byte, error) {
-	erc20Instance, err := erc20.NewERC20PresetMinterPauser(erc20Address, client.Client)
-	if err != nil {
-		return [32]byte{}, err
-	}
-	err = client.LockAndUpdateOpts()
-	if err != nil {
-		return [32]byte{}, err
-	}
-	res, err := erc20Instance.MINTERROLE(client.CallOpts())
-	if err != nil {
-		return [32]byte{}, err
-	}
-	client.UnlockOpts()
-	return res, nil
-}
-
 func ERC20AddMinter(client *client.Client, erc20Address, minter common.Address) error {
 	erc20Instance, err := erc20.NewERC20PresetMinterPauser(erc20Address, client.Client)
 	if err != nil {
@@ -687,27 +613,6 @@ func ERC20AddMinter(client *client.Client, erc20Address, minter common.Address) 
 	}
 	client.UnlockOpts()
 	return nil
-}
-
-func ERC20IsMinter(client *client.Client, erc20Address, minter common.Address) (bool, error) {
-	erc20Instance, err := erc20.NewERC20PresetMinterPauser(erc20Address, client.Client)
-	if err != nil {
-		return false, err
-	}
-	err = client.LockAndUpdateOpts()
-	if err != nil {
-		return false, err
-	}
-	role, err := ERC20MinterRole(client, erc20Address)
-	if err != nil {
-		return false, nil
-	}
-	res, err := erc20Instance.HasRole(client.CallOpts(), role, minter)
-	if err != nil {
-		return false, err
-	}
-	client.UnlockOpts()
-	return res, nil
 }
 
 func ERC20Approve(client *client.Client, erc20Address, spender common.Address, amount *big.Int) error {
@@ -753,42 +658,6 @@ func BridgeDeposit(client *client.Client, bridge common.Address, destChainID uin
 	return nil
 }
 
-func ERC20BalanceOf(client *client.Client, erc20Address, dest common.Address) (*big.Int, error) {
-	erc20Instance, err := erc20.NewERC20PresetMinterPauser(erc20Address, client.Client)
-	if err != nil {
-		return nil, err
-	}
-	err = client.LockAndUpdateOpts()
-	if err != nil {
-		return nil, err
-	}
-
-	balance, err := erc20Instance.BalanceOf(client.CallOpts(), dest)
-	if err != nil {
-		return nil, err
-	}
-	client.UnlockOpts()
-	return balance, nil
-}
-
-func ERC20Allowance(client *client.Client, erc20Address, spender, owner common.Address) (*big.Int, error) {
-	erc20Instance, err := erc20.NewERC20PresetMinterPauser(erc20Address, client.Client)
-	if err != nil {
-		return nil, err
-	}
-	err = client.LockAndUpdateOpts()
-	if err != nil {
-		return nil, err
-	}
-
-	balance, err := erc20Instance.Allowance(client.CallOpts(), owner, spender)
-	if err != nil {
-		return nil, err
-	}
-	client.UnlockOpts()
-	return balance, nil
-}
-
 func ERC721Mint(client *client.Client, erc721Address, to common.Address, id *big.Int, metadata string) error {
 	erc721Instance, err := ERC721MinterBurnerPauser.NewERC721MinterBurnerPauser(erc721Address, client.Client)
 	if err != nil {
@@ -822,23 +691,6 @@ func ERC721MinterRole(client *client.Client, erc721Address common.Address) ([32]
 	res, err := erc721Instance.MINTERROLE(client.CallOpts())
 	if err != nil {
 		return [32]byte{}, err
-	}
-	client.UnlockOpts()
-	return res, nil
-}
-
-func ERC721OwnerOf(client *client.Client, erc721Address common.Address, id *big.Int) (common.Address, error) {
-	erc721Instance, err := ERC721MinterBurnerPauser.NewERC721MinterBurnerPauser(erc721Address, client.Client)
-	if err != nil {
-		return common.Address{}, err
-	}
-	err = client.LockAndUpdateOpts()
-	if err != nil {
-		return common.Address{}, err
-	}
-	res, err := erc721Instance.OwnerOf(client.CallOpts(), id)
-	if err != nil {
-		return common.Address{}, err
 	}
 	client.UnlockOpts()
 	return res, nil
@@ -946,16 +798,18 @@ func WaitAndReturnTxReceipt(client *client.Client, tx *types.Transaction) (*type
 	return nil, errors.New("Tx do not appear")
 }
 
-func MakeErc20Deposit(client *client.Client, bridge *Bridge.Bridge, erc20ContractAddr, dest common.Address, amount *big.Int) (*types.Transaction, error) {
-	data := ConstructErc20DepositData(dest.Bytes(), amount)
-	err := client.LockAndUpdateOpts()
+func MakeErc20Deposit(client *client.Client, bridgeAddress common.Address, recipient common.Address, amount *big.Int, resourceID [32]byte, destChainID uint8) (*types.Transaction, error) {
+	bridgeInstance, err := Bridge.NewBridge(bridgeAddress, client.Client)
+	if err != nil {
+		return nil, err
+	}
+	data := ConstructErc20DepositData(recipient.Bytes(), amount)
+	err = client.LockAndUpdateOpts()
 	if err != nil {
 		return nil, err
 	}
 
-	src := ChainId(5)
-	resourceID := SliceTo32Bytes(append(common.LeftPadBytes(erc20ContractAddr.Bytes(), 31), uint8(src)))
-	tx, err := bridge.Deposit(client.Opts(), 1, resourceID, data)
+	tx, err := bridgeInstance.Deposit(client.Opts(), destChainID, resourceID, data)
 	if err != nil {
 		return nil, err
 	}
@@ -964,18 +818,9 @@ func MakeErc20Deposit(client *client.Client, bridge *Bridge.Bridge, erc20Contrac
 }
 
 func MakeAndSendERC20Deposit(client *client.Client, bridgeAddress common.Address, recipient common.Address, amount *big.Int, resourceID [32]byte, destChainID uint8) error {
-	data := ConstructErc20DepositData(recipient.Bytes(), amount)
-	err := client.LockAndUpdateOpts()
+	tx, err := MakeErc20Deposit(client, bridgeAddress, recipient, amount, resourceID, destChainID)
 	if err != nil {
-		return err
-	}
-	bridgeInstance, err := Bridge.NewBridge(bridgeAddress, client.Client)
-	if err != nil {
-		return err
-	}
-	tx, err := bridgeInstance.Deposit(client.Opts(), destChainID, resourceID, data)
-	if err != nil {
-		return err
+		return nil
 	}
 	err = WaitForTx(client, tx)
 	if err != nil {
@@ -983,14 +828,6 @@ func MakeAndSendERC20Deposit(client *client.Client, bridgeAddress common.Address
 	}
 	client.UnlockOpts()
 	return nil
-}
-
-func ConstructErc20DepositData(destRecipient []byte, amount *big.Int) []byte {
-	var data []byte
-	data = append(data, math.PaddedBigBytes(amount, 32)...)
-	data = append(data, math.PaddedBigBytes(big.NewInt(int64(len(destRecipient))), 32)...)
-	data = append(data, destRecipient...)
-	return data
 }
 
 func MakeAndSendERC721Deposit(client *client.Client, bridgeAddress common.Address, recipient common.Address, id *big.Int, resourceID [32]byte, destChainID uint8) error {
@@ -1013,63 +850,4 @@ func MakeAndSendERC721Deposit(client *client.Client, bridgeAddress common.Addres
 	}
 	client.UnlockOpts()
 	return nil
-}
-
-// constructErc20Data constructs the data field to be passed into an erc721 deposit call
-func ConstructErc721DepositData(tokenId *big.Int, destRecipient []byte) []byte {
-	var data []byte
-	data = append(data, math.PaddedBigBytes(tokenId, 32)...)                               // Resource Id + Token Id
-	data = append(data, math.PaddedBigBytes(big.NewInt(int64(len(destRecipient))), 32)...) // Length of recipient
-	data = append(data, destRecipient...)                                                  // Recipient
-
-	return data
-}
-
-func ConstructGenericDepositData(metadata []byte) []byte {
-	var data []byte
-	data = append(data, math.PaddedBigBytes(big.NewInt(int64(len(metadata))), 32)...)
-	data = append(data, metadata...)
-
-	return data
-}
-
-//nolint
-func Simulate(client *client.Client, block *big.Int, txHash common.Hash, from common.Address) ([]byte, error) {
-	tx, _, err := client.Client.TransactionByHash(context.TODO(), txHash)
-	if err != nil {
-		return nil, err
-	}
-	msg := ethereum.CallMsg{
-		From:                from,
-		To:                  tx.To(),
-		Gas:                 tx.Gas(),
-		FeeCurrency:         tx.FeeCurrency(),
-		GatewayFeeRecipient: tx.GatewayFeeRecipient(),
-		GatewayFee:          tx.GatewayFee(),
-		GasPrice:            tx.GasPrice(),
-		Value:               tx.Value(),
-		Data:                tx.Data(),
-	}
-	res, err := client.Client.CallContract(context.TODO(), msg, block)
-	if err != nil {
-		return nil, err
-	}
-	bs, err := hex.DecodeString(hexutils.BytesToHex(res))
-	if err != nil {
-		panic(err)
-	}
-	log.Debug().Msg(string(bs))
-	return nil, nil
-}
-
-func BuildQuery(contract common.Address, sig EventSig, startBlock *big.Int, endBlock *big.Int) ethereum.FilterQuery {
-	query := ethereum.FilterQuery{
-		FromBlock: startBlock,
-		ToBlock:   endBlock,
-		Addresses: []common.Address{contract},
-		Topics: [][]common.Hash{
-			{sig.GetTopic()},
-		},
-	}
-	return query
 }

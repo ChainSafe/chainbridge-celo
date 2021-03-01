@@ -3,6 +3,7 @@ package utils
 import (
 	"bytes"
 	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/common/math"
 	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/pkg/errors"
 	"math/big"
@@ -61,4 +62,30 @@ func UserAmountToWei(amount string, decimal *big.Int) (*big.Int, error) {
 	resInt, _ := big.NewInt(0).SetString(res.String(), 10)
 
 	return resInt, nil
+}
+
+func ConstructErc20DepositData(destRecipient []byte, amount *big.Int) []byte {
+	var data []byte
+	data = append(data, math.PaddedBigBytes(amount, 32)...)
+	data = append(data, math.PaddedBigBytes(big.NewInt(int64(len(destRecipient))), 32)...)
+	data = append(data, destRecipient...)
+	return data
+}
+
+// constructErc20Data constructs the data field to be passed into an erc721 deposit call
+func ConstructErc721DepositData(tokenId *big.Int, destRecipient []byte) []byte {
+	var data []byte
+	data = append(data, math.PaddedBigBytes(tokenId, 32)...)                               // Resource Id + Token Id
+	data = append(data, math.PaddedBigBytes(big.NewInt(int64(len(destRecipient))), 32)...) // Length of recipient
+	data = append(data, destRecipient...)                                                  // Recipient
+
+	return data
+}
+
+func ConstructGenericDepositData(metadata []byte) []byte {
+	var data []byte
+	data = append(data, math.PaddedBigBytes(big.NewInt(int64(len(metadata))), 32)...)
+	data = append(data, metadata...)
+
+	return data
 }

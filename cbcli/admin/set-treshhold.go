@@ -15,7 +15,7 @@ import (
 var setTresholdCMD = &cli.Command{
 	Name:        "set-threshold",
 	Description: "Sets a new relayer vote threshold.",
-	Action:      setTreshold,
+	Action:      setThreshold,
 	Flags: []cli.Flag{
 		&cli.StringFlag{
 			Name:  "treshold",
@@ -28,7 +28,7 @@ var setTresholdCMD = &cli.Command{
 	},
 }
 
-func setTreshold(cctx *cli.Context) error {
+func setThreshold(cctx *cli.Context) error {
 	url := cctx.String("url")
 	gasLimit := cctx.Uint64("gasLimit")
 	gasPrice := cctx.Uint64("gasPrice")
@@ -46,10 +46,10 @@ func setTreshold(cctx *cli.Context) error {
 	if err != nil {
 		return err
 	}
-	err = utils.AdminSetTreshHold(ethClient, bridgeAddress, big.NewInt(0).SetUint64(treshHold))
+	err = utils.AdminSetThreshHold(ethClient, bridgeAddress, big.NewInt(0).SetUint64(treshHold))
 	if err != nil {
 		return err
 	}
-	log.Info().Msgf("New treshhold set for %v", treshHold)
+	log.Info().Msgf("New threshold set for %v", treshHold)
 	return nil
 }
