@@ -57,7 +57,7 @@ func isRelayer(cctx *cli.Context) error {
 	if isRelayer {
 		log.Info().Msgf("Requested address %s is relayer", relayerAddress.String())
 	} else {
-		log.Info().Msgf("Requested address %s is not relayer", relayerAddress.String())
+		log.Info().Msgf("Requested address %s is not a relayer", relayerAddress.String())
 	}
 	return nil
 }
