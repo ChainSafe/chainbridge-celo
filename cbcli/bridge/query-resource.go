@@ -35,7 +35,7 @@ func queryResource(cctx *cli.Context) error {
 	if err != nil {
 		return err
 	}
-	log.Info().Msgf("Resource address that associated with ID %s is %s", resourceID, res)
+	log.Info().Msgf("Resource address that associated with ID %s is %s", resourceID, res.String())
 	return nil
 }
 
