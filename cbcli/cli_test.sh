@@ -42,7 +42,7 @@ $CMD cli --gasLimit $GAS_LIMIT --gasPrice $GAS_PRICE admin set-threshold --bridg
 $CMD cli --gasLimit $GAS_LIMIT --gasPrice $GAS_PRICE admin unpause --bridge $BRIDGE_ADDRESS
 
 #brdige
-$CMD cli --gasLimit $GAS_LIMIT --gasPrice $GAS_PRICE bridge --bridge $BRIDGE_ADDRESS query-resource --handler $ERC20_HANDLER --resourceId $RESOURCE_ID
+$CMD cli --gasLimit $GAS_LIMIT --gasPrice $GAS_PRICE bridge query-resource --handler $ERC20_HANDLER --resourceId $RESOURCE_ID
 $CMD cli --gasLimit $GAS_LIMIT --gasPrice $GAS_PRICE bridge --bridge $BRIDGE_ADDRESS set-burn --handler $ERC20_HANDLER --tokenContract $ERC20_ADDRESS
 $CMD cli --gasLimit $GAS_LIMIT --gasPrice $GAS_PRICE bridge --bridge $BRIDGE_ADDRESS register-resource --handler $ERC20_HANDLER --resourceId $RESOURCE_ID --targetContract $ERC20_ADDRESS
 $CMD cli --gasLimit $GAS_LIMIT --gasPrice $GAS_PRICE bridge --bridge $BRIDGE_ADDRESS set-burn --handler $ERC20_HANDLER --tokenContract $ERC20_ADDRESS
