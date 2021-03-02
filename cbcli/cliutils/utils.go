@@ -19,7 +19,9 @@ func DefineSender(cctx *cli.Context) (*secp256k1.Keypair, error) {
 		return kp, nil
 	}
 	//if jsonWallet != "" {
-	//
+	//const raw = fs.readFileSync(parent.jsonWallet);
+	//const keyfile = JSON.parse(raw);
+	//args.wallet = await ethers.Wallet.fromEncryptedJson(keyfile, parent.jsonWalletPassword)
 	//}
 	return utils.AliceKp, nil
 }

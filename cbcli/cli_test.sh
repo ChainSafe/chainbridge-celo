@@ -16,12 +16,22 @@ NEW_ADMIN="0x55f511f91eE0D3368Bd6C2A7A8c1f4E685595b56"
 
 set -eux
 
+# deploy
 $CMD cli --gasLimit $GAS_LIMIT --gasPrice $GAS_PRICE deploy --all --erc20Symbol "TKN" --erc20Name "token  token"
-#$CMD --gasLimit $GAS_LIMIT --gasPrice $GAS_PRICE deploy --centAsset
-#$CMD --gasLimit $GAS_LIMIT --gasPrice $GAS_PRICE deploy --wetc
-#
-#$CMD --gasLimit $GAS_LIMIT --gasPrice $GAS_PRICE erc20 mint --amount 100
-#$CMD --gasLimit $GAS_LIMIT --gasPrice $GAS_PRICE erc20 add-minter
+$CMD cli --gasLimit $GAS_LIMIT --gasPrice $GAS_PRICE deploy --erc721
+$CMD cli --gasLimit $GAS_LIMIT --gasPrice $GAS_PRICE deploy --erc20 --erc20Symbol "TKN" --erc20Name "token  token"
+$CMD cli --gasLimit $GAS_LIMIT --gasPrice $GAS_PRICE deploy --bridge
+
+
+#erc20
+$CMD cli --gasLimit $GAS_LIMIT --gasPrice $GAS_PRICE erc20 mint --amount 100 --erc20Address "0x21605f71845f372A9ed84253d2D024B7B10999f4"
+$CMD cli --gasLimit $GAS_LIMIT --gasPrice $GAS_PRICE erc20 add-minter --erc20Address "0x21605f71845f372A9ed84253d2D024B7B10999f4" --minter "0x3f709398808af36ADBA86ACC617FeB7F5B7B193E"
+$CMD cli --gasLimit $GAS_LIMIT --gasPrice $GAS_PRICE erc20 allowance --erc20Address "0x21605f71845f372A9ed84253d2D024B7B10999f4" --spender "0x3f709398808af36ADBA86ACC617FeB7F5B7B193E" --owner "0x2f709398808af36ADBA86ACC617FeB7F5B7B1931"
+$CMD cli --gasLimit $GAS_LIMIT --gasPrice $GAS_PRICE erc20 approve --erc20Address "0x21605f71845f372A9ed84253d2D024B7B10999f4" --recipient "0x3f709398808af36ADBA86ACC617FeB7F5B7B193E" --amount "1.11"
+
+
+#admin
+
 #$CMD --gasLimit $GAS_LIMIT --gasPrice $GAS_PRICE bridge register-resource
 #$CMD --gasLimit $GAS_LIMIT --gasPrice $GAS_PRICE bridge query-resource
 #$CMD --gasLimit $GAS_LIMIT --gasPrice $GAS_PRICE bridge set-burn

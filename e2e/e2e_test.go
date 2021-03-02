@@ -68,7 +68,7 @@ func (s *IntegrationTestSuite) TestDeposit() {
 
 	amountToDeposit := big.NewInt(1000000)
 	resourceID := utils.SliceTo32Bytes(append(common.LeftPadBytes(s.erc20ContractAddr.Bytes(), 31), uint8(5)))
-	tx, err := utils.MakeErc20Deposit(s.client, s.bridgeAddr, dstAddr, amountToDeposit, resourceID, 0)
+	tx, err := utils.MakeErc20Deposit(s.client, s.bridgeAddr, dstAddr, amountToDeposit, resourceID, 5)
 	s.Nil(err)
 	receipt, err := utils.WaitAndReturnTxReceipt(s.client, tx)
 	s.Nil(err)
@@ -140,7 +140,7 @@ func (s *IntegrationTestSuite) TestMultipleTransactionsInBlock() {
 	}
 
 	resourceID := utils.SliceTo32Bytes(append(common.LeftPadBytes(s.erc20ContractAddr.Bytes(), 31), uint8(5)))
-	tx, err := utils.MakeErc20Deposit(s.client, s.bridgeAddr, dstAddr, amountToDeposit, resourceID, 0)
+	tx, err := utils.MakeErc20Deposit(s.client, s.bridgeAddr, dstAddr, amountToDeposit, resourceID, 5)
 	s.Nil(err)
 	receipt, err := utils.WaitAndReturnTxReceipt(s.client, tx)
 	s.Nil(err)
