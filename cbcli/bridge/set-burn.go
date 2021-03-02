@@ -41,7 +41,7 @@ func setBurn(cctx *cli.Context) error {
 	if err != nil {
 		return err
 	}
-	log.Info().Msgf("Setting contract %s as burnable on handler %s", tokenContractAddress, handlerAddress)
+	log.Info().Msgf("Setting contract %s as burnable on handler %s", tokenContractAddress.String(), handlerAddress.String())
 	err = utils.SetBurnable(ethClient, bridgeAddress, handlerAddress, tokenContractAddress)
 	if err != nil {
 		return err

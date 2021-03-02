@@ -3,6 +3,7 @@ package bridge
 import (
 	"errors"
 	"github.com/ChainSafe/chainbridge-celo/cbcli/cliutils"
+	"github.com/status-im/keycard-go/hexutils"
 	"math/big"
 
 	"github.com/ChainSafe/chainbridge-celo/chain/client"
@@ -35,7 +36,7 @@ func queryResource(cctx *cli.Context) error {
 	if err != nil {
 		return err
 	}
-	log.Info().Msgf("Resource address that associated with ID %s is %s", resourceID, res.String())
+	log.Info().Msgf("Resource address that associated with ID %s is %s", hexutils.BytesToHex(resourceID[:]), res.String())
 	return nil
 }
 
