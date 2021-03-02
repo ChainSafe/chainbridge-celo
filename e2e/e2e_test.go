@@ -68,7 +68,7 @@ func (s *IntegrationTestSuite) TestDeposit() {
 
 	amountToDeposit := big.NewInt(1000000)
 	resourceID := utils.SliceTo32Bytes(append(common.LeftPadBytes(s.erc20ContractAddr.Bytes(), 31), uint8(5)))
-	tx, err := utils.MakeErc20Deposit(s.client, s.bridgeAddr, dstAddr, amountToDeposit, resourceID, 5)
+	tx, err := utils.MakeErc20Deposit(s.client, s.bridgeAddr, dstAddr, amountToDeposit, resourceID, 1)
 	s.Nil(err)
 	receipt, err := utils.WaitAndReturnTxReceipt(s.client, tx)
 	s.Nil(err)
@@ -140,7 +140,7 @@ func (s *IntegrationTestSuite) TestMultipleTransactionsInBlock() {
 	}
 
 	resourceID := utils.SliceTo32Bytes(append(common.LeftPadBytes(s.erc20ContractAddr.Bytes(), 31), uint8(5)))
-	tx, err := utils.MakeErc20Deposit(s.client, s.bridgeAddr, dstAddr, amountToDeposit, resourceID, 5)
+	tx, err := utils.MakeErc20Deposit(s.client, s.bridgeAddr, dstAddr, amountToDeposit, resourceID, 1)
 	s.Nil(err)
 	receipt, err := utils.WaitAndReturnTxReceipt(s.client, tx)
 	s.Nil(err)
@@ -188,3 +188,13 @@ func (s *IntegrationTestSuite) TestMultipleTransactionsInBlock() {
 	//Balance has increased
 	s.Equal(destBalanceAfter.Cmp(destBalanceBefor), 1)
 }
+
+//
+//func (s *IntegrationTestSuite) TestSimulate() {
+//	block := big.NewInt(2000)
+//	hash := common.HexToHash("0x002d7025077566d055f30bd25f620d61d58ba9fa6654df311eebc414b159d4cd")
+//	res, err := utils.Simulate(s.client, block, hash, utils.AliceKp.CommonAddress())
+//	s.Nil(err)
+//	hexres := common.Bytes2Hex(res)
+//	log.Info().Msg(hexres)
+//}

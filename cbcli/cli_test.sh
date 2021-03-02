@@ -4,15 +4,14 @@
 
 CMD=chainbridge-celo
 
-ERC721_HANDLER="0x3f709398808af36ADBA86ACC617FeB7F5B7B193E"
-ERC721_RESOURCE_ID="0x0000000000000000000000d7E33e1bbf65dC001A0Eb1552613106CD7e40C3100"
-ERC721_CONTRACT="0xd7E33e1bbf65dC001A0Eb1552613106CD7e40C31"
+BRIDGE_ADDRESS="0x62877dDCd49aD22f5eDfc6ac108e9a4b5D2bD88B"
+ERC20_ADDRESS="0x21605f71845f372A9ed84253d2D024B7B10999f4"
+ERC20_HANDLER="0x3167776db165D8eA0f51790CA2bbf44Db5105ADF"
+RESOURCE_ID="0x000000000000000000000021605f71845f372A9ed84253d2D024B7B10999f400"
 
 GAS_LIMIT=6721975
 GAS_PRICE=20000000000
 
-NEW_RELAYER="0x8cED5ad0d8dA4Ec211C17355Ed3DBFEC4Cf0E5b9"
-NEW_ADMIN="0x55f511f91eE0D3368Bd6C2A7A8c1f4E685595b56"
 
 set -eux
 
@@ -24,43 +23,26 @@ $CMD cli --gasLimit $GAS_LIMIT --gasPrice $GAS_PRICE deploy --bridge
 
 
 #erc20
-$CMD cli --gasLimit $GAS_LIMIT --gasPrice $GAS_PRICE erc20 mint --amount 100 --erc20Address "0x21605f71845f372A9ed84253d2D024B7B10999f4"
-$CMD cli --gasLimit $GAS_LIMIT --gasPrice $GAS_PRICE erc20 add-minter --erc20Address "0x21605f71845f372A9ed84253d2D024B7B10999f4" --minter "0x3f709398808af36ADBA86ACC617FeB7F5B7B193E"
-$CMD cli --gasLimit $GAS_LIMIT --gasPrice $GAS_PRICE erc20 allowance --erc20Address "0x21605f71845f372A9ed84253d2D024B7B10999f4" --spender "0x3f709398808af36ADBA86ACC617FeB7F5B7B193E" --owner "0x2f709398808af36ADBA86ACC617FeB7F5B7B1931"
-$CMD cli --gasLimit $GAS_LIMIT --gasPrice $GAS_PRICE erc20 approve --erc20Address "0x21605f71845f372A9ed84253d2D024B7B10999f4" --recipient "0x3f709398808af36ADBA86ACC617FeB7F5B7B193E" --amount "1.11"
+$CMD cli --gasLimit $GAS_LIMIT --gasPrice $GAS_PRICE erc20 mint --amount 100 --erc20Address $ERC20_ADDRESS
+$CMD cli --gasLimit $GAS_LIMIT --gasPrice $GAS_PRICE erc20 add-minter --erc20Address $ERC20_ADDRESS --minter "0x3f709398808af36ADBA86ACC617FeB7F5B7B193E"
+$CMD cli --gasLimit $GAS_LIMIT --gasPrice $GAS_PRICE erc20 allowance --erc20Address $ERC20_ADDRESS --spender "0x3f709398808af36ADBA86ACC617FeB7F5B7B193E" --owner "0x2f709398808af36ADBA86ACC617FeB7F5B7B1931"
+$CMD cli --gasLimit $GAS_LIMIT --gasPrice $GAS_PRICE erc20 approve --erc20Address $ERC20_ADDRESS --recipient "0x3f709398808af36ADBA86ACC617FeB7F5B7B193E" --amount "1.11"  --decimals 2
+$CMD cli --gasLimit $GAS_LIMIT --gasPrice $GAS_PRICE erc20 balance --erc20Address $ERC20_ADDRESS --address "0x3f709398808af36ADBA86ACC617FeB7F5B7B193E"
 
 
 #admin
+$CMD cli --gasLimit $GAS_LIMIT --gasPrice $GAS_PRICE admin add-admin --bridge $BRIDGE_ADDRESS --admin "0x3f709398808af36ADBA86ACC617FeB7F5B7B193E"
+$CMD cli --gasLimit $GAS_LIMIT --gasPrice $GAS_PRICE admin add-relayer --bridge $BRIDGE_ADDRESS --relayer "0x3f709398808af36ADBA86ACC617FeB7F5B7B193E"
+$CMD cli --gasLimit $GAS_LIMIT --gasPrice $GAS_PRICE admin is-relayer --bridge $BRIDGE_ADDRESS --relayer "0x3f709398808af36ADBA86ACC617FeB7F5B7B193E"
+$CMD cli --gasLimit $GAS_LIMIT --gasPrice $GAS_PRICE admin pause --bridge $BRIDGE_ADDRESS
+$CMD cli --gasLimit $GAS_LIMIT --gasPrice $GAS_PRICE admin remove-admin --bridge $BRIDGE_ADDRESS --admin "0x3f709398808af36ADBA86ACC617FeB7F5B7B193E"
+$CMD cli --gasLimit $GAS_LIMIT --gasPrice $GAS_PRICE admin remove-relayer --bridge $BRIDGE_ADDRESS --relayer "0x3f709398808af36ADBA86ACC617FeB7F5B7B193E"
+$CMD cli --gasLimit $GAS_LIMIT --gasPrice $GAS_PRICE admin set-fee --bridge $BRIDGE_ADDRESS --fee 123
+$CMD cli --gasLimit $GAS_LIMIT --gasPrice $GAS_PRICE admin set-threshold --bridge $BRIDGE_ADDRESS --threshold 2
+$CMD cli --gasLimit $GAS_LIMIT --gasPrice $GAS_PRICE admin unpause --bridge $BRIDGE_ADDRESS
 
-#$CMD --gasLimit $GAS_LIMIT --gasPrice $GAS_PRICE bridge register-resource
-#$CMD --gasLimit $GAS_LIMIT --gasPrice $GAS_PRICE bridge query-resource
-#$CMD --gasLimit $GAS_LIMIT --gasPrice $GAS_PRICE bridge set-burn
-#$CMD --gasLimit $GAS_LIMIT --gasPrice $GAS_PRICE erc20 approve --amount 100
-#$CMD --gasLimit $GAS_LIMIT --gasPrice $GAS_PRICE erc20 allowance
-#$CMD --gasLimit $GAS_LIMIT --gasPrice $GAS_PRICE erc20 deposit --amount 100
-#$CMD --gasLimit $GAS_LIMIT --gasPrice $GAS_PRICE erc20 balance
-#$CMD --gasLimit $GAS_LIMIT --gasPrice $GAS_PRICE erc20 data-hash --amount 100
-#$CMD --gasLimit $GAS_LIMIT --gasPrice $GAS_PRICE bridge query-proposal
-#
-#$CMD --gasLimit $GAS_LIMIT --gasPrice $GAS_PRICE erc721 mint --id 0x1
-#$CMD --gasLimit $GAS_LIMIT --gasPrice $GAS_PRICE erc721 add-minter
-#$CMD --gasLimit $GAS_LIMIT --gasPrice $GAS_PRICE bridge register-resource --handler $ERC721_HANDLER --resourceId $ERC721_RESOURCE_ID --targetContract $ERC721_CONTRACT
-#$CMD --gasLimit $GAS_LIMIT --gasPrice $GAS_PRICE erc721 approve --id 0x1
-#$CMD --gasLimit $GAS_LIMIT --gasPrice $GAS_PRICE bridge set-burn --handler $ERC721_HANDLER --tokenContract $ERC721_CONTRACT
-#$CMD --gasLimit $GAS_LIMIT --gasPrice $GAS_PRICE erc721 deposit --id 0x1
-#$CMD --gasLimit $GAS_LIMIT --gasPrice $GAS_PRICE erc721 data-hash --id 0x1 --metadata "0x1234"
-#
-#$CMD --gasLimit $GAS_LIMIT --gasPrice $GAS_PRICE bridge register-generic-resource --execute "store(bytes32)" --hash
-#$CMD --gasLimit $GAS_LIMIT --gasPrice $GAS_PRICE cent getHash
-#
-#$CMD --gasLimit $GAS_LIMIT --gasPrice $GAS_PRICE admin is-relayer
-#$CMD --gasLimit $GAS_LIMIT --gasPrice $GAS_PRICE admin add-relayer --relayer $NEW_RELAYER
-#$CMD --gasLimit $GAS_LIMIT --gasPrice $GAS_PRICE admin remove-relayer --relayer $NEW_RELAYER
-#$CMD --gasLimit $GAS_LIMIT --gasPrice $GAS_PRICE admin add-admin --admin $NEW_ADMIN
-#$CMD --gasLimit $GAS_LIMIT --gasPrice $GAS_PRICE admin remove-admin --admin $NEW_ADMIN
-#$CMD --gasLimit $GAS_LIMIT --gasPrice $GAS_PRICE admin set-threshold --threshold 3
-#$CMD --gasLimit $GAS_LIMIT --gasPrice $GAS_PRICE admin pause
-#$CMD --gasLimit $GAS_LIMIT --gasPrice $GAS_PRICE admin unpause
-#$CMD --gasLimit $GAS_LIMIT --gasPrice $GAS_PRICE admin set-fee --fee 1
-#
-#$CMD --gasLimit $GAS_LIMIT --gasPrice $GAS_PRICE erc20 wetc-deposit --amount 1
+#brdige
+$CMD cli --gasLimit $GAS_LIMIT --gasPrice $GAS_PRICE bridge --bridge $BRIDGE_ADDRESS query-resource --handler $ERC20_HANDLER --resourceId $RESOURCE_ID
+$CMD cli --gasLimit $GAS_LIMIT --gasPrice $GAS_PRICE bridge --bridge $BRIDGE_ADDRESS set-burn --handler $ERC20_HANDLER --tokenContract $ERC20_ADDRESS
+$CMD cli --gasLimit $GAS_LIMIT --gasPrice $GAS_PRICE bridge --bridge $BRIDGE_ADDRESS register-resource --handler $ERC20_HANDLER --resourceId $RESOURCE_ID --targetContract $ERC20_ADDRESS
+$CMD cli --gasLimit $GAS_LIMIT --gasPrice $GAS_PRICE bridge --bridge $BRIDGE_ADDRESS set-burn --handler $ERC20_HANDLER --tokenContract $ERC20_ADDRESS

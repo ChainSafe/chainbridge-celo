@@ -38,6 +38,11 @@ var depositCMD = &cli.Command{
 			Name:  "resourceId",
 			Usage: "ResourceID for transfer",
 		},
+		&cli.Uint64Flag{
+			Name:     "decimals",
+			Usage:    "erc20Token decimals",
+			Required: true,
+		},
 	},
 }
 

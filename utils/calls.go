@@ -21,16 +21,10 @@ func QueryProposal(client *client.Client, bridgeAddress common.Address, chainID 
 	if err != nil {
 		return nil, err
 	}
-	err = client.LockAndUpdateOpts()
-	if err != nil {
-		return nil, err
-	}
 	prop, err := bridgeInstance.GetProposal(client.CallOpts(), chainID, depositNonce, dataHash)
 	if err != nil {
 		return nil, err
 	}
-	client.UnlockOpts()
-
 	return &prop, nil
 }
 
@@ -39,15 +33,11 @@ func QueryResource(client *client.Client, handler common.Address, resourceID [32
 	if err != nil {
 		return common.Address{}, err
 	}
-	err = client.LockAndUpdateOpts()
-	if err != nil {
-		return common.Address{}, err
-	}
+
 	addr, err := handlerInstance.ResourceIDToTokenContractAddress(client.CallOpts(), resourceID)
 	if err != nil {
 		return common.Address{}, err
 	}
-	client.UnlockOpts()
 	return addr, nil
 }
 
@@ -56,16 +46,12 @@ func AdminIsRelayer(client *client.Client, bridge common.Address, relayer common
 	if err != nil {
 		return false, err
 	}
-	err = client.LockAndUpdateOpts()
-	if err != nil {
-		return false, err
-	}
+
 	prop, err := bridgeInstance.IsRelayer(client.CallOpts(), relayer)
 	if err != nil {
 		return false, err
 	}
 
-	client.UnlockOpts()
 	return prop, nil
 }
 
@@ -74,24 +60,15 @@ func ERC20MinterRole(client *client.Client, erc20Address common.Address) ([32]by
 	if err != nil {
 		return [32]byte{}, err
 	}
-	err = client.LockAndUpdateOpts()
-	if err != nil {
-		return [32]byte{}, err
-	}
 	res, err := erc20Instance.MINTERROLE(client.CallOpts())
 	if err != nil {
 		return [32]byte{}, err
 	}
-	client.UnlockOpts()
 	return res, nil
 }
 
 func ERC20IsMinter(client *client.Client, erc20Address, minter common.Address) (bool, error) {
 	erc20Instance, err := erc20.NewERC20PresetMinterPauser(erc20Address, client.Client)
-	if err != nil {
-		return false, err
-	}
-	err = client.LockAndUpdateOpts()
 	if err != nil {
 		return false, err
 	}
@@ -103,7 +80,6 @@ func ERC20IsMinter(client *client.Client, erc20Address, minter common.Address) (
 	if err != nil {
 		return false, err
 	}
-	client.UnlockOpts()
 	return res, nil
 }
 
@@ -112,16 +88,10 @@ func ERC20BalanceOf(client *client.Client, erc20Address, dest common.Address) (*
 	if err != nil {
 		return nil, err
 	}
-	err = client.LockAndUpdateOpts()
-	if err != nil {
-		return nil, err
-	}
-
 	balance, err := erc20Instance.BalanceOf(client.CallOpts(), dest)
 	if err != nil {
 		return nil, err
 	}
-	client.UnlockOpts()
 	return balance, nil
 }
 
@@ -130,16 +100,10 @@ func ERC20Allowance(client *client.Client, erc20Address, spender, owner common.A
 	if err != nil {
 		return nil, err
 	}
-	err = client.LockAndUpdateOpts()
-	if err != nil {
-		return nil, err
-	}
-
 	balance, err := erc20Instance.Allowance(client.CallOpts(), owner, spender)
 	if err != nil {
 		return nil, err
 	}
-	client.UnlockOpts()
 	return balance, nil
 }
 
@@ -148,15 +112,10 @@ func ERC721OwnerOf(client *client.Client, erc721Address common.Address, id *big.
 	if err != nil {
 		return common.Address{}, err
 	}
-	err = client.LockAndUpdateOpts()
-	if err != nil {
-		return common.Address{}, err
-	}
 	res, err := erc721Instance.OwnerOf(client.CallOpts(), id)
 	if err != nil {
 		return common.Address{}, err
 	}
-	client.UnlockOpts()
 	return res, nil
 }
 

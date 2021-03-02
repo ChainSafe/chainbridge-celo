@@ -29,6 +29,11 @@ var approveCMD = &cli.Command{
 			Name:  "amount",
 			Usage: "Amount to grant allowance",
 		},
+		&cli.Uint64Flag{
+			Name:     "decimals",
+			Usage:    "erc20Token decimals",
+			Required: true,
+		},
 	},
 }
 

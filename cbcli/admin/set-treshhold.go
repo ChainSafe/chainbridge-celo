@@ -17,8 +17,8 @@ var setTresholdCMD = &cli.Command{
 	Description: "Sets a new relayer vote threshold.",
 	Action:      setThreshold,
 	Flags: []cli.Flag{
-		&cli.StringFlag{
-			Name:  "treshold",
+		&cli.Uint64Flag{
+			Name:  "threshold",
 			Usage: "New relayer threshold",
 		},
 		&cli.StringFlag{
@@ -41,15 +41,15 @@ func setThreshold(cctx *cli.Context) error {
 		return errors.New("invalid bridge address")
 	}
 	bridgeAddress := common.HexToAddress(bridge)
-	treshHold := cctx.Uint64("treshold")
+	threshold := cctx.Uint64("threshold")
 	ethClient, err := client.NewClient(url, false, sender, big.NewInt(0).SetUint64(gasLimit), big.NewInt(0).SetUint64(gasPrice))
 	if err != nil {
 		return err
 	}
-	err = utils.AdminSetThreshHold(ethClient, bridgeAddress, big.NewInt(0).SetUint64(treshHold))
+	err = utils.AdminSetThreshHold(ethClient, bridgeAddress, big.NewInt(0).SetUint64(threshold))
 	if err != nil {
 		return err
 	}
-	log.Info().Msgf("New threshold set for %v", treshHold)
+	log.Info().Msgf("New threshold set for %v", threshold)
 	return nil
 }

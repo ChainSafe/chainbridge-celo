@@ -13,7 +13,7 @@ import (
 )
 
 var addRelayerCMD = &cli.Command{
-	Name:        "is-relayer",
+	Name:        "add-relayer",
 	Description: "Adds a new relayer.",
 	Action:      addRelayer,
 	Flags: []cli.Flag{

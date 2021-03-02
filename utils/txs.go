@@ -105,16 +105,14 @@ func SetBurnable(client *client.Client, bridge, handler, contract common.Address
 }
 
 func Erc20Approve(client *client.Client, erc20Contract, target common.Address, amount *big.Int) error {
-	err := client.LockAndUpdateOpts()
-	if err != nil {
-		return err
-	}
-
 	instance, err := erc20.NewERC20PresetMinterPauser(erc20Contract, client.Client)
 	if err != nil {
 		return err
 	}
-
+	err = client.LockAndUpdateOpts()
+	if err != nil {
+		return err
+	}
 	tx, err := instance.Approve(client.Opts(), target, amount)
 	if err != nil {
 		return err
@@ -524,7 +522,7 @@ func AdminWithdraw(client *client.Client, bridge, handler, token, recipient comm
 	return nil
 }
 
-var AdminRole = "0x0000000000000000000000000000000000000000000000000000000000000000"
+var AdminRole = "0000000000000000000000000000000000000000000000000000000000000000"
 
 func AdminAddAdmin(client *client.Client, bridge common.Address, newAdmin common.Address) error {
 	bridgeInstance, err := Bridge.NewBridge(bridge, client.Client)
@@ -762,6 +760,7 @@ var ExpectedBlockTime = 2 * time.Second
 // WaitForTx will query the chain at ExpectedBlockTime intervals, until a receipt is returned.
 // Returns an error if the tx failed.
 func WaitForTx(client *client.Client, tx *types.Transaction) error {
+	log.Info().Msgf("Waiting for transaction with hash %s", tx.Hash().String())
 	retry := 10
 	for retry > 0 {
 		receipt, err := client.Client.TransactionReceipt(context.Background(), tx.Hash())
@@ -770,9 +769,8 @@ func WaitForTx(client *client.Client, tx *types.Transaction) error {
 			time.Sleep(ExpectedBlockTime)
 			continue
 		}
-
 		if receipt.Status != 1 {
-			return fmt.Errorf("transaction failed on chain")
+			return fmt.Errorf("transaction with hash %s failed on chain latest block %s", tx.Hash().String(), receipt.BlockNumber.String())
 		}
 		return nil
 	}
