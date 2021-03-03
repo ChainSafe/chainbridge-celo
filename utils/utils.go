@@ -94,6 +94,5 @@ func ConstructGenericDepositData(metadata []byte) []byte {
 	var data []byte
 	data = append(data, math.PaddedBigBytes(big.NewInt(int64(len(metadata))), 32)...)
 	data = append(data, metadata...)
-
 	return data
 }
