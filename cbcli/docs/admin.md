@@ -61,8 +61,9 @@ Unpause deposits and proposals.
 Set a new fee.
 
 ```
---bridge <address>  Bridge contract address
---fee <value>       New fee (in wei)
+--bridge <address>   Bridge contract address
+--fee <string>       New fee (in wei)
+--decimals           The number of decimal places for the erc20 token
 ```
 
 ## `withdraw`

@@ -18,13 +18,18 @@ var setFeeCMD = &cli.Command{
 	Description: "Sets a new fee for deposits.",
 	Action:      setFee,
 	Flags: []cli.Flag{
-		&cli.Uint64Flag{
+		&cli.StringFlag{
 			Name:  "fee",
 			Usage: "New fee (in wei)",
 		},
 		&cli.StringFlag{
 			Name:  "bridge",
 			Usage: "Bridge contract address",
+		},
+		&cli.Uint64Flag{
+			Name:     "decimals",
+			Usage:    "erc20Token decimals",
+			Required: true,
 		},
 	},
 }
@@ -33,6 +38,7 @@ func setFee(cctx *cli.Context) error {
 	url := cctx.String("url")
 	gasLimit := cctx.Uint64("gasLimit")
 	gasPrice := cctx.Uint64("gasPrice")
+	decimals := big.NewInt(0).SetUint64(cctx.Uint64("decimals"))
 	sender, err := cliutils.DefineSender(cctx)
 	if err != nil {
 		return err
@@ -42,12 +48,18 @@ func setFee(cctx *cli.Context) error {
 		return errors.New(fmt.Sprintf("invalid bridge address %s", bridge))
 	}
 	bridgeAddress := common.HexToAddress(bridge)
-	fee := cctx.Uint64("fee")
+	fee := cctx.String("fee")
+
+	realFeeAmount, err := utils.UserAmountToWei(fee, decimals)
+	if err != nil {
+		return err
+	}
+
 	ethClient, err := client.NewClient(url, false, sender, big.NewInt(0).SetUint64(gasLimit), big.NewInt(0).SetUint64(gasPrice))
 	if err != nil {
 		return err
 	}
-	err = utils.AdminSetFee(ethClient, bridgeAddress, big.NewInt(0).SetUint64(fee))
+	err = utils.AdminSetFee(ethClient, bridgeAddress, realFeeAmount)
 	if err != nil {
 		return err
 	}
