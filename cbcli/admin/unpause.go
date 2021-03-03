@@ -46,6 +46,6 @@ func unpause(cctx *cli.Context) error {
 	if err != nil {
 		return err
 	}
-	log.Info().Msgf("Deposits and proposals are UNpaused")
+	log.Info().Msgf("Deposits and proposals are Unpaused")
 	return nil
 }
