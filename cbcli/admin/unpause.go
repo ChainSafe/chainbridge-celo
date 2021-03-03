@@ -15,7 +15,7 @@ import (
 
 var unpauseCMD = &cli.Command{
 	Name:        "unpause",
-	Description: "UNpauses deposits and proposals.",
+	Description: "Unpauses deposits and proposals.",
 	Action:      unpause,
 	Flags: []cli.Flag{
 		&cli.StringFlag{
@@ -46,6 +46,6 @@ func unpause(cctx *cli.Context) error {
 	if err != nil {
 		return err
 	}
-	log.Info().Msgf("Deposits and proposals are UNpaused")
+	log.Info().Msgf("Deposits and proposals are Unpaused")
 	return nil
 }
