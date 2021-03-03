@@ -79,5 +79,4 @@ docker run -v ./config.json:/config.json chainsafe/chainbridge-celo
 ```
 
 ## CLI
-ChainBridge CLI allows to interact with blockchain components of chainbridge infrastructure
-Detailed CLI docs: [`cli docs`](cbcli/README.md):
+ChainBridge CLI allows you to interact with the on-chain components of ChainBridge. Detailed CLI docs are [here](cbcli/README.md).
