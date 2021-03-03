@@ -45,7 +45,7 @@ func GetSolidityFunctionSig(in string) [4]byte {
 }
 
 // UserAmountToWei converts decimal user friendly representation of token amount to 'Wei' representation with provided amount of decimal places
-// eg 1,5 => 100000
+// eg 1,5 => 150000
 func UserAmountToWei(amount string, decimal *big.Int) (*big.Int, error) {
 	amountFloat, ok := big.NewFloat(0).SetString(amount)
 	if !ok {
