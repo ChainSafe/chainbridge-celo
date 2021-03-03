@@ -19,7 +19,7 @@ var addMinterCMD = &cli.Command{
 	Flags: []cli.Flag{
 		&cli.StringFlag{
 			Name:  "minter",
-			Usage: "Amount to mint fee (in wei)",
+			Usage: "Address of minter",
 		},
 		&cli.StringFlag{
 			Name:  "erc20Address",
