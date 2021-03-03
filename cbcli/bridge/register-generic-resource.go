@@ -70,7 +70,7 @@ func registerGenericResource(cctx *cli.Context) error {
 
 var registerGenericResourceCMD = &cli.Command{
 	Name:        "register-generic-resource",
-	Description: "Register a resource ID with a contract address for a generic handler..",
+	Description: "Register a resource ID with a contract address for a generic handler.",
 	Action:      registerGenericResource,
 	Flags: []cli.Flag{
 		&cli.StringFlag{
