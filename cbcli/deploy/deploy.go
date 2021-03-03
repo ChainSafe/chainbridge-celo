@@ -12,7 +12,7 @@ import (
 	"github.com/urfave/cli/v2"
 )
 
-var ErrNoDeploymentFalgsProvided = errors.New("provide at least one deployment flag. For help use help.")
+var ErrNoDeploymentFalgsProvided = errors.New("provide at least one deployment flag. For help use --help.")
 
 func deploy(cctx *cli.Context) error {
 	url := cctx.String("url")
