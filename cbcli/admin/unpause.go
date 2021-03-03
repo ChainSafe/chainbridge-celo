@@ -15,7 +15,7 @@ import (
 
 var unpauseCMD = &cli.Command{
 	Name:        "unpause",
-	Description: "UNpauses deposits and proposals.",
+	Description: "Unpauses deposits and proposals.",
 	Action:      unpause,
 	Flags: []cli.Flag{
 		&cli.StringFlag{
