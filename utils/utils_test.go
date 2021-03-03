@@ -5,12 +5,12 @@ import (
 	"math/big"
 	"testing"
 
-	"github.com/status-im/keycard-go/hexutils"
+	"github.com/ethereum/go-ethereum/common"
 )
 
 func TestGetFunctionBytes(t *testing.T) {
 	resb := GetSolidityFunctionSig("submitAsk(uint256,uint256)")
-	ress := hexutils.BytesToHex(resb[:])
+	ress := common.Bytes2Hex(resb[:])
 	if ress != "7288A28A" {
 		t.Fatal(fmt.Sprintf("Result is %s", ress))
 	}

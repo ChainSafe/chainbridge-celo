@@ -6,8 +6,8 @@ package listener
 import (
 	"github.com/ChainSafe/chainbridge-celo/utils"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
+	"github.com/ethereum/go-ethereum/common"
 	"github.com/rs/zerolog/log"
-	"github.com/status-im/keycard-go/hexutils"
 )
 
 func (l *listener) handleErc20DepositedEvent(destId utils.ChainId, nonce utils.Nonce) (*utils.Message, error) {
@@ -17,7 +17,7 @@ func (l *listener) handleErc20DepositedEvent(destId utils.ChainId, nonce utils.N
 		return nil, err
 	}
 
-	log.Info().Interface("dest", destId).Interface("nonce", nonce).Str("resourceID", hexutils.BytesToHex(record.ResourceID[:])).Msg("Handling fungible deposit event")
+	log.Info().Interface("dest", destId).Interface("nonce", nonce).Str("resourceID", common.Bytes2Hex(record.ResourceID[:])).Msg("Handling fungible deposit event")
 	return utils.NewFungibleTransfer(
 		l.cfg.ID,
 		destId,
@@ -37,7 +37,7 @@ func (l *listener) handleErc721DepositedEvent(destId utils.ChainId, nonce utils.
 		log.Error().Err(err).Msg("Error Unpacking ERC721 Deposit Record")
 		return nil, err
 	}
-	log.Info().Interface("dest", destId).Interface("nonce", nonce).Str("resourceID", hexutils.BytesToHex(record.ResourceID[:])).Msg("Handling nonfungible deposit event")
+	log.Info().Interface("dest", destId).Interface("nonce", nonce).Str("resourceID", common.Bytes2Hex(record.ResourceID[:])).Msg("Handling nonfungible deposit event")
 	return utils.NewNonFungibleTransfer(
 		l.cfg.ID,
 		destId,
@@ -57,7 +57,7 @@ func (l *listener) handleGenericDepositedEvent(destId utils.ChainId, nonce utils
 		log.Error().Err(err).Msg("Error Unpacking Generic Deposit Record")
 		return nil, err
 	}
-	log.Info().Interface("dest", destId).Interface("nonce", nonce).Str("resourceID", hexutils.BytesToHex(record.ResourceID[:])).Msg("Handling generic deposit event")
+	log.Info().Interface("dest", destId).Interface("nonce", nonce).Str("resourceID", common.Bytes2Hex(record.ResourceID[:])).Msg("Handling generic deposit event")
 	return utils.NewGenericTransfer(
 		l.cfg.ID,
 		destId,

@@ -13,7 +13,6 @@ import (
 	"github.com/ethereum/go-ethereum"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/rs/zerolog/log"
-	"github.com/status-im/keycard-go/hexutils"
 )
 
 func QueryProposal(client *client.Client, bridgeAddress common.Address, chainID uint8, depositNonce uint64, dataHash [32]byte) (*Bridge.BridgeProposal, error) {
@@ -140,7 +139,7 @@ func Simulate(client *client.Client, block *big.Int, txHash common.Hash, from co
 	if err != nil {
 		return nil, err
 	}
-	bs, err := hex.DecodeString(hexutils.BytesToHex(res))
+	bs, err := hex.DecodeString(common.Bytes2Hex(res))
 	if err != nil {
 		panic(err)
 	}

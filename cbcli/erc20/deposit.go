@@ -10,7 +10,6 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/pkg/errors"
 	"github.com/rs/zerolog/log"
-	"github.com/status-im/keycard-go/hexutils"
 	"github.com/urfave/cli/v2"
 )
 
@@ -79,7 +78,7 @@ func deposit(cctx *cli.Context) error {
 	dest := cctx.Uint64("dest")
 
 	resourceId := cctx.String("resourceId")
-	resourceIDBytes := utils.SliceTo32Bytes(hexutils.HexToBytes(resourceId))
+	resourceIDBytes := utils.SliceTo32Bytes(common.Hex2Bytes(resourceId))
 
 	ethClient, err := client.NewClient(url, false, sender, big.NewInt(0).SetUint64(gasLimit), big.NewInt(0).SetUint64(gasPrice))
 	if err != nil {

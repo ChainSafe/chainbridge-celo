@@ -19,7 +19,6 @@ import (
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/pkg/errors"
 	"github.com/rs/zerolog/log"
-	"github.com/status-im/keycard-go/hexutils"
 )
 
 var AliceKp = keystore.TestKeyRing.EthereumKeys[keystore.AliceKey]
@@ -533,7 +532,7 @@ func AdminAddAdmin(client *client.Client, bridge common.Address, newAdmin common
 	if err != nil {
 		return err
 	}
-	tx, err := bridgeInstance.GrantRole(client.Opts(), SliceTo32Bytes(hexutils.HexToBytes(AdminRole)), newAdmin)
+	tx, err := bridgeInstance.GrantRole(client.Opts(), SliceTo32Bytes(common.Hex2Bytes(AdminRole)), newAdmin)
 	if err != nil {
 		return err
 	}
@@ -554,7 +553,7 @@ func AdminRemoveAdmin(client *client.Client, bridge common.Address, addresToRevo
 	if err != nil {
 		return err
 	}
-	tx, err := bridgeInstance.RevokeRole(client.Opts(), SliceTo32Bytes(hexutils.HexToBytes(AdminRole)), addresToRevoke)
+	tx, err := bridgeInstance.RevokeRole(client.Opts(), SliceTo32Bytes(common.Hex2Bytes(AdminRole)), addresToRevoke)
 	if err != nil {
 		return err
 	}

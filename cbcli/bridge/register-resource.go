@@ -2,14 +2,13 @@ package bridge
 
 import (
 	"fmt"
-	"github.com/ChainSafe/chainbridge-celo/cbcli/cliutils"
 	"math/big"
 
+	"github.com/ChainSafe/chainbridge-celo/cbcli/cliutils"
 	"github.com/ChainSafe/chainbridge-celo/chain/client"
 	"github.com/ChainSafe/chainbridge-celo/utils"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/pkg/errors"
-	"github.com/status-im/keycard-go/hexutils"
 	"github.com/urfave/cli/v2"
 )
 
@@ -40,7 +39,7 @@ func registerResource(cctx *cli.Context) error {
 	}
 	targetContractAddress := common.HexToAddress(targetContract)
 	resourceId := cctx.String("resourceId")
-	resourceIdBytes := hexutils.HexToBytes(resourceId)
+	resourceIdBytes := common.Hex2Bytes(resourceId)
 	resourceIdBytesArr := utils.SliceTo32Bytes(resourceIdBytes)
 
 	fmt.Printf("Registering contract %s with resource ID %s on handler %s", targetContract, resourceId, handler)
