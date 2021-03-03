@@ -54,6 +54,7 @@ func setFee(cctx *cli.Context) error {
 	if err != nil {
 		return err
 	}
+	log.Debug().Msgf("%s", realFeeAmount.String())
 
 	ethClient, err := client.NewClient(url, false, sender, big.NewInt(0).SetUint64(gasLimit), big.NewInt(0).SetUint64(gasPrice))
 	if err != nil {

@@ -6,7 +6,9 @@ import (
 	"github.com/ethereum/go-ethereum/common/math"
 	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/pkg/errors"
+	gomath "math"
 	"math/big"
+	"strings"
 )
 
 type EventSig string
@@ -45,23 +47,29 @@ func GetSolidityFunctionSig(in string) [4]byte {
 }
 
 // UserAmountToWei converts decimal user friendly representation of token amount to 'Wei' representation with provided amount of decimal places
-// eg 1,5 => 100000
+// eg UserAmountToWei(1, 5) => 100000
 func UserAmountToWei(amount string, decimal *big.Int) (*big.Int, error) {
 	amountFloat, ok := big.NewFloat(0).SetString(amount)
 	if !ok {
 		return nil, errors.New("wrong amount format")
 	}
-	powerTo := big.NewInt(0).Exp(big.NewInt(10), decimal, nil)
+	ethValueFloat := new(big.Float).Mul(amountFloat, big.NewFloat(gomath.Pow10(int(decimal.Int64()))))
+	ethValuseFloatString := strings.Split(ethValueFloat.Text('f', int(decimal.Int64())), ".")
 
-	powerToFloat, ok := big.NewFloat(0).SetString(powerTo.String())
+	i, ok := big.NewInt(0).SetString(ethValuseFloatString[0], 10)
 	if !ok {
-		return nil, errors.New("wrong decimal format")
+		return nil, errors.New(ethValueFloat.Text('f', int(decimal.Int64())))
 	}
-	res := big.NewFloat(0)
-	res.Mul(amountFloat, powerToFloat)
-	resInt, _ := big.NewInt(0).SetString(res.String(), 10)
 
-	return resInt, nil
+	return i, nil
+}
+
+func WeiAmountToUser(amount *big.Int, decimals *big.Int) (*big.Float, error) {
+	amountFloat, ok := big.NewFloat(0).SetString(amount.String())
+	if !ok {
+		return nil, errors.New("wrong amount format")
+	}
+	return new(big.Float).Quo(amountFloat, big.NewFloat(gomath.Pow10(int(decimals.Int64())))), nil
 }
 
 func ConstructErc20DepositData(destRecipient []byte, amount *big.Int) []byte {
