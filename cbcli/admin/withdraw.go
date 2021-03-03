@@ -1,6 +1,7 @@
 package admin
 
 import (
+	"fmt"
 	"github.com/ChainSafe/chainbridge-celo/cbcli/cliutils"
 	"math/big"
 
@@ -50,25 +51,25 @@ func withdraw(cctx *cli.Context) error {
 	}
 	bridge := cctx.String("bridge")
 	if !common.IsHexAddress(bridge) {
-		return errors.New("invalid bridge address")
+		return errors.New(fmt.Sprintf("invalid bridge address %s", bridge))
 	}
 	bridgeAddress := common.HexToAddress(bridge)
 
 	handler := cctx.String("handler")
 	if !common.IsHexAddress(handler) {
-		return errors.New("invalid handler address")
+		return errors.New(fmt.Sprintf("invalid handler address %s", handler))
 	}
 	handlerAddress := common.HexToAddress(handler)
 
 	token := cctx.String("token")
 	if !common.IsHexAddress(token) {
-		return errors.New("invalid bridge address")
+		return errors.New(fmt.Sprintf("invalid token address %s", token))
 	}
 	tokenAddress := common.HexToAddress(token)
 
 	recipient := cctx.String("recipient")
 	if !common.IsHexAddress(recipient) {
-		return errors.New("invalid bridge address")
+		return errors.New(fmt.Sprintf("invalid recipient address %s", recipient))
 	}
 	recipientAddress := common.HexToAddress(recipient)
 

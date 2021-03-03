@@ -1,6 +1,7 @@
 package admin
 
 import (
+	"fmt"
 	"github.com/ChainSafe/chainbridge-celo/cbcli/cliutils"
 	"math/big"
 
@@ -39,13 +40,13 @@ func removeAdmin(cctx *cli.Context) error {
 
 	bridge := cctx.String("bridge")
 	if !common.IsHexAddress(bridge) {
-		return errors.New("invalid bridge address")
+		return errors.New(fmt.Sprintf("invalid bridge address %s", bridge))
 	}
 	bridgeAddress := common.HexToAddress(bridge)
 
 	admin := cctx.String("admin")
 	if !common.IsHexAddress(admin) {
-		return errors.New("invalid admin address")
+		return errors.New(fmt.Sprintf("invalid admin address %s", admin))
 	}
 	adminAddress := common.HexToAddress(admin)
 

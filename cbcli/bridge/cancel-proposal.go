@@ -1,6 +1,7 @@
 package bridge
 
 import (
+	"fmt"
 	"github.com/ChainSafe/chainbridge-celo/cbcli/cliutils"
 	"math/big"
 
@@ -22,7 +23,7 @@ func cancelProposal(cctx *cli.Context) error {
 	}
 	bridge := cctx.String("bridge")
 	if !common.IsHexAddress(bridge) {
-		return errors.New("invalid bridge address")
+		return errors.New(fmt.Sprintf("invalid bridge address %s", bridge))
 	}
 	bridgeAddress := common.HexToAddress(bridge)
 

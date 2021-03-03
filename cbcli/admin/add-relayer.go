@@ -1,6 +1,7 @@
 package admin
 
 import (
+	"fmt"
 	"github.com/ChainSafe/chainbridge-celo/cbcli/cliutils"
 	"math/big"
 
@@ -38,12 +39,12 @@ func addRelayer(cctx *cli.Context) error {
 	}
 	bridge := cctx.String("bridge")
 	if !common.IsHexAddress(bridge) {
-		return errors.New("invalid bridge address")
+		return errors.New(fmt.Sprintf("invalid bridge address %s", bridge))
 	}
 	bridgeAddress := common.HexToAddress(bridge)
 	relayer := cctx.String("relayer")
 	if !common.IsHexAddress(relayer) {
-		return errors.New("invalid relayer address")
+		return errors.New(fmt.Sprintf("invalid relayer address %s", relayer))
 	}
 	relayerAddress := common.HexToAddress(relayer)
 	ethClient, err := client.NewClient(url, false, sender, big.NewInt(0).SetUint64(gasLimit), big.NewInt(0).SetUint64(gasPrice))

@@ -38,18 +38,18 @@ func registerGenericResource(cctx *cli.Context) error {
 
 	bridge := cctx.String("bridge")
 	if !common.IsHexAddress(bridge) {
-		return errors.New("invalid bridge address")
+		return errors.New(fmt.Sprintf("invalid bridge address %s", bridge))
 	}
 	bridgeAddress := common.HexToAddress(bridge)
 
 	handler := cctx.String("handler")
 	if !common.IsHexAddress(handler) {
-		return errors.New("invalid bridge address")
+		return errors.New(fmt.Sprintf("invalid handler address %s", handler))
 	}
 	handlerAddress := common.HexToAddress(handler)
 	targetContract := cctx.String("targetContract")
 	if !common.IsHexAddress(targetContract) {
-		return errors.New("invalid bridge address")
+		return errors.New(fmt.Sprintf("invalid targetContract address %s", targetContract))
 	}
 	targetContractAddress := common.HexToAddress(targetContract)
 	resourceId := cctx.String("resourceId")
