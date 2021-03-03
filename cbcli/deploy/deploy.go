@@ -168,27 +168,27 @@ var DeployCMD = &cli.Command{
 		&cli.Int64Flag{
 			Name:  "relayerThreshold",
 			Value: 1,
-			Usage: "deploy all contracts",
+			Usage: "Number of votes required for a proposal to pass",
 		},
 		&cli.Uint64Flag{
 			Name:  "chainId",
 			Value: 1,
-			Usage: "deploy all contracts",
+			Usage: "Chain ID for the instance",
 		},
 		&cli.StringSliceFlag{
 			Name:  "relayers",
 			Value: cli.NewStringSlice(),
-			Usage: "deploy all contracts",
+			Usage: "List of initial relayers",
 		},
 		&cli.Int64Flag{
 			Name:  "fee",
 			Value: 0,
-			Usage: "deploy all contracts",
+			Usage: "Fee to be taken when making a deposit (in wei)",
 		},
 		&cli.StringFlag{
 			Name:  "bridgeAddress",
 			Value: "",
-			Usage: "deploy all contracts",
+			Usage: "bridge contract address. Should be provided if handlers deployed separately",
 		},
 		&cli.StringFlag{
 			Name:  "erc20Symbol",
