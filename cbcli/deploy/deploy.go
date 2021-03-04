@@ -18,7 +18,6 @@ func deploy(cctx *cli.Context) error {
 	url := cctx.String("url")
 	gasLimit := cctx.Int64("gasLimit")
 	gasPrice := cctx.Int64("gasPrice")
-	//networkID := cctx.String("networkID")
 
 	sender, err := cliutils.DefineSender(cctx)
 	if err != nil {
