@@ -1,9 +1,5 @@
 # ERC20 Command
 
-```
--d, decimals <number>          The number of decimal places for the erc20 token
-
-```
 
 - [`mint`](#mint)
 - [`add-minter`](#add-minter)
@@ -46,6 +42,8 @@ Initiate a transfer of ERC20 tokens.
   --recipient <address>  Destination recipient address
   --resourceId <id>      ResourceID for transfer
   --bridge <address>     Bridge contract address
+  --decimals <uint64>       Decimal places to convert amount to wei
+
 ```
 
 ## `balance`
@@ -71,13 +69,4 @@ Deposit ether into a WETC contract to mint tokens
 ```
   --amount <number>        Amount of ether to include in the deposit
   --wetcAddress <address>  ERC20 contract address
-```
-
-## `data-hash`
-Constructs proposal data and returns the hash required for on-chain queries.
-
-```
-  --amount <value>       Amount to transfer
-  --recipient <address>  Destination recipient address 
-  --handler <address>    ERC20 handler  address
 ```
