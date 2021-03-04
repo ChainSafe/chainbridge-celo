@@ -42,7 +42,7 @@ func mint(cctx *cli.Context) error {
 	}
 	erc721 := cctx.String("erc721Address")
 	if !common.IsHexAddress(erc721) {
-		return errors.New("invalid erc20Address address")
+		return errors.New("invalid erc721Address address")
 	}
 	erc721Address := common.HexToAddress(erc721)
 

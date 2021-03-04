@@ -8,9 +8,6 @@ import (
 
 func DefineSender(cctx *cli.Context) (*secp256k1.Keypair, error) {
 	privateKey := cctx.String("privateKey")
-	//jsonWallet := cctx.Path("jsonWallet")
-	//jsonWalletPassword := cctx.String("jsonWalletPassword")
-
 	if privateKey != "" {
 		kp, err := secp256k1.NewKeypairFromString(privateKey)
 		if err != nil {
@@ -18,10 +15,5 @@ func DefineSender(cctx *cli.Context) (*secp256k1.Keypair, error) {
 		}
 		return kp, nil
 	}
-	//if jsonWallet != "" {
-	//const raw = fs.readFileSync(parent.jsonWallet);
-	//const keyfile = JSON.parse(raw);
-	//args.wallet = await ethers.Wallet.fromEncryptedJson(keyfile, parent.jsonWalletPassword)
-	//}
 	return utils.AliceKp, nil
 }

@@ -15,7 +15,7 @@ import (
 
 var depositCMD = &cli.Command{
 	Name:        "deposit",
-	Description: "Approve token in an ERC721 contract for transfer.",
+	Description: "Initiates a bridge ERC721 transfer.",
 	Action:      deposit,
 	Flags: []cli.Flag{
 		&cli.StringFlag{

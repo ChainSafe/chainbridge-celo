@@ -13,6 +13,7 @@ Selection of contracts can be made by either specifying `--all` or a subset of t
   --centAsset                  Deploy centrifuge asset contract
   --wetc                       Deploy wrapped ETC Erc20 contract
   --config                     Logs the configuration based on the deployment
+  --bridgeAddress              Bridge contract address. Should be provided if handlers deployed separately
 ```
 
 If you are deploying the Bridge contract, you may want to specify these options as well:

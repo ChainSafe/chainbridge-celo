@@ -191,10 +191,10 @@ func (s *IntegrationTestSuite) TestMultipleTransactionsInBlock() {
 
 //
 //func (s *IntegrationTestSuite) TestSimulate() {
-//	block := big.NewInt(2000)
-//	hash := common.HexToHash("0x002d7025077566d055f30bd25f620d61d58ba9fa6654df311eebc414b159d4cd")
+//	block := big.NewInt(55)
+//	hash := common.HexToHash("0x349a03e6a803ad106348095636f266a36604bd045991df4c03e82cdd2377f9b1")
 //	res, err := utils.Simulate(s.client, block, hash, utils.AliceKp.CommonAddress())
 //	s.Nil(err)
 //	hexres := common.Bytes2Hex(res)
-//	log.Info().Msg(hexres)
+//	log.Info().Msgf("simulate result: %s", hexres)
 //}

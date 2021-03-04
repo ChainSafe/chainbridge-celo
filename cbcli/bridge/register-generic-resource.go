@@ -2,6 +2,7 @@ package bridge
 
 import (
 	"fmt"
+	"github.com/rs/zerolog/log"
 	"math/big"
 
 	"github.com/ChainSafe/chainbridge-celo/cbcli/cliutils"
@@ -55,7 +56,7 @@ func registerGenericResource(cctx *cli.Context) error {
 	resourceIdBytes := common.Hex2Bytes(resourceId)
 	resourceIdBytesArr := utils.SliceTo32Bytes(resourceIdBytes)
 
-	fmt.Printf("Registering contract %s with resource ID %s on handler %s", targetContract, resourceId, handler)
+	log.Info().Msgf("Registering contract %s with resource ID %s on handler %s", targetContract, resourceId, handler)
 	ethClient, err := client.NewClient(url, false, sender, big.NewInt(gasLimit), big.NewInt(gasPrice))
 	if err != nil {
 		return err
