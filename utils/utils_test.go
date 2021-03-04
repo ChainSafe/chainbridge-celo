@@ -11,7 +11,7 @@ import (
 func TestGetFunctionBytes(t *testing.T) {
 	resb := GetSolidityFunctionSig("submitAsk(uint256,uint256)")
 	ress := common.Bytes2Hex(resb[:])
-	if ress != "7288A28A" {
+	if ress != "7288a28a" {
 		t.Fatal(fmt.Sprintf("Result is %s", ress))
 	}
 

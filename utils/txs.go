@@ -769,10 +769,6 @@ func WaitForTx(client *client.Client, tx *types.Transaction) error {
 			continue
 		}
 		if receipt.Status != 1 {
-			for _, l := range receipt.Logs {
-				log.Info().Str("failed tx hash", tx.Hash().String()).Msgf("%v", l.Topics)
-			}
-			log.Info().Msg("HEEEEEEEEREEEEE")
 			return fmt.Errorf("transaction with hash %s failed on chain latest block %s", tx.Hash().String(), receipt.BlockNumber.String())
 		}
 		return nil
