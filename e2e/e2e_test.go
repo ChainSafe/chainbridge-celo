@@ -190,15 +190,15 @@ func (s *IntegrationTestSuite) TestMultipleTransactionsInBlock() {
 }
 
 //nolint
-//func (s *IntegrationTestSuite) TestSimulate() {
-//	block := big.NewInt(100)
-//	hash := common.HexToHash("0x1991265fe7bfad3cd2cce0cc4e0d4e72e05aa201ae03845df24b985098b6298e")
-//	res, err := utils.Simulate(s.client, block, hash, utils.AliceKp.CommonAddress())
-//	s.Nil(err)
-//	hexres := common.Bytes2Hex(res)
-//	log.Info().Msgf("simulate result: %s", hexres)
-//
-//	rec, err := s.client.TransactionReceipt(context.TODO(), hash)
-//	s.Nil(err)
-//	log.Debug().Msgf("%+v", rec)
-//}
+func (s *IntegrationTestSuite) TestSimulate() {
+	block := big.NewInt(380)
+	hash := common.HexToHash("0x4eb229f6aa1094545dc6cd9a1e031a270efd2b27b5e158947ee0ceaa8fc6fe8e")
+	res, err := utils.Simulate(s.client, block, hash, utils.AliceKp.CommonAddress())
+	s.Nil(err)
+	hexres := common.Bytes2Hex(res)
+	log.Info().Msgf("simulate result: %s", hexres)
+
+	rec, err := s.client.TransactionReceipt(context.TODO(), hash)
+	s.Nil(err)
+	log.Debug().Msgf("%+v", rec)
+}

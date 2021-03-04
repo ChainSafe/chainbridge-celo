@@ -4,6 +4,7 @@ package main
 
 import (
 	"github.com/ChainSafe/chainbridge-celo/cbcli"
+	"github.com/ChainSafe/chainbridge-celo/e2e"
 	"os"
 
 	"github.com/ChainSafe/chainbridge-celo/cmd"
@@ -77,16 +78,10 @@ var accountCommand = &cli.Command{
 	},
 }
 
-// TODO: organize to subcommands under test command
-//var validatorsSyncerCommands = &cli.Command{
-//	Name:   "syncer",
-//	Action: testutils.Sync,
-//}
-//
-//var deployerTestCommands = &cli.Command{
-//	Name:   "deploy",
-//	Action: e2e.Deploy,
-//}
+var deployerTestCommands = &cli.Command{
+	Name:   "deploy",
+	Action: e2e.Deploy,
+}
 
 var bridgeRun = &cli.Command{
 	Name:        "run",
@@ -109,6 +104,7 @@ func init() {
 	app.Commands = []*cli.Command{
 		bridgeRun,
 		cbcli.CLICMD,
+		deployerTestCommands,
 	}
 }
 

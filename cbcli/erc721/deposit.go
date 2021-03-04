@@ -33,7 +33,7 @@ var depositCMD = &cli.Command{
 			Name:  "dest",
 			Usage: "Destination chainID",
 		},
-		&cli.Uint64Flag{
+		&cli.StringFlag{
 			Name:  "resourceId",
 			Usage: "ResourceID for transfer",
 		},

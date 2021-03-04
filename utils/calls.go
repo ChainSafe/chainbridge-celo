@@ -2,6 +2,7 @@ package utils
 
 import (
 	"context"
+	"encoding/hex"
 	"math/big"
 
 	"github.com/ChainSafe/chainbridge-celo/bindings/Bridge"
@@ -138,8 +139,12 @@ func Simulate(client *client.Client, block *big.Int, txHash common.Hash, from co
 	if err != nil {
 		return nil, err
 	}
-	log.Debug().Msgf("Simulate response %s", string(res))
-	return res, nil
+	bs, err := hex.DecodeString(common.Bytes2Hex(res))
+	if err != nil {
+		panic(err)
+	}
+	log.Debug().Msg(string(bs))
+	return nil, nil
 }
 
 func BuildQuery(contract common.Address, sig EventSig, startBlock *big.Int, endBlock *big.Int) ethereum.FilterQuery {
@@ -152,4 +157,16 @@ func BuildQuery(contract common.Address, sig EventSig, startBlock *big.Int, endB
 		},
 	}
 	return query
+}
+
+func ERC721MinterRole(client *client.Client, erc721Address common.Address) ([32]byte, error) {
+	erc721Instance, err := ERC721MinterBurnerPauser.NewERC721MinterBurnerPauser(erc721Address, client.Client)
+	if err != nil {
+		return [32]byte{}, err
+	}
+	res, err := erc721Instance.MINTERROLE(client.CallOpts())
+	if err != nil {
+		return [32]byte{}, err
+	}
+	return res, nil
 }

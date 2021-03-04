@@ -676,23 +676,6 @@ func ERC721Mint(client *client.Client, erc721Address, to common.Address, id *big
 	return nil
 }
 
-func ERC721MinterRole(client *client.Client, erc721Address common.Address) ([32]byte, error) {
-	erc721Instance, err := ERC721MinterBurnerPauser.NewERC721MinterBurnerPauser(erc721Address, client.Client)
-	if err != nil {
-		return [32]byte{}, err
-	}
-	err = client.LockAndUpdateOpts()
-	if err != nil {
-		return [32]byte{}, err
-	}
-	res, err := erc721Instance.MINTERROLE(client.CallOpts())
-	if err != nil {
-		return [32]byte{}, err
-	}
-	client.UnlockOpts()
-	return res, nil
-}
-
 func ERC721AddMinter(client *client.Client, erc721Address, minter common.Address) error {
 	erc721Instance, err := ERC721MinterBurnerPauser.NewERC721MinterBurnerPauser(erc721Address, client.Client)
 	if err != nil {
