@@ -18,9 +18,13 @@ var withdrawCMD = &cli.Command{
 	Description: "Withdraw tokens from a handler contract.",
 	Action:      withdraw,
 	Flags: []cli.Flag{
-		&cli.Uint64Flag{
-			Name:  "amountOrId",
-			Usage: "Token ID or amount to withdraw",
+		&cli.StringFlag{
+			Name:  "amount",
+			Usage: "Tokens amount to withdraw. Should be set or id or amount if both set error will occur",
+		},
+		&cli.StringFlag{
+			Name:  "id",
+			Usage: "Token ID to withdraw. Should be set or id or amount if both set error will occur",
 		},
 		&cli.StringFlag{
 			Name:  "bridge",
@@ -37,6 +41,10 @@ var withdrawCMD = &cli.Command{
 		&cli.StringFlag{
 			Name:  "recipient",
 			Usage: "Address to withdraw to",
+		},
+		&cli.Uint64Flag{
+			Name:  "decimals",
+			Usage: "erc20Token decimals",
 		},
 	},
 }
@@ -73,16 +81,35 @@ func withdraw(cctx *cli.Context) error {
 	}
 	recipientAddress := common.HexToAddress(recipient)
 
-	amount := big.NewInt(0).SetUint64(cctx.Uint64("fee"))
+	amount := cctx.String("amount")
+	id := cctx.String("id")
 
+	if id != "" && amount != "" {
+		return errors.New("Only id or amount should be set.")
+	}
+	if id == "" && amount == "" {
+		return errors.New("id or amount flag should be set")
+	}
 	ethClient, err := client.NewClient(url, false, sender, big.NewInt(0).SetUint64(gasLimit), big.NewInt(0).SetUint64(gasPrice))
 	if err != nil {
 		return err
 	}
-	err = utils.AdminWithdraw(ethClient, bridgeAddress, handlerAddress, tokenAddress, recipientAddress, amount)
+	idOrAmountToWithdraw := new(big.Int)
+	if amount != "" {
+		decimals := big.NewInt(0).SetUint64(cctx.Uint64("decimals"))
+		idOrAmountToWithdraw, err = utils.UserAmountToWei(amount, decimals)
+		if err != nil {
+			return err
+		}
+	} else {
+		idOrAmountToWithdraw.SetString(id, 10)
+	}
+
+	err = utils.AdminWithdraw(ethClient, bridgeAddress, handlerAddress, tokenAddress, recipientAddress, idOrAmountToWithdraw)
 	if err != nil {
 		return err
 	}
-	log.Info().Msgf("Withdrawn %s to %s", amount.String(), recipient)
+
+	log.Info().Msgf("Withdrawn %s to %s", idOrAmountToWithdraw.String(), recipient)
 	return nil
 }

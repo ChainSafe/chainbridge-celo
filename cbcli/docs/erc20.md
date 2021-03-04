@@ -33,6 +33,8 @@ Approve tokens in an ERC20 contract for transfer.
 ```
   --erc20Address <address>  ERC20 contract address
   --minter <address>        Minter address
+  --amount <string>         Amount to grant allowance. Can be float
+  --decimals <uint64>       Decimal places to convert amount to wei
 ```
 
 ## `deposit`

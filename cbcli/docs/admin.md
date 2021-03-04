@@ -62,7 +62,7 @@ Set a new fee.
 
 ```
 --bridge <address>   Bridge contract address
---fee <string>       New fee (in wei)
+--fee <string>       New fee in ethers (can be float)
 --decimals           The number of decimal places for the erc20 token
 ```
 
@@ -74,7 +74,10 @@ Withdraw tokens from a handler contract.
 --handler <address>        Handler contract address
 --tokenContract <address>  ERC20 or ERC721 token contract address
 --recipient <address>      Address to withdraw to
---amountOrId <value>       Token ID or amount to withdraw
+--amount <string>          Token amount to withdraw. Should be set or id or amount if both set error will occur
+--id <uint64>              ID of token to withdraw. Should be set or id or amount if both set error will occur
+--decimals                 The number of decimal places for the erc20 token. Provide only when amount is specified
+
 ```
 
 ## `add-admin`
