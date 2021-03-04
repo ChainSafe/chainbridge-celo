@@ -36,11 +36,10 @@ func registerGenericResource(cctx *cli.Context) error {
 		return err
 	}
 
-	bridge := cctx.String("bridge")
-	if !common.IsHexAddress(bridge) {
-		return errors.New(fmt.Sprintf("invalid bridge address %s", bridge))
+	bridgeAddress, err := cliutils.DefineBridggeAddress(cctx)
+	if err != nil {
+		return err
 	}
-	bridgeAddress := common.HexToAddress(bridge)
 
 	handler := cctx.String("handler")
 	if !common.IsHexAddress(handler) {

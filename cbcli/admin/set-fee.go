@@ -1,14 +1,11 @@
 package admin
 
 import (
-	"fmt"
 	"github.com/ChainSafe/chainbridge-celo/cbcli/cliutils"
 	"math/big"
 
 	"github.com/ChainSafe/chainbridge-celo/chain/client"
 	"github.com/ChainSafe/chainbridge-celo/utils"
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/pkg/errors"
 	"github.com/rs/zerolog/log"
 	"github.com/urfave/cli/v2"
 )
@@ -43,11 +40,10 @@ func setFee(cctx *cli.Context) error {
 	if err != nil {
 		return err
 	}
-	bridge := cctx.String("bridge")
-	if !common.IsHexAddress(bridge) {
-		return errors.New(fmt.Sprintf("invalid bridge address %s", bridge))
+	bridgeAddress, err := cliutils.DefineBridggeAddress(cctx)
+	if err != nil {
+		return err
 	}
-	bridgeAddress := common.HexToAddress(bridge)
 	fee := cctx.String("fee")
 
 	realFeeAmount, err := utils.UserAmountToWei(fee, decimals)

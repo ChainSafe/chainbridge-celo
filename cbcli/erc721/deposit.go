@@ -1,7 +1,6 @@
 package erc721
 
 import (
-	"fmt"
 	"math/big"
 
 	"github.com/ChainSafe/chainbridge-celo/cbcli/cliutils"
@@ -50,11 +49,10 @@ func deposit(cctx *cli.Context) error {
 	if err != nil {
 		return err
 	}
-	bridge := cctx.String("bridge")
-	if !common.IsHexAddress(bridge) {
-		return errors.New(fmt.Sprintf("invalid bridge address %s", bridge))
+	bridgeAddress, err := cliutils.DefineBridggeAddress(cctx)
+	if err != nil {
+		return err
 	}
-	bridgeAddress := common.HexToAddress(bridge)
 
 	recipient := cctx.String("recipient")
 	if !common.IsHexAddress(recipient) {

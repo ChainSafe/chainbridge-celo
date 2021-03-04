@@ -16,9 +16,9 @@ func setBurn(cctx *cli.Context) error {
 	url := cctx.String("url")
 	gasLimit := cctx.Int64("gasLimit")
 	gasPrice := cctx.Int64("gasPrice")
-	bridge := cctx.String("bridge")
-	if !common.IsHexAddress(bridge) {
-		return errors.New("bridge address is incorrect format")
+	bridgeAddress, err := cliutils.DefineBridggeAddress(cctx)
+	if err != nil {
+		return err
 	}
 	handler := cctx.String("handler")
 	if !common.IsHexAddress(handler) {
@@ -28,7 +28,6 @@ func setBurn(cctx *cli.Context) error {
 	if !common.IsHexAddress(tokenContract) {
 		return errors.New("tokenContract address is incorrect format")
 	}
-	bridgeAddress := common.HexToAddress(bridge)
 	handlerAddress := common.HexToAddress(handler)
 	tokenContractAddress := common.HexToAddress(tokenContract)
 

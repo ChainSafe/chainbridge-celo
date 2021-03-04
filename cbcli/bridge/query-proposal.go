@@ -1,14 +1,12 @@
 package bridge
 
 import (
-	"fmt"
 	"github.com/ChainSafe/chainbridge-celo/cbcli/cliutils"
 	"math/big"
 
 	"github.com/ChainSafe/chainbridge-celo/chain/client"
 	"github.com/ChainSafe/chainbridge-celo/utils"
 	"github.com/ethereum/go-ethereum/common"
-	"github.com/pkg/errors"
 	"github.com/rs/zerolog/log"
 	"github.com/urfave/cli/v2"
 )
@@ -21,11 +19,10 @@ func queryProposal(cctx *cli.Context) error {
 	if err != nil {
 		return err
 	}
-	bridge := cctx.String("bridge")
-	if !common.IsHexAddress(bridge) {
-		return errors.New(fmt.Sprintf("invalid bridge address %s", bridge))
+	bridgeAddress, err := cliutils.DefineBridggeAddress(cctx)
+	if err != nil {
+		return err
 	}
-	bridgeAddress := common.HexToAddress(bridge)
 
 	chainID := cctx.Uint64("chainId")
 	depositNonce := cctx.Uint64("depositNonce")

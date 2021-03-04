@@ -1,15 +1,12 @@
 package admin
 
 import (
-	"fmt"
 	"github.com/ChainSafe/chainbridge-celo/cbcli/cliutils"
 	"github.com/rs/zerolog/log"
 	"math/big"
 
 	"github.com/ChainSafe/chainbridge-celo/chain/client"
 	"github.com/ChainSafe/chainbridge-celo/utils"
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/pkg/errors"
 	"github.com/urfave/cli/v2"
 )
 
@@ -33,11 +30,10 @@ func pause(cctx *cli.Context) error {
 	if err != nil {
 		return err
 	}
-	bridge := cctx.String("bridge")
-	if !common.IsHexAddress(bridge) {
-		return errors.New(fmt.Sprintf("invalid bridge address %s", bridge))
+	bridgeAddress, err := cliutils.DefineBridggeAddress(cctx)
+	if err != nil {
+		return err
 	}
-	bridgeAddress := common.HexToAddress(bridge)
 	ethClient, err := client.NewClient(url, false, sender, big.NewInt(0).SetUint64(gasLimit), big.NewInt(0).SetUint64(gasPrice))
 	if err != nil {
 		return err
