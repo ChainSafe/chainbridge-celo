@@ -189,12 +189,16 @@ func (s *IntegrationTestSuite) TestMultipleTransactionsInBlock() {
 	s.Equal(destBalanceAfter.Cmp(destBalanceBefor), 1)
 }
 
-//
+//nolint
 //func (s *IntegrationTestSuite) TestSimulate() {
-//	block := big.NewInt(55)
-//	hash := common.HexToHash("0x349a03e6a803ad106348095636f266a36604bd045991df4c03e82cdd2377f9b1")
+//	block := big.NewInt(100)
+//	hash := common.HexToHash("0x1991265fe7bfad3cd2cce0cc4e0d4e72e05aa201ae03845df24b985098b6298e")
 //	res, err := utils.Simulate(s.client, block, hash, utils.AliceKp.CommonAddress())
 //	s.Nil(err)
 //	hexres := common.Bytes2Hex(res)
 //	log.Info().Msgf("simulate result: %s", hexres)
+//
+//	rec, err := s.client.TransactionReceipt(context.TODO(), hash)
+//	s.Nil(err)
+//	log.Debug().Msgf("%+v", rec)
 //}

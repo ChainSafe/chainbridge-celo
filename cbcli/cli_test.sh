@@ -58,7 +58,7 @@ $CMD cli --gasLimit $GAS_LIMIT --gasPrice $GAS_PRICE bridge register-generic-res
 #
 #
 #erc721
-$CMD cli --gasLimit $GAS_LIMIT --gasPrice $GAS_PRICE erc721 --erc721Address $ERC721_CONTRACT mint --id 0x1
+$CMD cli --gasLimit $GAS_LIMIT --gasPrice $GAS_PRICE erc721 --erc721Address $ERC721_CONTRACT mint --id 0x1 --erc721Address $ERC721_CONTRACT --metadata "asdasdsaddas"
 $CMD cli --gasLimit $GAS_LIMIT --gasPrice $GAS_PRICE erc721 --erc721Address $ERC721_CONTRACT add-minter --minter "0x3f709398808af36ADBA86ACC617FeB7F5B7B193E"
 $CMD cli --gasLimit $GAS_LIMIT --gasPrice $GAS_PRICE erc721 --erc721Address $ERC721_CONTRACT approve --id 0x1 --recipient "0x3f709398808af36ADBA86ACC617FeB7F5B7B193E"
 $CMD cli --gasLimit $GAS_LIMIT --gasPrice $GAS_PRICE erc721 deposit --id 0x1 --bridge $BRIDGE_ADDRESS --dest 5 --recipient "0x3f709398808af36ADBA86ACC617FeB7F5B7B193E" --resourceId $ERC721_RESOURCE_ID

@@ -2,7 +2,6 @@ package utils
 
 import (
 	"context"
-	"encoding/hex"
 	"math/big"
 
 	"github.com/ChainSafe/chainbridge-celo/bindings/Bridge"
@@ -139,12 +138,8 @@ func Simulate(client *client.Client, block *big.Int, txHash common.Hash, from co
 	if err != nil {
 		return nil, err
 	}
-	bs, err := hex.DecodeString(common.Bytes2Hex(res))
-	if err != nil {
-		panic(err)
-	}
-	log.Debug().Msg(string(bs))
-	return nil, nil
+	log.Debug().Msgf("Simulate response %s", string(res))
+	return res, nil
 }
 
 func BuildQuery(contract common.Address, sig EventSig, startBlock *big.Int, endBlock *big.Int) ethereum.FilterQuery {
