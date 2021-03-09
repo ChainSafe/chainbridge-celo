@@ -17,7 +17,7 @@ var setFeeCMD = &cli.Command{
 	Flags: []cli.Flag{
 		&cli.StringFlag{
 			Name:  "fee",
-			Usage: "New fee (in wei)",
+			Usage: "New fee (in ether)",
 		},
 		&cli.StringFlag{
 			Name:  "bridge",
