@@ -197,8 +197,8 @@ func MintTokens(client *client.Client, erc20Addr common.Address, amount *big.Int
 }
 
 // DeployContracts deploys Bridge, Relayer, ERC20Handler, ERC721Handler and CentrifugeAssetHandler and returns the addresses
-func DeployContracts(client *client.Client, chainID uint8, initialRelayerThreshold *big.Int, relayerAddresses []common.Address, erc20Name, erc20Symbol string) (*DeployedContracts, error) {
-	bridgeAddr, err := DeployBridge(client, chainID, relayerAddresses, initialRelayerThreshold)
+func DeployContracts(client *client.Client, chainID uint8, initialRelayerThreshold *big.Int, relayerAddresses []common.Address, erc20Name, erc20Symbol string, bridgeFee *big.Int) (*DeployedContracts, error) {
+	bridgeAddr, err := DeployBridge(client, chainID, relayerAddresses, initialRelayerThreshold, bridgeFee)
 	if err != nil {
 		return nil, err
 	}
