@@ -249,13 +249,13 @@ func DeployERC20Token(client *client.Client, name, symbol string) (common.Addres
 	return bridgeAddr, nil
 }
 
-func DeployBridge(client *client.Client, chainID uint8, relayerAddrs []common.Address, initialRelayerThreshold *big.Int) (common.Address, error) {
+func DeployBridge(client *client.Client, chainID uint8, relayerAddrs []common.Address, initialRelayerThreshold *big.Int, fee *big.Int) (common.Address, error) {
 	err := client.LockAndUpdateOpts()
 	if err != nil {
 		return common.Address{}, err
 	}
 
-	bridgeAddr, tx, _, err := Bridge.DeployBridge(client.Opts(), client.Client, chainID, relayerAddrs, initialRelayerThreshold, big.NewInt(0), big.NewInt(100))
+	bridgeAddr, tx, _, err := Bridge.DeployBridge(client.Opts(), client.Client, chainID, relayerAddrs, initialRelayerThreshold, fee, big.NewInt(100))
 	if err != nil {
 		return common.Address{}, err
 	}

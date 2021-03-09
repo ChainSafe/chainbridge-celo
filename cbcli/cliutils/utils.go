@@ -22,7 +22,7 @@ func DefineSender(cctx *cli.Context) (*secp256k1.Keypair, error) {
 	return utils.AliceKp, nil
 }
 
-func DefineBridggeAddress(cctx *cli.Context) (common.Address, error) {
+func DefineBridgeAddress(cctx *cli.Context) (common.Address, error) {
 	bridge := cctx.String("bridge")
 	if !common.IsHexAddress(bridge) {
 		return common.Address{}, errors.New(fmt.Sprintf("invalid bridge address %s", bridge))

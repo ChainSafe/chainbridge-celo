@@ -42,6 +42,13 @@ func deploy(cctx *cli.Context) error {
 		bridgeAddress = common.HexToAddress(bridgeAddressString)
 	}
 
+	fee := cctx.String("fee")
+
+	realFee, err := utils.UserAmountToWei(fee, big.NewInt(18))
+	if err != nil {
+		return err
+	}
+
 	deployments := make([]string, 0)
 	if cctx.Bool("all") {
 		deployments = append(deployments, []string{"bridge", "erc20Handler", "erc721Handler", "genericHandler", "erc20", "erc721"}...)
@@ -76,7 +83,7 @@ func deploy(cctx *cli.Context) error {
 	for _, v := range deployments {
 		switch v {
 		case "bridge":
-			bridgeAddress, err = utils.DeployBridge(ethClient, uint8(chainID), relayerAddresses, big.NewInt(relayerThreshold))
+			bridgeAddress, err = utils.DeployBridge(ethClient, uint8(chainID), relayerAddresses, big.NewInt(relayerThreshold), realFee)
 			if err != nil {
 				return err
 			}
@@ -179,10 +186,10 @@ var DeployCMD = &cli.Command{
 			Value: cli.NewStringSlice(),
 			Usage: "List of initial relayers",
 		},
-		&cli.Int64Flag{
+		&cli.StringFlag{
 			Name:  "fee",
-			Value: 0,
-			Usage: "Fee to be taken when making a deposit (in wei)",
+			Value: "0",
+			Usage: "Fee to be taken when making a deposit (in ETH, decimals are allowed)",
 		},
 		&cli.StringFlag{
 			Name:  "bridgeAddress",

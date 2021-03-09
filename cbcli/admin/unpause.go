@@ -30,7 +30,7 @@ func unpause(cctx *cli.Context) error {
 	if err != nil {
 		return err
 	}
-	bridgeAddress, err := cliutils.DefineBridggeAddress(cctx)
+	bridgeAddress, err := cliutils.DefineBridgeAddress(cctx)
 	if err != nil {
 		return err
 	}

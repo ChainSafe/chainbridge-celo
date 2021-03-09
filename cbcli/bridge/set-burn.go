@@ -16,7 +16,7 @@ func setBurn(cctx *cli.Context) error {
 	url := cctx.String("url")
 	gasLimit := cctx.Int64("gasLimit")
 	gasPrice := cctx.Int64("gasPrice")
-	bridgeAddress, err := cliutils.DefineBridggeAddress(cctx)
+	bridgeAddress, err := cliutils.DefineBridgeAddress(cctx)
 	if err != nil {
 		return err
 	}

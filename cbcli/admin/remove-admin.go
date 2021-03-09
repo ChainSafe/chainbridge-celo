@@ -38,7 +38,7 @@ func removeAdmin(cctx *cli.Context) error {
 		return err
 	}
 
-	bridgeAddress, err := cliutils.DefineBridggeAddress(cctx)
+	bridgeAddress, err := cliutils.DefineBridgeAddress(cctx)
 	if err != nil {
 		return err
 	}

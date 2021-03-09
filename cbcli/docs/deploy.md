@@ -21,5 +21,5 @@ If you are deploying the Bridge contract, you may want to specify these options 
   --chainId <value>           Chain ID for the instance
   --relayers <value>          List of initial relayers
   --relayerThreshold <value>  Number of votes required for a proposal to pass
-  --fee <value>               Fee to be taken when making a deposit (in Ether)
+  --fee <value>               Fee to be taken when making a deposit (in ETH, decimals are allowed)
 ```

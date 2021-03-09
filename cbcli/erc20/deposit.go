@@ -56,7 +56,7 @@ func deposit(cctx *cli.Context) error {
 	if err != nil {
 		return err
 	}
-	bridgeAddress, err := cliutils.DefineBridggeAddress(cctx)
+	bridgeAddress, err := cliutils.DefineBridgeAddress(cctx)
 	if err != nil {
 		return err
 	}
@@ -87,6 +87,6 @@ func deposit(cctx *cli.Context) error {
 	if err != nil {
 		return err
 	}
-	log.Info().Msgf("%s account granted allowance on %v tokens of %s", recipientAddress.String(), amount, sender.CommonAddress().String())
+	log.Info().Msgf("%s tokens were transferred to %s from %s", amount, recipientAddress.String(), sender.CommonAddress().String())
 	return nil
 }

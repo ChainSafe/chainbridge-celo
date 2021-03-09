@@ -118,7 +118,8 @@ func ERC721OwnerOf(client *client.Client, erc721Address common.Address, id *big.
 	return res, nil
 }
 
-//nolint
+// Simulate function gets transaction info by hash and then executes a message call transaction, which is directly executed in the VM
+// of the node, but never mined into the blockchain. Execution happens against provided block.
 func Simulate(client *client.Client, block *big.Int, txHash common.Hash, from common.Address) ([]byte, error) {
 	tx, _, err := client.Client.TransactionByHash(context.TODO(), txHash)
 	if err != nil {
