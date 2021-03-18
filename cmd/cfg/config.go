@@ -95,7 +95,7 @@ func GetConfig(ctx *cli.Context) (*Config, error) {
 		log.Error().Err(fmt.Errorf("err loading json file: %s", err))
 		return &fig, err
 	}
-	log.Debug().Msgf("Loaded config", "path", path)
+	log.Debug().Msgf("Loaded config path: %s", path)
 	err = fig.validate()
 	if err != nil {
 		return nil, err
@@ -110,7 +110,7 @@ func loadConfig(file string, config *Config) error {
 		return err
 	}
 
-	log.Debug().Msgf("Loading configuration", "path", filepath.Clean(fp))
+	log.Debug().Msgf("Loading configuration path: %s", filepath.Clean(fp))
 
 	f, err := os.Open(filepath.Clean(fp))
 	if err != nil {
