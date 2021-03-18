@@ -1,0 +1,31 @@
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+name: CLI tests
+jobs:
+  test:
+    strategy:
+      matrix:
+        go-version: [1.15.x]
+        platform: [ubuntu-latest]
+    runs-on: ${{ matrix.platform }}
+    steps:
+      - name: Install Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: ${{ matrix.go-version }}
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - uses: actions/cache@v2
+        with:
+          path: ~/go/pkg/mod
+          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+          restore-keys: |
+            ${{ runner.os }}-go-
+      - name: Run nodes
+        run: docker-compose -f ./docker-compose-e2e.yml up -d
+      - name: Install bridge
+        run: make install
+      - name: Run CLI tests
+        run: ./cbcli/cli_test.sh

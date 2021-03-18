@@ -3,11 +3,11 @@
 package main
 
 import (
+	"github.com/ChainSafe/chainbridge-celo/cbcli"
+	"github.com/ChainSafe/chainbridge-celo/e2e"
 	"os"
 
 	"github.com/ChainSafe/chainbridge-celo/cmd"
-	"github.com/ChainSafe/chainbridge-celo/cmdutils/testutils"
-	"github.com/ChainSafe/chainbridge-celo/e2e"
 	"github.com/ChainSafe/chainbridge-celo/flags"
 	"github.com/rs/zerolog/log"
 	"github.com/urfave/cli/v2"
@@ -25,17 +25,13 @@ var cliFlags = []cli.Flag{
 	flags.MetricsFlag,
 	flags.MetricsPort,
 	flags.LevelDBPath,
+	flags.TestKeyFlag,
 }
 
 //
 var generateFlags = []cli.Flag{
 	flags.PasswordFlag,
 	flags.Secp256k1Flag,
-}
-
-//
-var devFlags = []cli.Flag{
-	flags.TestKeyFlag,
 }
 
 var importFlags = []cli.Flag{
@@ -45,7 +41,7 @@ var importFlags = []cli.Flag{
 	flags.PasswordFlag,
 }
 
-var accountCommand = cli.Command{
+var accountCommand = &cli.Command{
 	Name:  "accounts",
 	Usage: "manage bridge keystore",
 	Description: "The accounts command is used to manage the bridge keystore. \n" +
@@ -82,20 +78,23 @@ var accountCommand = cli.Command{
 	},
 }
 
-// TODO: organize to subcommands under test command
-var validatorsSyncerCommands = cli.Command{
-	Name:   "syncer",
-	Action: testutils.Sync,
-}
-
-var deployerTestCommands = cli.Command{
+var deployerTestCommands = &cli.Command{
 	Name:   "deploy",
 	Action: e2e.Deploy,
 }
 
+var bridgeRun = &cli.Command{
+	Name:        "run",
+	Action:      cmd.Run,
+	Description: "Runs bridge relayer instance",
+	Subcommands: []*cli.Command{
+		accountCommand,
+	},
+	Flags: cliFlags,
+}
+
 // init initializes CLI
 func init() {
-	app.Action = cmd.Run
 	app.Copyright = "Copyright 2019 ChainSafe Systems Authors"
 	app.Name = "chainbridge-celo"
 	app.Usage = "ChainBridge-celo"
@@ -103,13 +102,10 @@ func init() {
 	app.Version = "0.0.1"
 	app.EnableBashCompletion = true
 	app.Commands = []*cli.Command{
-		&accountCommand,
-		&validatorsSyncerCommands,
-		&deployerTestCommands,
+		bridgeRun,
+		cbcli.CLICMD,
+		deployerTestCommands,
 	}
-
-	app.Flags = append(app.Flags, cliFlags...)
-	app.Flags = append(app.Flags, devFlags...)
 }
 
 func main() {

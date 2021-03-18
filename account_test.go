@@ -124,7 +124,7 @@ func TestAccountCommands(t *testing.T) {
 	testApp := cli.NewApp()
 	testApp.Writer = ioutil.Discard
 	testApp.Commands = []*cli.Command{
-		&accountCommand,
+		accountCommand,
 	}
 
 	keypath := "."

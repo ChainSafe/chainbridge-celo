@@ -1,9 +1,9 @@
 # Copyright 2020 ChainSafe Systems
 # SPDX-License-Identifier: LGPL-3.0-only
 
-FROM golang:1.14-alpine as builder
+FROM golang:1.15-alpine3.13 as builder
 
-RUN apk add --no-cache gcc musl-dev linux-headers
+RUN apk add --no-cache linux-headers musl
 
 ADD . /src
 

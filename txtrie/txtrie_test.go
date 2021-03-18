@@ -5,7 +5,6 @@ package txtrie
 
 import (
 	"fmt"
-	"github.com/status-im/keycard-go/hexutils"
 	"testing"
 
 	"github.com/ethereum/go-ethereum/common"
@@ -76,8 +75,8 @@ func TestAddSingleTrieUpdate(t *testing.T) {
 	if proof == nil {
 		t.Fatal("proof is nil")
 	}
-	if hexutils.BytesToHex(key) != "0800" {
-		t.Fatal(fmt.Sprintf("wrong RLP key is %s", hexutils.BytesToHex(key)))
+	if common.Bytes2Hex(key) != "0800" {
+		t.Fatal(fmt.Sprintf("wrong RLP key is %s", common.Bytes2Hex(key)))
 	}
 
 }
