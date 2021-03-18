@@ -15,7 +15,6 @@ import (
 )
 
 const DefaultConfigPath = "./config.json"
-const DefaultBlockTimeout = int64(180) // 3 minutes
 
 type Config struct {
 	Chains []RawChainConfig `json:"chains"`
@@ -45,21 +44,21 @@ func (c *Config) ToJSON(file string) *os.File {
 
 	var raw []byte
 	if raw, err = json.Marshal(*c); err != nil {
-		log.Error().Msgf("error marshalling json", "err", err)
+		log.Error().Err(fmt.Errorf("error marshalling json: %w", err))
 		os.Exit(1)
 	}
 
 	newFile, err = os.Create(file)
 	if err != nil {
-		log.Error().Msgf("error creating config file", "err", err)
+		log.Error().Err(fmt.Errorf("error creating config file %w", err))
 	}
 	_, err = newFile.Write(raw)
 	if err != nil {
-		log.Error().Msgf("error writing to config file", "err", err)
+		log.Error().Err(fmt.Errorf("error writing to config file %w", err))
 	}
 
 	if err := newFile.Close(); err != nil {
-		log.Error().Msgf("error closing file", "err", err)
+		log.Error().Err(fmt.Errorf("error closing file %w", err))
 	}
 	return newFile
 }
@@ -93,7 +92,7 @@ func GetConfig(ctx *cli.Context) (*Config, error) {
 	}
 	err := loadConfig(path, &fig)
 	if err != nil {
-		log.Error().Msgf("err loading json file", "err", err.Error())
+		log.Error().Err(fmt.Errorf("err loading json file: %s", err))
 		return &fig, err
 	}
 	log.Debug().Msgf("Loaded config", "path", path)
