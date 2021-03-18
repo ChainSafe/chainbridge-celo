@@ -21,7 +21,7 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
-var BlockDelay = big.NewInt(10)
+var BlockDelay = big.NewInt(1)
 var BlockRetryInterval = time.Second * 5
 var ErrFatalPolling = errors.New("listener block polling failed")
 var ExpectedBlockTime = time.Second
