@@ -240,13 +240,17 @@ func (s *WriterTestSuite) TestProposalIsNotVotedButExecutedBecauseAlreadyPassed(
 	w.SetBridge(s.bridgeMock)
 
 	prop := Bridge.BridgeProposal{Status: ProposalStatusPassed} // some other status
+
+	// Mock for first shouldVote call
 	s.client.EXPECT().CallOpts().Return(nil)
 	s.bridgeMock.EXPECT().GetProposal(gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).Return(prop, nil)
-
 	s.client.EXPECT().CallOpts().Return(nil)
 	s.client.EXPECT().Opts().Return(&bind.TransactOpts{From: common.Address{}})
 	s.bridgeMock.EXPECT().HasVotedOnProposal(gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).Return(true, nil)
-	s.False(w.shouldVote(m, common.Hash{}))
+
+	// Mock for isPassed call
+	s.client.EXPECT().CallOpts().Return(nil)
+	s.bridgeMock.EXPECT().GetProposal(gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).Return(prop, nil)
 
 	// Expecting that ex execute proposal will be called since proposal was voted but not executed.\
 	s.client.EXPECT().LockAndUpdateOpts().Return(nil)
