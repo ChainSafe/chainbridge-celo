@@ -171,3 +171,17 @@ func ERC721MinterRole(client *client.Client, erc721Address common.Address) ([32]
 	}
 	return res, nil
 }
+
+func AdminFeeAmount(client *client.Client, bridge common.Address) (*big.Int, error) {
+	bridgeInstance, err := Bridge.NewBridge(bridge, client.Client)
+	if err != nil {
+		return nil, err
+	}
+
+	prop, err := bridgeInstance.Fee(client.CallOpts())
+	if err != nil {
+		return nil, err
+	}
+
+	return prop, nil
+}

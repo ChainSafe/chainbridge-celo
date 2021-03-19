@@ -33,6 +33,7 @@ var depositCMD = &cli.Command{
 		&cli.StringFlag{
 			Name:  "value",
 			Usage: "Value of ETH that should be sent along with deposit to cover possible fees. In WEI",
+			Value: "0",
 		},
 		&cli.StringFlag{
 			Name:  "dest",
