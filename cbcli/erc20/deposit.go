@@ -93,7 +93,7 @@ func deposit(cctx *cli.Context) error {
 		return err
 	}
 
-	ethClient = ethClient.ClientWithArgs(client.TheClientWithValue(value))
+	ethClient.ClientWithArgs(client.TheClientWithValue(value))
 
 	err = utils.MakeAndSendERC20Deposit(ethClient, bridgeAddress, recipientAddress, realAmount, resourceIDBytes, uint8(dest))
 	if err != nil {

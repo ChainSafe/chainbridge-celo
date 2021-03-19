@@ -58,11 +58,7 @@ func Test_ClientWithArgs(t *testing.T) {
 
 	chainClient.opts.Value = big.NewInt(0)
 
-	newClient := chainClient.ClientWithArgs(TheClientWithValue(big.NewInt(10)))
-
-	if newClient.opts.Value.Cmp(big.NewInt(10)) != 0 {
-		t.Fatal()
-	}
+	chainClient.ClientWithArgs(TheClientWithValue(big.NewInt(10)))
 
 	if chainClient.opts.Value.Cmp(big.NewInt(10)) != 0 {
 		t.Fatal()

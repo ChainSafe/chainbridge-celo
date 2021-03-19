@@ -118,6 +118,7 @@ func (c *Client) Opts() *bind.TransactOpts {
 	return c.opts
 }
 
+//OptsCopyWithArgs returns copy of Client.opts with updated by args updaters functions aruments
 func (c *Client) OptsCopyWithArgs(opts ...func(*bind.TransactOpts)) *bind.TransactOpts {
 	copyOfOpts := *c.opts
 	for _, opt := range opts {
@@ -126,19 +127,21 @@ func (c *Client) OptsCopyWithArgs(opts ...func(*bind.TransactOpts)) *bind.Transa
 	return &copyOfOpts
 }
 
+//OptsWithValue args updating function that updates opts.Value argument
 func OptsWithValue(value *big.Int) func(*bind.TransactOpts) {
 	return func(opts *bind.TransactOpts) {
 		opts.Value = value
 	}
 }
 
-func (c *Client) ClientWithArgs(args ...func(*Client)) *Client {
+//ClientWithArgs  updates client with provided array of arg updaters
+func (c *Client) ClientWithArgs(args ...func(*Client)) {
 	for _, arg := range args {
 		arg(c)
 	}
-	return c
 }
 
+//TheClientWithValue  arg updater of Client that sets opts.Value with provided value
 func TheClientWithValue(value *big.Int) func(*Client) {
 	return func(c *Client) {
 		c.opts.Value = value
