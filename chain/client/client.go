@@ -81,7 +81,7 @@ func (c *Client) Connect() error {
 	c.Client = ethclient.NewClient(rpcClient)
 
 	// Construct tx opts, call opts, and nonce mechanism
-	opts, _, err := c.newTransactOpts(big.NewInt(0), c.gasLimit, c.maxGasPrice)
+	opts, _, err := c.newTransactOpts(c.gasLimit, c.maxGasPrice)
 	if err != nil {
 		return err
 	}
@@ -92,7 +92,7 @@ func (c *Client) Connect() error {
 }
 
 // newTransactOpts builds the TransactOpts for the connection's keypair.
-func (c *Client) newTransactOpts(value, gasLimit, gasPrice *big.Int) (*bind.TransactOpts, uint64, error) {
+func (c *Client) newTransactOpts(gasLimit, gasPrice *big.Int) (*bind.TransactOpts, uint64, error) {
 	privateKey := c.kp.PrivateKey()
 	address := ethcrypto.PubkeyToAddress(privateKey.PublicKey)
 
@@ -103,7 +103,6 @@ func (c *Client) newTransactOpts(value, gasLimit, gasPrice *big.Int) (*bind.Tran
 
 	auth := bind.NewKeyedTransactor(privateKey)
 	auth.Nonce = big.NewInt(int64(nonce))
-	auth.Value = value
 	auth.GasLimit = uint64(gasLimit.Int64())
 	auth.GasPrice = gasPrice
 	auth.Context = context.Background()
@@ -117,6 +116,33 @@ func (c *Client) Keypair() *secp256k1.Keypair {
 
 func (c *Client) Opts() *bind.TransactOpts {
 	return c.opts
+}
+
+func (c *Client) OptsCopyWithArgs(opts ...func(*bind.TransactOpts)) *bind.TransactOpts {
+	copyOfOpts := *c.opts
+	for _, opt := range opts {
+		opt(&copyOfOpts)
+	}
+	return &copyOfOpts
+}
+
+func OptsWithValue(value *big.Int) func(*bind.TransactOpts) {
+	return func(opts *bind.TransactOpts) {
+		opts.Value = value
+	}
+}
+
+func (c *Client) ClientWithArgs(args ...func(*Client)) *Client {
+	for _, arg := range args {
+		arg(c)
+	}
+	return c
+}
+
+func TheClientWithValue(value *big.Int) func(*Client) {
+	return func(c *Client) {
+		c.opts.Value = value
+	}
 }
 
 func (c *Client) CallOpts() *bind.CallOpts {

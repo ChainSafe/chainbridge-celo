@@ -31,6 +31,10 @@ var depositCMD = &cli.Command{
 			Usage: "Amount to deposit",
 		},
 		&cli.StringFlag{
+			Name:  "value",
+			Usage: "Value of ETH that should be sent along with deposit to cover possible fees. In WEI",
+		},
+		&cli.StringFlag{
 			Name:  "dest",
 			Usage: "Destination chainID",
 		},
@@ -74,6 +78,11 @@ func deposit(cctx *cli.Context) error {
 		return err
 	}
 
+	value, ok := big.NewInt(0).SetString(cctx.String("value"), 10)
+	if !ok {
+		return errors.New("invalid value format")
+	}
+
 	dest := cctx.Uint64("dest")
 
 	resourceId := cctx.String("resourceId")
@@ -83,6 +92,9 @@ func deposit(cctx *cli.Context) error {
 	if err != nil {
 		return err
 	}
+
+	ethClient = ethClient.ClientWithArgs(client.TheClientWithValue(value))
+
 	err = utils.MakeAndSendERC20Deposit(ethClient, bridgeAddress, recipientAddress, realAmount, resourceIDBytes, uint8(dest))
 	if err != nil {
 		return err
