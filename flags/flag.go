@@ -4,7 +4,8 @@
 package flags
 
 import (
-	"github.com/ethereum/go-ethereum/log"
+	"github.com/rs/zerolog"
+
 	"github.com/urfave/cli/v2"
 )
 
@@ -24,7 +25,7 @@ var (
 	VerbosityFlag = &cli.StringFlag{
 		Name:  "verbosity",
 		Usage: "Supports levels crit (silent) to trce (trace)",
-		Value: log.LvlInfo.String(),
+		Value: zerolog.InfoLevel.String(),
 	}
 
 	KeystorePathFlag = &cli.StringFlag{
