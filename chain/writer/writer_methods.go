@@ -61,6 +61,15 @@ func (w *writer) hasVoted(srcId utils.ChainId, nonce utils.Nonce, dataHash ethco
 	return hasVoted
 }
 
+func (w *writer) proposalIsPassed(srcId utils.ChainId, nonce utils.Nonce, dataHash [32]byte) bool {
+	prop, err := w.bridgeContract.GetProposal(w.client.CallOpts(), uint8(srcId), uint64(nonce), dataHash)
+	if err != nil {
+		log.Error().Err(err).Msgf("Failed to check proposal existence")
+		return false
+	}
+	return prop.Status == ProposalStatusPassed
+}
+
 func idAndNonce(srcId utils.ChainId, nonce utils.Nonce) *big.Int {
 	var data []byte
 	data = append(data, nonce.Big().Bytes()...)
@@ -268,16 +277,15 @@ func (w *writer) executeProposal(m *utils.Message, data []byte, dataHash ethcomm
 			if err == nil {
 				log.Info().Interface("source", m.Source).Interface("dest", m.Destination).Interface("nonce", m.DepositNonce).Str("tx", tx.Hash().Hex()).Msg("Submitted proposal execution")
 				return
-			} else if err.Error() == ErrNonceTooLow.Error() || err.Error() == ErrTxUnderpriced.Error() {
+			}
+			if err.Error() == ErrNonceTooLow.Error() || err.Error() == ErrTxUnderpriced.Error() {
 				log.Error().Err(err).Msg("Nonce too low, will retry")
 				time.Sleep(TxRetryInterval)
 			} else {
 				log.Error().Err(err).Msg("Execution failed, proposal may already be complete")
 				time.Sleep(TxRetryInterval)
 			}
-
-			// Verify proposal is still open for execution, tx will fail if we aren't the first to execute,
-			// but there is no need to retry
+			// Checking proposal status one more time (Since it could be execute by some other bridge). If it is finalized then we do not need to retry
 			if w.proposalIsFinalized(m.Source, m.DepositNonce, dataHash) {
 				log.Info().Interface("source", m.Source).Interface("dest", m.Destination).Interface("nonce", m.DepositNonce).Msg("Proposal finalized on chain")
 				return
