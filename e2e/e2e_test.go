@@ -57,6 +57,7 @@ func (s *IntegrationTestSuite) TearDownTest() {}
 // Deposit hash: 0x42782f963df86c5f31f94d9c610445b72d388bd60f788e2cd8ea4bff17824426
 func (s *IntegrationTestSuite) TestDeposit() {
 	dstAddr := utils.BobKp.CommonAddress()
+
 	erc20Contract, err := erc20.NewERC20PresetMinterPauser(s.erc20ContractAddr, s.client.Client)
 	s.Nil(err)
 	erc20Contract2, err := erc20.NewERC20PresetMinterPauser(s.erc20ContractAddr, s.client2.Client)
