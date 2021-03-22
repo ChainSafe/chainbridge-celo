@@ -3,6 +3,7 @@ package e2e
 
 import (
 	"context"
+	"github.com/rs/zerolog/log"
 	"math/big"
 	"testing"
 	"time"
@@ -89,7 +90,9 @@ func (s *IntegrationTestSuite) TestDeposit() {
 		}
 	}
 	if !s.True(passedEventFound) {
-		_, _ = utils.Simulate(s.client, receipt.BlockNumber, tx.Hash(), utils.AliceKp.CommonAddress())
+		bs, err := utils.Simulate(s.client, receipt.BlockNumber, tx.Hash(), utils.AliceKp.CommonAddress())
+		s.Nil(err)
+		log.Info().Msg(string(bs))
 	}
 	//
 	//senderBalAfter, err := erc20Contract.BalanceOf(s.client.CallOpts(), utils.AliceKp.CommonAddress())
