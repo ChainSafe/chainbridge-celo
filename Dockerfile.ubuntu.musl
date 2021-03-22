@@ -1,0 +1,44 @@
+FROM ubuntu:18.04 as builder
+RUN apt update \
+ && apt install -y \
+    curl \
+    gcc \
+    make \
+ && apt clean \
+ && apt autoremove -y \
+ && rm -rf /var/lib/apt/lists/* \
+ && curl -LSs https://dl.google.com/go/go1.11.4.linux-amd64.tar.gz -o go.tar.gz \
+ && tar -xf go.tar.gz \
+ && rm -v go.tar.gz \
+ && mv go /usr/local/ \
+ && rm -rf /var/lib/apt/lists/*
+ENV PATH=${PATH}:/usr/local/go/bin
+RUN curl -LSs https://www.musl-libc.org/releases/musl-1.1.21.tar.gz -o musl.tar.gz \
+ && tar -xvf musl.tar.gz \
+ && cd musl-1.1.21 \
+ && ./configure \
+ && make \
+ && make install \
+ && cd .. \
+ && rm -rf musl*
+WORKDIR /app
+COPY include/blkid.h /usr/local/musl/include/blkid/
+COPY lib/libblkid.a lib/libuuid.a /usr/local/musl/lib/
+ENV CC=/usr/local/musl/bin/musl-gcc
+
+
+ADD . /src
+ENV GO111MODULE=on
+ENV GOPROXY=https://proxy.golang.org
+WORKDIR /src
+RUN go mod download
+RUN go build -ldflags "-linkmode external -extldflags '-static' -s -w" -o build/chainbridge-celo .
+
+## final stage
+FROM alpine
+RUN apk update && apk add ca-certificates binutils && rm -rf /var/cache/apk/*
+
+COPY --from=builder /build ./
+RUN chmod +x ./build
+
+ENTRYPOINT ["./build/chainbridge-celo"]
