@@ -256,8 +256,6 @@ func (w *writer) executeProposal(m *utils.Message, data []byte, dataHash ethcomm
 				m.ResourceId,
 				m.SVParams.Signature,
 				m.SVParams.AggregatePublicKey,
-				// TODO: Remove once G1 has been removed from contracts
-				[]byte{},
 				m.SVParams.BlockHash,
 				m.MPParams.TxRootHash,
 				m.MPParams.Key,
