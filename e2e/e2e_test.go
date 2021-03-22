@@ -76,7 +76,7 @@ func (s *IntegrationTestSuite) TestDeposit() {
 	log.Debug().Msg(tx.Hash().String())
 
 	//Wait 30 seconds for relayer vote
-	time.Sleep(60 * time.Second)
+	time.Sleep(30 * time.Second)
 
 	lp, err := s.client2.LatestBlock()
 	s.Nil(err)
@@ -98,7 +98,7 @@ func (s *IntegrationTestSuite) TestDeposit() {
 	s.Equal(senderBalBefore.Cmp(big.NewInt(0).Add(senderBalAfter, amountToDeposit)), 0)
 
 	//Wait 30 seconds for relayer to execute
-	time.Sleep(60 * time.Second)
+	time.Sleep(30 * time.Second)
 	lp, err = s.client2.LatestBlock()
 	s.Nil(err)
 	queryExecute := utils.BuildQuery(s.bridgeAddr, utils.ProposalEvent, receipt.BlockNumber, lp)
@@ -148,7 +148,7 @@ func (s *IntegrationTestSuite) TestMultipleTransactionsInBlock() {
 	log.Debug().Msg(tx.Hash().String())
 
 	//Wait 30 seconds for relayer vote
-	time.Sleep(60 * time.Second)
+	time.Sleep(30 * time.Second)
 
 	lp, err := s.client2.LatestBlock()
 	s.Nil(err)
@@ -169,7 +169,7 @@ func (s *IntegrationTestSuite) TestMultipleTransactionsInBlock() {
 	s.Equal(senderBalBefore.Cmp(big.NewInt(0).Add(senderBalAfter, amountToDeposit)), 0)
 
 	//Wait 30 seconds for relayer to execute
-	time.Sleep(60 * time.Second)
+	time.Sleep(30 * time.Second)
 	lp, err = s.client2.LatestBlock()
 	s.Nil(err)
 	queryExecute := utils.BuildQuery(s.bridgeAddr, utils.ProposalEvent, receipt.BlockNumber, lp)
