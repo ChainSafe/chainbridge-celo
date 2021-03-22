@@ -8,6 +8,8 @@
 <!--- If fixing a bug, there should be an issue describing it with steps to reproduce -->
 <!--- Otherwise, describe context and motivation for change herre -->
 
+Closes: #<issue>
+
 ## How Has This Been Tested? Testing details.
 <!--- Please describe in detail how you tested your changes. -->
 <!--- Include details of your testing environment, and the tests you ran to -->
@@ -18,6 +20,7 @@
 - [ ] Bug fix (non-breaking change which fixes an issue)
 - [ ] New feature (non-breaking change which adds functionality)
 - [ ] Breaking change (fix or feature that would cause existing functionality to change)
+- [ ] Documentation
 
 ## Checklist:
 <!--- Go over all the following points, and put an `x` in all the boxes that apply. -->
