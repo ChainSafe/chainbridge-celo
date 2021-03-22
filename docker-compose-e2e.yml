@@ -97,6 +97,14 @@ services:
       - DATADIR=celo-dump3
       - NETWORKID=444
 
+  chainbridge-celo:
+    image: "chainsafe/chainbridge-celo"
+    container_name: chainbridge-celo
+    command: run --config /cfg/config-celo-int-tst.json --testkey alice --fresh --leveldb ./lvldb
+    volumes:
+      - ./e2e/cfg:/cfg
+    network_mode: host
+
 networks:
   celo1:
   celo2:
