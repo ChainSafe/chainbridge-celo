@@ -265,7 +265,6 @@ func (s *WriterTestSuite) TestProposalIsNotVotedButExecutedBecauseAlreadyPassed(
 		gomock.Any(),
 		gomock.Any(),
 		gomock.Any(),
-		gomock.Any(),
 		gomock.Any()).Return(&types.Transaction{}, nil)
 	s.client.EXPECT().UnlockOpts()
 	s.True(w.ResolveMessage(m))
