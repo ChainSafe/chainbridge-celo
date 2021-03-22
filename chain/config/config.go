@@ -18,6 +18,7 @@ import (
 
 const DefaultGasLimit = 6721975
 const DefaultGasPrice = 20000000000
+const DefaultGasMultiplier = 1
 
 type CeloChainConfig struct {
 	ID                     utils.ChainId // ChainID
@@ -38,6 +39,7 @@ type CeloChainConfig struct {
 	LatestBlock            bool
 	Insecure               bool
 	EpochSize              uint64 // Size of chain epoch. eg. The number of blocks after which to checkpoint and reset the pending votes
+	GasMultiplier          *big.Float
 }
 
 func (cfg *CeloChainConfig) EnsureContractsHaveBytecode(conn *client.Client) error {
@@ -137,6 +139,16 @@ func ParseChainConfig(rawCfg *cfg.RawChainConfig, ctx *cli.Context) (*CeloChainC
 			config.GasLimit = limit
 		} else {
 			return nil, errors.New("unable to parse gas limit")
+		}
+	}
+
+	if gasMultiplier, ok := rawCfg.Opts["gasMultiplier"]; ok {
+		multilier := big.NewFloat(DefaultGasMultiplier)
+		_, pass := multilier.SetString(gasMultiplier)
+		if pass {
+			config.GasMultiplier = multilier
+		} else {
+			return nil, errors.New("unable to parse gasMultiplier to float")
 		}
 	}
 

@@ -53,7 +53,7 @@ func Run(ctx *cli.Context) error {
 		}
 		kp, _ := kpI.(*secp256k1.Keypair)
 
-		chainClient, err := client.NewClient(celoChainConfig.Endpoint, celoChainConfig.Http, kp, celoChainConfig.GasLimit, celoChainConfig.MaxGasPrice)
+		chainClient, err := client.NewClient(celoChainConfig.Endpoint, celoChainConfig.Http, kp, celoChainConfig.GasLimit, celoChainConfig.MaxGasPrice, celoChainConfig.GasMultiplier)
 		if err != nil {
 			return err
 		}

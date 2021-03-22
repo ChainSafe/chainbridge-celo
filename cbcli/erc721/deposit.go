@@ -64,7 +64,7 @@ func deposit(cctx *cli.Context) error {
 	resourceId := cctx.String("resourceId")
 	resourceIDBytes := utils.SliceTo32Bytes(common.Hex2Bytes(resourceId))
 
-	ethClient, err := client.NewClient(url, false, sender, big.NewInt(0).SetUint64(gasLimit), big.NewInt(0).SetUint64(gasPrice))
+	ethClient, err := client.NewClient(url, false, sender, big.NewInt(0).SetUint64(gasLimit), big.NewInt(0).SetUint64(gasPrice), big.NewFloat(1))
 	if err != nil {
 		return err
 	}

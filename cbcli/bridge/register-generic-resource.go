@@ -56,7 +56,7 @@ func registerGenericResource(cctx *cli.Context) error {
 	resourceIdBytesArr := utils.SliceTo32Bytes(resourceIdBytes)
 
 	log.Info().Msgf("Registering contract %s with resource ID %s on handler %s", targetContract, resourceId, handler)
-	ethClient, err := client.NewClient(url, false, sender, big.NewInt(gasLimit), big.NewInt(gasPrice))
+	ethClient, err := client.NewClient(url, false, sender, big.NewInt(gasLimit), big.NewInt(gasPrice), big.NewFloat(1))
 	if err != nil {
 		return err
 	}

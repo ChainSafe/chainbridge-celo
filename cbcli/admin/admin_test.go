@@ -34,13 +34,13 @@ func TestRunE2ETests(t *testing.T) {
 func (s *AdminCLIIntegrationTestSuite) SetupSuite()    {}
 func (s *AdminCLIIntegrationTestSuite) TearDownSuite() {}
 func (s *AdminCLIIntegrationTestSuite) SetupTest() {
-	chainClient, err := client.NewClient(TestEndpoint, false, utils.AliceKp, big.NewInt(utils.DefaultGasLimit), big.NewInt(utils.DefaultGasPrice))
+	chainClient, err := client.NewClient(TestEndpoint, false, utils.AliceKp, big.NewInt(utils.DefaultGasLimit), big.NewInt(utils.DefaultGasPrice), big.NewFloat(1))
 	if err != nil {
 		panic(err)
 	}
 	s.client = chainClient
 
-	client2, err := client.NewClient(TestEndpoint2, false, utils.AliceKp, big.NewInt(utils.DefaultGasLimit), big.NewInt(utils.DefaultGasPrice))
+	client2, err := client.NewClient(TestEndpoint2, false, utils.AliceKp, big.NewInt(utils.DefaultGasLimit), big.NewInt(utils.DefaultGasPrice), big.NewFloat(1))
 	if err != nil {
 		panic(err)
 	}

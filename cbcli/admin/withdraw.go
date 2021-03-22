@@ -89,7 +89,7 @@ func withdraw(cctx *cli.Context) error {
 	if id == "" && amount == "" {
 		return errors.New("id or amount flag should be set")
 	}
-	ethClient, err := client.NewClient(url, false, sender, big.NewInt(0).SetUint64(gasLimit), big.NewInt(0).SetUint64(gasPrice))
+	ethClient, err := client.NewClient(url, false, sender, big.NewInt(0).SetUint64(gasLimit), big.NewInt(0).SetUint64(gasPrice), big.NewFloat(1))
 	if err != nil {
 		return err
 	}
