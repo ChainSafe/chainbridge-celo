@@ -23,6 +23,8 @@ jobs:
           key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
           restore-keys: |
             ${{ runner.os }}-go-
+      - name: Build image
+        run: docker build -t chainsafe/chainbridge-celo .
       - name: Run nodes
         run: docker-compose -f ./docker-compose-e2e.yml up -d
       - name: Run tests
