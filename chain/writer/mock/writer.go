@@ -85,18 +85,18 @@ func (mr *MockBridgerMockRecorder) VoteProposal(opts, chainID, depositNonce, res
 }
 
 // ExecuteProposal mocks base method
-func (m *MockBridger) ExecuteProposal(opts *bind.TransactOpts, chainID uint8, depositNonce uint64, data []byte, resourceID [32]byte, signatureHeader, aggregatePublicKey, g1 []byte, hashedMessage, rootHash [32]byte, key, nodes []byte) (*types.Transaction, error) {
+func (m *MockBridger) ExecuteProposal(opts *bind.TransactOpts, chainID uint8, depositNonce uint64, data []byte, resourceID [32]byte, signatureHeader, aggregatePublicKey []byte, hashedMessage, rootHash [32]byte, key, nodes []byte) (*types.Transaction, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "ExecuteProposal", opts, chainID, depositNonce, data, resourceID, signatureHeader, aggregatePublicKey, g1, hashedMessage, rootHash, key, nodes)
+	ret := m.ctrl.Call(m, "ExecuteProposal", opts, chainID, depositNonce, data, resourceID, signatureHeader, aggregatePublicKey, hashedMessage, rootHash, key, nodes)
 	ret0, _ := ret[0].(*types.Transaction)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // ExecuteProposal indicates an expected call of ExecuteProposal
-func (mr *MockBridgerMockRecorder) ExecuteProposal(opts, chainID, depositNonce, data, resourceID, signatureHeader, aggregatePublicKey, g1, hashedMessage, rootHash, key, nodes interface{}) *gomock.Call {
+func (mr *MockBridgerMockRecorder) ExecuteProposal(opts, chainID, depositNonce, data, resourceID, signatureHeader, aggregatePublicKey, hashedMessage, rootHash, key, nodes interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ExecuteProposal", reflect.TypeOf((*MockBridger)(nil).ExecuteProposal), opts, chainID, depositNonce, data, resourceID, signatureHeader, aggregatePublicKey, g1, hashedMessage, rootHash, key, nodes)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ExecuteProposal", reflect.TypeOf((*MockBridger)(nil).ExecuteProposal), opts, chainID, depositNonce, data, resourceID, signatureHeader, aggregatePublicKey, hashedMessage, rootHash, key, nodes)
 }
 
 // MockContractCaller is a mock of ContractCaller interface

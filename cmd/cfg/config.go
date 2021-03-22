@@ -10,12 +10,11 @@ import (
 	"path/filepath"
 
 	"github.com/ChainSafe/chainbridge-celo/flags"
-	"github.com/ethereum/go-ethereum/log"
+	"github.com/rs/zerolog/log"
 	"github.com/urfave/cli/v2"
 )
 
 const DefaultConfigPath = "./config.json"
-const DefaultBlockTimeout = int64(180) // 3 minutes
 
 type Config struct {
 	Chains []RawChainConfig `json:"chains"`
@@ -45,21 +44,21 @@ func (c *Config) ToJSON(file string) *os.File {
 
 	var raw []byte
 	if raw, err = json.Marshal(*c); err != nil {
-		log.Warn("error marshalling json", "err", err)
+		log.Error().Err(fmt.Errorf("error marshalling json: %w", err))
 		os.Exit(1)
 	}
 
 	newFile, err = os.Create(file)
 	if err != nil {
-		log.Warn("error creating config file", "err", err)
+		log.Error().Err(fmt.Errorf("error creating config file %w", err))
 	}
 	_, err = newFile.Write(raw)
 	if err != nil {
-		log.Warn("error writing to config file", "err", err)
+		log.Error().Err(fmt.Errorf("error writing to config file %w", err))
 	}
 
 	if err := newFile.Close(); err != nil {
-		log.Warn("error closing file", "err", err)
+		log.Error().Err(fmt.Errorf("error closing file %w", err))
 	}
 	return newFile
 }
@@ -93,10 +92,10 @@ func GetConfig(ctx *cli.Context) (*Config, error) {
 	}
 	err := loadConfig(path, &fig)
 	if err != nil {
-		log.Warn("err loading json file", "err", err.Error())
+		log.Error().Err(fmt.Errorf("err loading json file: %s", err))
 		return &fig, err
 	}
-	log.Debug("Loaded config", "path", path)
+	log.Debug().Msgf("Loaded config path: %s", path)
 	err = fig.validate()
 	if err != nil {
 		return nil, err
@@ -111,7 +110,7 @@ func loadConfig(file string, config *Config) error {
 		return err
 	}
 
-	log.Debug("Loading configuration", "path", filepath.Clean(fp))
+	log.Debug().Msgf("Loading configuration path: %s", filepath.Clean(fp))
 
 	f, err := os.Open(filepath.Clean(fp))
 	if err != nil {
