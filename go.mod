@@ -4,7 +4,7 @@ go 1.15
 
 replace github.com/celo-org/celo-bls-go => github.com/celo-org/celo-bls-go v0.1.7
 
-replace github.com/ethereum/go-ethereum => github.com/celo-org/celo-blockchain v1.2.2
+replace github.com/ethereum/go-ethereum => github.com/celo-org/celo-blockchain v1.2.4
 
 require (
 	github.com/ChainSafe/chainbridge-utils v1.0.6
