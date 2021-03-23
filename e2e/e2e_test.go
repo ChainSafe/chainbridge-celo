@@ -11,7 +11,6 @@ import (
 	"github.com/ChainSafe/chainbridge-celo/chain/client"
 	"github.com/ChainSafe/chainbridge-celo/utils"
 	"github.com/ethereum/go-ethereum/common"
-	"github.com/rs/zerolog/log"
 	"github.com/stretchr/testify/suite"
 )
 
@@ -72,7 +71,6 @@ func (s *IntegrationTestSuite) TestDeposit() {
 	s.Nil(err)
 	receipt, err := utils.WaitAndReturnTxReceipt(s.client, tx)
 	s.Nil(err)
-	log.Debug().Msg(tx.Hash().String())
 
 	//Wait 30 seconds for relayer vote
 	time.Sleep(30 * time.Second)
@@ -144,7 +142,6 @@ func (s *IntegrationTestSuite) TestMultipleTransactionsInBlock() {
 	s.Nil(err)
 	receipt, err := utils.WaitAndReturnTxReceipt(s.client, tx)
 	s.Nil(err)
-	log.Debug().Msg(tx.Hash().String())
 
 	//Wait 30 seconds for relayer vote
 	time.Sleep(30 * time.Second)

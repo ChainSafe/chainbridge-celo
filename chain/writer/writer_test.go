@@ -105,8 +105,7 @@ func (s *WriterTestSuite) TestShouldVoteProposalIsAlreadyVoted() {
 	w.SetBridge(s.bridgeMock)
 
 	// Setting returned proposal to PassedStatus
-	var notPassedStatus uint8 = 0
-	prop := Bridge.BridgeProposal{Status: notPassedStatus} // some other status
+	prop := Bridge.BridgeProposal{Status: ProposalNotPassedStatus} // some other status
 
 	s.client.EXPECT().CallOpts().Return(nil)
 	s.bridgeMock.EXPECT().GetProposal(gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).Return(prop, nil)
@@ -127,8 +126,7 @@ func (s *WriterTestSuite) TestShouldVoteProposal() {
 	w.SetBridge(s.bridgeMock)
 
 	// Setting returned proposal to PassedStatus
-	var notPassedStatus uint8 = 0
-	prop := Bridge.BridgeProposal{Status: notPassedStatus} // some other status
+	prop := Bridge.BridgeProposal{Status: ProposalNotPassedStatus} // some other status
 
 	s.client.EXPECT().CallOpts().Return(nil)
 	s.bridgeMock.EXPECT().GetProposal(gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).Return(prop, nil)
@@ -233,6 +231,45 @@ func (s *WriterTestSuite) TestVoteProposalUnexpectedErrorOnVote() {
 	w.voteProposal(m, common.Hash{})
 }
 
+func (s *WriterTestSuite) TestProposalIsNotVotedButExecutedBecauseAlreadyPassed() {
+	stopChn := make(chan struct{})
+	errChn := make(chan error)
+	m := utils.NewFungibleTransfer(utils.ChainId(1), 0, utils.Nonce(555), [32]byte{1}, &utils.MerkleProof{}, &utils.SignatureVerification{}, big.NewInt(10), make([]byte, 32))
+	cfg := &config.CeloChainConfig{StartBlock: big.NewInt(1), BridgeContract: common.Address{}}
+	w := NewWriter(s.client, cfg, stopChn, errChn, nil)
+	w.SetBridge(s.bridgeMock)
+
+	prop := Bridge.BridgeProposal{Status: ProposalStatusPassed} // some other status
+
+	// Mock for first shouldVote call
+	s.client.EXPECT().CallOpts().Return(nil)
+	s.bridgeMock.EXPECT().GetProposal(gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).Return(prop, nil)
+	s.client.EXPECT().CallOpts().Return(nil)
+	s.client.EXPECT().Opts().Return(&bind.TransactOpts{From: common.Address{}})
+	s.bridgeMock.EXPECT().HasVotedOnProposal(gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).Return(true, nil)
+
+	// Mock for isPassed call
+	s.client.EXPECT().CallOpts().Return(nil)
+	s.bridgeMock.EXPECT().GetProposal(gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).Return(prop, nil)
+
+	// Expecting that ex execute proposal will be called since proposal was voted but not executed.\
+	s.client.EXPECT().LockAndUpdateOpts().Return(nil)
+	s.client.EXPECT().Opts().Return(nil)
+	s.bridgeMock.EXPECT().ExecuteProposal(gomock.Any(),
+		gomock.Any(),
+		gomock.Any(),
+		gomock.Any(),
+		gomock.Any(),
+		gomock.Any(),
+		gomock.Any(),
+		gomock.Any(),
+		gomock.Any(),
+		gomock.Any(),
+		gomock.Any()).Return(&types.Transaction{}, nil)
+	s.client.EXPECT().UnlockOpts()
+	s.True(w.ResolveMessage(m))
+}
+
 func (s *WriterTestSuite) TestVoteProposalLockAndUpdateOptsError() {
 	stopChn := make(chan struct{})
 	errChn := make(chan error)
@@ -323,7 +360,6 @@ func (s *WriterTestSuite) TestExecuteProposalNonceTooLowError() {
 			gomock.Any(),
 			[]byte{},
 			[]byte{},
-			[]byte{},
 			gomock.Any(),
 			gomock.Any(),
 			[]byte{},
@@ -380,7 +416,6 @@ func (s *WriterTestSuite) TestExecuteProposalCompleted() {
 			uint64(message.DepositNonce),
 			[]byte{},
 			gomock.Any(),
-			[]byte{},
 			[]byte{},
 			[]byte{},
 			gomock.Any(),
@@ -441,7 +476,6 @@ func (s *WriterTestSuite) TestExecuteProposalProposalIsFinalizedError() {
 			gomock.Any(),
 			[]byte{},
 			[]byte{},
-			[]byte{},
 			gomock.Any(),
 			gomock.Any(),
 			[]byte{},
@@ -500,7 +534,6 @@ func (s *WriterTestSuite) TestExecuteProposalProposalStatusTransferred() {
 			gomock.Any(),
 			[]byte{},
 			[]byte{},
-			[]byte{},
 			gomock.Any(),
 			gomock.Any(),
 			[]byte{},
@@ -557,7 +590,6 @@ func (s *WriterTestSuite) TestExecuteProposalProposalStatusCancelled() {
 			uint64(message.DepositNonce),
 			[]byte{},
 			gomock.Any(),
-			[]byte{},
 			[]byte{},
 			[]byte{},
 			gomock.Any(),

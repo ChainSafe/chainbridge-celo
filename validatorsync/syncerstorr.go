@@ -8,6 +8,7 @@ import (
 	"encoding/gob"
 	"errors"
 	"math/big"
+	"time"
 
 	"github.com/ethereum/go-ethereum/consensus/istanbul"
 	"github.com/syndtr/goleveldb/leveldb"
@@ -125,6 +126,7 @@ func (db *ValidatorsStore) GetAPKForBlock(block *big.Int, chainID uint8, epochSi
 		vals, err := db.GetValidatorsForBlock(computeLastBlockOfEpochForProvidedBlock(block, epochSize), chainID)
 		if err != nil {
 			if errors.Is(err, leveldb.ErrNotFound) {
+				time.Sleep(5 * time.Second)
 				continue
 			}
 			return nil, err
