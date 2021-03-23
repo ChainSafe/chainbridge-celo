@@ -8,7 +8,7 @@ services:
   celo1-1:
     image: "chainsafe/chainbridge-bootstrapped-celo:latest"
     networks:
-      celo1:
+      - celo1
     container_name: celo1-1
     ports:
       - "8545:8545"
@@ -54,7 +54,7 @@ services:
   celo2-1:
     image: "chainsafe/chainbridge-bootstrapped-celo:latest"
     networks:
-      celo2:
+      - celo2
     container_name: celo2-1
     ports:
       - "8547:8545"
@@ -99,11 +99,16 @@ services:
 
   chainbridge-celo:
     image: "chainsafe/chainbridge-celo:latest"
+    depends_on:
+      - celo1-1
+      - celo2-1
+    networks:
+      - celo1
+      - celo2
     container_name: chainbridge-celo
     command: run --config /cfg/config-celo-int-tst.json --testkey alice --fresh --leveldb ./lvldb
     volumes:
       - ./e2e/cfg:/cfg
-    network_mode: host
 
 networks:
   celo1:
