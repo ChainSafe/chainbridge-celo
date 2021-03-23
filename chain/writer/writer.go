@@ -17,6 +17,7 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
+var ProposalNotPassedStatus uint8 = 1
 var ProposalStatusPassed uint8 = 2
 var ProposalStatusTransferred uint8 = 3
 var ProposalStatusCancelled uint8 = 4
@@ -35,7 +36,7 @@ type Bridger interface {
 	GetProposal(opts *bind.CallOpts, originChainID uint8, depositNonce uint64, dataHash [32]byte) (Bridge.BridgeProposal, error)
 	HasVotedOnProposal(opts *bind.CallOpts, arg0 *big.Int, arg1 [32]byte, arg2 common.Address) (bool, error)
 	VoteProposal(opts *bind.TransactOpts, chainID uint8, depositNonce uint64, resourceID [32]byte, dataHash [32]byte) (*types.Transaction, error)
-	ExecuteProposal(opts *bind.TransactOpts, chainID uint8, depositNonce uint64, data []byte, resourceID [32]byte, signatureHeader []byte, aggregatePublicKey []byte, g1 []byte, hashedMessage [32]byte, rootHash [32]byte, key []byte, nodes []byte) (*types.Transaction, error)
+	ExecuteProposal(opts *bind.TransactOpts, chainID uint8, depositNonce uint64, data []byte, resourceID [32]byte, signatureHeader []byte, aggregatePublicKey []byte, hashedMessage [32]byte, rootHash [32]byte, key []byte, nodes []byte) (*types.Transaction, error)
 }
 
 type ContractCaller interface {
@@ -92,7 +93,13 @@ func (w *writer) ResolveMessage(m *utils.Message) bool {
 	dataHash := CreateProposalDataHash(data, handlerContract, m.MPParams, m.SVParams)
 
 	if !w.shouldVote(m, dataHash) {
-		return false
+		if w.proposalIsPassed(m.Source, m.DepositNonce, dataHash) {
+			// We should not vote for this proposal but it is ready to be executed
+			w.executeProposal(m, data, dataHash)
+			return true
+		} else {
+			return false
+		}
 	}
 	// Capture latest block so when know where to watch from
 	latestBlock, err := w.client.LatestBlock()
