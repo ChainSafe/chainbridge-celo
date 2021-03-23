@@ -88,7 +88,7 @@ func (s *IntegrationTestSuite) TestDeposit() {
 			passedEventFound = true
 		}
 	}
-	s.False(passedEventFound)
+	s.True(passedEventFound)
 
 	senderBalAfter, err := erc20Contract.BalanceOf(s.client.CallOpts(), utils.AliceKp.CommonAddress())
 	s.Nil(err)
