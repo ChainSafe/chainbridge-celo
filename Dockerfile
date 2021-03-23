@@ -1,3 +1,4 @@
+# Using ubuntu as builder bcs of errors on building celo-bls-crypto library on alpine. I seems related to musl C compiler that i used by alpine.
 FROM ubuntu:18.04 as builder
 RUN apt update \
  && apt install -y \
@@ -31,7 +32,7 @@ RUN chmod +x ./build/chainbridge-celo
 
 ENTRYPOINT ["/src/build/chainbridge-celo"]
 
-# # final stage
+# # final stage. Using ubuntu as runner since image build on ubuntu was not able to run on alpine somehow...
 FROM ubuntu:18.04
 
 COPY --from=builder /src/build ./
