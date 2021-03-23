@@ -1,4 +1,4 @@
-# Using ubuntu as builder bcs of errors on building celo-bls-crypto library on alpine. I seems related to musl C compiler that i used by alpine.
+# Using ubuntu as builder bcs of errors on building celo-bls-crypto library on alpine. It seems related to musl C compiler that is used by alpine.
 FROM ubuntu:18.04 as builder
 RUN apt update \
  && apt install -y \
