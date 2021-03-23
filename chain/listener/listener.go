@@ -129,6 +129,7 @@ func (l *listener) pollBlocks() error {
 			if err != nil {
 				log.Error().Str("block", currentBlock.String()).Err(err).Msg("Failed to get events for block")
 				retry--
+				time.Sleep(BlockRetryInterval)
 				continue
 			}
 			if currentBlock.Int64()%20 == 0 {
