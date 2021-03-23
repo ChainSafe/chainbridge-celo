@@ -142,10 +142,10 @@ func Simulate(client *client.Client, block *big.Int, txHash common.Hash, from co
 	}
 	bs, err := hex.DecodeString(common.Bytes2Hex(res))
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 	log.Debug().Msg(string(bs))
-	return nil, nil
+	return bs, nil
 }
 
 func BuildQuery(contract common.Address, sig EventSig, startBlock *big.Int, endBlock *big.Int) ethereum.FilterQuery {
