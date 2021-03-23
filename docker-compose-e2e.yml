@@ -98,7 +98,7 @@ services:
       - NETWORKID=444
 
   chainbridge-celo:
-    image: "chainsafe/chainbridge-celo:latest"
+    image: "local/chainbridge-celo"
     container_name: chainbridge-celo
     command: run --config /cfg/config-celo-int-tst.json --testkey alice --fresh --leveldb ./lvldb
     volumes:
