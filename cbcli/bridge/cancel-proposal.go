@@ -29,7 +29,7 @@ func cancelProposal(cctx *cli.Context) error {
 	dataHash := cctx.String("dataHash")
 	dataHashBytes := utils.SliceTo32Bytes(common.Hex2Bytes(dataHash))
 
-	ethClient, err := client.NewClient(url, false, sender, big.NewInt(0).SetUint64(gasLimit), big.NewInt(0).SetUint64(gasPrice))
+	ethClient, err := client.NewClient(url, false, sender, big.NewInt(0).SetUint64(gasLimit), big.NewInt(0).SetUint64(gasPrice), big.NewFloat(1))
 	if err != nil {
 		return err
 	}
