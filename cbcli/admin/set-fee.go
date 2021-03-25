@@ -23,11 +23,6 @@ var setFeeCMD = &cli.Command{
 			Name:  "bridge",
 			Usage: "Bridge contract address",
 		},
-		&cli.Uint64Flag{
-			Name:     "decimals",
-			Usage:    "erc20Token decimals",
-			Required: true,
-		},
 	},
 }
 
@@ -35,7 +30,6 @@ func setFee(cctx *cli.Context) error {
 	url := cctx.String("url")
 	gasLimit := cctx.Uint64("gasLimit")
 	gasPrice := cctx.Uint64("gasPrice")
-	decimals := big.NewInt(0).SetUint64(cctx.Uint64("decimals"))
 	sender, err := cliutils.DefineSender(cctx)
 	if err != nil {
 		return err
@@ -46,7 +40,7 @@ func setFee(cctx *cli.Context) error {
 	}
 	fee := cctx.String("fee")
 
-	realFeeAmount, err := utils.UserAmountToWei(fee, decimals)
+	realFeeAmount, err := utils.UserAmountToWei(fee, big.NewInt(18))
 	if err != nil {
 		return err
 	}
