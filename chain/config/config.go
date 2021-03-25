@@ -143,10 +143,10 @@ func ParseChainConfig(rawCfg *cfg.RawChainConfig, ctx *cli.Context) (*CeloChainC
 	}
 
 	if gasMultiplier, ok := rawCfg.Opts["gasMultiplier"]; ok {
-		multilier := big.NewFloat(DefaultGasMultiplier)
-		_, pass := multilier.SetString(gasMultiplier)
+		multiplier := big.NewFloat(DefaultGasMultiplier)
+		_, pass := multiplier.SetString(gasMultiplier)
 		if pass {
-			config.GasMultiplier = multilier
+			config.GasMultiplier = multiplier
 		} else {
 			return nil, errors.New("unable to parse gasMultiplier to float")
 		}
