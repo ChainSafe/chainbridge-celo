@@ -53,6 +53,7 @@ Celo chains support the following additional options:
     "startBlock": "1234",            // The block to start processing events from (default: 0)
     "blockConfirmations": "10",      // Number of blocks to wait before processing a block
     "epochSize": "12"                // Size of chain epoch. eg. The number of blocks after which to checkpoint and reset the pending votes
+    "gasMultiplier": "1.25", 		 // Multiplies the gas price by the supplied value (default: 1)
 }
 ```
 

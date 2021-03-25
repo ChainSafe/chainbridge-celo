@@ -15,7 +15,7 @@ const TestEndpoint = "ws://localhost:8545"
 const TestEndpoint2 = "ws://localhost:8547"
 
 func Deploy(ctx *cli.Context) error {
-	ethClient, err := client.NewClient(TestEndpoint, false, utils.AliceKp, big.NewInt(utils.DefaultGasLimit), big.NewInt(utils.DefaultGasPrice))
+	ethClient, err := client.NewClient(TestEndpoint, false, utils.AliceKp, big.NewInt(utils.DefaultGasLimit), big.NewInt(utils.DefaultGasPrice), big.NewFloat(1))
 	if err != nil {
 		return err
 	}

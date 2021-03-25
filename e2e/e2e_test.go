@@ -33,13 +33,13 @@ func TestRunE2ETests(t *testing.T) {
 func (s *IntegrationTestSuite) SetupSuite()    {}
 func (s *IntegrationTestSuite) TearDownSuite() {}
 func (s *IntegrationTestSuite) SetupTest() {
-	chainClient, err := client.NewClient(TestEndpoint, false, utils.AliceKp, big.NewInt(utils.DefaultGasLimit), big.NewInt(utils.DefaultGasPrice))
+	chainClient, err := client.NewClient(TestEndpoint, false, utils.AliceKp, big.NewInt(utils.DefaultGasLimit), big.NewInt(utils.DefaultGasPrice), big.NewFloat(1))
 	if err != nil {
 		panic(err)
 	}
 	s.client = chainClient
 
-	client2, err := client.NewClient(TestEndpoint2, false, utils.AliceKp, big.NewInt(utils.DefaultGasLimit), big.NewInt(utils.DefaultGasPrice))
+	client2, err := client.NewClient(TestEndpoint2, false, utils.AliceKp, big.NewInt(utils.DefaultGasLimit), big.NewInt(utils.DefaultGasPrice), big.NewFloat(1))
 	if err != nil {
 		panic(err)
 	}
@@ -117,7 +117,7 @@ func (s *IntegrationTestSuite) TestDeposit() {
 }
 
 func (s *IntegrationTestSuite) TestMultipleTransactionsInBlock() {
-	eveSender, err := client.NewClient(TestEndpoint, false, utils.EveKp, big.NewInt(utils.DefaultGasLimit), big.NewInt(utils.DefaultGasPrice))
+	eveSender, err := client.NewClient(TestEndpoint, false, utils.EveKp, big.NewInt(utils.DefaultGasLimit), big.NewInt(utils.DefaultGasPrice), big.NewFloat(1))
 	s.Nil(err)
 
 	dstAddr := utils.BobKp.CommonAddress()

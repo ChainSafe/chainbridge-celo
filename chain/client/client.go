@@ -29,17 +29,18 @@ var BlockRetryInterval = time.Second * 5
 
 type Client struct {
 	*ethclient.Client
-	endpoint    string
-	http        bool
-	kp          *secp256k1.Keypair
-	gasLimit    *big.Int
-	maxGasPrice *big.Int
-	opts        *bind.TransactOpts
-	callOpts    *bind.CallOpts
-	nonce       uint64
-	nonceLock   sync.Mutex
-	optsLock    sync.Mutex
-	stop        chan int // All routines should exit when this channel is closed
+	endpoint      string
+	http          bool
+	kp            *secp256k1.Keypair
+	gasLimit      *big.Int
+	maxGasPrice   *big.Int
+	gasMultiplier *big.Float
+	opts          *bind.TransactOpts
+	callOpts      *bind.CallOpts
+	nonce         uint64
+	nonceLock     sync.Mutex
+	optsLock      sync.Mutex
+	stop          chan int // All routines should exit when this channel is closed
 }
 
 type LogFilterWithLatestBlock interface {
@@ -49,14 +50,15 @@ type LogFilterWithLatestBlock interface {
 }
 
 // NewConnection returns an uninitialized connection, must call Client.Connect() before using.
-func NewClient(endpoint string, http bool, kp *secp256k1.Keypair, gasLimit *big.Int, gasPrice *big.Int) (*Client, error) {
+func NewClient(endpoint string, http bool, kp *secp256k1.Keypair, gasLimit *big.Int, gasPrice *big.Int, gasMultiplier *big.Float) (*Client, error) {
 	c := &Client{
-		endpoint:    endpoint,
-		http:        http,
-		kp:          kp,
-		maxGasPrice: gasPrice,
-		gasLimit:    gasLimit,
-		stop:        make(chan int),
+		endpoint:      endpoint,
+		http:          http,
+		kp:            kp,
+		maxGasPrice:   gasPrice,
+		gasLimit:      gasLimit,
+		gasMultiplier: gasMultiplier,
+		stop:          make(chan int),
 	}
 	if err := c.Connect(); err != nil {
 		return nil, err
@@ -141,7 +143,7 @@ func (c *Client) ClientWithArgs(args ...func(*Client)) {
 	}
 }
 
-//TheClientWithValue  arg updater of Client that sets opts.Value with provided value
+//ClientWithValue  arg updater of Client that sets opts.Value with provided value
 func ClientWithValue(value *big.Int) func(*Client) {
 	return func(c *Client) {
 		c.opts.Value = value
@@ -237,10 +239,12 @@ func (c *Client) LockAndUpdateNonce() error {
 }
 
 func (c *Client) SafeEstimateGas(ctx context.Context) (*big.Int, error) {
-	gasPrice, err := c.SuggestGasPrice(context.TODO())
+	suggestedGasPrice, err := c.SuggestGasPrice(context.TODO())
 	if err != nil {
 		return nil, err
 	}
+
+	gasPrice := multiplyGasPrice(suggestedGasPrice, c.gasMultiplier)
 
 	// Check we aren't exceeding our limit
 
@@ -249,6 +253,19 @@ func (c *Client) SafeEstimateGas(ctx context.Context) (*big.Int, error) {
 	} else {
 		return gasPrice, nil
 	}
+}
+
+func multiplyGasPrice(gasEstimate *big.Int, gasMultiplier *big.Float) *big.Int {
+
+	gasEstimateFloat := new(big.Float).SetInt(gasEstimate)
+
+	result := gasEstimateFloat.Mul(gasEstimateFloat, gasMultiplier)
+
+	gasPrice := new(big.Int)
+
+	result.Int(gasPrice)
+
+	return gasPrice
 }
 
 // Close terminates the client connection and stops any running routines

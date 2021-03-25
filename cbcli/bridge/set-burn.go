@@ -36,7 +36,7 @@ func setBurn(cctx *cli.Context) error {
 		return err
 	}
 
-	ethClient, err := client.NewClient(url, false, sender, big.NewInt(gasLimit), big.NewInt(gasPrice))
+	ethClient, err := client.NewClient(url, false, sender, big.NewInt(gasLimit), big.NewInt(gasPrice), big.NewFloat(1))
 	if err != nil {
 		return err
 	}

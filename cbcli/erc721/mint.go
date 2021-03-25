@@ -50,7 +50,7 @@ func mint(cctx *cli.Context) error {
 
 	metadata := cctx.String("metadata")
 
-	ethClient, err := client.NewClient(url, false, sender, big.NewInt(0).SetUint64(gasLimit), big.NewInt(0).SetUint64(gasPrice))
+	ethClient, err := client.NewClient(url, false, sender, big.NewInt(0).SetUint64(gasLimit), big.NewInt(0).SetUint64(gasPrice), big.NewFloat(1))
 	if err != nil {
 		return err
 	}

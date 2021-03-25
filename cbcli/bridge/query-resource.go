@@ -27,7 +27,7 @@ func queryResource(cctx *cli.Context) error {
 	handlerAddr := common.HexToAddress(handlerS)
 	resourceIDs := cctx.String("resourceId")
 	resourceID := utils.SliceTo32Bytes(common.Hex2Bytes(resourceIDs))
-	ethClient, err := client.NewClient(url, false, sender, big.NewInt(0).SetUint64(gasLimit), big.NewInt(0).SetUint64(gasPrice))
+	ethClient, err := client.NewClient(url, false, sender, big.NewInt(0).SetUint64(gasLimit), big.NewInt(0).SetUint64(gasPrice), big.NewFloat(1))
 	if err != nil {
 		return err
 	}

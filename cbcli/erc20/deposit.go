@@ -32,7 +32,7 @@ var depositCMD = &cli.Command{
 		},
 		&cli.StringFlag{
 			Name:  "value",
-			Usage: "Value of ETH that should be sent along with deposit to cover possible fees. In WEI",
+			Usage: "Value of ETH that should be sent along with deposit to cover possible fees. In ETH (decimals are allowed)",
 			Value: "0",
 		},
 		&cli.StringFlag{
@@ -79,22 +79,23 @@ func deposit(cctx *cli.Context) error {
 		return err
 	}
 
-	value, ok := big.NewInt(0).SetString(cctx.String("value"), 10)
-	if !ok {
-		return errors.New("invalid value format")
-	}
+	value := cctx.String("value")
 
+	realValue, err := utils.UserAmountToWei(value, big.NewInt(18))
+	if err != nil {
+		return err
+	}
 	dest := cctx.Uint64("dest")
 
 	resourceId := cctx.String("resourceId")
 	resourceIDBytes := utils.SliceTo32Bytes(common.Hex2Bytes(resourceId))
 
-	ethClient, err := client.NewClient(url, false, sender, big.NewInt(0).SetUint64(gasLimit), big.NewInt(0).SetUint64(gasPrice))
+	ethClient, err := client.NewClient(url, false, sender, big.NewInt(0).SetUint64(gasLimit), big.NewInt(0).SetUint64(gasPrice), big.NewFloat(1))
 	if err != nil {
 		return err
 	}
 
-	ethClient.ClientWithArgs(client.TheClientWithValue(value))
+	ethClient.ClientWithArgs(client.ClientWithValue(realValue))
 
 	err = utils.MakeAndSendERC20Deposit(ethClient, bridgeAddress, recipientAddress, realAmount, resourceIDBytes, uint8(dest))
 	if err != nil {

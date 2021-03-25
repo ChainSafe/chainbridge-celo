@@ -4,6 +4,7 @@ package config
 
 import (
 	"flag"
+	"math/big"
 	"strconv"
 	"testing"
 
@@ -60,6 +61,7 @@ func TestParseConfig(t *testing.T) {
 			"http":           http,
 			"startBlock":     startBlockStr,
 			"epochSize":      "12",
+			"gasMultiplier":  "2.33",
 		},
 	}
 
@@ -133,6 +135,9 @@ func TestParseConfig(t *testing.T) {
 
 	if config.LatestBlock != _latest {
 		t.Errorf("expected %v got %v ", _latest, config.LatestBlock)
+	}
+	if config.GasMultiplier.Cmp(big.NewFloat(0).SetFloat64(2.33)) != 0 {
+		t.Errorf("expected gasMutliplayer to be %s got %s", "2.33", config.GasMultiplier.String())
 	}
 
 }
