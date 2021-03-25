@@ -142,7 +142,7 @@ func (c *Client) ClientWithArgs(args ...func(*Client)) {
 }
 
 //TheClientWithValue  arg updater of Client that sets opts.Value with provided value
-func TheClientWithValue(value *big.Int) func(*Client) {
+func ClientWithValue(value *big.Int) func(*Client) {
 	return func(c *Client) {
 		c.opts.Value = value
 	}
