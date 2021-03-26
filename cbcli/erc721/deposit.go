@@ -37,6 +37,11 @@ var depositCMD = &cli.Command{
 			Name:  "resourceId",
 			Usage: "ResourceID for transfer",
 		},
+		&cli.StringFlag{
+			Name:  "value",
+			Usage: "Value of ETH that should be sent along with deposit to cover possible fees. In ETH (decimals are allowed)",
+			Value: "0",
+		},
 	},
 }
 
@@ -64,10 +69,19 @@ func deposit(cctx *cli.Context) error {
 	resourceId := cctx.String("resourceId")
 	resourceIDBytes := utils.SliceTo32Bytes(common.Hex2Bytes(resourceId))
 
+	value := cctx.String("value")
+
+	realValue, err := utils.UserAmountToWei(value, big.NewInt(18))
+	if err != nil {
+		return err
+	}
+
 	ethClient, err := client.NewClient(url, false, sender, big.NewInt(0).SetUint64(gasLimit), big.NewInt(0).SetUint64(gasPrice), big.NewFloat(1))
 	if err != nil {
 		return err
 	}
+	ethClient.ClientWithArgs(client.ClientWithValue(realValue))
+
 	err = utils.MakeAndSendERC721Deposit(ethClient, bridgeAddress, recipientAddress, big.NewInt(id), resourceIDBytes, uint8(dest))
 	if err != nil {
 		return err

@@ -54,9 +54,9 @@ func UserAmountToWei(amount string, decimal *big.Int) (*big.Int, error) {
 		return nil, errors.New("wrong amount format")
 	}
 	ethValueFloat := new(big.Float).Mul(amountFloat, big.NewFloat(gomath.Pow10(int(decimal.Int64()))))
-	ethValuseFloatString := strings.Split(ethValueFloat.Text('f', int(decimal.Int64())), ".")
+	ethValueFloatString := strings.Split(ethValueFloat.Text('f', int(decimal.Int64())), ".")
 
-	i, ok := big.NewInt(0).SetString(ethValuseFloatString[0], 10)
+	i, ok := big.NewInt(0).SetString(ethValueFloatString[0], 10)
 	if !ok {
 		return nil, errors.New(ethValueFloat.Text('f', int(decimal.Int64())))
 	}
