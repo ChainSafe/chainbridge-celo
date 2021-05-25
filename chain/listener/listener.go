@@ -17,6 +17,7 @@ import (
 	eth "github.com/ethereum/go-ethereum"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	ethcommon "github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/rlp"
 	"github.com/rs/zerolog/log"
 )
@@ -214,7 +215,12 @@ func (l *listener) getDepositEventsAndProofsForBlock(latestBlock *big.Int) error
 		if err != nil {
 			return err
 		}
-		m.SVParams = &utils.SignatureVerification{AggregatePublicKey: apk, BlockHash: blockData.Header().Hash(), Signature: blockData.EpochSnarkData().Signature}
+		// fetch block signature from block validators
+		extra, err := types.ExtractIstanbulExtra(blockData.Header())
+		if err != nil {
+			return err
+		}
+		m.SVParams = &utils.SignatureVerification{AggregatePublicKey: apk, BlockHash: blockData.Header().Hash(), Signature: extra.AggregatedSeal.Signature}
 		m.MPParams = &utils.MerkleProof{TxRootHash: utils.SliceTo32Bytes(blockData.TxHash().Bytes()), Nodes: proof, Key: key}
 		err = l.router.Send(m)
 
