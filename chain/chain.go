@@ -4,6 +4,7 @@ package chain
 
 import (
 	"fmt"
+
 	bridgeHandler "github.com/ChainSafe/chainbridge-celo/bindings/Bridge"
 	erc20Handler "github.com/ChainSafe/chainbridge-celo/bindings/ERC20Handler"
 	erc721Handler "github.com/ChainSafe/chainbridge-celo/bindings/ERC721Handler"
@@ -13,7 +14,6 @@ import (
 	"github.com/ChainSafe/chainbridge-celo/chain/listener"
 	"github.com/ChainSafe/chainbridge-celo/chain/writer"
 	"github.com/ChainSafe/chainbridge-celo/utils"
-	"github.com/pkg/errors"
 	"github.com/rs/zerolog/log"
 )
 
@@ -49,7 +49,7 @@ func InitializeChain(cc *config.CeloChainConfig, c *client.Client, listener List
 		return nil, err
 	}
 	if chainId != uint8(cc.ID) {
-		return nil, errors.New(fmt.Sprintf("chainId (%d) and configuration chainId (%d) do not match", chainId, cc.ID))
+		return nil, fmt.Errorf("chainId (%d) and configuration chainId (%d) do not match", chainId, cc.ID)
 	}
 
 	erc20HandlerContract, err := erc20Handler.NewERC20Handler(cc.Erc20HandlerContract, c)
