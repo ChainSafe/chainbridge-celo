@@ -6,7 +6,7 @@ package writer
 import (
 	"math/big"
 
-	"github.com/ChainSafe/chainbridge-celo/bindings/mptp/Bridge"
+	"github.com/ChainSafe/chainbridge-celo/bindings/Bridge"
 	"github.com/ChainSafe/chainbridge-celo/chain/client"
 	"github.com/ChainSafe/chainbridge-celo/chain/config"
 	"github.com/ChainSafe/chainbridge-celo/utils"

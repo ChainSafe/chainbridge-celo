@@ -7,7 +7,7 @@ import (
 	"testing"
 	"time"
 
-	erc20 "github.com/ChainSafe/chainbridge-celo/bindings/mptp/ERC20PresetMinterPauser"
+	erc20 "github.com/ChainSafe/chainbridge-celo/bindings/ERC20PresetMinterPauser"
 	"github.com/ChainSafe/chainbridge-celo/chain/client"
 	"github.com/ChainSafe/chainbridge-celo/utils"
 	"github.com/ethereum/go-ethereum/common"
