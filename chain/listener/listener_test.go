@@ -6,9 +6,9 @@ import (
 	"math/big"
 	"testing"
 
-	"github.com/ChainSafe/chainbridge-celo/bindings/ERC20Handler"
-	"github.com/ChainSafe/chainbridge-celo/bindings/ERC721Handler"
-	"github.com/ChainSafe/chainbridge-celo/bindings/GenericHandler"
+	"github.com/ChainSafe/chainbridge-celo/bindings/mptp/ERC20Handler"
+	"github.com/ChainSafe/chainbridge-celo/bindings/mptp/ERC721Handler"
+	"github.com/ChainSafe/chainbridge-celo/bindings/mptp/GenericHandler"
 	"github.com/ChainSafe/chainbridge-celo/chain/client/mock"
 	"github.com/ChainSafe/chainbridge-celo/chain/config"
 	"github.com/ChainSafe/chainbridge-celo/chain/listener/mock"

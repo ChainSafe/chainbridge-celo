@@ -4,10 +4,10 @@ package chain
 
 import (
 	"fmt"
-	bridgeHandler "github.com/ChainSafe/chainbridge-celo/bindings/Bridge"
-	erc20Handler "github.com/ChainSafe/chainbridge-celo/bindings/ERC20Handler"
-	erc721Handler "github.com/ChainSafe/chainbridge-celo/bindings/ERC721Handler"
-	"github.com/ChainSafe/chainbridge-celo/bindings/GenericHandler"
+	bridgeHandler "github.com/ChainSafe/chainbridge-celo/bindings/mptp/Bridge"
+	erc20Handler "github.com/ChainSafe/chainbridge-celo/bindings/mptp/ERC20Handler"
+	erc721Handler "github.com/ChainSafe/chainbridge-celo/bindings/mptp/ERC721Handler"
+	"github.com/ChainSafe/chainbridge-celo/bindings/mptp/GenericHandler"
 	"github.com/ChainSafe/chainbridge-celo/chain/client"
 	"github.com/ChainSafe/chainbridge-celo/chain/config"
 	"github.com/ChainSafe/chainbridge-celo/chain/listener"

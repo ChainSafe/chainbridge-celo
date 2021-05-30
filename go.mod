@@ -4,11 +4,11 @@ go 1.15
 
 replace github.com/celo-org/celo-bls-go => github.com/celo-org/celo-bls-go v0.1.7
 
-replace github.com/ethereum/go-ethereum => github.com/celo-org/celo-blockchain v1.2.4
+replace github.com/ethereum/go-ethereum => github.com/celo-org/celo-blockchain v1.3.2
 
 require (
 	github.com/ChainSafe/chainbridge-utils v1.0.6
-	github.com/celo-org/celo-bls-go v0.1.6
+	github.com/celo-org/celo-bls-go v0.2.4
 	github.com/ethereum/go-ethereum v1.9.17
 	github.com/golang/mock v1.4.4
 	github.com/pkg/errors v0.9.1

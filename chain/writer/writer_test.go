@@ -8,7 +8,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/ChainSafe/chainbridge-celo/bindings/Bridge"
+	"github.com/ChainSafe/chainbridge-celo/bindings/mptp/Bridge"
 	"github.com/ChainSafe/chainbridge-celo/chain/config"
 	mock_writer "github.com/ChainSafe/chainbridge-celo/chain/writer/mock"
 	"github.com/ChainSafe/chainbridge-celo/utils"

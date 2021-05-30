@@ -6,7 +6,7 @@ package mock_writer
 
 import (
 	context "context"
-	Bridge "github.com/ChainSafe/chainbridge-celo/bindings/Bridge"
+	Bridge "github.com/ChainSafe/chainbridge-celo/bindings/mptp/Bridge"
 	ethereum "github.com/ethereum/go-ethereum"
 	bind "github.com/ethereum/go-ethereum/accounts/abi/bind"
 	common "github.com/ethereum/go-ethereum/common"
