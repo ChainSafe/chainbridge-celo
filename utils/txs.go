@@ -15,8 +15,8 @@ import (
 	"github.com/ChainSafe/chainbridge-celo/chain/client"
 	"github.com/ChainSafe/chainbridge-utils/keystore"
 	"github.com/ChainSafe/chainbridge-utils/msg"
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/core/types"
+	"github.com/celo-org/celo-blockchain/common"
+	"github.com/celo-org/celo-blockchain/core/types"
 	"github.com/pkg/errors"
 	"github.com/rs/zerolog/log"
 )

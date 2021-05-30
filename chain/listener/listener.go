@@ -14,10 +14,10 @@ import (
 	"github.com/ChainSafe/chainbridge-celo/chain/config"
 	"github.com/ChainSafe/chainbridge-celo/txtrie"
 	"github.com/ChainSafe/chainbridge-celo/utils"
-	eth "github.com/ethereum/go-ethereum"
-	"github.com/ethereum/go-ethereum/accounts/abi/bind"
-	ethcommon "github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/rlp"
+	eth "github.com/celo-org/celo-blockchain"
+	"github.com/celo-org/celo-blockchain/accounts/abi/bind"
+	ethcommon "github.com/celo-org/celo-blockchain/common"
+	"github.com/celo-org/celo-blockchain/rlp"
 	"github.com/rs/zerolog/log"
 )
 

@@ -4,12 +4,12 @@ package validatorsync
 
 import (
 	"errors"
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/common/hexutil"
-	"github.com/ethereum/go-ethereum/core/types"
-	"github.com/ethereum/go-ethereum/crypto"
-	"github.com/ethereum/go-ethereum/crypto/bls"
-	"github.com/ethereum/go-ethereum/rlp"
+	"github.com/celo-org/celo-blockchain/common"
+	"github.com/celo-org/celo-blockchain/common/hexutil"
+	"github.com/celo-org/celo-blockchain/core/types"
+	"github.com/celo-org/celo-blockchain/crypto"
+	"github.com/celo-org/celo-blockchain/crypto/bls"
+	"github.com/celo-org/celo-blockchain/rlp"
 	"math/big"
 	"os"
 	"testing"

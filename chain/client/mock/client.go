@@ -6,8 +6,8 @@ package mock_client
 
 import (
 	context "context"
-	ethereum "github.com/ethereum/go-ethereum"
-	types "github.com/ethereum/go-ethereum/core/types"
+	ethereum "github.com/celo-org/celo-blockchain"
+	types "github.com/celo-org/celo-blockchain/core/types"
 	gomock "github.com/golang/mock/gomock"
 	big "math/big"
 	reflect "reflect"

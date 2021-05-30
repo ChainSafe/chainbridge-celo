@@ -4,10 +4,10 @@ package validatorsync
 
 import (
 	"errors"
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/consensus/istanbul"
-	"github.com/ethereum/go-ethereum/crypto"
-	"github.com/ethereum/go-ethereum/crypto/bls"
+	"github.com/celo-org/celo-blockchain/common"
+	"github.com/celo-org/celo-blockchain/consensus/istanbul"
+	"github.com/celo-org/celo-blockchain/crypto"
+	"github.com/celo-org/celo-blockchain/crypto/bls"
 	"github.com/stretchr/testify/suite"
 	"github.com/syndtr/goleveldb/leveldb"
 	"math/big"

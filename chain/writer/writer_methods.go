@@ -10,8 +10,8 @@ import (
 	"time"
 
 	"github.com/ChainSafe/chainbridge-celo/utils"
-	eth "github.com/ethereum/go-ethereum"
-	ethcommon "github.com/ethereum/go-ethereum/common"
+	eth "github.com/celo-org/celo-blockchain"
+	ethcommon "github.com/celo-org/celo-blockchain/common"
 	"github.com/rs/zerolog/log"
 )
 

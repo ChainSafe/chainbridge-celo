@@ -12,13 +12,13 @@ import (
 	"time"
 
 	"github.com/ChainSafe/chainbridge-utils/crypto/secp256k1"
-	eth "github.com/ethereum/go-ethereum"
-	"github.com/ethereum/go-ethereum/accounts/abi/bind"
-	ethcommon "github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/core/types"
-	ethcrypto "github.com/ethereum/go-ethereum/crypto"
-	"github.com/ethereum/go-ethereum/ethclient"
-	"github.com/ethereum/go-ethereum/rpc"
+	eth "github.com/celo-org/celo-blockchain"
+	"github.com/celo-org/celo-blockchain/accounts/abi/bind"
+	ethcommon "github.com/celo-org/celo-blockchain/common"
+	"github.com/celo-org/celo-blockchain/core/types"
+	ethcrypto "github.com/celo-org/celo-blockchain/crypto"
+	"github.com/celo-org/celo-blockchain/ethclient"
+	"github.com/celo-org/celo-blockchain/rpc"
 	"github.com/rs/zerolog/log"
 )
 

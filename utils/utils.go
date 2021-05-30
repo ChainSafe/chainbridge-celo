@@ -2,9 +2,9 @@ package utils
 
 import (
 	"bytes"
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/common/math"
-	"github.com/ethereum/go-ethereum/crypto"
+	"github.com/celo-org/celo-blockchain/common"
+	"github.com/celo-org/celo-blockchain/common/math"
+	"github.com/celo-org/celo-blockchain/crypto"
 	"github.com/pkg/errors"
 	gomath "math"
 	"math/big"
