@@ -8,8 +8,8 @@ import (
 	ERC20Handler "github.com/ChainSafe/chainbridge-celo/bindings/mptp/ERC20Handler"
 	ERC721Handler "github.com/ChainSafe/chainbridge-celo/bindings/mptp/ERC721Handler"
 	GenericHandler "github.com/ChainSafe/chainbridge-celo/bindings/mptp/GenericHandler"
-	bind "github.com/celo-org/celo-blockchain/accounts/abi/bind"
-	common "github.com/celo-org/celo-blockchain/common"
+	bind "github.com/ethereum/go-ethereum/accounts/abi/bind"
+	common "github.com/ethereum/go-ethereum/common"
 	gomock "github.com/golang/mock/gomock"
 	reflect "reflect"
 )

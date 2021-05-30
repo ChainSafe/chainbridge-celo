@@ -7,12 +7,12 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/celo-org/celo-blockchain/consensus/istanbul"
+	"github.com/ethereum/go-ethereum/consensus/istanbul"
 	"math/big"
 	"time"
 
-	"github.com/celo-org/celo-blockchain"
-	"github.com/celo-org/celo-blockchain/core/types"
+	"github.com/ethereum/go-ethereum"
+	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/rs/zerolog/log"
 )
 

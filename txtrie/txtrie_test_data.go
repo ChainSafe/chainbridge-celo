@@ -6,7 +6,7 @@ import (
 	"encoding/json"
 	"log"
 
-	"github.com/celo-org/celo-blockchain/core/types"
+	"github.com/ethereum/go-ethereum/core/types"
 )
 
 func GetTransactions1() types.Transactions {

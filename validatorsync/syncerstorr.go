@@ -10,7 +10,7 @@ import (
 	"math/big"
 	"time"
 
-	"github.com/celo-org/celo-blockchain/consensus/istanbul"
+	"github.com/ethereum/go-ethereum/consensus/istanbul"
 	"github.com/syndtr/goleveldb/leveldb"
 )
 

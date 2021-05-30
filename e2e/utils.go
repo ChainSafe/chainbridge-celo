@@ -8,7 +8,7 @@ import (
 	"time"
 
 	"github.com/ChainSafe/chainbridge-celo/utils"
-	"github.com/celo-org/celo-blockchain/core/types"
+	"github.com/ethereum/go-ethereum/core/types"
 )
 
 func sendOneWeiWithDelay(sender *client.Client) (*types.Transaction, error) {

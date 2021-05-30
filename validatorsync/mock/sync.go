@@ -6,7 +6,7 @@ package mock_validatorsync
 
 import (
 	context "context"
-	types "github.com/celo-org/celo-blockchain/core/types"
+	types "github.com/ethereum/go-ethereum/core/types"
 	gomock "github.com/golang/mock/gomock"
 	big "math/big"
 	reflect "reflect"

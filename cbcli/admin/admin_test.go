@@ -7,7 +7,7 @@ import (
 
 	"github.com/ChainSafe/chainbridge-celo/chain/client"
 	"github.com/ChainSafe/chainbridge-celo/utils"
-	"github.com/celo-org/celo-blockchain/common"
+	"github.com/ethereum/go-ethereum/common"
 	"github.com/stretchr/testify/suite"
 	"github.com/urfave/cli/v2"
 )

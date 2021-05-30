@@ -8,8 +8,8 @@ import (
 	"github.com/ChainSafe/chainbridge-celo/utils"
 	"math/big"
 
-	"github.com/celo-org/celo-blockchain/common"
-	"github.com/celo-org/celo-blockchain/crypto"
+	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/crypto"
 )
 
 // constructErc20ProposalData returns the bytes to construct a proposal suitable for Erc20

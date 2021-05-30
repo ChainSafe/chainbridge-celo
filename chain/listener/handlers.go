@@ -5,8 +5,8 @@ package listener
 
 import (
 	"github.com/ChainSafe/chainbridge-celo/utils"
-	"github.com/celo-org/celo-blockchain/accounts/abi/bind"
-	"github.com/celo-org/celo-blockchain/common"
+	"github.com/ethereum/go-ethereum/accounts/abi/bind"
+	"github.com/ethereum/go-ethereum/common"
 	"github.com/rs/zerolog/log"
 )
 
