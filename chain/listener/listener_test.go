@@ -76,10 +76,6 @@ func dummyBlock(number int64) *types.Block {
 	return types.NewBlock(header, []*types.Transaction{tx}, nil, nil)
 }
 
-// func setIstanbulExtraDummyBlockExtra(block *types.Block) {
-// 	b :=
-// }
-
 func (s *ListenerTestSuite) TestListenerStartStop() {
 	stopChn := make(chan struct{})
 	errChn := make(chan error)
