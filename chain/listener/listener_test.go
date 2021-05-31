@@ -9,9 +9,9 @@ import (
 	"github.com/ChainSafe/chainbridge-celo/bindings/ERC20Handler"
 	"github.com/ChainSafe/chainbridge-celo/bindings/ERC721Handler"
 	"github.com/ChainSafe/chainbridge-celo/bindings/GenericHandler"
-	"github.com/ChainSafe/chainbridge-celo/chain/client/mock"
+	mock_client "github.com/ChainSafe/chainbridge-celo/chain/client/mock"
 	"github.com/ChainSafe/chainbridge-celo/chain/config"
-	"github.com/ChainSafe/chainbridge-celo/chain/listener/mock"
+	mock_listener "github.com/ChainSafe/chainbridge-celo/chain/listener/mock"
 	"github.com/ChainSafe/chainbridge-celo/txtrie"
 	"github.com/ChainSafe/chainbridge-celo/utils"
 	eth "github.com/ethereum/go-ethereum"
@@ -38,6 +38,7 @@ type ListenerTestSuite struct {
 	erc721Handler            *mock_listener.MockIERC721Handler
 	genericHandler           *mock_listener.MockIGenericHandler
 	validatorsAggregatorMock *mock_listener.MockValidatorsAggregator
+	istanbulExtraExtractor   *mock_listener.MockIstanbulExtraExtractor
 }
 
 func TestRunTestSuite(t *testing.T) {
@@ -57,6 +58,7 @@ func (s *ListenerTestSuite) SetupTest() {
 	s.erc721Handler = mock_listener.NewMockIERC721Handler(gomockController)
 	s.genericHandler = mock_listener.NewMockIGenericHandler(gomockController)
 	s.validatorsAggregatorMock = mock_listener.NewMockValidatorsAggregator(gomockController)
+	s.istanbulExtraExtractor = mock_listener.NewMockIstanbulExtraExtractor(gomockController)
 }
 func (s *ListenerTestSuite) TearDownTest() {}
 
@@ -65,13 +67,28 @@ func dummyBlock(number int64) *types.Block {
 		Number:  big.NewInt(number),
 		GasUsed: 123213,
 		Time:    100,
-		Extra:   []byte{01, 02},
+		// Extra:   []byte{01, 02},
 	}
+
+	// set block header extra data (Istanbul Extra check)
+	// init new byte array with length of 32
+	var byteArr = [32]byte{}
+
+	// init slice of sliced array to set type to []byte
+	byteSlice := byteArr[:]
+
+	// set header extra as byteSlice
+	header.Extra = byteSlice
+
 	feeCurrencyAddr := common.HexToAddress("02")
 	gatewayFeeRecipientAddr := common.HexToAddress("03")
 	tx := types.NewTransaction(1, common.HexToAddress("01"), big.NewInt(1), 10000, big.NewInt(10), &feeCurrencyAddr, &gatewayFeeRecipientAddr, big.NewInt(34), []byte{04})
 	return types.NewBlock(header, []*types.Transaction{tx}, nil, nil)
 }
+
+// func setIstanbulExtraDummyBlockExtra(block *types.Block) {
+// 	b :=
+// }
 
 func (s *ListenerTestSuite) TestListenerStartStop() {
 	stopChn := make(chan struct{})
@@ -318,6 +335,11 @@ func (s *ListenerTestSuite) TestGetDepositEventsAndProofsForBlockerERC20() {
 	proof, key, err := txtrie.RetrieveProof(trie, keyRlp)
 	s.Nil(err)
 
+	istanbulExtraData := new(types.IstanbulExtra)
+
+	s.istanbulExtraExtractor.EXPECT().ExtractIstanbulExtra(block.Header()).Return(istanbulExtraData, nil)
+	s.Nil(errors.New("Error with istanbul extra data"))
+
 	_ = utils.NewFungibleTransfer(
 		listener.cfg.ID,
 		destID,
@@ -331,7 +353,7 @@ func (s *ListenerTestSuite) TestGetDepositEventsAndProofsForBlockerERC20() {
 		&utils.SignatureVerification{
 			AggregatePublicKey: pk,
 			BlockHash:          block.Header().Hash(),
-			Signature:          block.EpochSnarkData().Signature,
+			Signature:          istanbulExtraData.AggregatedSeal.Signature,
 		},
 		prop.Amount,
 		prop.DestinationRecipientAddress,
@@ -417,6 +439,12 @@ func (s *ListenerTestSuite) TestGetDepositEventsAndProofsForBlockerERC721() {
 	s.validatorsAggregatorMock.EXPECT().GetAPKForBlock(gomock.Any(), gomock.Any(), gomock.Any()).Return(pk, nil)
 	block := dummyBlock(123)
 	s.clientMock.EXPECT().BlockByNumber(gomock.Any(), gomock.Any()).Return(block, nil)
+
+	istanbulExtraData := new(types.IstanbulExtra)
+
+	s.istanbulExtraExtractor.EXPECT().ExtractIstanbulExtra(block.Header()).Return(istanbulExtraData, nil)
+	s.Nil(errors.New("Error with istanbul extra data"))
+
 	_ = utils.NewNonFungibleTransfer(
 		listener.cfg.ID,
 		destID,
@@ -428,7 +456,7 @@ func (s *ListenerTestSuite) TestGetDepositEventsAndProofsForBlockerERC721() {
 		&utils.SignatureVerification{
 			AggregatePublicKey: pk,
 			BlockHash:          block.Header().Hash(),
-			Signature:          block.EpochSnarkData().Signature,
+			Signature:          istanbulExtraData.AggregatedSeal.Signature,
 		},
 		prop.TokenID,
 		prop.DestinationRecipientAddress,
@@ -502,6 +530,12 @@ func (s *ListenerTestSuite) TestGetDepositEventsAndProofsForBlockerGeneric() {
 	s.validatorsAggregatorMock.EXPECT().GetAPKForBlock(gomock.Any(), gomock.Any(), gomock.Any()).Return(pk, nil)
 	block := dummyBlock(123)
 	s.clientMock.EXPECT().BlockByNumber(gomock.Any(), gomock.Any()).Return(block, nil)
+
+	istanbulExtraData := new(types.IstanbulExtra)
+
+	s.istanbulExtraExtractor.EXPECT().ExtractIstanbulExtra(block.Header()).Return(istanbulExtraData, nil)
+	s.Nil(errors.New("Error with istanbul extra extractor"))
+
 	_ = utils.NewGenericTransfer(
 		listener.cfg.ID,
 		destID,
@@ -513,7 +547,7 @@ func (s *ListenerTestSuite) TestGetDepositEventsAndProofsForBlockerGeneric() {
 		&utils.SignatureVerification{
 			AggregatePublicKey: pk,
 			BlockHash:          block.Header().Hash(),
-			Signature:          block.EpochSnarkData().Signature,
+			Signature:          istanbulExtraData.AggregatedSeal.Signature,
 		},
 		prop.MetaData,
 	)
