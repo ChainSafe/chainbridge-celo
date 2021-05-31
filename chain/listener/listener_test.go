@@ -335,7 +335,6 @@ func (s *ListenerTestSuite) TestGetDepositEventsAndProofsForBlockerERC20() {
 	istanbulExtraData := new(types.IstanbulExtra)
 
 	s.istanbulExtraExtractor.EXPECT().ExtractIstanbulExtra(block.Header()).Return(istanbulExtraData, nil)
-	s.Nil(errors.New("Error with istanbul extra data"))
 
 	_ = utils.NewFungibleTransfer(
 		listener.cfg.ID,
@@ -447,7 +446,6 @@ func (s *ListenerTestSuite) TestGetDepositEventsAndProofsForBlockerERC721() {
 	istanbulExtraData := new(types.IstanbulExtra)
 
 	s.istanbulExtraExtractor.EXPECT().ExtractIstanbulExtra(block.Header()).Return(istanbulExtraData, nil)
-	s.Nil(errors.New("Error with istanbul extra data"))
 
 	_ = utils.NewNonFungibleTransfer(
 		listener.cfg.ID,
@@ -545,7 +543,6 @@ func (s *ListenerTestSuite) TestGetDepositEventsAndProofsForBlockerGeneric() {
 	istanbulExtraData := new(types.IstanbulExtra)
 
 	s.istanbulExtraExtractor.EXPECT().ExtractIstanbulExtra(block.Header()).Return(istanbulExtraData, nil)
-	s.Nil(errors.New("Error with istanbul extra extractor"))
 
 	_ = utils.NewGenericTransfer(
 		listener.cfg.ID,
