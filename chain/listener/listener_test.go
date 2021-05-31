@@ -67,18 +67,8 @@ func dummyBlock(number int64) *types.Block {
 		Number:  big.NewInt(number),
 		GasUsed: 123213,
 		Time:    100,
-		// Extra:   []byte{01, 02},
+		Extra:   []byte{01, 02},
 	}
-
-	// set block header extra data (Istanbul Extra check)
-	// init new byte array with length of 32
-	var byteArr = [32]byte{}
-
-	// init slice of sliced array to set type to []byte
-	byteSlice := byteArr[:]
-
-	// set header extra as byteSlice
-	header.Extra = byteSlice
 
 	feeCurrencyAddr := common.HexToAddress("02")
 	gatewayFeeRecipientAddr := common.HexToAddress("03")
@@ -335,6 +325,13 @@ func (s *ListenerTestSuite) TestGetDepositEventsAndProofsForBlockerERC20() {
 	proof, key, err := txtrie.RetrieveProof(trie, keyRlp)
 	s.Nil(err)
 
+	// init new byte array with length of 32
+	var byteArr = [32]byte{}
+
+	// alter dummy block header to be length of 32 to pass Istanbul check
+	// init slice of sliced array to set type to []byte
+	block.Header().Extra = byteArr[:]
+
 	istanbulExtraData := new(types.IstanbulExtra)
 
 	s.istanbulExtraExtractor.EXPECT().ExtractIstanbulExtra(block.Header()).Return(istanbulExtraData, nil)
@@ -440,6 +437,13 @@ func (s *ListenerTestSuite) TestGetDepositEventsAndProofsForBlockerERC721() {
 	block := dummyBlock(123)
 	s.clientMock.EXPECT().BlockByNumber(gomock.Any(), gomock.Any()).Return(block, nil)
 
+	// init new byte array with length of 32
+	var byteArr = [32]byte{}
+
+	// alter dummy block header to be length of 32 to pass Istanbul check
+	// init slice of sliced array to set type to []byte
+	block.Header().Extra = byteArr[:]
+
 	istanbulExtraData := new(types.IstanbulExtra)
 
 	s.istanbulExtraExtractor.EXPECT().ExtractIstanbulExtra(block.Header()).Return(istanbulExtraData, nil)
@@ -530,6 +534,13 @@ func (s *ListenerTestSuite) TestGetDepositEventsAndProofsForBlockerGeneric() {
 	s.validatorsAggregatorMock.EXPECT().GetAPKForBlock(gomock.Any(), gomock.Any(), gomock.Any()).Return(pk, nil)
 	block := dummyBlock(123)
 	s.clientMock.EXPECT().BlockByNumber(gomock.Any(), gomock.Any()).Return(block, nil)
+
+	// init new byte array with length of 32
+	var byteArr = [32]byte{}
+
+	// alter dummy block header to be length of 32 to pass Istanbul check
+	// init slice of sliced array to set type to []byte
+	block.Header().Extra = byteArr[:]
 
 	istanbulExtraData := new(types.IstanbulExtra)
 
