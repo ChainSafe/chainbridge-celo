@@ -321,15 +321,10 @@ func (s *ListenerTestSuite) TestGetDepositEventsAndProofsForBlockerERC20() {
 	proof, key, err := txtrie.RetrieveProof(trie, keyRlp)
 	s.Nil(err)
 
-	// init new byte array with length of 32
-	var byteArr = [32]byte{}
-
-	// alter dummy block header to be length of 32 to pass Istanbul check
-	// init slice of sliced array to set type to []byte
-	block.Header().Extra = byteArr[:]
-
+	// init new instance of IstanbulExtra
 	istanbulExtraData := new(types.IstanbulExtra)
 
+	// mock IstanbulExtra data with dummy block header
 	s.istanbulExtraExtractor.EXPECT().ExtractIstanbulExtra(block.Header()).Return(istanbulExtraData, nil)
 
 	_ = utils.NewFungibleTransfer(
@@ -364,7 +359,7 @@ func (s *ListenerTestSuite) TestGetDepositEventsAndProofsForBlockerERC20() {
 
 	s.clientMock.EXPECT().BlockByNumber(context.TODO(), gomock.Any()).Return(block, nil)
 
-	err = listener.getDepositEventsAndProofsForBlock(big.NewInt(112233))
+	err = listener.getDepositEventsAndProofsForBlock(big.NewInt(112233), s.istanbulExtraExtractor)
 
 	s.Nil(err)
 }
@@ -439,8 +434,10 @@ func (s *ListenerTestSuite) TestGetDepositEventsAndProofsForBlockerERC721() {
 	// init slice of sliced array to set type to []byte
 	block.Header().Extra = byteArr[:]
 
+	// init new instance of IstanbulExtra
 	istanbulExtraData := new(types.IstanbulExtra)
 
+	// mock IstanbulExtra data with dummy block header
 	s.istanbulExtraExtractor.EXPECT().ExtractIstanbulExtra(block.Header()).Return(istanbulExtraData, nil)
 
 	_ = utils.NewNonFungibleTransfer(
@@ -463,7 +460,7 @@ func (s *ListenerTestSuite) TestGetDepositEventsAndProofsForBlockerERC721() {
 
 	s.routerMock.EXPECT().Send(gomock.Any()).Times(1).Return(nil)
 
-	err := listener.getDepositEventsAndProofsForBlock(big.NewInt(112233))
+	err := listener.getDepositEventsAndProofsForBlock(big.NewInt(112233), s.istanbulExtraExtractor)
 
 	s.Nil(err)
 
@@ -529,15 +526,10 @@ func (s *ListenerTestSuite) TestGetDepositEventsAndProofsForBlockerGeneric() {
 	block := dummyBlock(123)
 	s.clientMock.EXPECT().BlockByNumber(gomock.Any(), gomock.Any()).Return(block, nil)
 
-	// init new byte array with length of 32
-	var byteArr = [32]byte{}
-
-	// alter dummy block header to be length of 32 to pass Istanbul check
-	// init slice of sliced array to set type to []byte
-	block.Header().Extra = byteArr[:]
-
+	// init new instance of IstanbulExtra
 	istanbulExtraData := new(types.IstanbulExtra)
 
+	// mock IstanbulExtra data with dummy block header
 	s.istanbulExtraExtractor.EXPECT().ExtractIstanbulExtra(block.Header()).Return(istanbulExtraData, nil)
 
 	_ = utils.NewGenericTransfer(
@@ -558,7 +550,7 @@ func (s *ListenerTestSuite) TestGetDepositEventsAndProofsForBlockerGeneric() {
 
 	s.routerMock.EXPECT().Send(gomock.Any()).Times(1).Return(nil)
 
-	err := listener.getDepositEventsAndProofsForBlock(big.NewInt(112233))
+	err := listener.getDepositEventsAndProofsForBlock(big.NewInt(112233), s.istanbulExtraExtractor)
 
 	s.Nil(err)
 
@@ -641,7 +633,7 @@ func (s *ListenerTestSuite) TestGetDepositEventsAndProofsForBlockerFailure() {
 	//should not be called
 	s.routerMock.EXPECT().Send(gomock.Any()).Times(0).Return(nil)
 
-	err := listener.getDepositEventsAndProofsForBlock(big.NewInt(112233))
+	err := listener.getDepositEventsAndProofsForBlock(big.NewInt(112233), s.istanbulExtraExtractor)
 
 	s.Nil(err)
 
