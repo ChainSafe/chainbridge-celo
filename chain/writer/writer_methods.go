@@ -64,7 +64,7 @@ func (w *writer) hasVoted(srcId utils.ChainId, nonce utils.Nonce, dataHash ethco
 func (w *writer) proposalIsPassed(srcId utils.ChainId, nonce utils.Nonce, dataHash [32]byte) bool {
 	prop, err := w.bridgeContract.GetProposal(w.client.CallOpts(), uint8(srcId), uint64(nonce), dataHash)
 	if err != nil {
-		log.Error().Err(err).Msgf("Failed to check proposal existence")
+		log.Error().Err(err).Msg("Failed to check proposal existence")
 		return false
 	}
 	return prop.Status == ProposalStatusPassed

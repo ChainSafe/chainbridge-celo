@@ -125,7 +125,7 @@ func getDataDir(ctx *cli.Context) (string, error) {
 		if err != nil {
 			return "", err
 		}
-		log.Trace().Msg(fmt.Sprintf("Using keystore dir: %s", datadir))
+		log.Trace().Msgf("Using keystore dir: %s", datadir)
 		return datadir, nil
 	}
 	return "", fmt.Errorf("datadir flag not supplied")
