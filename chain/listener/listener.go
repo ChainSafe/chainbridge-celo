@@ -131,7 +131,7 @@ func (l *listener) pollBlocks() error {
 			}
 
 			// Parse out events
-			err = l.getDepositEventsAndProofsForBlock(currentBlock)
+			err = l.getDepositEventsAndProofsForBlock(currentBlock, nil)
 			if err != nil {
 				log.Error().Str("block", currentBlock.String()).Err(err).Msg("Failed to get events for block")
 				retry--
@@ -164,7 +164,7 @@ func (l *listener) pollBlocks() error {
 	}
 }
 
-func (l *listener) getDepositEventsAndProofsForBlock(latestBlock *big.Int) error {
+func (l *listener) getDepositEventsAndProofsForBlock(latestBlock *big.Int, istanbulExtraExtractorIface IstanbulExtraExtractor) error {
 	// querying for logs
 	query := buildQuery(l.cfg.BridgeContract, utils.Deposit, latestBlock, latestBlock)
 	logs, err := l.client.FilterLogs(context.Background(), query)
@@ -221,7 +221,7 @@ func (l *listener) getDepositEventsAndProofsForBlock(latestBlock *big.Int) error
 			return err
 		}
 		// fetch block signature from block validators
-		extra, err := types.ExtractIstanbulExtra(blockData.Header())
+		extra, err := istanbulExtraExtractorIface.ExtractIstanbulExtra(blockData.Header())
 		if err != nil {
 			return err
 		}
