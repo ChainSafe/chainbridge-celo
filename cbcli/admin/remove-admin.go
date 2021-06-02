@@ -2,13 +2,13 @@ package admin
 
 import (
 	"fmt"
-	"github.com/ChainSafe/chainbridge-celo/cbcli/cliutils"
 	"math/big"
+
+	"github.com/ChainSafe/chainbridge-celo/cbcli/cliutils"
 
 	"github.com/ChainSafe/chainbridge-celo/chain/client"
 	"github.com/ChainSafe/chainbridge-celo/utils"
 	"github.com/ethereum/go-ethereum/common"
-	"github.com/pkg/errors"
 	"github.com/rs/zerolog/log"
 	"github.com/urfave/cli/v2"
 )
@@ -45,7 +45,7 @@ func removeAdmin(cctx *cli.Context) error {
 
 	admin := cctx.String("admin")
 	if !common.IsHexAddress(admin) {
-		return errors.New(fmt.Sprintf("invalid admin address %s", admin))
+		return fmt.Errorf("invalid admin address %s", admin)
 	}
 	adminAddress := common.HexToAddress(admin)
 

@@ -8,7 +8,6 @@ import (
 	"github.com/ChainSafe/chainbridge-celo/chain/client"
 	"github.com/ChainSafe/chainbridge-celo/utils"
 	"github.com/ethereum/go-ethereum/common"
-	"github.com/pkg/errors"
 	"github.com/rs/zerolog/log"
 	"github.com/urfave/cli/v2"
 )
@@ -68,7 +67,7 @@ func deposit(cctx *cli.Context) error {
 
 	recipient := cctx.String("recipient")
 	if !common.IsHexAddress(recipient) {
-		return errors.New(fmt.Sprintf("invalid recipient address %s", recipient))
+		return fmt.Errorf("invalid recipient address %s", recipient)
 	}
 	recipientAddress := common.HexToAddress(recipient)
 
