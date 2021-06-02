@@ -40,8 +40,9 @@ type listener struct {
 	sysErr                 chan<- error // Reports fatal error to core
 	//latestBlock            *metrics.LatestBlock
 	//metrics                *metrics.ChainMetrics
-	client   client.LogFilterWithLatestBlock
-	valsAggr ValidatorsAggregator
+	client                 client.LogFilterWithLatestBlock
+	valsAggr               ValidatorsAggregator
+	istanbulExtraExtractor IstanbulExtraExtractor // embedded interface
 }
 
 type IRouter interface {
@@ -60,15 +61,16 @@ type IstanbulExtraExtractor interface {
 	ExtractIstanbulExtra(h *types.Header) (*types.IstanbulExtra, error)
 }
 
-func NewListener(cfg *config.CeloChainConfig, client client.LogFilterWithLatestBlock, bs Blockstorer, stop <-chan struct{}, sysErr chan<- error, router IRouter, valsAggr ValidatorsAggregator) *listener {
+func NewListener(cfg *config.CeloChainConfig, client client.LogFilterWithLatestBlock, bs Blockstorer, stop <-chan struct{}, sysErr chan<- error, router IRouter, valsAggr ValidatorsAggregator, istanbulExtraExtractor IstanbulExtraExtractor) *listener {
 	return &listener{
-		cfg:        cfg,
-		blockstore: bs,
-		stop:       stop,
-		sysErr:     sysErr,
-		router:     router,
-		client:     client,
-		valsAggr:   valsAggr,
+		cfg:                    cfg,
+		blockstore:             bs,
+		stop:                   stop,
+		sysErr:                 sysErr,
+		router:                 router,
+		client:                 client,
+		valsAggr:               valsAggr,
+		istanbulExtraExtractor: istanbulExtraExtractor,
 	}
 }
 
@@ -131,7 +133,7 @@ func (l *listener) pollBlocks() error {
 			}
 
 			// Parse out events
-			err = l.getDepositEventsAndProofsForBlock(currentBlock, nil)
+			err = l.getDepositEventsAndProofsForBlock(currentBlock)
 			if err != nil {
 				log.Error().Str("block", currentBlock.String()).Err(err).Msg("Failed to get events for block")
 				retry--
@@ -164,7 +166,7 @@ func (l *listener) pollBlocks() error {
 	}
 }
 
-func (l *listener) getDepositEventsAndProofsForBlock(latestBlock *big.Int, istanbulExtraExtractorIface IstanbulExtraExtractor) error {
+func (l *listener) getDepositEventsAndProofsForBlock(latestBlock *big.Int) error {
 	// querying for logs
 	query := buildQuery(l.cfg.BridgeContract, utils.Deposit, latestBlock, latestBlock)
 	logs, err := l.client.FilterLogs(context.Background(), query)
@@ -221,7 +223,7 @@ func (l *listener) getDepositEventsAndProofsForBlock(latestBlock *big.Int, istan
 			return err
 		}
 		// fetch block signature from block validators
-		extra, err := istanbulExtraExtractorIface.ExtractIstanbulExtra(blockData.Header())
+		extra, err := l.istanbulExtraExtractor.ExtractIstanbulExtra(blockData.Header())
 		if err != nil {
 			return err
 		}
