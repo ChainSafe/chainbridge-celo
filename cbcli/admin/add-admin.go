@@ -8,7 +8,6 @@ import (
 	"github.com/ChainSafe/chainbridge-celo/chain/client"
 	"github.com/ChainSafe/chainbridge-celo/utils"
 	"github.com/ethereum/go-ethereum/common"
-	"github.com/pkg/errors"
 	"github.com/rs/zerolog/log"
 	"github.com/urfave/cli/v2"
 )
@@ -43,7 +42,7 @@ func addAdmin(cctx *cli.Context) error {
 	}
 	admin := cctx.String("admin")
 	if !common.IsHexAddress(admin) {
-		return errors.New(fmt.Sprintf("invalid admin address %s", admin))
+		return fmt.Errorf("invalid admin address %s", admin)
 	}
 	adminAddress := common.HexToAddress(admin)
 	ethClient, err := client.NewClient(url, false, sender, big.NewInt(0).SetUint64(gasLimit), big.NewInt(0).SetUint64(gasPrice), big.NewFloat(1))

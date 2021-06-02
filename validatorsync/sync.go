@@ -7,9 +7,10 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/ethereum/go-ethereum/consensus/istanbul"
 	"math/big"
 	"time"
+
+	"github.com/ethereum/go-ethereum/consensus/istanbul"
 
 	"github.com/ethereum/go-ethereum"
 	"github.com/ethereum/go-ethereum/core/types"
@@ -44,7 +45,7 @@ func SyncBlockValidators(stopChn <-chan struct{}, errChn chan error, c HeaderByN
 		}
 		// We already know validators for that block so moving to next one
 		block.Add(block, big.NewInt(0).SetUint64(epochSize))
-		log.Info().Msg(fmt.Sprintf("Syncing validators from %s block", block.String()))
+		log.Info().Msgf("Syncing validators from %s block", block.String())
 	}
 	for {
 		select {

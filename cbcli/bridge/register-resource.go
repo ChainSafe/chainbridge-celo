@@ -8,7 +8,6 @@ import (
 	"github.com/ChainSafe/chainbridge-celo/chain/client"
 	"github.com/ChainSafe/chainbridge-celo/utils"
 	"github.com/ethereum/go-ethereum/common"
-	"github.com/pkg/errors"
 	"github.com/urfave/cli/v2"
 )
 
@@ -29,12 +28,12 @@ func registerResource(cctx *cli.Context) error {
 
 	handler := cctx.String("handler")
 	if !common.IsHexAddress(handler) {
-		return errors.New(fmt.Sprintf("invalid handler address %s", handler))
+		return fmt.Errorf("invalid handler address %s", handler)
 	}
 	handlerAddress := common.HexToAddress(handler)
 	targetContract := cctx.String("targetContract")
 	if !common.IsHexAddress(targetContract) {
-		return errors.New(fmt.Sprintf("invalid targetContract address %s", targetContract))
+		return fmt.Errorf("invalid targetContract address %s", targetContract)
 	}
 	targetContractAddress := common.HexToAddress(targetContract)
 	resourceId := cctx.String("resourceId")
