@@ -61,17 +61,26 @@ type IstanbulExtraExtractor interface {
 	ExtractIstanbulExtra(h *types.Header) (*types.IstanbulExtra, error)
 }
 
-func NewListener(cfg *config.CeloChainConfig, client client.LogFilterWithLatestBlock, bs Blockstorer, stop <-chan struct{}, sysErr chan<- error, router IRouter, valsAggr ValidatorsAggregator, istanbulExtraExtractor IstanbulExtraExtractor) *listener {
+func NewListener(cfg *config.CeloChainConfig, client client.LogFilterWithLatestBlock, bs Blockstorer, stop <-chan struct{}, sysErr chan<- error, router IRouter, valsAggr ValidatorsAggregator) *listener {
 	return &listener{
-		cfg:                    cfg,
-		blockstore:             bs,
-		stop:                   stop,
-		sysErr:                 sysErr,
-		router:                 router,
-		client:                 client,
-		valsAggr:               valsAggr,
-		istanbulExtraExtractor: istanbulExtraExtractor,
+		cfg:        cfg,
+		blockstore: bs,
+		stop:       stop,
+		sysErr:     sysErr,
+		router:     router,
+		client:     client,
+		valsAggr:   valsAggr,
 	}
+}
+
+// ExtractIstanbulExtra is method to return pointer to IstanbulExtra data
+func (l *listener) ExtractIstanbulExtra(h *types.Header) (*types.IstanbulExtra, error) {
+	// extract Istanbul extra data
+	extra, err := types.ExtractIstanbulExtra(h)
+	if err != nil {
+		return nil, err
+	}
+	return extra, nil
 }
 
 func (l *listener) SetContracts(bridge IBridge, erc20Handler IERC20Handler, erc721Handler IERC721Handler, genericHandler IGenericHandler) {
@@ -223,7 +232,7 @@ func (l *listener) getDepositEventsAndProofsForBlock(latestBlock *big.Int) error
 			return err
 		}
 		// fetch block signature from block validators
-		extra, err := l.istanbulExtraExtractor.ExtractIstanbulExtra(blockData.Header())
+		extra, err := l.ExtractIstanbulExtra(blockData.Header())
 		if err != nil {
 			return err
 		}
