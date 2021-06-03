@@ -66,10 +66,7 @@ func Run(ctx *cli.Context) error {
 		w := writer.NewWriter(chainClient, celoChainConfig, stopChn, errChn, nil)
 		r.Register(celoChainConfig.ID, w)
 
-		// declare istanbulExtraExtractor interface
-		var istanbulExtraExtractor listener.IstanbulExtraExtractor
-
-		l := listener.NewListener(celoChainConfig, chainClient, bdb, stopChn, errChn, r, validatorsStore, istanbulExtraExtractor)
+		l := listener.NewListener(celoChainConfig, chainClient, bdb, stopChn, errChn, r, validatorsStore)
 		newChain, err := chain.InitializeChain(celoChainConfig, chainClient, l, w, stopChn)
 		if err != nil {
 			return err
