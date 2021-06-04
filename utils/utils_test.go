@@ -62,7 +62,7 @@ func TestRlpEncodeHeader(t *testing.T) {
 	// init new header with sample data
 	header, err := generateBlockHeader()
 	if err != nil {
-		t.Fatalf("error generating test block header: %w", err)
+		t.Fatalf("error generating test block header: %v", err)
 	}
 
 	// init new block with custom header
