@@ -124,18 +124,6 @@ func (l *listener) pollBlocks() error {
 				continue
 			}
 
-			blockData, err := l.client.BlockByNumber(context.Background(), latestBlock)
-			if err != nil {
-				return err
-			}
-
-			rlpEncodedHeader, err := utils.RlpEncodeHeader(blockData.Header())
-			if err != nil {
-				return err
-			}
-
-			log.Debug().Msgf("RLP Encoded Header: %x\n", rlpEncodedHeader)
-
 			// Parse out events
 			err = l.getDepositEventsAndProofsForBlock(currentBlock)
 			if err != nil {
