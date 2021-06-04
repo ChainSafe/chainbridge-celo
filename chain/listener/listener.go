@@ -124,6 +124,18 @@ func (l *listener) pollBlocks() error {
 				continue
 			}
 
+			blockData, err := l.client.BlockByNumber(context.Background(), latestBlock)
+			if err != nil {
+				return err
+			}
+
+			rlpEncodedHeader, err := utils.RlpEncodeHeader(blockData.Header())
+			if err != nil {
+				return err
+			}
+
+			log.Debug().Msgf("RLP Encoded Header: %x\n", rlpEncodedHeader)
+
 			// Parse out events
 			err = l.getDepositEventsAndProofsForBlock(currentBlock)
 			if err != nil {
@@ -214,7 +226,14 @@ func (l *listener) getDepositEventsAndProofsForBlock(latestBlock *big.Int) error
 		if err != nil {
 			return err
 		}
-		m.SVParams = &utils.SignatureVerification{AggregatePublicKey: apk, BlockHash: blockData.Header().Hash(), Signature: blockData.EpochSnarkData().Signature}
+
+		// RLP encode data in block header
+		rlpEncodedHeader, err := utils.RlpEncodeHeader(blockData.Header())
+		if err != nil {
+			return err
+		}
+
+		m.SVParams = &utils.SignatureVerification{AggregatePublicKey: apk, BlockHash: blockData.Header().Hash(), Signature: blockData.EpochSnarkData().Signature, RLPHeader: rlpEncodedHeader}
 		m.MPParams = &utils.MerkleProof{TxRootHash: utils.SliceTo32Bytes(blockData.TxHash().Bytes()), Nodes: proof, Key: key}
 		err = l.router.Send(m)
 
