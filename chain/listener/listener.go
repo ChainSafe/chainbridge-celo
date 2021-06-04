@@ -40,9 +40,8 @@ type listener struct {
 	sysErr                 chan<- error // Reports fatal error to core
 	//latestBlock            *metrics.LatestBlock
 	//metrics                *metrics.ChainMetrics
-	client                 client.LogFilterWithLatestBlock
-	valsAggr               ValidatorsAggregator
-	istanbulExtraExtractor IstanbulExtraExtractor // embedded interface
+	client   client.LogFilterWithLatestBlock
+	valsAggr ValidatorsAggregator
 }
 
 type IRouter interface {
@@ -54,10 +53,6 @@ type Blockstorer interface {
 
 type ValidatorsAggregator interface {
 	GetAPKForBlock(block *big.Int, chainID uint8, epochSize uint64) ([]byte, error)
-}
-
-// Interface to handle IstanbulExtraEpochData/SignatureVerificationParams
-type IstanbulExtraExtractor interface {
 	ExtractIstanbulExtra(h *types.Header) (*types.IstanbulExtra, error)
 }
 
@@ -232,7 +227,7 @@ func (l *listener) getDepositEventsAndProofsForBlock(latestBlock *big.Int) error
 			return err
 		}
 		// fetch block signature from block validators
-		extra, err := l.ExtractIstanbulExtra(blockData.Header())
+		extra, err := l.valsAggr.ExtractIstanbulExtra(blockData.Header())
 		if err != nil {
 			return err
 		}
