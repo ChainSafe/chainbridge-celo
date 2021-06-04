@@ -2,13 +2,17 @@ package utils
 
 import (
 	"bytes"
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/common/math"
-	"github.com/ethereum/go-ethereum/crypto"
-	"github.com/pkg/errors"
+	"fmt"
 	gomath "math"
 	"math/big"
 	"strings"
+
+	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/common/math"
+	"github.com/ethereum/go-ethereum/core/types"
+	"github.com/ethereum/go-ethereum/crypto"
+	"github.com/ethereum/go-ethereum/rlp"
+	"github.com/pkg/errors"
 )
 
 type EventSig string
@@ -95,4 +99,19 @@ func ConstructGenericDepositData(metadata []byte) []byte {
 	data = append(data, math.PaddedBigBytes(big.NewInt(int64(len(metadata))), 32)...)
 	data = append(data, metadata...)
 	return data
+}
+
+// RlpEncodeHeader is method to RLP encode data stored in a block header
+func RlpEncodeHeader(header *types.Header) ([]byte, error) {
+	// init new instance of header
+	newHeader := types.CopyHeader(header)
+
+	// encode copied header into local byte slice variable
+	rlpEncodedHeader, err := rlp.EncodeToBytes(newHeader)
+	if err != nil {
+		// return empty byte slice, error
+		return []byte{}, fmt.Errorf("[utils] error encoding header: %w", err)
+	}
+
+	return rlpEncodedHeader, nil
 }
