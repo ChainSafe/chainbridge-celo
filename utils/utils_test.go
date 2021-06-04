@@ -6,6 +6,8 @@ import (
 	"testing"
 
 	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/core/types"
+	"github.com/ethereum/go-ethereum/rlp"
 )
 
 func TestGetFunctionBytes(t *testing.T) {
@@ -52,4 +54,20 @@ func TestWeiAmountToUser(t *testing.T) {
 	if res.Text('f', int(decimal.Int64())) != "1000.00001" {
 		t.Fatal(res.Text('f', int(decimal.Int64())))
 	}
+}
+
+func TestRlpEncodeHeader(t *testing.T) {
+	// init new header
+	header := &types.Header{}
+
+	// init new block with custom header
+	block := types.NewBlockWithHeader(header)
+
+	// encode copied header into local byte slice variable
+	rlpEncodedHeader, err := rlp.EncodeToBytes(block.Header())
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
+	t.Log(rlpEncodedHeader)
 }
