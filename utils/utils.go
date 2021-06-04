@@ -8,9 +8,11 @@ import (
 	"strings"
 
 	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/common/math"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/crypto"
+	blscrypto "github.com/ethereum/go-ethereum/crypto/bls"
 	"github.com/ethereum/go-ethereum/rlp"
 	"github.com/pkg/errors"
 )
@@ -110,8 +112,43 @@ func RlpEncodeHeader(header *types.Header) ([]byte, error) {
 	rlpEncodedHeader, err := rlp.EncodeToBytes(newHeader)
 	if err != nil {
 		// return empty byte slice, error
-		return []byte{}, fmt.Errorf("[utils] error encoding header: %w", err)
+		return []byte{}, fmt.Errorf("error encoding header: %w", err)
 	}
 
 	return rlpEncodedHeader, nil
+}
+
+// borrowed and modified from validatorsync/sync_test.go
+func generateBlockHeader() (*types.Header, error) {
+	testKey2, _ := crypto.HexToECDSA("b71c71a67e1177ad4e901695e1b4b9ee17ae16c6668d313eac2f96dbcda3f292")
+	testKey3, _ := crypto.HexToECDSA("b71c71a67e1177ad4e901695e1b4b9ee17ae16c6668d313eac2f96dbcda3f293")
+	blsPK2, _ := blscrypto.ECDSAToBLS(testKey2)
+	blsPK3, _ := blscrypto.ECDSAToBLS(testKey3)
+	pubKey2, _ := blscrypto.PrivateToPublic(blsPK2)
+	pubKey3, _ := blscrypto.PrivateToPublic(blsPK3)
+	extra, err := rlp.EncodeToBytes(&types.IstanbulExtra{
+		AddedValidators: []common.Address{
+			common.BytesToAddress(hexutil.MustDecode("0x44add0ec310f115a0e603b2d7db9f067778eaf8a")),
+			common.BytesToAddress(hexutil.MustDecode("0x294fc7e8f22b3bcdcf955dd7ff3ba2ed833f8212")),
+		},
+		AddedValidatorsPublicKeys: []blscrypto.SerializedPublicKey{
+			pubKey2,
+			pubKey3,
+		},
+		RemovedValidators:    big.NewInt(0),
+		Seal:                 []byte{},
+		AggregatedSeal:       types.IstanbulAggregatedSeal{},
+		ParentAggregatedSeal: types.IstanbulAggregatedSeal{},
+	})
+	if err != nil {
+		return nil, err
+	}
+	h := &types.Header{
+		Number:      big.NewInt(123),
+		Root:        common.HexToHash("0x1"),
+		TxHash:      common.HexToHash("0x2"),
+		ReceiptHash: common.HexToHash("0x3"),
+		Extra:       append(make([]byte, types.IstanbulExtraVanity), extra...),
+	}
+	return h, nil
 }
