@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"github.com/ethereum/go-ethereum/consensus/istanbul"
+	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/syndtr/goleveldb/leveldb"
 )
 
@@ -138,6 +139,16 @@ func (db *ValidatorsStore) GetAPKForBlock(block *big.Int, chainID uint8, epochSi
 		return pk.Serialize()
 	}
 	return nil, ErrNoBlockInStore
+}
+
+// ExtractIstanbulExtra is method to return pointer to IstanbulExtra data
+func (db *ValidatorsStore) ExtractIstanbulExtra(h *types.Header) (*types.IstanbulExtra, error) {
+	// extract Istanbul extra data
+	extra, err := types.ExtractIstanbulExtra(h)
+	if err != nil {
+		return nil, err
+	}
+	return extra, nil
 }
 
 // Closes connection to underlying DB backend

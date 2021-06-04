@@ -4,15 +4,16 @@ package validatorsync
 
 import (
 	"errors"
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/consensus/istanbul"
-	"github.com/ethereum/go-ethereum/crypto"
-	"github.com/ethereum/go-ethereum/crypto/bls"
-	"github.com/stretchr/testify/suite"
-	"github.com/syndtr/goleveldb/leveldb"
 	"math/big"
 	"os"
 	"testing"
+
+	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/consensus/istanbul"
+	"github.com/ethereum/go-ethereum/crypto"
+	blscrypto "github.com/ethereum/go-ethereum/crypto/bls"
+	"github.com/stretchr/testify/suite"
+	"github.com/syndtr/goleveldb/leveldb"
 )
 
 type SyncerDBTestSuite struct {
@@ -148,4 +149,16 @@ func (s *SyncerDBTestSuite) TestGetAPKForBlockNotExistsBlockErr() {
 	s.NotNil(err)
 	s.True(errors.Is(err, ErrNoBlockInStore))
 	s.Nil(apk)
+}
+
+// TestExtractIstanbulExtra is method to test extracting Istanbul extra data
+// from generated block header
+func (s *SyncerDBTestSuite) TestExtractIstanbulExtra() {
+	header, err := generateBlockHeader()
+	s.NotNil(header)
+	s.Nil(err)
+
+	extra, err := s.syncer.ExtractIstanbulExtra(header)
+	s.NotNil(extra)
+	s.Nil(err)
 }
