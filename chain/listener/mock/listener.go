@@ -9,7 +9,6 @@ import (
 	reflect "reflect"
 
 	utils "github.com/ChainSafe/chainbridge-celo/utils"
-	types "github.com/ethereum/go-ethereum/core/types"
 	gomock "github.com/golang/mock/gomock"
 )
 
@@ -108,21 +107,6 @@ func NewMockValidatorsAggregator(ctrl *gomock.Controller) *MockValidatorsAggrega
 // EXPECT returns an object that allows the caller to indicate expected use.
 func (m *MockValidatorsAggregator) EXPECT() *MockValidatorsAggregatorMockRecorder {
 	return m.recorder
-}
-
-// ExtractIstanbulExtra mocks base method.
-func (m *MockValidatorsAggregator) ExtractIstanbulExtra(h *types.Header) (*types.IstanbulExtra, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "ExtractIstanbulExtra", h)
-	ret0, _ := ret[0].(*types.IstanbulExtra)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// ExtractIstanbulExtra indicates an expected call of ExtractIstanbulExtra.
-func (mr *MockValidatorsAggregatorMockRecorder) ExtractIstanbulExtra(h interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ExtractIstanbulExtra", reflect.TypeOf((*MockValidatorsAggregator)(nil).ExtractIstanbulExtra), h)
 }
 
 // GetAPKForBlock mocks base method.
