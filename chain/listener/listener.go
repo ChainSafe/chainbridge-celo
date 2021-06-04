@@ -68,16 +68,6 @@ func NewListener(cfg *config.CeloChainConfig, client client.LogFilterWithLatestB
 	}
 }
 
-// ExtractIstanbulExtra is method to return pointer to IstanbulExtra data
-func (l *listener) ExtractIstanbulExtra(h *types.Header) (*types.IstanbulExtra, error) {
-	// extract Istanbul extra data
-	extra, err := types.ExtractIstanbulExtra(h)
-	if err != nil {
-		return nil, err
-	}
-	return extra, nil
-}
-
 func (l *listener) SetContracts(bridge IBridge, erc20Handler IERC20Handler, erc721Handler IERC721Handler, genericHandler IGenericHandler) {
 	l.bridgeContract = bridge
 	l.erc20HandlerContract = erc20Handler
