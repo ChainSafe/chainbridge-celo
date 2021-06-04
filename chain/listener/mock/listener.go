@@ -9,6 +9,7 @@ import (
 	reflect "reflect"
 
 	utils "github.com/ChainSafe/chainbridge-celo/utils"
+	types "github.com/ethereum/go-ethereum/core/types"
 	gomock "github.com/golang/mock/gomock"
 )
 
@@ -122,4 +123,42 @@ func (m *MockValidatorsAggregator) GetAPKForBlock(block *big.Int, chainID uint8,
 func (mr *MockValidatorsAggregatorMockRecorder) GetAPKForBlock(block, chainID, epochSize interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAPKForBlock", reflect.TypeOf((*MockValidatorsAggregator)(nil).GetAPKForBlock), block, chainID, epochSize)
+}
+
+// MockIstanbulExtraExtractor is a mock of IstanbulExtraExtractor interface.
+type MockIstanbulExtraExtractor struct {
+	ctrl     *gomock.Controller
+	recorder *MockIstanbulExtraExtractorMockRecorder
+}
+
+// MockIstanbulExtraExtractorMockRecorder is the mock recorder for MockIstanbulExtraExtractor.
+type MockIstanbulExtraExtractorMockRecorder struct {
+	mock *MockIstanbulExtraExtractor
+}
+
+// NewMockIstanbulExtraExtractor creates a new mock instance.
+func NewMockIstanbulExtraExtractor(ctrl *gomock.Controller) *MockIstanbulExtraExtractor {
+	mock := &MockIstanbulExtraExtractor{ctrl: ctrl}
+	mock.recorder = &MockIstanbulExtraExtractorMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockIstanbulExtraExtractor) EXPECT() *MockIstanbulExtraExtractorMockRecorder {
+	return m.recorder
+}
+
+// ExtractIstanbulExtra mocks base method.
+func (m *MockIstanbulExtraExtractor) ExtractIstanbulExtra(arg0 *types.Header) (*types.IstanbulExtra, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ExtractIstanbulExtra", arg0)
+	ret0, _ := ret[0].(*types.IstanbulExtra)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// ExtractIstanbulExtra indicates an expected call of ExtractIstanbulExtra.
+func (mr *MockIstanbulExtraExtractorMockRecorder) ExtractIstanbulExtra(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ExtractIstanbulExtra", reflect.TypeOf((*MockIstanbulExtraExtractor)(nil).ExtractIstanbulExtra), arg0)
 }
