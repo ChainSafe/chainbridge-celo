@@ -150,15 +150,3 @@ func (s *SyncerDBTestSuite) TestGetAPKForBlockNotExistsBlockErr() {
 	s.True(errors.Is(err, ErrNoBlockInStore))
 	s.Nil(apk)
 }
-
-// TestExtractIstanbulExtra is method to test extracting Istanbul extra data
-// from generated block header
-func (s *SyncerDBTestSuite) TestExtractIstanbulExtra() {
-	header, err := generateBlockHeader()
-	s.NotNil(header)
-	s.Nil(err)
-
-	extra, err := s.syncer.ExtractIstanbulExtra(header)
-	s.NotNil(extra)
-	s.Nil(err)
-}
