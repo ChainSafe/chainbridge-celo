@@ -44,6 +44,9 @@ type listener struct {
 	valsAggr ValidatorsAggregator
 }
 
+// empty struct
+type IstanbulExtraExtract struct{}
+
 type IRouter interface {
 	Send(msg *utils.Message) error
 }
@@ -53,6 +56,10 @@ type Blockstorer interface {
 
 type ValidatorsAggregator interface {
 	GetAPKForBlock(block *big.Int, chainID uint8, epochSize uint64) ([]byte, error)
+}
+
+// IstanbulExtraExtractor is interface used for mock testing
+type IstanbulExtraExtractor interface {
 	ExtractIstanbulExtra(h *types.Header) (*types.IstanbulExtra, error)
 }
 
@@ -216,8 +223,9 @@ func (l *listener) getDepositEventsAndProofsForBlock(latestBlock *big.Int) error
 		if err != nil {
 			return err
 		}
-		// fetch block signature from block validators
-		extra, err := l.valsAggr.ExtractIstanbulExtra(blockData.Header())
+		// fetch IstanbulExtra data by parsing block header
+		// https://github.com/ethereum/go-ethereum/master/tree/core/types
+		extra, err := types.ExtractIstanbulExtra(blockData.Header())
 		if err != nil {
 			return err
 		}
