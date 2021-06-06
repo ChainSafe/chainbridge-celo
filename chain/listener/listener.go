@@ -58,11 +58,6 @@ type ValidatorsAggregator interface {
 	GetAPKForBlock(block *big.Int, chainID uint8, epochSize uint64) ([]byte, error)
 }
 
-// IstanbulExtraExtractor is interface used for mock testing
-type IstanbulExtraExtractor interface {
-	ExtractIstanbulExtra(h *types.Header) (*types.IstanbulExtra, error)
-}
-
 func NewListener(cfg *config.CeloChainConfig, client client.LogFilterWithLatestBlock, bs Blockstorer, stop <-chan struct{}, sysErr chan<- error, router IRouter, valsAggr ValidatorsAggregator) *listener {
 	return &listener{
 		cfg:        cfg,
