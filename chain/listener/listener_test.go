@@ -85,7 +85,7 @@ func dummyBlock(number int64) *types.Block {
 // 2. an RLP decode check on the raw data
 func dummyIstanbulExtraBlock(number int64) *types.Block {
 	// Borrowed from celo-blockchain implementation
-	// https://github.com/celo-blockchain/tree/master/core/types/istanbul_test.go#L49-L93
+	// https://github.com/celo-org/celo-blockchain/tree/master/core/types/istanbul_test.go#L49-L93
 	istanbulExtraVanity := bytes.Repeat([]byte{0x00}, types.IstanbulExtraVanity)
 	istanbulExtraRawData := hexutil.MustDecode("0xf6ea9444add0ec310f115a0e603b2d7db9f067778eaf8a94294fc7e8f22b3bcdcf955dd7ff3ba2ed833f8212c00c80c3808080c3808080")
 
