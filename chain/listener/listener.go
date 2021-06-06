@@ -44,9 +44,6 @@ type listener struct {
 	valsAggr ValidatorsAggregator
 }
 
-// empty struct
-type IstanbulExtraExtract struct{}
-
 type IRouter interface {
 	Send(msg *utils.Message) error
 }
