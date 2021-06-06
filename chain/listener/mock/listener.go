@@ -125,40 +125,40 @@ func (mr *MockValidatorsAggregatorMockRecorder) GetAPKForBlock(block, chainID, e
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAPKForBlock", reflect.TypeOf((*MockValidatorsAggregator)(nil).GetAPKForBlock), block, chainID, epochSize)
 }
 
-// MockIstanbulExtraExtractor is a mock of IstanbulExtraExtractor interface.
-type MockIstanbulExtraExtractor struct {
+// MockIstanbulExtrExtractor is a mock of IstanbulExtrExtractor interface.
+type MockIstanbulExtrExtractor struct {
 	ctrl     *gomock.Controller
-	recorder *MockIstanbulExtraExtractorMockRecorder
+	recorder *MockIstanbulExtrExtractorMockRecorder
 }
 
-// MockIstanbulExtraExtractorMockRecorder is the mock recorder for MockIstanbulExtraExtractor.
-type MockIstanbulExtraExtractorMockRecorder struct {
-	mock *MockIstanbulExtraExtractor
+// MockIstanbulExtrExtractorMockRecorder is the mock recorder for MockIstanbulExtrExtractor.
+type MockIstanbulExtrExtractorMockRecorder struct {
+	mock *MockIstanbulExtrExtractor
 }
 
-// NewMockIstanbulExtraExtractor creates a new mock instance.
-func NewMockIstanbulExtraExtractor(ctrl *gomock.Controller) *MockIstanbulExtraExtractor {
-	mock := &MockIstanbulExtraExtractor{ctrl: ctrl}
-	mock.recorder = &MockIstanbulExtraExtractorMockRecorder{mock}
+// NewMockIstanbulExtrExtractor creates a new mock instance.
+func NewMockIstanbulExtrExtractor(ctrl *gomock.Controller) *MockIstanbulExtrExtractor {
+	mock := &MockIstanbulExtrExtractor{ctrl: ctrl}
+	mock.recorder = &MockIstanbulExtrExtractorMockRecorder{mock}
 	return mock
 }
 
 // EXPECT returns an object that allows the caller to indicate expected use.
-func (m *MockIstanbulExtraExtractor) EXPECT() *MockIstanbulExtraExtractorMockRecorder {
+func (m *MockIstanbulExtrExtractor) EXPECT() *MockIstanbulExtrExtractorMockRecorder {
 	return m.recorder
 }
 
 // ExtractIstanbulExtra mocks base method.
-func (m *MockIstanbulExtraExtractor) ExtractIstanbulExtra(arg0 *types.Header) (*types.IstanbulExtra, error) {
+func (m *MockIstanbulExtrExtractor) ExtractIstanbulExtra(h *types.Header) (*types.IstanbulExtra, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "ExtractIstanbulExtra", arg0)
+	ret := m.ctrl.Call(m, "ExtractIstanbulExtra", h)
 	ret0, _ := ret[0].(*types.IstanbulExtra)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // ExtractIstanbulExtra indicates an expected call of ExtractIstanbulExtra.
-func (mr *MockIstanbulExtraExtractorMockRecorder) ExtractIstanbulExtra(arg0 interface{}) *gomock.Call {
+func (mr *MockIstanbulExtrExtractorMockRecorder) ExtractIstanbulExtra(h interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ExtractIstanbulExtra", reflect.TypeOf((*MockIstanbulExtraExtractor)(nil).ExtractIstanbulExtra), arg0)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ExtractIstanbulExtra", reflect.TypeOf((*MockIstanbulExtrExtractor)(nil).ExtractIstanbulExtra), h)
 }
