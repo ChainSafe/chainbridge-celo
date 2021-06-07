@@ -105,10 +105,10 @@ func ConstructGenericDepositData(metadata []byte) []byte {
 
 // RlpEncodeHeader is method to RLP encode data stored in a block header
 func RlpEncodeHeader(header *types.Header) ([]byte, error) {
-	// init new instance of header
+	// deep copy of header
 	newHeader := types.CopyHeader(header)
 
-	// encode copied header into local byte slice variable
+	// encode copied header into byte slice
 	rlpEncodedHeader, err := rlp.EncodeToBytes(newHeader)
 	if err != nil {
 		// return empty byte slice, error
