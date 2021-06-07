@@ -53,3 +53,25 @@ func TestWeiAmountToUser(t *testing.T) {
 		t.Fatal(res.Text('f', int(decimal.Int64())))
 	}
 }
+
+// TestCommitedSealSuffix is ...
+func TestCommitedSealSuffix(t *testing.T) {
+	// init sample pointer to big int
+	istAggSealRound := big.NewInt(123)
+	// generate commited seal suffix from round
+	commitedSealSuffix := CommitedSealSuffix(istAggSealRound)
+	// fail if length of commited seal suffix less than 1
+	if len(commitedSealSuffix) < 1 {
+		t.Fatal("could not generate CommitedSealSuffix")
+	}
+}
+
+// TestCommitedSealPrefix is ...
+func TestCommitedSealPrefix(t *testing.T) {
+	t.Log()
+}
+
+// TestCommitedSealHints is ...
+func TestCommitedSealHints(t *testing.T) {
+	t.Log()
+}
