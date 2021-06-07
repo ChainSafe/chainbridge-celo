@@ -2,13 +2,16 @@ package utils
 
 import (
 	"bytes"
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/common/math"
-	"github.com/ethereum/go-ethereum/crypto"
-	"github.com/pkg/errors"
+	"encoding/binary"
 	gomath "math"
 	"math/big"
 	"strings"
+
+	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/common/math"
+	"github.com/ethereum/go-ethereum/consensus/istanbul"
+	"github.com/ethereum/go-ethereum/crypto"
+	"github.com/pkg/errors"
 )
 
 type EventSig string
@@ -95,4 +98,43 @@ func ConstructGenericDepositData(metadata []byte) []byte {
 	data = append(data, math.PaddedBigBytes(big.NewInt(int64(len(metadata))), 32)...)
 	data = append(data, metadata...)
 	return data
+}
+
+// TODO: store in separate file
+// documentation
+// make methods?
+
+// CommitedSealSuffix is ...
+func CommitedSealSuffix(istAggSealRound *big.Int) []byte {
+	// init new byte slice to hold final result suffix
+	commitedSealSuffixByteSlice := make([]byte, 0)
+
+	// init new byte slice to hold uint64 => bytes conversion
+	msgCommitByteSlice := make([]byte, 8)
+
+	// store uint64 data into byte slice
+	binary.LittleEndian.PutUint64(msgCommitByteSlice, istanbul.MsgCommit)
+
+	// append the round
+	commitedSealSuffixByteSlice = append(commitedSealSuffixByteSlice, istAggSealRound.Bytes()...)
+
+	// append the msg commit
+	commitedSealSuffixByteSlice = append(commitedSealSuffixByteSlice, msgCommitByteSlice...)
+
+	return commitedSealSuffixByteSlice
+}
+
+// CommitedSealPrefix is ...
+func CommitedSealPrefix(blockHash common.Hash, commitedSealSuffix []byte) ([]byte, error) {
+	// msg, err := hex.DecodeString(arg)
+	// if err != nil {
+	// 	return []byte{}, fmt.Errorf("could not decode: %w", err)
+	// }
+
+	return []byte{}, nil
+}
+
+// CommitedSealHints is ...
+func CommitedSealHints(blockHash common.Hash, commitedSealSuffix []byte) ([]byte, error) {
+	return []byte{}, nil
 }
