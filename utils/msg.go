@@ -47,9 +47,18 @@ type MerkleProof struct {
 }
 
 type SignatureVerification struct {
-	AggregatePublicKey []byte      // Aggregated public key of block validators
-	BlockHash          common.Hash // Hash of block we are proving
-	Signature          []byte      // Signature of block we are proving
+	AggregatePublicKey []byte        // Aggregated public key of block validators
+	BlockHash          common.Hash   // Hash of block we are proving
+	Signature          []byte        // Signature of block we are proving
+	CommitedSeal       *CommitedSeal // Data for validating BLS sig of block
+}
+
+// CommitedSeal is struct to hold data relating to validating BLS signature of
+// block
+type CommitedSeal struct {
+	CommitedSealSuffix []byte //
+	CommitedSealPrefix []byte //
+	CommitedSealHints  []byte //
 }
 
 func NewFungibleTransfer(source, dest ChainId, nonce Nonce, resourceId ResourceId, mp *MerkleProof, sv *SignatureVerification, amount *big.Int, recipient []byte) *Message {
