@@ -9,9 +9,9 @@ import (
 	"github.com/ChainSafe/chainbridge-celo/bindings/ERC20Handler"
 	"github.com/ChainSafe/chainbridge-celo/bindings/ERC721Handler"
 	"github.com/ChainSafe/chainbridge-celo/bindings/GenericHandler"
-	"github.com/ChainSafe/chainbridge-celo/chain/client/mock"
+	mock_client "github.com/ChainSafe/chainbridge-celo/chain/client/mock"
 	"github.com/ChainSafe/chainbridge-celo/chain/config"
-	"github.com/ChainSafe/chainbridge-celo/chain/listener/mock"
+	mock_listener "github.com/ChainSafe/chainbridge-celo/chain/listener/mock"
 	"github.com/ChainSafe/chainbridge-celo/txtrie"
 	"github.com/ChainSafe/chainbridge-celo/utils"
 	eth "github.com/ethereum/go-ethereum"
@@ -318,6 +318,9 @@ func (s *ListenerTestSuite) TestGetDepositEventsAndProofsForBlockerERC20() {
 	proof, key, err := txtrie.RetrieveProof(trie, keyRlp)
 	s.Nil(err)
 
+	rlpHeader, err := utils.RlpEncodeHeader(block.Header())
+	s.Nil(err)
+
 	_ = utils.NewFungibleTransfer(
 		listener.cfg.ID,
 		destID,
@@ -332,6 +335,7 @@ func (s *ListenerTestSuite) TestGetDepositEventsAndProofsForBlockerERC20() {
 			AggregatePublicKey: pk,
 			BlockHash:          block.Header().Hash(),
 			Signature:          block.EpochSnarkData().Signature,
+			RLPHeader:          rlpHeader,
 		},
 		prop.Amount,
 		prop.DestinationRecipientAddress,
@@ -417,6 +421,10 @@ func (s *ListenerTestSuite) TestGetDepositEventsAndProofsForBlockerERC721() {
 	s.validatorsAggregatorMock.EXPECT().GetAPKForBlock(gomock.Any(), gomock.Any(), gomock.Any()).Return(pk, nil)
 	block := dummyBlock(123)
 	s.clientMock.EXPECT().BlockByNumber(gomock.Any(), gomock.Any()).Return(block, nil)
+
+	rlpHeader, err := utils.RlpEncodeHeader(block.Header())
+	s.Nil(err)
+
 	_ = utils.NewNonFungibleTransfer(
 		listener.cfg.ID,
 		destID,
@@ -429,6 +437,7 @@ func (s *ListenerTestSuite) TestGetDepositEventsAndProofsForBlockerERC721() {
 			AggregatePublicKey: pk,
 			BlockHash:          block.Header().Hash(),
 			Signature:          block.EpochSnarkData().Signature,
+			RLPHeader:          rlpHeader,
 		},
 		prop.TokenID,
 		prop.DestinationRecipientAddress,
@@ -437,7 +446,7 @@ func (s *ListenerTestSuite) TestGetDepositEventsAndProofsForBlockerERC721() {
 
 	s.routerMock.EXPECT().Send(gomock.Any()).Times(1).Return(nil)
 
-	err := listener.getDepositEventsAndProofsForBlock(big.NewInt(112233))
+	err = listener.getDepositEventsAndProofsForBlock(big.NewInt(112233))
 
 	s.Nil(err)
 
@@ -502,6 +511,10 @@ func (s *ListenerTestSuite) TestGetDepositEventsAndProofsForBlockerGeneric() {
 	s.validatorsAggregatorMock.EXPECT().GetAPKForBlock(gomock.Any(), gomock.Any(), gomock.Any()).Return(pk, nil)
 	block := dummyBlock(123)
 	s.clientMock.EXPECT().BlockByNumber(gomock.Any(), gomock.Any()).Return(block, nil)
+
+	rlpHeader, err := utils.RlpEncodeHeader(block.Header())
+	s.Nil(err)
+
 	_ = utils.NewGenericTransfer(
 		listener.cfg.ID,
 		destID,
@@ -514,13 +527,14 @@ func (s *ListenerTestSuite) TestGetDepositEventsAndProofsForBlockerGeneric() {
 			AggregatePublicKey: pk,
 			BlockHash:          block.Header().Hash(),
 			Signature:          block.EpochSnarkData().Signature,
+			RLPHeader:          rlpHeader,
 		},
 		prop.MetaData,
 	)
 
 	s.routerMock.EXPECT().Send(gomock.Any()).Times(1).Return(nil)
 
-	err := listener.getDepositEventsAndProofsForBlock(big.NewInt(112233))
+	err = listener.getDepositEventsAndProofsForBlock(big.NewInt(112233))
 
 	s.Nil(err)
 
