@@ -9,7 +9,6 @@ import (
 	reflect "reflect"
 
 	utils "github.com/ChainSafe/chainbridge-celo/utils"
-	types "github.com/ethereum/go-ethereum/core/types"
 	gomock "github.com/golang/mock/gomock"
 )
 
@@ -123,42 +122,4 @@ func (m *MockValidatorsAggregator) GetAPKForBlock(block *big.Int, chainID uint8,
 func (mr *MockValidatorsAggregatorMockRecorder) GetAPKForBlock(block, chainID, epochSize interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAPKForBlock", reflect.TypeOf((*MockValidatorsAggregator)(nil).GetAPKForBlock), block, chainID, epochSize)
-}
-
-// MockIstanbulExtrExtractor is a mock of IstanbulExtrExtractor interface.
-type MockIstanbulExtrExtractor struct {
-	ctrl     *gomock.Controller
-	recorder *MockIstanbulExtrExtractorMockRecorder
-}
-
-// MockIstanbulExtrExtractorMockRecorder is the mock recorder for MockIstanbulExtrExtractor.
-type MockIstanbulExtrExtractorMockRecorder struct {
-	mock *MockIstanbulExtrExtractor
-}
-
-// NewMockIstanbulExtrExtractor creates a new mock instance.
-func NewMockIstanbulExtrExtractor(ctrl *gomock.Controller) *MockIstanbulExtrExtractor {
-	mock := &MockIstanbulExtrExtractor{ctrl: ctrl}
-	mock.recorder = &MockIstanbulExtrExtractorMockRecorder{mock}
-	return mock
-}
-
-// EXPECT returns an object that allows the caller to indicate expected use.
-func (m *MockIstanbulExtrExtractor) EXPECT() *MockIstanbulExtrExtractorMockRecorder {
-	return m.recorder
-}
-
-// ExtractIstanbulExtra mocks base method.
-func (m *MockIstanbulExtrExtractor) ExtractIstanbulExtra(h *types.Header) (*types.IstanbulExtra, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "ExtractIstanbulExtra", h)
-	ret0, _ := ret[0].(*types.IstanbulExtra)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// ExtractIstanbulExtra indicates an expected call of ExtractIstanbulExtra.
-func (mr *MockIstanbulExtrExtractorMockRecorder) ExtractIstanbulExtra(h interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ExtractIstanbulExtra", reflect.TypeOf((*MockIstanbulExtrExtractor)(nil).ExtractIstanbulExtra), h)
 }
