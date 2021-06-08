@@ -3,6 +3,7 @@
 package listener
 
 import (
+	"bytes"
 	"math/big"
 	"testing"
 
@@ -18,6 +19,7 @@ import (
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
 	ethcommon "github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/ethereum/go-ethereum/rlp"
@@ -60,13 +62,24 @@ func (s *ListenerTestSuite) SetupTest() {
 }
 func (s *ListenerTestSuite) TearDownTest() {}
 
-func dummyBlock(number int64) *types.Block {
+// dummyBlockWithIstanbulExtra returns a block with dummy data including
+// IstanbulExtra data
+// This is needed to pass two checks:
+// 1. an IstanbulExtraVanity length check
+// 2. an RLP decode check on the raw data
+func dummyBlockWithIstanbulExtra(number int64) *types.Block {
+	// Borrowed from celo-blockchain implementation
+	// https://github.com/celo-org/celo-blockchain/tree/master/core/types/istanbul_test.go#L49-L93
+	istanbulExtraVanity := bytes.Repeat([]byte{0x00}, types.IstanbulExtraVanity)
+	istanbulExtraRawData := hexutil.MustDecode("0xf6ea9444add0ec310f115a0e603b2d7db9f067778eaf8a94294fc7e8f22b3bcdcf955dd7ff3ba2ed833f8212c00c80c3808080c3808080")
+
 	header := &types.Header{
 		Number:  big.NewInt(number),
 		GasUsed: 123213,
 		Time:    100,
-		Extra:   []byte{01, 02},
+		Extra:   append(istanbulExtraVanity, istanbulExtraRawData...),
 	}
+
 	feeCurrencyAddr := common.HexToAddress("02")
 	gatewayFeeRecipientAddr := common.HexToAddress("03")
 	tx := types.NewTransaction(1, common.HexToAddress("01"), big.NewInt(1), 10000, big.NewInt(10), &feeCurrencyAddr, &gatewayFeeRecipientAddr, big.NewInt(34), []byte{04})
@@ -305,7 +318,10 @@ func (s *ListenerTestSuite) TestGetDepositEventsAndProofsForBlockerERC20() {
 	destID := utils.ChainId(logs[0].Topics[1].Big().Uint64())
 	pk := []byte{0x1f}
 	s.validatorsAggregatorMock.EXPECT().GetAPKForBlock(gomock.Any(), gomock.Any(), gomock.Any()).Return([]byte{0x1f}, nil)
-	block := dummyBlock(123)
+
+	// replace block with customized block to hold IstanbulExtra data
+	block := dummyBlockWithIstanbulExtra(123)
+
 	s.clientMock.EXPECT().BlockByNumber(gomock.Any(), gomock.Any()).Return(block, nil)
 
 	trie, err := txtrie.CreateNewTrie(block.TxHash(), block.Transactions())
@@ -316,6 +332,9 @@ func (s *ListenerTestSuite) TestGetDepositEventsAndProofsForBlockerERC20() {
 	s.Nil(err)
 
 	proof, key, err := txtrie.RetrieveProof(trie, keyRlp)
+	s.Nil(err)
+
+	extra, err := types.ExtractIstanbulExtra(block.Header())
 	s.Nil(err)
 
 	rlpHeader, err := utils.RlpEncodeHeader(block.Header())
@@ -334,7 +353,7 @@ func (s *ListenerTestSuite) TestGetDepositEventsAndProofsForBlockerERC20() {
 		&utils.SignatureVerification{
 			AggregatePublicKey: pk,
 			BlockHash:          block.Header().Hash(),
-			Signature:          block.EpochSnarkData().Signature,
+			Signature:          extra.AggregatedSeal.Signature,
 			RLPHeader:          rlpHeader,
 		},
 		prop.Amount,
@@ -419,12 +438,17 @@ func (s *ListenerTestSuite) TestGetDepositEventsAndProofsForBlockerERC721() {
 	destID := utils.ChainId(logs[0].Topics[1].Big().Uint64())
 	pk := []byte{0x1f}
 	s.validatorsAggregatorMock.EXPECT().GetAPKForBlock(gomock.Any(), gomock.Any(), gomock.Any()).Return(pk, nil)
-	block := dummyBlock(123)
+
+	// replace block with customized block to hold IstanbulExtra data
+	block := dummyBlockWithIstanbulExtra(123)
+
 	s.clientMock.EXPECT().BlockByNumber(gomock.Any(), gomock.Any()).Return(block, nil)
+
+	extra, err := types.ExtractIstanbulExtra(block.Header())
+	s.Nil(err)
 
 	rlpHeader, err := utils.RlpEncodeHeader(block.Header())
 	s.Nil(err)
-
 	_ = utils.NewNonFungibleTransfer(
 		listener.cfg.ID,
 		destID,
@@ -436,7 +460,7 @@ func (s *ListenerTestSuite) TestGetDepositEventsAndProofsForBlockerERC721() {
 		&utils.SignatureVerification{
 			AggregatePublicKey: pk,
 			BlockHash:          block.Header().Hash(),
-			Signature:          block.EpochSnarkData().Signature,
+			Signature:          extra.AggregatedSeal.Signature,
 			RLPHeader:          rlpHeader,
 		},
 		prop.TokenID,
@@ -509,8 +533,14 @@ func (s *ListenerTestSuite) TestGetDepositEventsAndProofsForBlockerGeneric() {
 	destID := utils.ChainId(logs[0].Topics[1].Big().Uint64())
 	pk := []byte{0x1f}
 	s.validatorsAggregatorMock.EXPECT().GetAPKForBlock(gomock.Any(), gomock.Any(), gomock.Any()).Return(pk, nil)
-	block := dummyBlock(123)
+
+	// replace block with customized block to hold IstanbulExtra data
+	block := dummyBlockWithIstanbulExtra(123)
+
 	s.clientMock.EXPECT().BlockByNumber(gomock.Any(), gomock.Any()).Return(block, nil)
+
+	extra, err := types.ExtractIstanbulExtra(block.Header())
+	s.Nil(err)
 
 	rlpHeader, err := utils.RlpEncodeHeader(block.Header())
 	s.Nil(err)
@@ -526,7 +556,7 @@ func (s *ListenerTestSuite) TestGetDepositEventsAndProofsForBlockerGeneric() {
 		&utils.SignatureVerification{
 			AggregatePublicKey: pk,
 			BlockHash:          block.Header().Hash(),
-			Signature:          block.EpochSnarkData().Signature,
+			Signature:          extra.AggregatedSeal.Signature,
 			RLPHeader:          rlpHeader,
 		},
 		prop.MetaData,
@@ -597,7 +627,10 @@ func (s *ListenerTestSuite) TestGetDepositEventsAndProofsForBlockerFailure() {
 	s.genericHandler.EXPECT().GetDepositRecord(gomock.Any(), gomock.Any(), gomock.Any()).Times(0).Return(prop, nil)
 
 	s.bridge.EXPECT().ResourceIDToHandlerAddress(&bind.CallOpts{}, [32]byte(contractAddress.Hash())).Return(contractAddress, nil)
-	block := dummyBlock(123)
+
+	// replace block with customized block to hold IstanbulExtra data
+	block := dummyBlockWithIstanbulExtra(123)
+
 	s.clientMock.EXPECT().BlockByNumber(gomock.Any(), gomock.Any()).Return(block, nil)
 
 	nonce := utils.Nonce(logs[0].Topics[3].Big().Uint64())

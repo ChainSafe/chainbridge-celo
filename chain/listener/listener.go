@@ -17,6 +17,7 @@ import (
 	eth "github.com/ethereum/go-ethereum"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	ethcommon "github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/rlp"
 	"github.com/rs/zerolog/log"
 )
@@ -215,13 +216,20 @@ func (l *listener) getDepositEventsAndProofsForBlock(latestBlock *big.Int) error
 			return err
 		}
 
+		// fetch IstanbulExtra data by parsing block header
+		// https://github.com/celo-org/celo-blockchain/blob/master/core/types/istanbul.go#L128-L142
+		extra, err := types.ExtractIstanbulExtra(blockData.Header())
+		if err != nil {
+			return err
+		}
+
 		// RLP encode data in block header
 		rlpEncodedHeader, err := utils.RlpEncodeHeader(blockData.Header())
 		if err != nil {
 			return err
 		}
 
-		m.SVParams = &utils.SignatureVerification{AggregatePublicKey: apk, BlockHash: blockData.Header().Hash(), Signature: blockData.EpochSnarkData().Signature, RLPHeader: rlpEncodedHeader}
+		m.SVParams = &utils.SignatureVerification{AggregatePublicKey: apk, BlockHash: blockData.Header().Hash(), Signature: extra.AggregatedSeal.Signature, RLPHeader: rlpEncodedHeader}
 		m.MPParams = &utils.MerkleProof{TxRootHash: utils.SliceTo32Bytes(blockData.TxHash().Bytes()), Nodes: proof, Key: key}
 		err = l.router.Send(m)
 
