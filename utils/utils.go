@@ -7,6 +7,7 @@ import (
 	"math/big"
 	"strings"
 
+	"github.com/celo-org/celo-bls-go/bls"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/math"
 	"github.com/ethereum/go-ethereum/core/types"
@@ -114,4 +115,83 @@ func RlpEncodeHeader(header *types.Header) ([]byte, error) {
 	}
 
 	return rlpEncodedHeader, nil
+}
+
+// PrepareAPKForContract properly encodes APK for use within a contract
+// NOTE: uses new functionality from celo-bls-go PR #23
+// https://github.com/celo-org/celo-bls-go/examples/utils
+func PrepareAPKForContract(apk []byte) ([]byte, error) {
+	// init new byte slice to hold newly encoded APK
+	encodedAPK := make([]byte, 0)
+
+	// deserialize public key
+	key, err := bls.DeserializePublicKey(apk)
+	if err != nil {
+		return encodedAPK, fmt.Errorf("could not deserialize public key: %w", err)
+	}
+
+	// serialize uncompressed data
+	// new functionality from celo-bls-go PR #23
+	// https://github.com/celo-org/celo-bls-go/pull/23
+	encodedData, err := key.SerializeUncompressed()
+	if err != nil {
+		return encodedAPK, fmt.Errorf("could not serialize data: %w", err)
+	}
+
+	// new functionality from celo-bls-go PR #23
+	// https://github.com/celo-org/celo-bls-go/examples/utils
+	// https://github.com/celo-org/celo-bls-go/examples/prepare_for_contract/prepare_for_contract.go#L23-L35
+	encodedDataPart1 := encodedData[0:utils.FIELD_SIZE]
+	encodedDataPart1 = utils.ReverseAnyAndPad(encodedDataPart1)
+	encodedDataPart2 := encodedData[utils.FIELD_SIZE : 2*utils.FIELD_SIZE]
+	encodedDataPart2 = utils.ReverseAnyAndPad(encodedDataPart2)
+	encodedDataPart3 := encodedData[2*utils.FIELD_SIZE : 3*utils.FIELD_SIZE]
+	encodedDataPart3 = utils.ReverseAnyAndPad(encodedDataPart3)
+	encodedDataPart4 := encodedData[3*utils.FIELD_SIZE : 4*utils.FIELD_SIZE]
+	encodedDataPart4 = utils.ReverseAnyAndPad(encodedDataPart4)
+
+	// append encoded data to APK byte slice
+	encodedAPK = append(encodedAPK, encodedDataPart1...)
+	encodedAPK = append(encodedAPK, encodedDataPart2...)
+	encodedAPK = append(encodedAPK, encodedDataPart3...)
+	encodedAPK = append(encodedAPK, encodedDataPart4...)
+
+	return encodedAPK, nil
+}
+
+// PrepareSignatureForContract properly encodes Signature field within
+// the SignatureVerification struct to be used within a contract
+// NOTE: uses new functionality from celo-bls-go PR #23
+// https://github.com/celo-org/celo-bls-go/examples/utils
+func PrepareSignatureForContract(signature []byte) ([]byte, error) {
+	// init new byte slice to hold newly encoded signature
+	encodedSignature := make([]byte, 0)
+
+	// deserialize signature
+	key, err := bls.DeserializeSignature(signature)
+	if err != nil {
+		return encodedSignature, fmt.Errorf("could not deserialize public key: %w", err)
+	}
+
+	// serialize uncompressed data
+	// new functionality from celo-bls-go PR #23
+	// https://github.com/celo-org/celo-bls-go/pull/23
+	encodedData, err := key.SerializeUncompressed()
+	if err != nil {
+		return encodedSignature, fmt.Errorf("could not serialize data: %w", err)
+	}
+
+	// new functionality from celo-bls-go PR #23
+	// https://github.com/celo-org/celo-bls-go/examples/utils
+	// https://github.com/celo-org/celo-bls-go/examples/prepare_for_contract/prepare_for_contract.go#L23-L3
+	encodedDataPart1 := encodedData[0:utils.FIELD_SIZE]
+	encodedDataPart1 = utils.ReverseAnyAndPad(encodedDataPart1)
+	encodedDataPart2 := encodedData[utils.FIELD_SIZE : 2*utils.FIELD_SIZE]
+	encodedDataPart2 = utils.ReverseAnyAndPad(encodedDataPart2)
+
+	// append encoded data to encoded signature byte slice
+	encodedSignature = append(encodedSignature, encodedDataPart1...)
+	encodedSignature = append(encodedSignature, encodedDataPart2...)
+
+	return encodedSignature, nil
 }
