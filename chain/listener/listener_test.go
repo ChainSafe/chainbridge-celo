@@ -340,6 +340,14 @@ func (s *ListenerTestSuite) TestGetDepositEventsAndProofsForBlockerERC20() {
 	rlpHeader, err := utils.RlpEncodeHeader(block.Header())
 	s.Nil(err)
 
+	// prepare APK for contract
+	preparedApk, err := utils.PrepareAPKForContract(pk)
+	s.Nil(err)
+
+	// prepare signature for contract
+	preparedSignature, err := utils.PrepareSignatureForContract(extra.AggregatedSeal.Signature)
+	s.Nil(err)
+
 	_ = utils.NewFungibleTransfer(
 		listener.cfg.ID,
 		destID,
@@ -351,9 +359,9 @@ func (s *ListenerTestSuite) TestGetDepositEventsAndProofsForBlockerERC20() {
 			Key:        key,
 		},
 		&utils.SignatureVerification{
-			AggregatePublicKey: pk,
+			AggregatePublicKey: preparedApk,
 			BlockHash:          block.Header().Hash(),
-			Signature:          extra.AggregatedSeal.Signature,
+			Signature:          preparedSignature,
 			RLPHeader:          rlpHeader,
 		},
 		prop.Amount,
@@ -449,6 +457,15 @@ func (s *ListenerTestSuite) TestGetDepositEventsAndProofsForBlockerERC721() {
 
 	rlpHeader, err := utils.RlpEncodeHeader(block.Header())
 	s.Nil(err)
+
+	// prepare APK for contract
+	preparedApk, err := utils.PrepareAPKForContract(pk)
+	s.Nil(err)
+
+	// prepare signature for contract
+	preparedSignature, err := utils.PrepareSignatureForContract(extra.AggregatedSeal.Signature)
+	s.Nil(err)
+
 	_ = utils.NewNonFungibleTransfer(
 		listener.cfg.ID,
 		destID,
@@ -458,9 +475,9 @@ func (s *ListenerTestSuite) TestGetDepositEventsAndProofsForBlockerERC721() {
 			TxRootHash: block.TxHash(),
 		},
 		&utils.SignatureVerification{
-			AggregatePublicKey: pk,
+			AggregatePublicKey: preparedApk,
 			BlockHash:          block.Header().Hash(),
-			Signature:          extra.AggregatedSeal.Signature,
+			Signature:          preparedSignature,
 			RLPHeader:          rlpHeader,
 		},
 		prop.TokenID,
@@ -545,6 +562,14 @@ func (s *ListenerTestSuite) TestGetDepositEventsAndProofsForBlockerGeneric() {
 	rlpHeader, err := utils.RlpEncodeHeader(block.Header())
 	s.Nil(err)
 
+	// prepare APK for contract
+	preparedApk, err := utils.PrepareAPKForContract(pk)
+	s.Nil(err)
+
+	// prepare signature for contract
+	preparedSignature, err := utils.PrepareSignatureForContract(extra.AggregatedSeal.Signature)
+	s.Nil(err)
+
 	_ = utils.NewGenericTransfer(
 		listener.cfg.ID,
 		destID,
@@ -554,9 +579,9 @@ func (s *ListenerTestSuite) TestGetDepositEventsAndProofsForBlockerGeneric() {
 			TxRootHash: block.TxHash(),
 		},
 		&utils.SignatureVerification{
-			AggregatePublicKey: pk,
+			AggregatePublicKey: preparedApk,
 			BlockHash:          block.Header().Hash(),
-			Signature:          extra.AggregatedSeal.Signature,
+			Signature:          preparedSignature,
 			RLPHeader:          rlpHeader,
 		},
 		prop.MetaData,
