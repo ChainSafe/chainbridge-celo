@@ -3,14 +3,18 @@ package utils
 import (
 	"bytes"
 	"encoding/binary"
+	"fmt"
 	gomath "math"
 	"math/big"
 	"strings"
 
+	"github.com/celo-org/celo-bls-go/bls"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/math"
 	"github.com/ethereum/go-ethereum/consensus/istanbul"
+	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/crypto"
+	"github.com/ethereum/go-ethereum/rlp"
 	"github.com/pkg/errors"
 )
 
@@ -100,14 +104,106 @@ func ConstructGenericDepositData(metadata []byte) []byte {
 	return data
 }
 
-// TODO: store in separate file
-// documentation
-// make methods?
+// RlpEncodeHeader is method to RLP encode data stored in a block header
+func RlpEncodeHeader(header *types.Header) ([]byte, error) {
+	// deep copy of header
+	newHeader := types.CopyHeader(header)
 
-// CommitedSealSuffix is ...
+	// encode copied header into byte slice
+	rlpEncodedHeader, err := rlp.EncodeToBytes(newHeader)
+	if err != nil {
+		// return empty byte slice, error
+		return []byte{}, fmt.Errorf("error encoding header: %w", err)
+	}
+
+	return rlpEncodedHeader, nil
+}
+
+// PrepareAPKForContract properly encodes APK for use within a contract
+// NOTE: uses new functionality from celo-bls-go PR #23
+// https://github.com/celo-org/celo-bls-go/examples/utils
+func PrepareAPKForContract(apk []byte) ([]byte, error) {
+	// init new byte slice to hold newly encoded APK
+	encodedAPK := make([]byte, 0)
+
+	// deserialize public key
+	key, err := bls.DeserializePublicKey(apk)
+	if err != nil {
+		return encodedAPK, fmt.Errorf("could not deserialize public key: %w", err)
+	}
+
+	// serialize uncompressed data
+	// new functionality from celo-bls-go PR #23
+	// https://github.com/celo-org/celo-bls-go/pull/23
+	encodedData, err := key.SerializeUncompressed()
+	if err != nil {
+		return encodedAPK, fmt.Errorf("could not serialize data: %w", err)
+	}
+
+	// new functionality from celo-bls-go PR #23
+	// https://github.com/celo-org/celo-bls-go/examples/utils
+	// https://github.com/celo-org/celo-bls-go/examples/prepare_for_contract/prepare_for_contract.go#L23-L35
+	encodedDataPart1 := encodedData[0:utils.FIELD_SIZE]
+	encodedDataPart1 = utils.ReverseAnyAndPad(encodedDataPart1)
+	encodedDataPart2 := encodedData[utils.FIELD_SIZE : 2*utils.FIELD_SIZE]
+	encodedDataPart2 = utils.ReverseAnyAndPad(encodedDataPart2)
+	encodedDataPart3 := encodedData[2*utils.FIELD_SIZE : 3*utils.FIELD_SIZE]
+	encodedDataPart3 = utils.ReverseAnyAndPad(encodedDataPart3)
+	encodedDataPart4 := encodedData[3*utils.FIELD_SIZE : 4*utils.FIELD_SIZE]
+	encodedDataPart4 = utils.ReverseAnyAndPad(encodedDataPart4)
+
+	// append encoded data to APK byte slice
+	encodedAPK = append(encodedAPK, encodedDataPart1...)
+	encodedAPK = append(encodedAPK, encodedDataPart2...)
+	encodedAPK = append(encodedAPK, encodedDataPart3...)
+	encodedAPK = append(encodedAPK, encodedDataPart4...)
+
+	return encodedAPK, nil
+}
+
+// PrepareSignatureForContract properly encodes Signature field within
+// the SignatureVerification struct to be used within a contract
+// NOTE: uses new functionality from celo-bls-go PR #23
+// https://github.com/celo-org/celo-bls-go/examples/utils
+func PrepareSignatureForContract(signature []byte) ([]byte, error) {
+	// init new byte slice to hold newly encoded signature
+	encodedSignature := make([]byte, 0)
+
+	// deserialize signature
+	key, err := bls.DeserializeSignature(signature)
+	if err != nil {
+		return encodedSignature, fmt.Errorf("could not deserialize public key: %w", err)
+	}
+
+	// serialize uncompressed data
+	// new functionality from celo-bls-go PR #23
+	// https://github.com/celo-org/celo-bls-go/pull/23
+	encodedData, err := key.SerializeUncompressed()
+	if err != nil {
+		return encodedSignature, fmt.Errorf("could not serialize data: %w", err)
+	}
+
+	// new functionality from celo-bls-go PR #23
+	// https://github.com/celo-org/celo-bls-go/examples/utils
+	// https://github.com/celo-org/celo-bls-go/examples/prepare_for_contract/prepare_for_contract.go#L23-L3
+	encodedDataPart1 := encodedData[0:utils.FIELD_SIZE]
+	encodedDataPart1 = utils.ReverseAnyAndPad(encodedDataPart1)
+	encodedDataPart2 := encodedData[utils.FIELD_SIZE : 2*utils.FIELD_SIZE]
+	encodedDataPart2 = utils.ReverseAnyAndPad(encodedDataPart2)
+
+	// append encoded data to encoded signature byte slice
+	encodedSignature = append(encodedSignature, encodedDataPart1...)
+	encodedSignature = append(encodedSignature, encodedDataPart2...)
+
+	return encodedSignature, nil
+}
+
+// CommitedSealSuffix creates the Commited Seal Suffix
+// NOTE: uses new functionality from celo-bls-go PR #23
+// https://github.com/celo-org/celo-bls-go/examples/utils
 func CommitedSealSuffix(istAggSealRound *big.Int) []byte {
-	// init new byte slice to hold final result suffix
-	commitedSealSuffixByteSlice := make([]byte, 0)
+	// init new byte slice to hold resulting Commited Seal Suffix
+	commitedSealSuffix := make([]byte, 0)
 
 	// init new byte slice to hold uint64 => bytes conversion
 	msgCommitByteSlice := make([]byte, 8)
@@ -116,16 +212,18 @@ func CommitedSealSuffix(istAggSealRound *big.Int) []byte {
 	binary.LittleEndian.PutUint64(msgCommitByteSlice, istanbul.MsgCommit)
 
 	// append the round
-	commitedSealSuffixByteSlice = append(commitedSealSuffixByteSlice, istAggSealRound.Bytes()...)
+	commitedSealSuffix = append(commitedSealSuffix, istAggSealRound.Bytes()...)
 
 	// append the msg commit
-	commitedSealSuffixByteSlice = append(commitedSealSuffixByteSlice, msgCommitByteSlice...)
+	commitedSealSuffix = append(commitedSealSuffix, msgCommitByteSlice...)
 
-	return commitedSealSuffixByteSlice
+	return commitedSealSuffix
 }
 
-// CommitedSealPrefix is ...
-func CommitedSealPrefix(blockHash common.Hash, commitedSealSuffix []byte) ([]byte, error) {
+// CommitedSealPrefix is creates the Commited Seal Prefix
+// NOTE: uses new functionality from celo-bls-go PR #23
+// https://github.com/celo-org/celo-bls-go/examples/utils
+func CommitedSealPrefix() ([]byte, error) {
 	// msg, err := hex.DecodeString(arg)
 	// if err != nil {
 	// 	return []byte{}, fmt.Errorf("could not decode: %w", err)
@@ -134,7 +232,21 @@ func CommitedSealPrefix(blockHash common.Hash, commitedSealSuffix []byte) ([]byt
 	return []byte{}, nil
 }
 
-// CommitedSealHints is ...
-func CommitedSealHints(blockHash common.Hash, commitedSealSuffix []byte) ([]byte, error) {
-	return []byte{}, nil
+// CommitedSealHints creates the Commited Seal Hints
+// NOTE: uses new functionality from celo-bls-go PR #23
+// https://github.com/celo-org/celo-bls-go/examples/utils
+func CommitedSealHints(blockHash common.Hash, commitedSealSuffix []byte) []byte {
+	// init new byte slice to hold resulting Commited Seal Hints
+	commitedSealHints := make([]byte, 0)
+
+	// return block hash to bytes
+	blockHashByteSlice := blockHash.Bytes()
+
+	// append block hash bytes to commited seal hints
+	commitedSealHints = append(commitedSealHints, blockHashByteSlice...)
+
+	// append commited seal suffix to commited seal hints
+	commitedSealHints = append(commitedSealHints, commitedSealSuffix...)
+
+	return commitedSealHints
 }
