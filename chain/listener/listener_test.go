@@ -337,6 +337,9 @@ func (s *ListenerTestSuite) TestGetDepositEventsAndProofsForBlockerERC20() {
 	extra, err := types.ExtractIstanbulExtra(block.Header())
 	s.Nil(err)
 
+	rlpHeader, err := utils.RlpEncodeHeader(block.Header())
+	s.Nil(err)
+
 	_ = utils.NewFungibleTransfer(
 		listener.cfg.ID,
 		destID,
@@ -351,6 +354,7 @@ func (s *ListenerTestSuite) TestGetDepositEventsAndProofsForBlockerERC20() {
 			AggregatePublicKey: pk,
 			BlockHash:          block.Header().Hash(),
 			Signature:          extra.AggregatedSeal.Signature,
+			RLPHeader:          rlpHeader,
 		},
 		prop.Amount,
 		prop.DestinationRecipientAddress,
@@ -443,6 +447,8 @@ func (s *ListenerTestSuite) TestGetDepositEventsAndProofsForBlockerERC721() {
 	extra, err := types.ExtractIstanbulExtra(block.Header())
 	s.Nil(err)
 
+	rlpHeader, err := utils.RlpEncodeHeader(block.Header())
+	s.Nil(err)
 	_ = utils.NewNonFungibleTransfer(
 		listener.cfg.ID,
 		destID,
@@ -455,6 +461,7 @@ func (s *ListenerTestSuite) TestGetDepositEventsAndProofsForBlockerERC721() {
 			AggregatePublicKey: pk,
 			BlockHash:          block.Header().Hash(),
 			Signature:          extra.AggregatedSeal.Signature,
+			RLPHeader:          rlpHeader,
 		},
 		prop.TokenID,
 		prop.DestinationRecipientAddress,
@@ -535,6 +542,9 @@ func (s *ListenerTestSuite) TestGetDepositEventsAndProofsForBlockerGeneric() {
 	extra, err := types.ExtractIstanbulExtra(block.Header())
 	s.Nil(err)
 
+	rlpHeader, err := utils.RlpEncodeHeader(block.Header())
+	s.Nil(err)
+
 	_ = utils.NewGenericTransfer(
 		listener.cfg.ID,
 		destID,
@@ -547,6 +557,7 @@ func (s *ListenerTestSuite) TestGetDepositEventsAndProofsForBlockerGeneric() {
 			AggregatePublicKey: pk,
 			BlockHash:          block.Header().Hash(),
 			Signature:          extra.AggregatedSeal.Signature,
+			RLPHeader:          rlpHeader,
 		},
 		prop.MetaData,
 	)

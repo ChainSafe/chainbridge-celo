@@ -215,13 +215,21 @@ func (l *listener) getDepositEventsAndProofsForBlock(latestBlock *big.Int) error
 		if err != nil {
 			return err
 		}
+
 		// fetch IstanbulExtra data by parsing block header
 		// https://github.com/celo-org/celo-blockchain/blob/master/core/types/istanbul.go#L128-L142
 		extra, err := types.ExtractIstanbulExtra(blockData.Header())
 		if err != nil {
 			return err
 		}
-		m.SVParams = &utils.SignatureVerification{AggregatePublicKey: apk, BlockHash: blockData.Header().Hash(), Signature: extra.AggregatedSeal.Signature}
+
+		// RLP encode data in block header
+		rlpEncodedHeader, err := utils.RlpEncodeHeader(blockData.Header())
+		if err != nil {
+			return err
+		}
+
+		m.SVParams = &utils.SignatureVerification{AggregatePublicKey: apk, BlockHash: blockData.Header().Hash(), Signature: extra.AggregatedSeal.Signature, RLPHeader: rlpEncodedHeader}
 		m.MPParams = &utils.MerkleProof{TxRootHash: utils.SliceTo32Bytes(blockData.TxHash().Bytes()), Nodes: proof, Key: key}
 		err = l.router.Send(m)
 
