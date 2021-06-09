@@ -117,3 +117,12 @@ func generateBlockHeader() (*types.Header, error) {
 	}
 	return h, nil
 }
+
+// TestPrepareAPKForContract tests PrepareAPKForContract to ensure
+// that it properly encodes APK for use within a contract
+func TestPrepareAPKForContract(t *testing.T) {}
+
+// TestPrepareSignatureForContract tests PrepareSignatureForContract to ensure
+// that it properly encodes a SignatureVerification.Signature for use within
+// a contract
+func TestPrepareSignatureForContract(t *testing.T) {}
