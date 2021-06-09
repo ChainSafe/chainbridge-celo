@@ -348,6 +348,17 @@ func (s *ListenerTestSuite) TestGetDepositEventsAndProofsForBlockerERC20() {
 	preparedSignature, err := utils.PrepareSignatureForContract(extra.AggregatedSeal.Signature)
 	s.Nil(err)
 
+	// CommitedSeal construction
+	// construct commited seal suffix
+	commitedSealSuffix := utils.CommitedSealSuffix(extra.AggregatedSeal.Round)
+
+	// construct commited seal prefix
+	commitedSealPrefix, err := utils.CommitedSealPrefix()
+	s.Nil(err)
+
+	// construct commited seal hints
+	commitedSealHints := utils.CommitedSealHints(block.Hash(), commitedSealSuffix)
+
 	_ = utils.NewFungibleTransfer(
 		listener.cfg.ID,
 		destID,
@@ -363,6 +374,11 @@ func (s *ListenerTestSuite) TestGetDepositEventsAndProofsForBlockerERC20() {
 			BlockHash:          block.Header().Hash(),
 			Signature:          preparedSignature,
 			RLPHeader:          rlpHeader,
+			CommitedSeal: &utils.CommitedSeal{
+				CommitedSealSuffix: commitedSealSuffix,
+				CommitedSealPrefix: commitedSealPrefix,
+				CommitedSealHints:  commitedSealHints,
+			},
 		},
 		prop.Amount,
 		prop.DestinationRecipientAddress,
@@ -466,6 +482,17 @@ func (s *ListenerTestSuite) TestGetDepositEventsAndProofsForBlockerERC721() {
 	preparedSignature, err := utils.PrepareSignatureForContract(extra.AggregatedSeal.Signature)
 	s.Nil(err)
 
+	// CommitedSeal construction
+	// construct commited seal suffix
+	commitedSealSuffix := utils.CommitedSealSuffix(extra.AggregatedSeal.Round)
+
+	// construct commited seal prefix
+	commitedSealPrefix, err := utils.CommitedSealPrefix()
+	s.Nil(err)
+
+	// construct commited seal hints
+	commitedSealHints := utils.CommitedSealHints(block.Hash(), commitedSealSuffix)
+
 	_ = utils.NewNonFungibleTransfer(
 		listener.cfg.ID,
 		destID,
@@ -479,6 +506,11 @@ func (s *ListenerTestSuite) TestGetDepositEventsAndProofsForBlockerERC721() {
 			BlockHash:          block.Header().Hash(),
 			Signature:          preparedSignature,
 			RLPHeader:          rlpHeader,
+			CommitedSeal: &utils.CommitedSeal{
+				CommitedSealSuffix: commitedSealSuffix,
+				CommitedSealPrefix: commitedSealPrefix,
+				CommitedSealHints:  commitedSealHints,
+			},
 		},
 		prop.TokenID,
 		prop.DestinationRecipientAddress,
@@ -570,6 +602,17 @@ func (s *ListenerTestSuite) TestGetDepositEventsAndProofsForBlockerGeneric() {
 	preparedSignature, err := utils.PrepareSignatureForContract(extra.AggregatedSeal.Signature)
 	s.Nil(err)
 
+	// CommitedSeal construction
+	// construct commited seal suffix
+	commitedSealSuffix := utils.CommitedSealSuffix(extra.AggregatedSeal.Round)
+
+	// construct commited seal prefix
+	commitedSealPrefix, err := utils.CommitedSealPrefix()
+	s.Nil(err)
+
+	// construct commited seal hints
+	commitedSealHints := utils.CommitedSealHints(block.Hash(), commitedSealSuffix)
+
 	_ = utils.NewGenericTransfer(
 		listener.cfg.ID,
 		destID,
@@ -583,6 +626,11 @@ func (s *ListenerTestSuite) TestGetDepositEventsAndProofsForBlockerGeneric() {
 			BlockHash:          block.Header().Hash(),
 			Signature:          preparedSignature,
 			RLPHeader:          rlpHeader,
+			CommitedSeal: &utils.CommitedSeal{
+				CommitedSealSuffix: commitedSealSuffix,
+				CommitedSealPrefix: commitedSealPrefix,
+				CommitedSealHints:  commitedSealHints,
+			},
 		},
 		prop.MetaData,
 	)
