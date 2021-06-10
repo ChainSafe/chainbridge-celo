@@ -148,4 +148,26 @@ func TestCommitedSealPrefix(t *testing.T) {
 // TestCommitedSealHints tests CommitedSealHints to ensure that it
 // properly creates a CommitedSealHints
 func TestCommitedSealHints(t *testing.T) {
+	// init new header with sample data
+	header, err := generateBlockHeader()
+	if err != nil {
+		t.Fatalf("error generating test block header: %v", err)
+	}
+
+	// init new block with custom header
+	block := types.NewBlockWithHeader(header)
+
+	// init sample pointer to big int
+	istAggSealRound := big.NewInt(123)
+
+	// construct CommitedSealSuffix from round
+	commitedSealSuffix := CommitedSealSuffix(istAggSealRound)
+
+	// construct CommitedSealHints
+	commitedSealHints := CommitedSealHints(block.Hash(), commitedSealSuffix)
+
+	// fail if length of commited seal hints less than 1
+	if len(commitedSealHints) < 1 {
+		t.Fatal("could not generate CommitedSealHints")
+	}
 }
