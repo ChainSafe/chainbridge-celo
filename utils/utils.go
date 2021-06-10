@@ -16,13 +16,6 @@ import (
 	"github.com/pkg/errors"
 )
 
-// function required for celo-bls-go package
-// Note: this is called once, implicitly
-func init() {
-	// register BLS package within utils
-	bls.InitBLSCrypto()
-}
-
 type EventSig string
 
 func (es EventSig) GetTopic() common.Hash {
@@ -128,6 +121,9 @@ func RlpEncodeHeader(header *types.Header) ([]byte, error) {
 // NOTE: uses new functionality from celo-bls-go PR #23
 // https://github.com/celo-org/celo-bls-go/examples/utils
 func PrepareAPKForContract(apk []byte) ([]byte, error) {
+	// registration required for celo-bls-go package
+	bls.InitBLSCrypto()
+
 	// init new byte slice to hold newly encoded APK
 	encodedAPK := make([]byte, 0)
 
@@ -171,6 +167,9 @@ func PrepareAPKForContract(apk []byte) ([]byte, error) {
 // NOTE: uses new functionality from celo-bls-go PR #23
 // https://github.com/celo-org/celo-bls-go/examples/utils
 func PrepareSignatureForContract(signature []byte) ([]byte, error) {
+	// registration required for celo-bls-go package
+	bls.InitBLSCrypto()
+
 	// init new byte slice to hold newly encoded signature
 	encodedSignature := make([]byte, 0)
 
