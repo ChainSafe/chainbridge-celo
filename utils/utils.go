@@ -2,7 +2,6 @@ package utils
 
 import (
 	"bytes"
-	"encoding/binary"
 	"fmt"
 	gomath "math"
 	"math/big"
@@ -202,34 +201,33 @@ func PrepareSignatureForContract(signature []byte) ([]byte, error) {
 // NOTE: uses new functionality from celo-bls-go PR #23
 // https://github.com/celo-org/celo-bls-go/examples/utils
 func CommitedSealSuffix(istAggSealRound *big.Int) []byte {
-	// init new byte slice to hold resulting Commited Seal Suffix
-	commitedSealSuffix := make([]byte, 0)
+	// declare new buffer
+	var buf bytes.Buffer
+	// write the round
+	buf.Write(istAggSealRound.Bytes())
+	// write the msg commit
+	buf.Write([]byte{byte(istanbul.MsgCommit)})
 
-	// init new byte slice to hold uint64 => bytes conversion
-	msgCommitByteSlice := make([]byte, 8)
-
-	// store uint64 data into byte slice
-	binary.LittleEndian.PutUint64(msgCommitByteSlice, istanbul.MsgCommit)
-
-	// append the round
-	commitedSealSuffix = append(commitedSealSuffix, istAggSealRound.Bytes()...)
-
-	// append the msg commit
-	commitedSealSuffix = append(commitedSealSuffix, msgCommitByteSlice...)
-
-	return commitedSealSuffix
+	return buf.Bytes()
 }
 
 // CommitedSealPrefix is creates the Commited Seal Prefix
 // NOTE: uses new functionality from celo-bls-go PR #23
 // https://github.com/celo-org/celo-bls-go/examples/utils
-func CommitedSealPrefix() ([]byte, error) {
-	// msg, err := hex.DecodeString(arg)
-	// if err != nil {
-	// 	return []byte{}, fmt.Errorf("could not decode: %w", err)
-	// }
+func CommitedSealPrefix(data []byte) ([]byte, error) {
+	// registration required for celo-bls-go package
+	bls.InitBLSCrypto()
 
-	return []byte{}, nil
+	// obtain prefix
+	_, prefix, err := bls.HashDirectWithAttempt(data, false)
+	if err != nil {
+		return err, fmt.Errorf("could not ")
+	}
+
+	// TODO:
+	// ensure types match
+
+	return prefix, nil
 }
 
 // CommitedSealHints creates the Commited Seal Hints
