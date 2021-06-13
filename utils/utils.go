@@ -5,6 +5,7 @@ import (
 	"fmt"
 	gomath "math"
 	"math/big"
+	"reflect"
 	"strings"
 
 	"github.com/celo-org/celo-bls-go/bls"
@@ -103,6 +104,36 @@ func ConstructGenericDepositData(metadata []byte) []byte {
 	return data
 }
 
+// TODO:
+// move all below to new package
+
+// borrowed from Celo
+// https://github.com/celo-org/celo-bls-go/blob/kobigurk/arkworks/examples/utils/utils.go#L8-L13
+func ReverseAnyAndPad(s []byte) []byte {
+	s = ReverseAny(s)
+	padding := make([]byte, FIELD_SIZE_IN_CONTRACT-(len(s)%FIELD_SIZE_IN_CONTRACT))
+	z := append(padding, s...)
+	return z
+}
+
+// borrowed from Celo
+// https://github.com/celo-org/celo-bls-go/blob/kobigurk/arkworks/examples/utils/utils.go#L15-L24
+func ReverseAny(s []byte) []byte {
+	z := make([]byte, len(s))
+	copy(z, s)
+	n := reflect.ValueOf(z).Len()
+	swap := reflect.Swapper(z)
+	for i, j := 0, n-1; i < j; i, j = i+1, j-1 {
+		swap(i, j)
+	}
+	return z
+}
+
+// borrowed from Celo
+// https://github.com/celo-org/celo-bls-go/blob/kobigurk/arkworks/examples/utils/utils.go#L15-L24
+const FIELD_SIZE = 48
+const FIELD_SIZE_IN_CONTRACT = 32
+
 // RlpEncodeHeader is method to RLP encode data stored in a block header
 func RlpEncodeHeader(header *types.Header) ([]byte, error) {
 	// deep copy of header
@@ -122,6 +153,9 @@ func RlpEncodeHeader(header *types.Header) ([]byte, error) {
 // NOTE: uses new functionality from celo-bls-go PR #23
 // https://github.com/celo-org/celo-bls-go/examples/utils
 func PrepareAPKForContract(apk []byte) ([]byte, error) {
+	// registration required for celo-bls-go package
+	bls.InitBLSCrypto()
+
 	// init new byte slice to hold newly encoded APK
 	encodedAPK := make([]byte, 0)
 
@@ -142,14 +176,14 @@ func PrepareAPKForContract(apk []byte) ([]byte, error) {
 	// new functionality from celo-bls-go PR #23
 	// https://github.com/celo-org/celo-bls-go/examples/utils
 	// https://github.com/celo-org/celo-bls-go/examples/prepare_for_contract/prepare_for_contract.go#L23-L35
-	encodedDataPart1 := encodedData[0:utils.FIELD_SIZE]
-	encodedDataPart1 = utils.ReverseAnyAndPad(encodedDataPart1)
-	encodedDataPart2 := encodedData[utils.FIELD_SIZE : 2*utils.FIELD_SIZE]
-	encodedDataPart2 = utils.ReverseAnyAndPad(encodedDataPart2)
-	encodedDataPart3 := encodedData[2*utils.FIELD_SIZE : 3*utils.FIELD_SIZE]
-	encodedDataPart3 = utils.ReverseAnyAndPad(encodedDataPart3)
-	encodedDataPart4 := encodedData[3*utils.FIELD_SIZE : 4*utils.FIELD_SIZE]
-	encodedDataPart4 = utils.ReverseAnyAndPad(encodedDataPart4)
+	encodedDataPart1 := encodedData[0:FIELD_SIZE]
+	encodedDataPart1 = ReverseAnyAndPad(encodedDataPart1)
+	encodedDataPart2 := encodedData[FIELD_SIZE : 2*FIELD_SIZE]
+	encodedDataPart2 = ReverseAnyAndPad(encodedDataPart2)
+	encodedDataPart3 := encodedData[2*FIELD_SIZE : 3*FIELD_SIZE]
+	encodedDataPart3 = ReverseAnyAndPad(encodedDataPart3)
+	encodedDataPart4 := encodedData[3*FIELD_SIZE : 4*FIELD_SIZE]
+	encodedDataPart4 = ReverseAnyAndPad(encodedDataPart4)
 
 	// append encoded data to APK byte slice
 	encodedAPK = append(encodedAPK, encodedDataPart1...)
@@ -165,6 +199,9 @@ func PrepareAPKForContract(apk []byte) ([]byte, error) {
 // NOTE: uses new functionality from celo-bls-go PR #23
 // https://github.com/celo-org/celo-bls-go/examples/utils
 func PrepareSignatureForContract(signature []byte) ([]byte, error) {
+	// registration required for celo-bls-go package
+	bls.InitBLSCrypto()
+
 	// init new byte slice to hold newly encoded signature
 	encodedSignature := make([]byte, 0)
 
@@ -185,10 +222,10 @@ func PrepareSignatureForContract(signature []byte) ([]byte, error) {
 	// new functionality from celo-bls-go PR #23
 	// https://github.com/celo-org/celo-bls-go/examples/utils
 	// https://github.com/celo-org/celo-bls-go/examples/prepare_for_contract/prepare_for_contract.go#L23-L3
-	encodedDataPart1 := encodedData[0:utils.FIELD_SIZE]
-	encodedDataPart1 = utils.ReverseAnyAndPad(encodedDataPart1)
-	encodedDataPart2 := encodedData[utils.FIELD_SIZE : 2*utils.FIELD_SIZE]
-	encodedDataPart2 = utils.ReverseAnyAndPad(encodedDataPart2)
+	encodedDataPart1 := encodedData[0:FIELD_SIZE]
+	encodedDataPart1 = ReverseAnyAndPad(encodedDataPart1)
+	encodedDataPart2 := encodedData[FIELD_SIZE : 2*FIELD_SIZE]
+	encodedDataPart2 = ReverseAnyAndPad(encodedDataPart2)
 
 	// append encoded data to encoded signature byte slice
 	encodedSignature = append(encodedSignature, encodedDataPart1...)
@@ -214,14 +251,14 @@ func CommitedSealSuffix(istAggSealRound *big.Int) []byte {
 // CommitedSealPrefix is creates the Commited Seal Prefix
 // NOTE: uses new functionality from celo-bls-go PR #23
 // https://github.com/celo-org/celo-bls-go/examples/utils
-func CommitedSealPrefix(data []byte) ([]byte, error) {
+func CommitedSealPrefix(msg []byte) ([]byte, error) {
 	// registration required for celo-bls-go package
 	bls.InitBLSCrypto()
 
 	// obtain prefix
-	_, prefix, err := bls.HashDirectWithAttempt(data, false)
+	_, prefix, err := bls.HashDirectWithAttempt(msg, false)
 	if err != nil {
-		return err, fmt.Errorf("could not ")
+		return err, fmt.Errorf("could not hash message: %w", err)
 	}
 
 	// TODO:

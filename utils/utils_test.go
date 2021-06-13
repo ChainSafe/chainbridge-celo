@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"bytes"
 	"fmt"
 	"math/big"
 	"strings"
@@ -120,12 +121,44 @@ func generateBlockHeader() (*types.Header, error) {
 
 // TestPrepareAPKForContract tests PrepareAPKForContract to ensure
 // that it properly encodes APK for use within a contract
-func TestPrepareAPKForContract(t *testing.T) {}
+func TestPrepareAPKForContract(t *testing.T) {
+	apk := []byte("aab506de1ef9b0df75f202b0813904e08d99ba0dbbf2084c3a983d9190c41f5f773489a6ee530da67d517d3151805101860dfdb8d7d72d768643af1b07a468f93ba1e08edb2a7f22c85bad3c2c02545f036647f11ce63eed3bd44e2cc080c480")
+
+	// encode APK
+	preparedApk, err := PrepareAPKForContract(apk)
+	if err != nil {
+		t.Fatalf("could not prepare APK for contract: %v", err)
+	}
+
+	encodedApk := []byte("0000000000000000000000000000000001518051317d517da60d53eea68934775f1fc490913d983a4c08f2bb0dba998de0043981b002f275dfb0f91ede06b5aa0000000000000000000000000000000000c480c02c4ed43bed3ee61cf14766035f54022c3cad5bc8227f2adb8ee0a13bf968a4071baf4386762dd7d7b8fd0d8600000000000000000000000000000000002f95dc47ed1188c0cc5762cf3fe3de3cbd0584eedcda9581d78dbc44dbbbc8f773003f3d024c94a04b099158d677bf0000000000000000000000000000000000eca490fa6b49e659f7e143bf06e230b6417cd7caaa65ae2e9b6a610b84559e9244879348c1a9ac06259f6fdba605e5")
+
+	result := bytes.Compare(preparedApk, encodedApk)
+
+	if result != 0 {
+		t.Fatal("preparedAPK != encodedAPK; bytes do not match")
+	}
+}
 
 // TestPrepareSignatureForContract tests PrepareSignatureForContract to ensure
 // that it properly encodes a SignatureVerification.Signature for use within
 // a contract
-func TestPrepareSignatureForContract(t *testing.T) {}
+func TestPrepareSignatureForContract(t *testing.T) {
+	// sample signature
+	signature := []byte("063c39b0d4f7fa61cef3b97fe6705f02ffc209a4f3c91442588f15a884e25e68fb63cc60215ac6912f67b9fee9276501")
+
+	preparedSignature, err := PrepareSignatureForContract(signature)
+	if err != nil {
+		t.Fatalf("could not prepare signature for contract: %v", err)
+	}
+
+	encodedSignature := []byte("00000000000000000000000000000000016527e9feb9672f91c65a2160cc63fb685ee284a8158f584214c9f3a409c2ff025f70e67fb9f3ce61faf7d4b0393c060000000000000000000000000000000000a3a8fc6a0258b5bba7bb306d8e7abc147999201f61df1e65f1adbd6ba7b6037e08e966178165ba8f28101a94574853")
+
+	result := bytes.Compare(preparedSignature, encodedSignature)
+
+	if result != 0 {
+		t.Fatal("preparedSignature != encodedSignature; bytes do not match")
+	}
+}
 
 // TestCommitedSealSuffix tests CommitedSealSuffix to ensure that it
 // properly creates a CommitedSealSuffix

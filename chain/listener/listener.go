@@ -246,6 +246,10 @@ func (l *listener) getDepositEventsAndProofsForBlock(latestBlock *big.Int) error
 		commitedSealSuffix := utils.CommitedSealSuffix(extra.AggregatedSeal.Round)
 
 		// construct commited seal prefix
+		// TODO:
+		// add argument
+		// what is datatype?
+		// []byte, uint64 ?
 		commitedSealPrefix, err := utils.CommitedSealPrefix()
 		if err != nil {
 			return err
