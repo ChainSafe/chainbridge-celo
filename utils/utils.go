@@ -239,7 +239,7 @@ func CommitedSealPrefix(blockHashAndSuffix []byte) ([]byte, error) {
 		return err, fmt.Errorf("could not hash data: %w", err)
 	}
 
-	return prefix, nil
+	return []byte{byte(prefix)}, nil
 }
 
 // CommitedSealHints creates the Commited Seal Hints
@@ -285,7 +285,6 @@ func CommitedSealHints(blockHashAndSuffix []byte) ([]byte, error) {
 // ConcatBlockHashAndCommitedSealSuffix concatenates the block hash with
 // the CommitedSealSuffix to be used within CommitedSeal Prefix/Hints operations
 func ConcatBlockHashAndCommitedSealSuffix(blockHash common.Hash, commitedSealSuffix []byte) []byte {
-
 	// init new byte slice to hold resulting Commited Seal Hints
 	blockHashAndSuffix := make([]byte, 0)
 
