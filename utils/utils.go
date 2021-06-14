@@ -306,7 +306,6 @@ func reverseAnyAndPad(s []byte) []byte {
 	return z
 }
 
-// reverseAny is private function to
 // borrowed from Celo
 // https://github.com/celo-org/celo-bls-go/blob/kobigurk/arkworks/examples/utils/utils.go#L15-L24
 func reverseAny(s []byte) []byte {
