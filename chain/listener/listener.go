@@ -216,6 +216,9 @@ func (l *listener) getDepositEventsAndProofsForBlock(latestBlock *big.Int) error
 			return err
 		}
 
+		// TODO:
+		// Refactor below
+
 		// fetch IstanbulExtra data by parsing block header
 		// https://github.com/celo-org/celo-blockchain/blob/master/core/types/istanbul.go#L128-L142
 		extra, err := types.ExtractIstanbulExtra(blockData.Header())
@@ -245,18 +248,20 @@ func (l *listener) getDepositEventsAndProofsForBlock(latestBlock *big.Int) error
 		// construct commited seal suffix
 		commitedSealSuffix := utils.CommitedSealSuffix(extra.AggregatedSeal.Round)
 
+		// construct concatenation of blockHash + commitedSealSuffix
+		blockHashAndSuffix := utils.ConcatBlockHashAndCommitedSealSuffix(blockData.Hash(), commitedSealSuffix)
+
 		// construct commited seal prefix
-		// TODO:
-		// add argument
-		// what is datatype?
-		// []byte, uint64 ?
-		commitedSealPrefix, err := utils.CommitedSealPrefix()
+		commitedSealPrefix, err := utils.CommitedSealPrefix(blockHashAndSuffix)
 		if err != nil {
 			return err
 		}
 
 		// construct commited seal hints
-		commitedSealHints := utils.CommitedSealHints(blockData.Hash(), commitedSealSuffix)
+		commitedSealHints, err := utils.CommitedSealHints(blockHashAndSuffix)
+		if err != nil {
+			return err
+		}
 
 		m.SVParams = &utils.SignatureVerification{AggregatePublicKey: preparedApk, BlockHash: blockData.Header().Hash(), Signature: preparedSignature, RLPHeader: rlpEncodedHeader, CommitedSeal: &utils.CommitedSeal{CommitedSealSuffix: commitedSealSuffix, CommitedSealPrefix: commitedSealPrefix, CommitedSealHints: commitedSealHints}}
 		m.MPParams = &utils.MerkleProof{TxRootHash: utils.SliceTo32Bytes(blockData.TxHash().Bytes()), Nodes: proof, Key: key}
