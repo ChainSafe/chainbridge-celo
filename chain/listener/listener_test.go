@@ -352,12 +352,16 @@ func (s *ListenerTestSuite) TestGetDepositEventsAndProofsForBlockerERC20() {
 	// construct commited seal suffix
 	commitedSealSuffix := utils.CommitedSealSuffix(extra.AggregatedSeal.Round)
 
+	// construct concatenation of blockHash + commitedSealSuffix
+	blockHashAndSuffix := utils.ConcatBlockHashAndCommitedSealSuffix(block.Hash(), commitedSealSuffix)
+
 	// construct commited seal prefix
-	commitedSealPrefix, err := utils.CommitedSealPrefix()
+	commitedSealPrefix, err := utils.CommitedSealPrefix(blockHashAndSuffix)
 	s.Nil(err)
 
 	// construct commited seal hints
-	commitedSealHints := utils.CommitedSealHints(block.Hash(), commitedSealSuffix)
+	commitedSealHints, err := utils.CommitedSealHints(blockHashAndSuffix)
+	s.Nil(err)
 
 	_ = utils.NewFungibleTransfer(
 		listener.cfg.ID,
@@ -486,12 +490,16 @@ func (s *ListenerTestSuite) TestGetDepositEventsAndProofsForBlockerERC721() {
 	// construct commited seal suffix
 	commitedSealSuffix := utils.CommitedSealSuffix(extra.AggregatedSeal.Round)
 
+	// construct concatenation of blockHash + commitedSealSuffix
+	blockHashAndSuffix := utils.ConcatBlockHashAndCommitedSealSuffix(block.Hash(), commitedSealSuffix)
+
 	// construct commited seal prefix
-	commitedSealPrefix, err := utils.CommitedSealPrefix()
+	commitedSealPrefix, err := utils.CommitedSealPrefix(blockHashAndSuffix)
 	s.Nil(err)
 
 	// construct commited seal hints
-	commitedSealHints := utils.CommitedSealHints(block.Hash(), commitedSealSuffix)
+	commitedSealHints, err := utils.CommitedSealHints(blockHashAndSuffix)
+	s.Nil(err)
 
 	_ = utils.NewNonFungibleTransfer(
 		listener.cfg.ID,
@@ -606,12 +614,16 @@ func (s *ListenerTestSuite) TestGetDepositEventsAndProofsForBlockerGeneric() {
 	// construct commited seal suffix
 	commitedSealSuffix := utils.CommitedSealSuffix(extra.AggregatedSeal.Round)
 
+	// construct concatenation of blockHash + commitedSealSuffix
+	blockHashAndSuffix := utils.ConcatBlockHashAndCommitedSealSuffix(block.Hash(), commitedSealSuffix)
+
 	// construct commited seal prefix
-	commitedSealPrefix, err := utils.CommitedSealPrefix()
+	commitedSealPrefix, err := utils.CommitedSealPrefix(blockHashAndSuffix)
 	s.Nil(err)
 
 	// construct commited seal hints
-	commitedSealHints := utils.CommitedSealHints(block.Hash(), commitedSealSuffix)
+	commitedSealHints, err := utils.CommitedSealHints(blockHashAndSuffix)
+	s.Nil(err)
 
 	_ = utils.NewGenericTransfer(
 		listener.cfg.ID,
