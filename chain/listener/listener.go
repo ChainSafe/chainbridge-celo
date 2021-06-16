@@ -119,6 +119,14 @@ func (l *listener) pollBlocks() error {
 				continue
 			}
 
+			// debugging
+
+			apk, err := l.valsAggr.GetAPKForBlock(latestBlock, uint8(l.cfg.ID), l.cfg.EpochSize)
+			if err != nil {
+				return err
+			}
+			log.Debug().Msgf("APK: %x", apk)
+
 			// Sleep if the difference is less than BlockDelay; (latest - current) < BlockDelay
 			if big.NewInt(0).Sub(latestBlock, currentBlock).Cmp(BlockDelay) == -1 {
 				time.Sleep(BlockRetryInterval)
