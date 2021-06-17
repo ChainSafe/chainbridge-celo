@@ -128,8 +128,7 @@ func (db *ValidatorsStore) GetAPKForBlock(block *big.Int, chainID uint8, epochSi
 	bitmaskedValidators := make([]*istanbul.ValidatorData, 0)
 
 	for i := 0; i <= 10; i++ {
-		// vals, err := db.GetValidatorsForBlock(computeLastBlockOfEpochForProvidedBlock(block, epochSize), chainID)
-		vals, err := db.GetValidatorsForBlock(block, chainID)
+		vals, err := db.GetValidatorsForBlock(computeLastBlockOfEpochForProvidedBlock(block, epochSize), chainID)
 		if err != nil {
 			if errors.Is(err, leveldb.ErrNotFound) {
 				time.Sleep(5 * time.Second)
@@ -150,7 +149,14 @@ func (db *ValidatorsStore) GetAPKForBlock(block *big.Int, chainID uint8, epochSi
 		if err != nil {
 			return nil, err
 		}
-		log.Debug().Msgf("pk: %x", pk)
+
+		pkSerialized, err := pk.Serialize()
+		if err != nil {
+			return nil, err
+		}
+
+		log.Debug().Msgf("serialized pk: %x", pkSerialized)
+
 		return pk.Serialize()
 	}
 	return nil, ErrNoBlockInStore
