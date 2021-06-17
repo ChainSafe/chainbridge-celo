@@ -10,7 +10,6 @@ import (
 	"github.com/ethereum/go-ethereum/core/types"
 	blscrypto "github.com/ethereum/go-ethereum/crypto/bls"
 	"github.com/pkg/errors"
-	"github.com/rs/zerolog/log"
 )
 
 var (
@@ -47,9 +46,6 @@ func aggregatePublicKeys(validators []*istanbul.ValidatorData) (*bls.PublicKey, 
 		publicKeys[i] = validators[i].BLSPublicKey
 	}
 
-	log.Debug().Msgf("num public keys: %v", len(publicKeys))
-	log.Debug().Msgf("serialized public keys: %x", publicKeys)
-
 	publicKeyObjs := make([]*bls.PublicKey, len(publicKeys))
 	for i := range publicKeys {
 		publicKeyObj, err := bls.DeserializePublicKeyCached(publicKeys[i][:])
@@ -57,24 +53,15 @@ func aggregatePublicKeys(validators []*istanbul.ValidatorData) (*bls.PublicKey, 
 			return nil, err
 		}
 
-		// this changes each time
-		log.Debug().Msgf("public key obj: %v", publicKeyObj)
-
 		publicKeyObjs[i] = publicKeyObj
 		publicKeyObj.Destroy()
 	}
-
-	// as a result of the above, this also changes
-	log.Debug().Msgf("public key objs: %v", publicKeyObjs)
 
 	apk, err := bls.AggregatePublicKeys(publicKeyObjs)
 	if err != nil {
 		return nil, err
 	}
 	defer apk.Destroy()
-
-	// therefore, this will also change
-	log.Debug().Msgf("Returning APK: %v", apk)
 
 	return apk, nil
 }

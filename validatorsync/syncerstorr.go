@@ -11,6 +11,8 @@ import (
 	"time"
 
 	"github.com/ethereum/go-ethereum/consensus/istanbul"
+	"github.com/ethereum/go-ethereum/core/types"
+	"github.com/rs/zerolog/log"
 	"github.com/syndtr/goleveldb/leveldb"
 )
 
@@ -121,9 +123,13 @@ func (db *ValidatorsStore) setLatestKnownEpochLastBlockWithTransaction(block *bi
 
 var ErrNoBlockInStore = errors.New("no corresponding validators for provided block number")
 
-func (db *ValidatorsStore) GetAPKForBlock(block *big.Int, chainID uint8, epochSize uint64) ([]byte, error) {
+func (db *ValidatorsStore) GetAPKForBlock(block *big.Int, chainID uint8, epochSize uint64, extra *types.IstanbulExtra) ([]byte, error) {
+	// init new slice to hold validators after bitmask applied
+	bitmaskedValidators := make([]*istanbul.ValidatorData, 0)
+
 	for i := 0; i <= 10; i++ {
-		vals, err := db.GetValidatorsForBlock(computeLastBlockOfEpochForProvidedBlock(block, epochSize), chainID)
+		// vals, err := db.GetValidatorsForBlock(computeLastBlockOfEpochForProvidedBlock(block, epochSize), chainID)
+		vals, err := db.GetValidatorsForBlock(block, chainID)
 		if err != nil {
 			if errors.Is(err, leveldb.ErrNotFound) {
 				time.Sleep(5 * time.Second)
@@ -131,10 +137,20 @@ func (db *ValidatorsStore) GetAPKForBlock(block *big.Int, chainID uint8, epochSi
 			}
 			return nil, err
 		}
-		pk, err := aggregatePublicKeys(vals)
+		log.Debug().Msgf("before: %x", vals[i].BLSPublicKey)
+
+		// apply bitmask here
+		if extra.AggregatedSeal.Bitmap.Bit(i) == 1 {
+			bitmaskedValidators = append(bitmaskedValidators, vals[i])
+		}
+
+		log.Debug().Msgf("after: %x", bitmaskedValidators[i].BLSPublicKey)
+
+		pk, err := aggregatePublicKeys(bitmaskedValidators)
 		if err != nil {
 			return nil, err
 		}
+		log.Debug().Msgf("pk: %x", pk)
 		return pk.Serialize()
 	}
 	return nil, ErrNoBlockInStore

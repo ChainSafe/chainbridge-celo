@@ -52,7 +52,7 @@ type Blockstorer interface {
 }
 
 type ValidatorsAggregator interface {
-	GetAPKForBlock(block *big.Int, chainID uint8, epochSize uint64) ([]byte, error)
+	GetAPKForBlock(block *big.Int, chainID uint8, epochSize uint64, extra *types.IstanbulExtra) ([]byte, error)
 }
 
 func NewListener(cfg *config.CeloChainConfig, client client.LogFilterWithLatestBlock, bs Blockstorer, stop <-chan struct{}, sysErr chan<- error, router IRouter, valsAggr ValidatorsAggregator) *listener {
@@ -121,7 +121,17 @@ func (l *listener) pollBlocks() error {
 
 			// debugging
 
-			apk, err := l.valsAggr.GetAPKForBlock(latestBlock, uint8(l.cfg.ID), l.cfg.EpochSize)
+			blockData, err := l.client.BlockByNumber(context.Background(), latestBlock)
+			if err != nil {
+				return err
+			}
+
+			extra, err := types.ExtractIstanbulExtra(blockData.Header())
+			if err != nil {
+				return err
+			}
+
+			apk, err := l.valsAggr.GetAPKForBlock(latestBlock, uint8(l.cfg.ID), l.cfg.EpochSize, extra)
 			if err != nil {
 				return err
 			}
@@ -210,7 +220,14 @@ func (l *listener) getDepositEventsAndProofsForBlock(latestBlock *big.Int) error
 		if err != nil {
 			return err
 		}
-		apk, err := l.valsAggr.GetAPKForBlock(latestBlock, uint8(l.cfg.ID), l.cfg.EpochSize)
+		// fetch IstanbulExtra data by parsing block header
+		// https://github.com/celo-org/celo-blockchain/blob/master/core/types/istanbul.go#L128-L142
+		extra, err := types.ExtractIstanbulExtra(blockData.Header())
+		if err != nil {
+			return err
+		}
+
+		apk, err := l.valsAggr.GetAPKForBlock(latestBlock, uint8(l.cfg.ID), l.cfg.EpochSize, extra)
 		if err != nil {
 			return err
 
@@ -220,13 +237,6 @@ func (l *listener) getDepositEventsAndProofsForBlock(latestBlock *big.Int) error
 			return fmt.Errorf("encoding TxIndex to rlp: %w", err)
 		}
 		proof, key, err := txtrie.RetrieveProof(trie, keyRlp)
-		if err != nil {
-			return err
-		}
-
-		// fetch IstanbulExtra data by parsing block header
-		// https://github.com/celo-org/celo-blockchain/blob/master/core/types/istanbul.go#L128-L142
-		extra, err := types.ExtractIstanbulExtra(blockData.Header())
 		if err != nil {
 			return err
 		}
