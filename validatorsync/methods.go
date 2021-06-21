@@ -71,3 +71,21 @@ func computeLastBlockOfEpochForProvidedBlock(block *big.Int, epochSize uint64) *
 	lastBlock := istanbul.GetEpochLastBlockNumber(epochNumber, epochSize)
 	return big.NewInt(0).SetUint64(lastBlock)
 }
+
+// filterValidatorsWithBitmap is a private function that returns a slice of
+// validators who signed the current block by applying the current
+// block's bitmap on a slice of validators chosen for the current epoch
+func filterValidatorsWithBitmap(validators []*istanbul.ValidatorData, bitmap *big.Int) []*istanbul.ValidatorData {
+	// init new slice to hold validators who signed block
+	newValidators := make([]*istanbul.ValidatorData, 0)
+
+	// iterate over validators in slice to determine which ones signed the block
+	for index, validator := range validators {
+		// if validator found within bitmap, append to new validators slice
+		if bitmap.Bit(index) == 1 {
+			newValidators = append(newValidators, &istanbul.ValidatorData{Address: validator.Address, BLSPublicKey: validator.BLSPublicKey})
+		}
+	}
+
+	return newValidators
+}
