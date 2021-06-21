@@ -134,23 +134,15 @@ func (db *ValidatorsStore) GetAPKForBlock(block *big.Int, chainID uint8, epochSi
 			return nil, err
 		}
 
-		// make new slice to determine which validators (keys) signed the block
-		bitmaskedValidators := make([]*istanbul.ValidatorData, 0)
+		log.Debug().Msgf("validators: %v", vals)
 
-		log.Debug().Msgf("bitmap: %v", extra.AggregatedSeal.Bitmap)
+		// apply bitmask on validators slice
+		newValidators := filterValidatorsWithBitmap(vals, extra.AggregatedSeal.Bitmap)
 
-		// if signed the block, add to block signed validators slice
-		for index, val := range vals {
-			log.Debug().Msgf("bitmap of [%d]: %d", index, extra.AggregatedSeal.Bitmap.Bit(index))
-			if extra.AggregatedSeal.Bitmap.Bit(index) == 1 {
-				bitmaskedValidators = append(bitmaskedValidators, val)
-			}
-		}
+		// if signed the block, add to block signe validators slice
+		log.Debug().Msgf("vals: %v", len(newValidators))
 
-		log.Debug().Msgf("vals: %v", len(bitmaskedValidators))
-		log.Debug().Msgf("val address: %x", bitmaskedValidators[i].Address)
-
-		pk, err := aggregatePublicKeys(bitmaskedValidators)
+		pk, err := aggregatePublicKeys(newValidators)
 		if err != nil {
 			return nil, err
 		}
