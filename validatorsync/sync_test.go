@@ -4,18 +4,19 @@ package validatorsync
 
 import (
 	"errors"
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/common/hexutil"
-	"github.com/ethereum/go-ethereum/core/types"
-	"github.com/ethereum/go-ethereum/crypto"
-	"github.com/ethereum/go-ethereum/crypto/bls"
-	"github.com/ethereum/go-ethereum/rlp"
 	"math/big"
 	"os"
 	"testing"
 	"time"
 
-	"github.com/ChainSafe/chainbridge-celo/validatorsync/mock"
+	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/common/hexutil"
+	"github.com/ethereum/go-ethereum/core/types"
+	"github.com/ethereum/go-ethereum/crypto"
+	blscrypto "github.com/ethereum/go-ethereum/crypto/bls"
+	"github.com/ethereum/go-ethereum/rlp"
+
+	mock_validatorsync "github.com/ChainSafe/chainbridge-celo/validatorsync/mock"
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/suite"
 	"github.com/syndtr/goleveldb/leveldb"
@@ -125,7 +126,11 @@ func (s *SyncTestSuite) TestStoreBlockValidatorsWIthEmptyDB() {
 	s.Nil(err)
 	s.Equal(0, lb.Cmp(big.NewInt(24)))
 
-	apk, err := s.store.GetAPKForBlock(big.NewInt(1), chainID, 12)
+	// fetch Istanbul Extra data from block header
+	extra, err := types.ExtractIstanbulExtra(header)
+	s.Nil(err)
+
+	apk, err := s.store.GetAPKForBlock(big.NewInt(1), chainID, 12, extra)
 	s.Nil(err)
 	s.NotNil(apk)
 

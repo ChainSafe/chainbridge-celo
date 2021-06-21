@@ -10,6 +10,7 @@ import (
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/consensus/istanbul"
+	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/crypto"
 	blscrypto "github.com/ethereum/go-ethereum/crypto/bls"
 	"github.com/stretchr/testify/suite"
@@ -132,7 +133,11 @@ func (s *SyncerDBTestSuite) TestGetAPKForBlock() {
 
 	err := s.syncer.SetValidatorsForBlock(big.NewInt(12), startVals, chainID)
 	s.Nil(err)
-	apk, err := s.syncer.GetAPKForBlock(big.NewInt(11), chainID, 12)
+	header, err := generateBlockHeader()
+	s.Nil(err)
+	extra, err := types.ExtractIstanbulExtra(header)
+	s.Nil(err)
+	apk, err := s.syncer.GetAPKForBlock(big.NewInt(11), chainID, 12, extra)
 	s.Nil(err)
 	s.NotNil(apk)
 }
@@ -145,7 +150,11 @@ func (s *SyncerDBTestSuite) TestGetAPKForBlockNotExistsBlockErr() {
 	startVals[2] = &istanbul.ValidatorData{Address: common.Address{0x2f}, BLSPublicKey: blscrypto.SerializedPublicKey{}}
 	err := s.syncer.SetValidatorsForBlock(big.NewInt(12), startVals, chainID)
 	s.Nil(err)
-	apk, err := s.syncer.GetAPKForBlock(big.NewInt(11), chainID, 13)
+	header, err := generateBlockHeader()
+	s.Nil(err)
+	extra, err := types.ExtractIstanbulExtra(header)
+	s.Nil(err)
+	apk, err := s.syncer.GetAPKForBlock(big.NewInt(11), chainID, 13, extra)
 	s.NotNil(err)
 	s.True(errors.Is(err, ErrNoBlockInStore))
 	s.Nil(apk)
