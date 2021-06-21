@@ -296,6 +296,7 @@ func TestConcatBlockHashAndCommitedSealSuffix(t *testing.T) {
 // commited seal suffix with the block hash
 func generateBlockHashAndSuffix() ([]byte, error) {
 	// init new header with dummy data
+	// dummy data: round = 123
 	header, err := generateBlockHeader()
 	if err != nil {
 		return []byte{}, err
@@ -303,12 +304,6 @@ func generateBlockHashAndSuffix() ([]byte, error) {
 
 	// init new block with custom header
 	block := types.NewBlockWithHeader(header)
-
-	// init new byte slice to hold resulting Commited Seal Hints
-	blockHashAndSuffix := make([]byte, 0)
-
-	// append block hash bytes to commited seal hints
-	blockHashAndSuffix = append(blockHashAndSuffix, block.Hash().Bytes()...)
 
 	// extract Istanbul Extra data from block header
 	extra, err := types.ExtractIstanbulExtra(block.Header())
@@ -318,6 +313,12 @@ func generateBlockHashAndSuffix() ([]byte, error) {
 
 	// derive commited seal suffix data
 	commitedSealSuffix := CommitedSealSuffix(extra.AggregatedSeal.Round)
+
+	// init new byte slice to hold resulting Commited Seal Hints
+	blockHashAndSuffix := make([]byte, 0)
+
+	// append block hash bytes to commited seal hints
+	blockHashAndSuffix = append(blockHashAndSuffix, block.Hash().Bytes()...)
 
 	// append commited seal suffix to commited seal hints
 	blockHashAndSuffix = append(blockHashAndSuffix, commitedSealSuffix...)
