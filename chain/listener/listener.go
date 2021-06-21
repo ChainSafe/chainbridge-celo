@@ -126,6 +126,8 @@ func (l *listener) pollBlocks() error {
 				return err
 			}
 
+			// fetch IstanbulExtra data by parsing block header
+			// https://github.com/celo-org/celo-blockchain/blob/master/core/types/istanbul.go#L128-L142
 			extra, err := types.ExtractIstanbulExtra(blockData.Header())
 			if err != nil {
 				return err
@@ -135,6 +137,7 @@ func (l *listener) pollBlocks() error {
 			if err != nil {
 				return err
 			}
+
 			log.Debug().Msgf("APK: %x", apk)
 
 			// Sleep if the difference is less than BlockDelay; (latest - current) < BlockDelay

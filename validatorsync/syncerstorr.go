@@ -124,9 +124,6 @@ func (db *ValidatorsStore) setLatestKnownEpochLastBlockWithTransaction(block *bi
 var ErrNoBlockInStore = errors.New("no corresponding validators for provided block number")
 
 func (db *ValidatorsStore) GetAPKForBlock(block *big.Int, chainID uint8, epochSize uint64, extra *types.IstanbulExtra) ([]byte, error) {
-	// init new slice to hold validators after bitmask applied
-	bitmaskedValidators := make([]*istanbul.ValidatorData, 0)
-
 	for i := 0; i <= 10; i++ {
 		vals, err := db.GetValidatorsForBlock(computeLastBlockOfEpochForProvidedBlock(block, epochSize), chainID)
 		if err != nil {
@@ -136,26 +133,27 @@ func (db *ValidatorsStore) GetAPKForBlock(block *big.Int, chainID uint8, epochSi
 			}
 			return nil, err
 		}
-		log.Debug().Msgf("before: %x", vals[i].BLSPublicKey)
 
-		// apply bitmask here
-		if extra.AggregatedSeal.Bitmap.Bit(i) == 1 {
-			bitmaskedValidators = append(bitmaskedValidators, vals[i])
+		// make new slice to determine which validators (keys) signed the block
+		bitmaskedValidators := make([]*istanbul.ValidatorData, 0)
+
+		log.Debug().Msgf("bitmap: %v", extra.AggregatedSeal.Bitmap)
+
+		// if signed the block, add to block signed validators slice
+		for index, val := range vals {
+			log.Debug().Msgf("bitmap of [%d]: %d", index, extra.AggregatedSeal.Bitmap.Bit(index))
+			if extra.AggregatedSeal.Bitmap.Bit(index) == 1 {
+				bitmaskedValidators = append(bitmaskedValidators, val)
+			}
 		}
 
-		log.Debug().Msgf("after: %x", bitmaskedValidators[i].BLSPublicKey)
+		log.Debug().Msgf("vals: %v", len(bitmaskedValidators))
+		log.Debug().Msgf("val address: %x", bitmaskedValidators[i].Address)
 
 		pk, err := aggregatePublicKeys(bitmaskedValidators)
 		if err != nil {
 			return nil, err
 		}
-
-		pkSerialized, err := pk.Serialize()
-		if err != nil {
-			return nil, err
-		}
-
-		log.Debug().Msgf("serialized pk: %x", pkSerialized)
 
 		return pk.Serialize()
 	}
