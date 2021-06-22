@@ -317,10 +317,14 @@ func (s *ListenerTestSuite) TestGetDepositEventsAndProofsForBlockerERC20() {
 
 	destID := utils.ChainId(logs[0].Topics[1].Big().Uint64())
 	pk := []byte{0x1f}
-	s.validatorsAggregatorMock.EXPECT().GetAPKForBlock(gomock.Any(), gomock.Any(), gomock.Any()).Return([]byte{0x1f}, nil)
 
 	// replace block with customized block to hold IstanbulExtra data
 	block := dummyBlockWithIstanbulExtra(123)
+
+	extra, err := types.ExtractIstanbulExtra(block.Header())
+	s.Nil(err)
+
+	s.validatorsAggregatorMock.EXPECT().GetAPKForBlock(gomock.Any(), gomock.Any(), gomock.Any(), extra).Return([]byte{0x1f}, nil)
 
 	s.clientMock.EXPECT().BlockByNumber(gomock.Any(), gomock.Any()).Return(block, nil)
 
@@ -332,9 +336,6 @@ func (s *ListenerTestSuite) TestGetDepositEventsAndProofsForBlockerERC20() {
 	s.Nil(err)
 
 	proof, key, err := txtrie.RetrieveProof(trie, keyRlp)
-	s.Nil(err)
-
-	extra, err := types.ExtractIstanbulExtra(block.Header())
 	s.Nil(err)
 
 	rlpHeader, err := utils.RlpEncodeHeader(block.Header())
@@ -437,15 +438,16 @@ func (s *ListenerTestSuite) TestGetDepositEventsAndProofsForBlockerERC721() {
 
 	destID := utils.ChainId(logs[0].Topics[1].Big().Uint64())
 	pk := []byte{0x1f}
-	s.validatorsAggregatorMock.EXPECT().GetAPKForBlock(gomock.Any(), gomock.Any(), gomock.Any()).Return(pk, nil)
 
 	// replace block with customized block to hold IstanbulExtra data
 	block := dummyBlockWithIstanbulExtra(123)
 
-	s.clientMock.EXPECT().BlockByNumber(gomock.Any(), gomock.Any()).Return(block, nil)
-
 	extra, err := types.ExtractIstanbulExtra(block.Header())
 	s.Nil(err)
+
+	s.validatorsAggregatorMock.EXPECT().GetAPKForBlock(gomock.Any(), gomock.Any(), gomock.Any(), extra).Return(pk, nil)
+
+	s.clientMock.EXPECT().BlockByNumber(gomock.Any(), gomock.Any()).Return(block, nil)
 
 	rlpHeader, err := utils.RlpEncodeHeader(block.Header())
 	s.Nil(err)
@@ -532,15 +534,16 @@ func (s *ListenerTestSuite) TestGetDepositEventsAndProofsForBlockerGeneric() {
 
 	destID := utils.ChainId(logs[0].Topics[1].Big().Uint64())
 	pk := []byte{0x1f}
-	s.validatorsAggregatorMock.EXPECT().GetAPKForBlock(gomock.Any(), gomock.Any(), gomock.Any()).Return(pk, nil)
 
 	// replace block with customized block to hold IstanbulExtra data
 	block := dummyBlockWithIstanbulExtra(123)
 
-	s.clientMock.EXPECT().BlockByNumber(gomock.Any(), gomock.Any()).Return(block, nil)
-
 	extra, err := types.ExtractIstanbulExtra(block.Header())
 	s.Nil(err)
+
+	s.validatorsAggregatorMock.EXPECT().GetAPKForBlock(gomock.Any(), gomock.Any(), gomock.Any(), extra).Return(pk, nil)
+
+	s.clientMock.EXPECT().BlockByNumber(gomock.Any(), gomock.Any()).Return(block, nil)
 
 	rlpHeader, err := utils.RlpEncodeHeader(block.Header())
 	s.Nil(err)
