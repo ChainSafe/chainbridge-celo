@@ -12,7 +12,6 @@ import (
 
 	"github.com/ethereum/go-ethereum/consensus/istanbul"
 	"github.com/ethereum/go-ethereum/core/types"
-	"github.com/rs/zerolog/log"
 	"github.com/syndtr/goleveldb/leveldb"
 )
 
@@ -134,13 +133,8 @@ func (db *ValidatorsStore) GetAPKForBlock(block *big.Int, chainID uint8, epochSi
 			return nil, err
 		}
 
-		log.Debug().Msgf("validators: %v", vals)
-
 		// apply bitmask on validators slice
 		newValidators := filterValidatorsWithBitmap(vals, extra.AggregatedSeal.Bitmap)
-
-		// if signed the block, add to block signe validators slice
-		log.Debug().Msgf("vals: %v", len(newValidators))
 
 		pk, err := aggregatePublicKeys(newValidators)
 		if err != nil {
