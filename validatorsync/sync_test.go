@@ -126,9 +126,26 @@ func (s *SyncTestSuite) TestStoreBlockValidatorsWIthEmptyDB() {
 	s.Nil(err)
 	s.Equal(0, lb.Cmp(big.NewInt(24)))
 
-	// fetch Istanbul Extra data from block header
-	extra, err := types.ExtractIstanbulExtra(header)
-	s.Nil(err)
+	// create custom Istanbul Extra data
+	extra := &types.IstanbulExtra{
+		AggregatedSeal: types.IstanbulAggregatedSeal{
+			// init bitmap at 0
+			Bitmap: big.NewInt(0),
+		},
+	}
+
+	// loop over vals4 to set bitmap
+	for valIndex := range vals4 {
+		// set that validators 5 (index 4) and 6 (index 5) did not sign block
+		if valIndex == 4 || valIndex == 5 {
+			// skip
+			continue
+		}
+		// set bitmap
+		extra.AggregatedSeal.Bitmap.SetBit(
+			extra.AggregatedSeal.Bitmap, valIndex, 1,
+		)
+	}
 
 	apk, err := s.store.GetAPKForBlock(big.NewInt(1), chainID, 12, extra)
 	s.Nil(err)

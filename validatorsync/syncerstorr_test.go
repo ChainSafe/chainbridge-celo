@@ -133,10 +133,28 @@ func (s *SyncerDBTestSuite) TestGetAPKForBlock() {
 
 	err := s.syncer.SetValidatorsForBlock(big.NewInt(12), startVals, chainID)
 	s.Nil(err)
-	header, err := generateBlockHeader()
-	s.Nil(err)
-	extra, err := types.ExtractIstanbulExtra(header)
-	s.Nil(err)
+
+	// create custom Istanbul Extra data
+	extra := &types.IstanbulExtra{
+		AggregatedSeal: types.IstanbulAggregatedSeal{
+			// init bitmap at 0
+			Bitmap: big.NewInt(0),
+		},
+	}
+
+	// loop over vals4 to set bitmap
+	for valIndex := range startVals {
+		// set that validator 1 (index 0) did not sign block
+		if valIndex == 0 {
+			// skip
+			continue
+		}
+		// set bitmap
+		extra.AggregatedSeal.Bitmap.SetBit(
+			extra.AggregatedSeal.Bitmap, valIndex, 1,
+		)
+	}
+
 	apk, err := s.syncer.GetAPKForBlock(big.NewInt(11), chainID, 12, extra)
 	s.Nil(err)
 	s.NotNil(apk)
