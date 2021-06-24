@@ -142,7 +142,7 @@ func (s *SyncerDBTestSuite) TestGetAPKForBlock() {
 		},
 	}
 
-	// loop over vals4 to set bitmap
+	// loop over startVals to set bitmap
 	for valIndex := range startVals {
 		// set that validator 1 (index 0) did not sign block
 		if valIndex == 0 {
