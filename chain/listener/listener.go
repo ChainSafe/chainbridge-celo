@@ -259,6 +259,18 @@ func (l *listener) getDepositEventsAndProofsForBlock(latestBlock *big.Int) error
 			return err
 		}
 
+
+		// prepare APK for contract
+		preparedApk, err := utils.PrepareAPKForContract(apk)
+		if err != nil {
+			return err
+		}
+
+		// prepare signature for contract
+		preparedSignature, err := utils.PrepareSignatureForContract(extra.AggregatedSeal.Signature)
+		if err != nil {
+			return err
+		}
 		m.SVParams = &utils.SignatureVerification{AggregatePublicKey: preparedApk, BlockHash: blockData.Header().Hash(), Signature: preparedSignature, RLPHeader: rlpEncodedHeader, CommitedSeal: &utils.CommitedSeal{CommitedSealSuffix: commitedSealSuffix, CommitedSealPrefix: commitedSealPrefix, CommitedSealHints: commitedSealHints}}
 		m.MPParams = &utils.MerkleProof{TxRootHash: utils.SliceTo32Bytes(blockData.TxHash().Bytes()), Nodes: proof, Key: key}
 		err = l.router.Send(m)

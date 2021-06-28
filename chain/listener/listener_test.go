@@ -364,6 +364,14 @@ func (s *ListenerTestSuite) TestGetDepositEventsAndProofsForBlockerERC20() {
 	commitedSealHints, err := utils.CommitedSealHints(blockHashAndSuffix)
 	s.Nil(err)
 
+	// prepare APK for contract
+	preparedApk, err := utils.PrepareAPKForContract(pk)
+	s.Nil(err)
+
+	// prepare signature for contract
+	preparedSignature, err := utils.PrepareSignatureForContract(extra.AggregatedSeal.Signature)
+	s.Nil(err)
+
 	_ = utils.NewFungibleTransfer(
 		listener.cfg.ID,
 		destID,
@@ -502,7 +510,7 @@ func (s *ListenerTestSuite) TestGetDepositEventsAndProofsForBlockerERC721() {
 	// construct commited seal hints
 	commitedSealHints, err := utils.CommitedSealHints(blockHashAndSuffix)
 	s.Nil(err)
-
+  
 	_ = utils.NewNonFungibleTransfer(
 		listener.cfg.ID,
 		destID,
@@ -612,7 +620,6 @@ func (s *ListenerTestSuite) TestGetDepositEventsAndProofsForBlockerGeneric() {
 	// prepare signature for contract
 	preparedSignature, err := utils.PrepareSignatureForContract(extra.AggregatedSeal.Signature)
 	s.Nil(err)
-
 	// CommitedSeal construction
 	// construct commited seal suffix
 	commitedSealSuffix := utils.CommitedSealSuffix(extra.AggregatedSeal.Round)

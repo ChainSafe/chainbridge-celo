@@ -127,7 +127,8 @@ func TestPrepareAPKForContract(t *testing.T) {
 	apk := []byte("aab506de1ef9b0df75f202b0813904e08d99ba0dbbf2084c3a983d9190c41f5f773489a6ee530da67d517d3151805101860dfdb8d7d72d768643af1b07a468f93ba1e08edb2a7f22c85bad3c2c02545f036647f11ce63eed3bd44e2cc080c480")
 
 	// encode APK
-	preparedApk, err := PrepareAPKForContract(apk)
+	preparedApk, err := PreparedAPKForContract(apk)
+
 	if err != nil {
 		t.Fatalf("could not prepare APK for contract: %v", err)
 	}

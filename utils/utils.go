@@ -111,6 +111,32 @@ func ConstructGenericDepositData(metadata []byte) []byte {
 
 // TODO:
 // move all below to new package
+// borrowed from Celo
+// https://github.com/celo-org/celo-bls-go/blob/kobigurk/arkworks/examples/utils/utils.go#L8-L13
+func ReverseAnyAndPad(s []byte) []byte {
+	s = ReverseAny(s)
+	padding := make([]byte, FIELD_SIZE_IN_CONTRACT-(len(s)%FIELD_SIZE_IN_CONTRACT))
+	z := append(padding, s...)
+	return z
+}
+
+// borrowed from Celo
+// https://github.com/celo-org/celo-bls-go/blob/kobigurk/arkworks/examples/utils/utils.go#L15-L24
+func ReverseAny(s []byte) []byte {
+	z := make([]byte, len(s))
+	copy(z, s)
+	n := reflect.ValueOf(z).Len()
+	swap := reflect.Swapper(z)
+	for i, j := 0, n-1; i < j; i, j = i+1, j-1 {
+		swap(i, j)
+	}
+	return z
+}
+
+// borrowed from Celo
+// https://github.com/celo-org/celo-bls-go/blob/kobigurk/arkworks/examples/utils/utils.go#L15-L24
+const FIELD_SIZE = 48
+const FIELD_SIZE_IN_CONTRACT = 32
 
 // RlpEncodeHeader is method to RLP encode data stored in a block header
 func RlpEncodeHeader(header *types.Header) ([]byte, error) {
@@ -155,13 +181,13 @@ func PrepareAPKForContract(apk []byte) ([]byte, error) {
 	// https://github.com/celo-org/celo-bls-go/examples/utils
 	// https://github.com/celo-org/celo-bls-go/examples/prepare_for_contract/prepare_for_contract.go#L23-L35
 	encodedDataPart1 := encodedData[0:FIELD_SIZE]
-	encodedDataPart1 = reverseAnyAndPad(encodedDataPart1)
+	encodedDataPart1 = ReverseAnyAndPad(encodedDataPart1)
 	encodedDataPart2 := encodedData[FIELD_SIZE : 2*FIELD_SIZE]
-	encodedDataPart2 = reverseAnyAndPad(encodedDataPart2)
+	encodedDataPart2 = ReverseAnyAndPad(encodedDataPart2)
 	encodedDataPart3 := encodedData[2*FIELD_SIZE : 3*FIELD_SIZE]
-	encodedDataPart3 = reverseAnyAndPad(encodedDataPart3)
+	encodedDataPart3 = ReverseAnyAndPad(encodedDataPart3)
 	encodedDataPart4 := encodedData[3*FIELD_SIZE : 4*FIELD_SIZE]
-	encodedDataPart4 = reverseAnyAndPad(encodedDataPart4)
+	encodedDataPart4 = ReverseAnyAndPad(encodedDataPart4)
 
 	// append encoded data to APK byte slice
 	encodedAPK = append(encodedAPK, encodedDataPart1...)
