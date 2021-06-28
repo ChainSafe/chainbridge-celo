@@ -3,13 +3,14 @@
 package validatorsync
 
 import (
+	"math/big"
+	"testing"
+
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/consensus/istanbul"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/crypto"
-	"github.com/ethereum/go-ethereum/crypto/bls"
-	"math/big"
-	"testing"
+	blscrypto "github.com/ethereum/go-ethereum/crypto/bls"
 
 	"github.com/stretchr/testify/suite"
 )
@@ -122,4 +123,50 @@ func (s *WriterTestSuite) TestAggregatePublicKeys() {
 	apk2, err := aggregatePublicKeys(startVals)
 	s.Nil(err)
 	s.Equal(apk, apk2)
+}
+
+// TestFilterValidatorsWithBitmap tests that filterValidatorsWithBitmap
+// returns a slice of validators who signed the current block after applying
+// the current block's bitmap.
+func (s *WriterTestSuite) TestFilterValidatorsWithBitmap() {
+	// init new slice to hold initial validators slice
+	startVals := make([]*istanbul.ValidatorData, 5)
+	startVals[0] = &istanbul.ValidatorData{Address: common.Address{0x0f}}
+	startVals[1] = &istanbul.ValidatorData{Address: common.Address{0x1f}}
+	startVals[2] = &istanbul.ValidatorData{Address: common.Address{0x2f}}
+	startVals[3] = &istanbul.ValidatorData{Address: common.Address{0x3f}}
+	startVals[4] = &istanbul.ValidatorData{Address: common.Address{0x4f}}
+
+	// init sample Istanbul Extra header data
+	extra := &types.IstanbulExtra{
+		AggregatedSeal: types.IstanbulAggregatedSeal{
+			// init bitmap at 0
+			Bitmap: big.NewInt(0),
+		},
+	}
+
+	// loop over validators to set bitmap
+	for valIndex := range startVals {
+		// validators 4 (index 3) and 5 (index 4) did not sign
+		if valIndex == 3 || valIndex == 4 {
+			// skip
+			continue
+		}
+		// set bitmap
+		extra.AggregatedSeal.Bitmap.SetBit(
+			extra.AggregatedSeal.Bitmap, valIndex, 1,
+		)
+	}
+
+	// init new slice to hold expected validators slice after bitmask applied
+	expected := make([]*istanbul.ValidatorData, 3)
+	expected[0] = &istanbul.ValidatorData{Address: common.Address{0x0f}}
+	expected[1] = &istanbul.ValidatorData{Address: common.Address{0x1f}}
+	expected[2] = &istanbul.ValidatorData{Address: common.Address{0x2f}}
+	// validator at index 3 => 0x3f did not sign
+	// validator at index 4 => 0x4f did not sign
+
+	newValidators := filterValidatorsWithBitmap(startVals, extra.AggregatedSeal.Bitmap)
+	s.NotNil(newValidators)
+	s.Equal(expected, newValidators)
 }
