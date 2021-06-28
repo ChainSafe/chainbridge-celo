@@ -222,14 +222,44 @@ func (l *listener) getDepositEventsAndProofsForBlock(latestBlock *big.Int) error
 		if err != nil {
 			return err
 		}
-
 		// RLP encode data in block header
 		rlpEncodedHeader, err := utils.RlpEncodeHeader(blockData.Header())
 		if err != nil {
 			return err
 		}
 
-		m.SVParams = &utils.SignatureVerification{AggregatePublicKey: apk, BlockHash: blockData.Header().Hash(), Signature: extra.AggregatedSeal.Signature, RLPHeader: rlpEncodedHeader}
+		// prepare APK for contract
+		preparedApk, err := utils.PrepareAPKForContract(apk)
+		if err != nil {
+			return err
+		}
+
+		// prepare signature for contract
+		preparedSignature, err := utils.PrepareSignatureForContract(extra.AggregatedSeal.Signature)
+		if err != nil {
+			return err
+		}
+
+		// CommitedSeal construction
+		// construct commited seal suffix
+		commitedSealSuffix := utils.CommitedSealSuffix(extra.AggregatedSeal.Round)
+
+		// construct concatenation of blockHash + commitedSealSuffix
+		blockHashAndSuffix := utils.ConcatBlockHashAndCommitedSealSuffix(blockData.Hash(), commitedSealSuffix)
+
+		// construct commited seal prefix
+		commitedSealPrefix, err := utils.CommitedSealPrefix(blockHashAndSuffix)
+		if err != nil {
+			return err
+		}
+
+		// construct commited seal hints
+		commitedSealHints, err := utils.CommitedSealHints(blockHashAndSuffix)
+		if err != nil {
+			return err
+		}
+
+		m.SVParams = &utils.SignatureVerification{AggregatePublicKey: preparedApk, BlockHash: blockData.Header().Hash(), Signature: preparedSignature, RLPHeader: rlpEncodedHeader, CommitedSeal: &utils.CommitedSeal{CommitedSealSuffix: commitedSealSuffix, CommitedSealPrefix: commitedSealPrefix, CommitedSealHints: commitedSealHints}}
 		m.MPParams = &utils.MerkleProof{TxRootHash: utils.SliceTo32Bytes(blockData.TxHash().Bytes()), Nodes: proof, Key: key}
 		err = l.router.Send(m)
 
