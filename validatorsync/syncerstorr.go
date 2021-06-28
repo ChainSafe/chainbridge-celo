@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"github.com/ethereum/go-ethereum/consensus/istanbul"
+	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/syndtr/goleveldb/leveldb"
 )
 
@@ -121,7 +122,7 @@ func (db *ValidatorsStore) setLatestKnownEpochLastBlockWithTransaction(block *bi
 
 var ErrNoBlockInStore = errors.New("no corresponding validators for provided block number")
 
-func (db *ValidatorsStore) GetAPKForBlock(block *big.Int, chainID uint8, epochSize uint64) ([]byte, error) {
+func (db *ValidatorsStore) GetAPKForBlock(block *big.Int, chainID uint8, epochSize uint64, extra *types.IstanbulExtra) ([]byte, error) {
 	for i := 0; i <= 10; i++ {
 		vals, err := db.GetValidatorsForBlock(computeLastBlockOfEpochForProvidedBlock(block, epochSize), chainID)
 		if err != nil {
@@ -131,10 +132,15 @@ func (db *ValidatorsStore) GetAPKForBlock(block *big.Int, chainID uint8, epochSi
 			}
 			return nil, err
 		}
-		pk, err := aggregatePublicKeys(vals)
+
+		// apply bitmask on validators slice
+		newValidators := filterValidatorsWithBitmap(vals, extra.AggregatedSeal.Bitmap)
+
+		pk, err := aggregatePublicKeys(newValidators)
 		if err != nil {
 			return nil, err
 		}
+
 		return pk.Serialize()
 	}
 	return nil, ErrNoBlockInStore

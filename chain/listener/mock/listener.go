@@ -9,6 +9,7 @@ import (
 	reflect "reflect"
 
 	utils "github.com/ChainSafe/chainbridge-celo/utils"
+	types "github.com/ethereum/go-ethereum/core/types"
 	gomock "github.com/golang/mock/gomock"
 )
 
@@ -110,16 +111,16 @@ func (m *MockValidatorsAggregator) EXPECT() *MockValidatorsAggregatorMockRecorde
 }
 
 // GetAPKForBlock mocks base method.
-func (m *MockValidatorsAggregator) GetAPKForBlock(block *big.Int, chainID uint8, epochSize uint64) ([]byte, error) {
+func (m *MockValidatorsAggregator) GetAPKForBlock(block *big.Int, chainID uint8, epochSize uint64, extra *types.IstanbulExtra) ([]byte, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetAPKForBlock", block, chainID, epochSize)
+	ret := m.ctrl.Call(m, "GetAPKForBlock", block, chainID, epochSize, extra)
 	ret0, _ := ret[0].([]byte)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // GetAPKForBlock indicates an expected call of GetAPKForBlock.
-func (mr *MockValidatorsAggregatorMockRecorder) GetAPKForBlock(block, chainID, epochSize interface{}) *gomock.Call {
+func (mr *MockValidatorsAggregatorMockRecorder) GetAPKForBlock(block, chainID, epochSize, extra interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAPKForBlock", reflect.TypeOf((*MockValidatorsAggregator)(nil).GetAPKForBlock), block, chainID, epochSize)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAPKForBlock", reflect.TypeOf((*MockValidatorsAggregator)(nil).GetAPKForBlock), block, chainID, epochSize, extra)
 }
