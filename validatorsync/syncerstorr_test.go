@@ -10,6 +10,7 @@ import (
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/consensus/istanbul"
+	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/crypto"
 	blscrypto "github.com/ethereum/go-ethereum/crypto/bls"
 	"github.com/stretchr/testify/suite"
@@ -132,7 +133,29 @@ func (s *SyncerDBTestSuite) TestGetAPKForBlock() {
 
 	err := s.syncer.SetValidatorsForBlock(big.NewInt(12), startVals, chainID)
 	s.Nil(err)
-	apk, err := s.syncer.GetAPKForBlock(big.NewInt(11), chainID, 12)
+
+	// create custom Istanbul Extra data
+	extra := &types.IstanbulExtra{
+		AggregatedSeal: types.IstanbulAggregatedSeal{
+			// init bitmap at 0
+			Bitmap: big.NewInt(0),
+		},
+	}
+
+	// loop over startVals to set bitmap
+	for valIndex := range startVals {
+		// set that validator 1 (index 0) did not sign block
+		if valIndex == 0 {
+			// skip
+			continue
+		}
+		// set bitmap
+		extra.AggregatedSeal.Bitmap.SetBit(
+			extra.AggregatedSeal.Bitmap, valIndex, 1,
+		)
+	}
+
+	apk, err := s.syncer.GetAPKForBlock(big.NewInt(11), chainID, 12, extra)
 	s.Nil(err)
 	s.NotNil(apk)
 }
@@ -145,7 +168,11 @@ func (s *SyncerDBTestSuite) TestGetAPKForBlockNotExistsBlockErr() {
 	startVals[2] = &istanbul.ValidatorData{Address: common.Address{0x2f}, BLSPublicKey: blscrypto.SerializedPublicKey{}}
 	err := s.syncer.SetValidatorsForBlock(big.NewInt(12), startVals, chainID)
 	s.Nil(err)
-	apk, err := s.syncer.GetAPKForBlock(big.NewInt(11), chainID, 13)
+	header, err := generateBlockHeader()
+	s.Nil(err)
+	extra, err := types.ExtractIstanbulExtra(header)
+	s.Nil(err)
+	apk, err := s.syncer.GetAPKForBlock(big.NewInt(11), chainID, 13, extra)
 	s.NotNil(err)
 	s.True(errors.Is(err, ErrNoBlockInStore))
 	s.Nil(apk)

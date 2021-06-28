@@ -77,7 +77,7 @@ func TestRlpEncodeHeader(t *testing.T) {
 		t.Fatalf("error encoding header to bytes: %v", err)
 	}
 
-	sampleRlpEncodedHeader := "f902bfa00000000000000000000000000000000000000000000000000000000000000000940000000000000000000000000000000000000000a00000000000000000000000000000000000000000000000000000000000000001a00000000000000000000000000000000000000000000000000000000000000002a00000000000000000000000000000000000000000000000000000000000000003b90100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000007b8080b9011d0000000000000000000000000000000000000000000000000000000000000000f8fbea9444add0ec310f115a0e603b2d7db9f067778eaf8a94294fc7e8f22b3bcdcf955dd7ff3ba2ed833f8212f8c4b86035b46d6f783958831a85deb6ad15d4daf428cbfafd7c59845e17941681dbc09bcf4fc516ffc3c89979c678075033ea006b749d100a0200ff53527570a45239388a20336ea19278f334ee2c3d2a383be4f6769e4be31ff9ae3406d7a642c44700b8601c5303fab0c8bd479422c6199b6a3a6e05f129fc815481732da91f408cc0e5229abf6395410244d7caac41a9b074d80015ffc2ce2ce49c678942460d0af93911e0caaf300921c6ec49937ba6e4aff16a0441457ff6b4795e157c828344ab3d018080c3808080c3808080"
+	sampleRlpEncodedHeader := "f902bfa00000000000000000000000000000000000000000000000000000000000000000940000000000000000000000000000000000000000a00000000000000000000000000000000000000000000000000000000000000001a00000000000000000000000000000000000000000000000000000000000000002a00000000000000000000000000000000000000000000000000000000000000003b90100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000007b8080b9011d0000000000000000000000000000000000000000000000000000000000000000f8fbea9444add0ec310f115a0e603b2d7db9f067778eaf8a94294fc7e8f22b3bcdcf955dd7ff3ba2ed833f8212f8c4b86035b46d6f783958831a85deb6ad15d4daf428cbfafd7c59845e17941681dbc09bcf4fc516ffc3c89979c678075033ea006b749d100a0200ff53527570a45239388a20336ea19278f334ee2c3d2a383be4f6769e4be31ff9ae3406d7a642c44700b8601c5303fab0c8bd479422c6199b6a3a6e05f129fc815481732da91f408cc0e5229abf6395410244d7caac41a9b074d80015ffc2ce2ce49c678942460d0af93911e0caaf300921c6ec49937ba6e4aff16a0441457ff6b4795e157c828344ab3d018080c380807bc3808080"
 
 	if strings.TrimPrefix(hexutil.Encode(rlpEncodedHeader), "0x") != sampleRlpEncodedHeader {
 		t.Fatal("rlp encoded headers do not match")
@@ -101,9 +101,11 @@ func generateBlockHeader() (*types.Header, error) {
 			pubKey2,
 			pubKey3,
 		},
-		RemovedValidators:    big.NewInt(0),
-		Seal:                 []byte{},
-		AggregatedSeal:       types.IstanbulAggregatedSeal{},
+		RemovedValidators: big.NewInt(0),
+		Seal:              []byte{},
+		AggregatedSeal: types.IstanbulAggregatedSeal{
+			Round: big.NewInt(123),
+		},
 		ParentAggregatedSeal: types.IstanbulAggregatedSeal{},
 	})
 	if err != nil {
@@ -126,6 +128,7 @@ func TestPrepareAPKForContract(t *testing.T) {
 
 	// encode APK
 	preparedApk, err := PreparedAPKForContract(apk)
+
 	if err != nil {
 		t.Fatalf("could not prepare APK for contract: %v", err)
 	}
@@ -158,4 +161,168 @@ func TestPrepareSignatureForContract(t *testing.T) {
 	if result != 0 {
 		t.Fatal("preparedSignature != encodedSignature; bytes do not match")
 	}
+}
+
+// TestCommitedSealSuffix tests CommitedSealSuffix to ensure that it
+// properly creates a CommitedSealSuffix
+func TestCommitedSealSuffix(t *testing.T) {
+	// generate block header with dummy data
+	header, err := generateBlockHeader()
+	if err != nil {
+		t.Fatalf("could not generate block header: %v", err)
+	}
+
+	// init new block with custom header
+	block := types.NewBlockWithHeader(header)
+
+	// extra Istanbul extra data from block header
+	extra, err := types.ExtractIstanbulExtra(block.Header())
+	if err != nil {
+		t.Fatalf("could not extract Istanbul extra data: %v", err)
+	}
+
+	// generate commited seal suffix from round
+	commitedSealSuffix := CommitedSealSuffix(extra.AggregatedSeal.Round)
+
+	// init new byte slice to hold dummy data
+	preparedSuffixSlice := make([]byte, 0)
+
+	// append first element (round)
+	preparedSuffixSlice = append(preparedSuffixSlice, []byte{byte(123)}...)
+
+	// append second element (istanbul msg commit)
+	preparedSuffixSlice = append(preparedSuffixSlice, []byte{byte(2)}...)
+
+	result := bytes.Compare(preparedSuffixSlice, commitedSealSuffix)
+
+	if result != 0 {
+		t.Fatal("preparedSuffix != CommitedSealSuffix; bytes do not match")
+	}
+}
+
+// TestCommitedSealPrefix tests CommitedSealPrefix to ensure that it
+// properly creates a CommitedSealPrefix
+func TestCommitedSealPrefix(t *testing.T) {
+	// generate concatenated blockHashAndSuffix from dummy header + block data
+	blockHashAndSuffix, err := generateBlockHashAndSuffix()
+	if err != nil {
+		t.Fatalf("could not generate blockHashAndSuffix: %v", err)
+	}
+
+	// resulting prefix from sample
+	preparedPrefix := []byte("03")
+
+	// derive prefix
+	commitedSealPrefix, err := CommitedSealPrefix(blockHashAndSuffix)
+	if err != nil {
+		t.Fatalf("could not derive CommitedSealPrefix: %v", err)
+	}
+
+	// match bytes of results
+	result := bytes.Compare(preparedPrefix, commitedSealPrefix)
+
+	if result != 0 {
+		t.Fatal("preparedPrefix != CommitedSealPrefix; bytes do not match")
+	}
+}
+
+// TestCommitedSealHints tests CommitedSealHints to ensure that it
+// properly creates a CommitedSealHints
+func TestCommitedSealHints(t *testing.T) {
+	// sample data
+	preparedBlockHashAndSuffix := []byte("8972a43b239781a90cc8cd56e6ea0b0c62a02ede612d58d71d1fd5211ed65c2402")
+
+	// generate concatenated blockHashAndSuffix from dummy header + block data
+	blockHashAndSuffix, err := generateBlockHashAndSuffix()
+	if err != nil {
+		t.Fatalf("could not generate blockHashAndSuffix: %v", err)
+	}
+
+	result := bytes.Compare(preparedBlockHashAndSuffix, blockHashAndSuffix)
+
+	if result != 0 {
+		t.Fatal("preparedBlockHashAndSuffix != blockHashAndSuffix; bytes do not match")
+	}
+
+	// data generated by referencing Celo example
+	// https://github.com/celo-org/celo-bls-go/examples/prepare_for_contract/prepare_for_contract.go#L53-L70
+	preparedHints := []byte("000000000000000000000000000000000057a618735d7522cbe64234384ecc00fb53a9425455ec896abd45636c88e249413b261915a5cb6aff21589dff42a1cc000000000000000000000000000000000156942da4679bc7fa54c38c34527d3a1ecf30b0ac9f2705b4361ccc4d8065b6d5d0372b1a5a349585e7676200bd5e35")
+
+	commitedSealHints, err := CommitedSealHints(blockHashAndSuffix)
+	if err != nil {
+		t.Fatalf("could not generate commitedSealHints: %v", err)
+	}
+
+	result = bytes.Compare(preparedHints, commitedSealHints)
+
+	if result != 0 {
+		t.Fatal("preparedPrefix != CommitedSealPrefix; bytes do not match")
+	}
+}
+
+// TestConcatBlockHashAndCommitedSealSuffix tests
+// ConcatBlockHashAndCommitedSealSuffix to ensure that it properly
+// concatenates the blockhash with the commited seal suffix
+func TestConcatBlockHashAndCommitedSealSuffix(t *testing.T) {
+	// init new header with dummy data
+	header, err := generateBlockHeader()
+	if err != nil {
+		t.Fatalf("error generating test block header: %v", err)
+	}
+
+	// init new block with custom header
+	block := types.NewBlockWithHeader(header)
+
+	// init new byte slice to hold resulting Commited Seal Hints
+	blockHashAndSuffix := make([]byte, 0)
+
+	// append block hash bytes to commited seal hints
+	blockHashAndSuffix = append(blockHashAndSuffix, block.Hash().Bytes()...)
+
+	// extract Istanbul Extra data from block header
+	extra, err := types.ExtractIstanbulExtra(block.Header())
+	if err != nil {
+		t.Fatalf("error extracting Istanbul extra data: %v", err)
+	}
+
+	// derive commited seal suffix data
+	commitedSealSuffix := CommitedSealSuffix(extra.AggregatedSeal.Round)
+
+	// append commited seal suffix to commited seal hints
+	blockHashAndSuffix = append(blockHashAndSuffix, commitedSealSuffix...)
+
+}
+
+// generateBlockHashAndSuffix is a private function to concatenate the
+// commited seal suffix with the block hash
+func generateBlockHashAndSuffix() ([]byte, error) {
+	// init new header with dummy data
+	// dummy data: round = 123
+	header, err := generateBlockHeader()
+	if err != nil {
+		return []byte{}, err
+	}
+
+	// init new block with custom header
+	block := types.NewBlockWithHeader(header)
+
+	// extract Istanbul Extra data from block header
+	extra, err := types.ExtractIstanbulExtra(block.Header())
+	if err != nil {
+		return []byte{}, err
+	}
+
+	// derive commited seal suffix data
+	commitedSealSuffix := CommitedSealSuffix(extra.AggregatedSeal.Round)
+
+	// init new byte slice to hold resulting Commited Seal Hints
+	blockHashAndSuffix := make([]byte, 0)
+
+	// append block hash bytes to commited seal hints
+	blockHashAndSuffix = append(blockHashAndSuffix, block.Hash().Bytes()...)
+
+	// append commited seal suffix to commited seal hints
+	blockHashAndSuffix = append(blockHashAndSuffix, commitedSealSuffix...)
+
+	return blockHashAndSuffix, nil
 }
