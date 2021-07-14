@@ -14,11 +14,11 @@ import (
 	"github.com/ChainSafe/chainbridge-celo/chain/config"
 	"github.com/ChainSafe/chainbridge-celo/txtrie"
 	"github.com/ChainSafe/chainbridge-celo/utils"
-	eth "github.com/ethereum/go-ethereum"
-	"github.com/ethereum/go-ethereum/accounts/abi/bind"
-	ethcommon "github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/core/types"
-	"github.com/ethereum/go-ethereum/rlp"
+	eth "github.com/celo-org/celo-blockchain"
+	"github.com/celo-org/celo-blockchain/accounts/abi/bind"
+	ethcommon "github.com/celo-org/celo-blockchain/common"
+	"github.com/celo-org/celo-blockchain/core/types"
+	"github.com/celo-org/celo-blockchain/rlp"
 	"github.com/rs/zerolog/log"
 )
 
@@ -259,18 +259,6 @@ func (l *listener) getDepositEventsAndProofsForBlock(latestBlock *big.Int) error
 			return err
 		}
 
-
-		// prepare APK for contract
-		preparedApk, err := utils.PrepareAPKForContract(apk)
-		if err != nil {
-			return err
-		}
-
-		// prepare signature for contract
-		preparedSignature, err := utils.PrepareSignatureForContract(extra.AggregatedSeal.Signature)
-		if err != nil {
-			return err
-		}
 		m.SVParams = &utils.SignatureVerification{AggregatePublicKey: preparedApk, BlockHash: blockData.Header().Hash(), Signature: preparedSignature, RLPHeader: rlpEncodedHeader, CommitedSeal: &utils.CommitedSeal{CommitedSealSuffix: commitedSealSuffix, CommitedSealPrefix: commitedSealPrefix, CommitedSealHints: commitedSealHints}}
 		m.MPParams = &utils.MerkleProof{TxRootHash: utils.SliceTo32Bytes(blockData.TxHash().Bytes()), Nodes: proof, Key: key}
 		err = l.router.Send(m)

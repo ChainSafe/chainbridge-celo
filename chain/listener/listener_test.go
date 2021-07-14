@@ -15,14 +15,14 @@ import (
 	mock_listener "github.com/ChainSafe/chainbridge-celo/chain/listener/mock"
 	"github.com/ChainSafe/chainbridge-celo/txtrie"
 	"github.com/ChainSafe/chainbridge-celo/utils"
-	eth "github.com/ethereum/go-ethereum"
-	"github.com/ethereum/go-ethereum/accounts/abi/bind"
-	"github.com/ethereum/go-ethereum/common"
-	ethcommon "github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/common/hexutil"
-	"github.com/ethereum/go-ethereum/core/types"
-	"github.com/ethereum/go-ethereum/crypto"
-	"github.com/ethereum/go-ethereum/rlp"
+	eth "github.com/celo-org/celo-blockchain"
+	"github.com/celo-org/celo-blockchain/accounts/abi/bind"
+	"github.com/celo-org/celo-blockchain/common"
+	ethcommon "github.com/celo-org/celo-blockchain/common"
+	"github.com/celo-org/celo-blockchain/common/hexutil"
+	"github.com/celo-org/celo-blockchain/core/types"
+	"github.com/celo-org/celo-blockchain/crypto"
+	"github.com/celo-org/celo-blockchain/rlp"
 	"github.com/golang/mock/gomock"
 	"github.com/pkg/errors"
 	"github.com/stretchr/testify/suite"
@@ -365,11 +365,11 @@ func (s *ListenerTestSuite) TestGetDepositEventsAndProofsForBlockerERC20() {
 	s.Nil(err)
 
 	// prepare APK for contract
-	preparedApk, err := utils.PrepareAPKForContract(pk)
+	preparedApk, err = utils.PrepareAPKForContract(pk)
 	s.Nil(err)
 
 	// prepare signature for contract
-	preparedSignature, err := utils.PrepareSignatureForContract(extra.AggregatedSeal.Signature)
+	preparedSignature, err = utils.PrepareSignatureForContract(extra.AggregatedSeal.Signature)
 	s.Nil(err)
 
 	_ = utils.NewFungibleTransfer(
@@ -510,7 +510,7 @@ func (s *ListenerTestSuite) TestGetDepositEventsAndProofsForBlockerERC721() {
 	// construct commited seal hints
 	commitedSealHints, err := utils.CommitedSealHints(blockHashAndSuffix)
 	s.Nil(err)
-  
+
 	_ = utils.NewNonFungibleTransfer(
 		listener.cfg.ID,
 		destID,

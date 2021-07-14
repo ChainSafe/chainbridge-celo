@@ -10,8 +10,8 @@ import (
 	"time"
 
 	"github.com/ChainSafe/chainbridge-celo/utils"
-	eth "github.com/ethereum/go-ethereum"
-	ethcommon "github.com/ethereum/go-ethereum/common"
+	eth "github.com/celo-org/celo-blockchain"
+	ethcommon "github.com/celo-org/celo-blockchain/common"
 	"github.com/rs/zerolog/log"
 )
 
@@ -263,10 +263,12 @@ func (w *writer) executeProposal(m *utils.Message, data []byte, dataHash ethcomm
 				uint64(m.DepositNonce),
 				data,
 				m.ResourceId,
+				m.SVParams.RLPHeader,
+				m.SVParams.CommitedSeal.CommitedSealPrefix,
+				m.SVParams.CommitedSeal.CommitedSealSuffix,
+				m.SVParams.CommitedSeal.CommitedSealHints,
 				m.SVParams.Signature,
 				m.SVParams.AggregatePublicKey,
-				m.SVParams.BlockHash,
-				m.MPParams.TxRootHash,
 				m.MPParams.Key,
 				m.MPParams.Nodes,
 			)

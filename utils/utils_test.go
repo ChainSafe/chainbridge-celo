@@ -7,12 +7,12 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/common/hexutil"
-	"github.com/ethereum/go-ethereum/core/types"
-	"github.com/ethereum/go-ethereum/crypto"
-	blscrypto "github.com/ethereum/go-ethereum/crypto/bls"
-	"github.com/ethereum/go-ethereum/rlp"
+	"github.com/celo-org/celo-blockchain/common"
+	"github.com/celo-org/celo-blockchain/common/hexutil"
+	"github.com/celo-org/celo-blockchain/core/types"
+	"github.com/celo-org/celo-blockchain/crypto"
+	blscrypto "github.com/celo-org/celo-blockchain/crypto/bls"
+	"github.com/celo-org/celo-blockchain/rlp"
 )
 
 func TestGetFunctionBytes(t *testing.T) {
@@ -127,7 +127,7 @@ func TestPrepareAPKForContract(t *testing.T) {
 	apk := []byte("aab506de1ef9b0df75f202b0813904e08d99ba0dbbf2084c3a983d9190c41f5f773489a6ee530da67d517d3151805101860dfdb8d7d72d768643af1b07a468f93ba1e08edb2a7f22c85bad3c2c02545f036647f11ce63eed3bd44e2cc080c480")
 
 	// encode APK
-	preparedApk, err := PreparedAPKForContract(apk)
+	preparedApk, err := PrepareAPKForContract(apk)
 
 	if err != nil {
 		t.Fatalf("could not prepare APK for contract: %v", err)
@@ -219,7 +219,7 @@ func TestCommitedSealPrefix(t *testing.T) {
 	}
 
 	// match bytes of results
-	result := bytes.Compare(preparedPrefix, commitedSealPrefix)
+	result := bytes.Compare(preparedPrefix, commitedSealPrefix[:])
 
 	if result != 0 {
 		t.Fatal("preparedPrefix != CommitedSealPrefix; bytes do not match")

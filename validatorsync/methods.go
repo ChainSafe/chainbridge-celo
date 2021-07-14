@@ -5,10 +5,10 @@ package validatorsync
 import (
 	"math/big"
 
+	"github.com/celo-org/celo-blockchain/consensus/istanbul"
+	"github.com/celo-org/celo-blockchain/core/types"
+	blscrypto "github.com/celo-org/celo-blockchain/crypto/bls"
 	"github.com/celo-org/celo-bls-go/bls"
-	"github.com/ethereum/go-ethereum/consensus/istanbul"
-	"github.com/ethereum/go-ethereum/core/types"
-	blscrypto "github.com/ethereum/go-ethereum/crypto/bls"
 	"github.com/pkg/errors"
 )
 

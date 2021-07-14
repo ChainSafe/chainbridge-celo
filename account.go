@@ -10,11 +10,11 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/ChainSafe/chainbridge-celo/crypto"
 	"github.com/ChainSafe/chainbridge-celo/flags"
-	"github.com/ChainSafe/chainbridge-utils/crypto"
-	"github.com/ChainSafe/chainbridge-utils/crypto/secp256k1"
-	"github.com/ChainSafe/chainbridge-utils/keystore"
-	gokeystore "github.com/ethereum/go-ethereum/accounts/keystore"
+	"github.com/ChainSafe/chainbridge-celo/crypto/secp256k1"
+	"github.com/ChainSafe/chainbridge-celo/keystore"
+	gokeystore "github.com/celo-org/celo-blockchain/accounts/keystore"
 	"github.com/rs/zerolog/log"
 	"github.com/urfave/cli/v2"
 )

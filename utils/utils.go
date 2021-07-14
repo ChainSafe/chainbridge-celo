@@ -8,20 +8,15 @@ import (
 	"reflect"
 	"strings"
 
+	"github.com/celo-org/celo-blockchain/common"
+	"github.com/celo-org/celo-blockchain/common/math"
+	"github.com/celo-org/celo-blockchain/consensus/istanbul"
+	"github.com/celo-org/celo-blockchain/core/types"
+	"github.com/celo-org/celo-blockchain/crypto"
+	"github.com/celo-org/celo-blockchain/rlp"
 	"github.com/celo-org/celo-bls-go/bls"
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/common/math"
-	"github.com/ethereum/go-ethereum/consensus/istanbul"
-	"github.com/ethereum/go-ethereum/core/types"
-	"github.com/ethereum/go-ethereum/crypto"
-	"github.com/ethereum/go-ethereum/rlp"
 	"github.com/pkg/errors"
 )
-
-// borrowed from Celo
-// https://github.com/celo-org/celo-bls-go/blob/kobigurk/arkworks/examples/utils/utils.go#L15-L24
-const FIELD_SIZE = 48
-const FIELD_SIZE_IN_CONTRACT = 32
 
 type EventSig string
 
@@ -255,17 +250,17 @@ func CommitedSealSuffix(istAggSealRound *big.Int) []byte {
 // CommitedSealPrefix creates the Commited Seal Prefix
 // NOTE: uses new functionality from celo-bls-go PR #23
 // https://github.com/celo-org/celo-bls-go/examples/utils
-func CommitedSealPrefix(blockHashAndSuffix []byte) ([]byte, error) {
+func CommitedSealPrefix(blockHashAndSuffix []byte) ([1]byte, error) {
 	// registration required for celo-bls-go package
 	bls.InitBLSCrypto()
 
 	// obtain prefix
 	_, prefix, err := bls.HashDirectWithAttempt(blockHashAndSuffix, false)
 	if err != nil {
-		return err, fmt.Errorf("could not hash data: %w", err)
+		return [1]byte{}, fmt.Errorf("could not hash data: %w", err)
 	}
 
-	return []byte{byte(prefix)}, nil
+	return [1]byte{byte(prefix)}, nil
 }
 
 // CommitedSealHints creates the Commited Seal Hints
