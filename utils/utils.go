@@ -8,13 +8,13 @@ import (
 	"reflect"
 	"strings"
 
+	"github.com/ChainSafe/chainbridge-celo/celo-bls-go/bls"
 	"github.com/celo-org/celo-blockchain/common"
 	"github.com/celo-org/celo-blockchain/common/math"
 	"github.com/celo-org/celo-blockchain/consensus/istanbul"
 	"github.com/celo-org/celo-blockchain/core/types"
 	"github.com/celo-org/celo-blockchain/crypto"
 	"github.com/celo-org/celo-blockchain/rlp"
-	"github.com/ChainSafe/chainbridge-celo/celo-bls-go/bls"
 	"github.com/pkg/errors"
 )
 
