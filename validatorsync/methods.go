@@ -8,7 +8,7 @@ import (
 	"github.com/celo-org/celo-blockchain/consensus/istanbul"
 	"github.com/celo-org/celo-blockchain/core/types"
 	blscrypto "github.com/celo-org/celo-blockchain/crypto/bls"
-	"github.com/celo-org/celo-bls-go/bls"
+	"github.com/ChainSafe/chainbridge-celo/celo-bls-go/bls"
 	"github.com/pkg/errors"
 )
 

@@ -341,14 +341,6 @@ func (s *ListenerTestSuite) TestGetDepositEventsAndProofsForBlockerERC20() {
 	rlpHeader, err := utils.RlpEncodeHeader(block.Header())
 	s.Nil(err)
 
-	// prepare APK for contract
-	preparedApk, err := utils.PrepareAPKForContract(pk)
-	s.Nil(err)
-
-	// prepare signature for contract
-	preparedSignature, err := utils.PrepareSignatureForContract(extra.AggregatedSeal.Signature)
-	s.Nil(err)
-
 	// CommitedSeal construction
 	// construct commited seal suffix
 	commitedSealSuffix := utils.CommitedSealSuffix(extra.AggregatedSeal.Round)
@@ -365,11 +357,11 @@ func (s *ListenerTestSuite) TestGetDepositEventsAndProofsForBlockerERC20() {
 	s.Nil(err)
 
 	// prepare APK for contract
-	preparedApk, err = utils.PrepareAPKForContract(pk)
+	preparedApk, err := utils.PrepareAPKForContract(pk)
 	s.Nil(err)
 
 	// prepare signature for contract
-	preparedSignature, err = utils.PrepareSignatureForContract(extra.AggregatedSeal.Signature)
+	preparedSignature, err := utils.PrepareSignatureForContract(extra.AggregatedSeal.Signature)
 	s.Nil(err)
 
 	_ = utils.NewFungibleTransfer(
