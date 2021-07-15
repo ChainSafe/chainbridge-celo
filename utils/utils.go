@@ -8,7 +8,7 @@ import (
 	"reflect"
 	"strings"
 
-	"github.com/ChainSafe/chainbridge-celo/celo-bls-go/bls"
+	"github.com/ChainSafe/chainbridge-celo/celo-bls/bls"
 	"github.com/celo-org/celo-blockchain/common"
 	"github.com/celo-org/celo-blockchain/common/math"
 	"github.com/celo-org/celo-blockchain/consensus/istanbul"
@@ -107,7 +107,7 @@ func ConstructGenericDepositData(metadata []byte) []byte {
 // TODO:
 // move all below to new package
 // borrowed from Celo
-// https://github.com/ChainSafe/chainbridge-celo/celo-bls-go/blob/kobigurk/arkworks/examples/utils/utils.go#L8-L13
+// https://github.com/ChainSafe/chainbridge-celo/celo-bls/blob/kobigurk/arkworks/examples/utils/utils.go#L8-L13
 func ReverseAnyAndPad(s []byte) []byte {
 	s = ReverseAny(s)
 	padding := make([]byte, FIELD_SIZE_IN_CONTRACT-(len(s)%FIELD_SIZE_IN_CONTRACT))
@@ -116,7 +116,7 @@ func ReverseAnyAndPad(s []byte) []byte {
 }
 
 // borrowed from Celo
-// https://github.com/ChainSafe/chainbridge-celo/celo-bls-go/blob/kobigurk/arkworks/examples/utils/utils.go#L15-L24
+// https://github.com/ChainSafe/chainbridge-celo/celo-bls/blob/kobigurk/arkworks/examples/utils/utils.go#L15-L24
 func ReverseAny(s []byte) []byte {
 	z := make([]byte, len(s))
 	copy(z, s)
@@ -129,7 +129,7 @@ func ReverseAny(s []byte) []byte {
 }
 
 // borrowed from Celo
-// https://github.com/ChainSafe/chainbridge-celo/celo-bls-go/blob/kobigurk/arkworks/examples/utils/utils.go#L15-L24
+// https://github.com/ChainSafe/chainbridge-celo/celo-bls/blob/kobigurk/arkworks/examples/utils/utils.go#L15-L24
 const FIELD_SIZE = 48
 const FIELD_SIZE_IN_CONTRACT = 32
 
@@ -149,10 +149,10 @@ func RlpEncodeHeader(header *types.Header) ([]byte, error) {
 }
 
 // PrepareAPKForContract properly encodes APK for use within a contract
-// NOTE: uses new functionality from celo-bls-go PR #23
-// https://github.com/ChainSafe/chainbridge-celo/celo-bls-go/examples/utils
+// NOTE: uses new functionality from celo-bls PR #23
+// https://github.com/ChainSafe/chainbridge-celo/celo-bls/examples/utils
 func PrepareAPKForContract(apk []byte) ([]byte, error) {
-	// registration required for celo-bls-go package
+	// registration required for celo-bls package
 	bls.InitBLSCrypto()
 
 	// init new byte slice to hold newly encoded APK
@@ -165,16 +165,16 @@ func PrepareAPKForContract(apk []byte) ([]byte, error) {
 	}
 
 	// serialize uncompressed data
-	// new functionality from celo-bls-go PR #23
-	// https://github.com/ChainSafe/chainbridge-celo/celo-bls-go/pull/23
+	// new functionality from celo-bls PR #23
+	// https://github.com/ChainSafe/chainbridge-celo/celo-bls/pull/23
 	encodedData, err := key.SerializeUncompressed()
 	if err != nil {
 		return encodedAPK, fmt.Errorf("could not serialize data: %w", err)
 	}
 
-	// new functionality from celo-bls-go PR #23
-	// https://github.com/ChainSafe/chainbridge-celo/celo-bls-go/examples/utils
-	// https://github.com/ChainSafe/chainbridge-celo/celo-bls-go/examples/prepare_for_contract/prepare_for_contract.go#L23-L35
+	// new functionality from celo-bls PR #23
+	// https://github.com/ChainSafe/chainbridge-celo/celo-bls/examples/utils
+	// https://github.com/ChainSafe/chainbridge-celo/celo-bls/examples/prepare_for_contract/prepare_for_contract.go#L23-L35
 	encodedDataPart1 := encodedData[0:FIELD_SIZE]
 	encodedDataPart1 = ReverseAnyAndPad(encodedDataPart1)
 	encodedDataPart2 := encodedData[FIELD_SIZE : 2*FIELD_SIZE]
@@ -195,10 +195,10 @@ func PrepareAPKForContract(apk []byte) ([]byte, error) {
 
 // PrepareSignatureForContract properly encodes Signature field within
 // the SignatureVerification struct to be used within a contract
-// NOTE: uses new functionality from celo-bls-go PR #23
-// https://github.com/ChainSafe/chainbridge-celo/celo-bls-go/examples/utils
+// NOTE: uses new functionality from celo-bls PR #23
+// https://github.com/ChainSafe/chainbridge-celo/celo-bls/examples/utils
 func PrepareSignatureForContract(signature []byte) ([]byte, error) {
-	// registration required for celo-bls-go package
+	// registration required for celo-bls package
 	bls.InitBLSCrypto()
 
 	// init new byte slice to hold newly encoded signature
@@ -211,16 +211,16 @@ func PrepareSignatureForContract(signature []byte) ([]byte, error) {
 	}
 
 	// serialize uncompressed data
-	// new functionality from celo-bls-go PR #23
-	// https://github.com/ChainSafe/chainbridge-celo/celo-bls-go/pull/23
+	// new functionality from celo-bls PR #23
+	// https://github.com/ChainSafe/chainbridge-celo/celo-bls/pull/23
 	encodedData, err := key.SerializeUncompressed()
 	if err != nil {
 		return encodedSignature, fmt.Errorf("could not serialize data: %w", err)
 	}
 
-	// new functionality from celo-bls-go PR #23
-	// https://github.com/ChainSafe/chainbridge-celo/celo-bls-go/examples/utils
-	// https://github.com/ChainSafe/chainbridge-celo/celo-bls-go/examples/prepare_for_contract/prepare_for_contract.go#L23-L3
+	// new functionality from celo-bls PR #23
+	// https://github.com/ChainSafe/chainbridge-celo/celo-bls/examples/utils
+	// https://github.com/ChainSafe/chainbridge-celo/celo-bls/examples/prepare_for_contract/prepare_for_contract.go#L23-L3
 	encodedDataPart1 := encodedData[0:FIELD_SIZE]
 	encodedDataPart1 = reverseAnyAndPad(encodedDataPart1)
 	encodedDataPart2 := encodedData[FIELD_SIZE : 2*FIELD_SIZE]
@@ -234,8 +234,8 @@ func PrepareSignatureForContract(signature []byte) ([]byte, error) {
 }
 
 // CommitedSealSuffix creates the Commited Seal Suffix
-// NOTE: uses new functionality from celo-bls-go PR #23
-// https://github.com/ChainSafe/chainbridge-celo/celo-bls-go/examples/utils
+// NOTE: uses new functionality from celo-bls PR #23
+// https://github.com/ChainSafe/chainbridge-celo/celo-bls/examples/utils
 func CommitedSealSuffix(istAggSealRound *big.Int) []byte {
 	// declare new buffer
 	var buf bytes.Buffer
@@ -248,10 +248,10 @@ func CommitedSealSuffix(istAggSealRound *big.Int) []byte {
 }
 
 // CommitedSealPrefix creates the Commited Seal Prefix
-// NOTE: uses new functionality from celo-bls-go PR #23
-// https://github.com/ChainSafe/chainbridge-celo/celo-bls-go/examples/utils
+// NOTE: uses new functionality from celo-bls PR #23
+// https://github.com/ChainSafe/chainbridge-celo/celo-bls/examples/utils
 func CommitedSealPrefix(blockHashAndSuffix []byte) ([1]byte, error) {
-	// registration required for celo-bls-go package
+	// registration required for celo-bls package
 	bls.InitBLSCrypto()
 
 	// obtain prefix
@@ -264,13 +264,13 @@ func CommitedSealPrefix(blockHashAndSuffix []byte) ([1]byte, error) {
 }
 
 // CommitedSealHints creates the Commited Seal Hints
-// NOTE: uses new functionality from celo-bls-go PR #23
-// https://github.com/ChainSafe/chainbridge-celo/celo-bls-go/examples/utils
+// NOTE: uses new functionality from celo-bls PR #23
+// https://github.com/ChainSafe/chainbridge-celo/celo-bls/examples/utils
 func CommitedSealHints(blockHashAndSuffix []byte) ([]byte, error) {
-	// registration required for celo-bls-go package
+	// registration required for celo-bls package
 	bls.InitBLSCrypto()
 
-	// https://github.com/ChainSafe/chainbridge-celo/celo-bls-go/examples/prepare_for_contract/prepare_for_contract.go#L53-L70
+	// https://github.com/ChainSafe/chainbridge-celo/celo-bls/examples/prepare_for_contract/prepare_for_contract.go#L53-L70
 	_, prefix, err := bls.HashDirectWithAttempt(blockHashAndSuffix, false)
 	if err != nil {
 		return []byte{}, fmt.Errorf("could not hash blockHashAndSuffix: %w", err)
@@ -319,7 +319,7 @@ func ConcatBlockHashAndCommitedSealSuffix(blockHash common.Hash, commitedSealSuf
 }
 
 // borrowed from Celo
-// https://github.com/ChainSafe/chainbridge-celo/celo-bls-go/blob/kobigurk/arkworks/examples/utils/utils.go#L8-L13
+// https://github.com/ChainSafe/chainbridge-celo/celo-bls/blob/kobigurk/arkworks/examples/utils/utils.go#L8-L13
 func reverseAnyAndPad(s []byte) []byte {
 	s = reverseAny(s)
 	padding := make([]byte, FIELD_SIZE_IN_CONTRACT-(len(s)%FIELD_SIZE_IN_CONTRACT))
@@ -328,7 +328,7 @@ func reverseAnyAndPad(s []byte) []byte {
 }
 
 // borrowed from Celo
-// https://github.com/ChainSafe/chainbridge-celo/celo-bls-go/blob/kobigurk/arkworks/examples/utils/utils.go#L15-L24
+// https://github.com/ChainSafe/chainbridge-celo/celo-bls/blob/kobigurk/arkworks/examples/utils/utils.go#L15-L24
 func reverseAny(s []byte) []byte {
 	z := make([]byte, len(s))
 	copy(z, s)
