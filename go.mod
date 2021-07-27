@@ -9,7 +9,7 @@ replace github.com/ethereum/go-ethereum => github.com/celo-org/celo-blockchain v
 require (
 	github.com/ChainSafe/chainbridge-utils v1.0.6
 	github.com/celo-org/celo-bls-go v0.1.6
-	github.com/ethereum/go-ethereum v1.9.17
+	github.com/ethereum/go-ethereum v1.9.25
 	github.com/golang/mock v1.4.4
 	github.com/pkg/errors v0.9.1
 	github.com/rs/zerolog v1.20.0
