@@ -6,8 +6,8 @@ package mock_client
 
 import (
 	context "context"
-	ethereum "github.com/ethereum/go-ethereum"
-	types "github.com/ethereum/go-ethereum/core/types"
+	celo "github.com/celo-org/celo-blockchain"
+	types "github.com/celo-org/celo-blockchain/core/types"
 	gomock "github.com/golang/mock/gomock"
 	big "math/big"
 	reflect "reflect"
@@ -37,7 +37,7 @@ func (m *MockLogFilterWithLatestBlock) EXPECT() *MockLogFilterWithLatestBlockMoc
 }
 
 // FilterLogs mocks base method
-func (m *MockLogFilterWithLatestBlock) FilterLogs(ctx context.Context, q ethereum.FilterQuery) ([]types.Log, error) {
+func (m *MockLogFilterWithLatestBlock) FilterLogs(ctx context.Context, q celo.FilterQuery) ([]types.Log, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "FilterLogs", ctx, q)
 	ret0, _ := ret[0].([]types.Log)

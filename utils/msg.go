@@ -7,7 +7,7 @@ import (
 	"fmt"
 	"math/big"
 
-	"github.com/ethereum/go-ethereum/common"
+	"github.com/celo-org/celo-blockchain/common"
 )
 
 type ChainId uint8
@@ -47,10 +47,19 @@ type MerkleProof struct {
 }
 
 type SignatureVerification struct {
-	AggregatePublicKey []byte      // Aggregated public key of block validators
-	BlockHash          common.Hash // Hash of block we are proving
-	Signature          []byte      // Signature of block we are proving
-	RLPHeader          []byte      // RLP encoding of header data
+	AggregatePublicKey []byte        // Aggregated public key of block validators
+	BlockHash          common.Hash   // Hash of block we are proving
+	Signature          []byte        // Signature of block we are proving
+	RLPHeader          []byte        // RLP encoding of header data
+	CommitedSeal       *CommitedSeal // Data for validating BLS sig of block
+}
+
+// CommitedSeal is struct to hold data relating to validating BLS signature of
+// block
+type CommitedSeal struct {
+	CommitedSealSuffix []byte  // CommitedSealSuffix
+	CommitedSealPrefix [1]byte // CommitedSealPrefix
+	CommitedSealHints  []byte  // CommitedSealHints
 }
 
 func NewFungibleTransfer(source, dest ChainId, nonce Nonce, resourceId ResourceId, mp *MerkleProof, sv *SignatureVerification, amount *big.Int, recipient []byte) *Message {

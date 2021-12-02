@@ -9,11 +9,11 @@ import (
 	"github.com/ChainSafe/chainbridge-celo/bindings/Bridge"
 	"github.com/ChainSafe/chainbridge-celo/chain/client"
 	"github.com/ChainSafe/chainbridge-celo/chain/config"
+	metrics "github.com/ChainSafe/chainbridge-celo/metrics/types"
 	"github.com/ChainSafe/chainbridge-celo/utils"
-	metrics "github.com/ChainSafe/chainbridge-utils/metrics/types"
-	"github.com/ethereum/go-ethereum/accounts/abi/bind"
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/core/types"
+	"github.com/celo-org/celo-blockchain/accounts/abi/bind"
+	"github.com/celo-org/celo-blockchain/common"
+	"github.com/celo-org/celo-blockchain/core/types"
 	"github.com/rs/zerolog/log"
 )
 
@@ -36,7 +36,7 @@ type Bridger interface {
 	GetProposal(opts *bind.CallOpts, originChainID uint8, depositNonce uint64, dataHash [32]byte) (Bridge.BridgeProposal, error)
 	HasVotedOnProposal(opts *bind.CallOpts, arg0 *big.Int, arg1 [32]byte, arg2 common.Address) (bool, error)
 	VoteProposal(opts *bind.TransactOpts, chainID uint8, depositNonce uint64, resourceID [32]byte, dataHash [32]byte) (*types.Transaction, error)
-	ExecuteProposal(opts *bind.TransactOpts, chainID uint8, depositNonce uint64, data []byte, resourceID [32]byte, signatureHeader []byte, aggregatePublicKey []byte, hashedMessage [32]byte, rootHash [32]byte, key []byte, nodes []byte) (*types.Transaction, error)
+	ExecuteProposal(opts *bind.TransactOpts, chainID uint8, depositNonce uint64, data []byte, resourceID [32]byte, blockHeaderRLP []byte, blockHashPrefix [1]byte, blockHashSuffix []byte, blockHashBLSHints []byte, blockHashSignature []byte, aggregatePublicKey []byte, transactionMerkleKey []byte, transactionMerkleNodes []byte) (*types.Transaction, error)
 }
 
 type ContractCaller interface {

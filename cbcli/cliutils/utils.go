@@ -4,8 +4,8 @@ import (
 	"fmt"
 
 	"github.com/ChainSafe/chainbridge-celo/utils"
-	"github.com/ChainSafe/chainbridge-utils/crypto/secp256k1"
-	"github.com/ethereum/go-ethereum/common"
+	"github.com/ChainSafe/chainbridge-celo/crypto/secp256k1"
+	"github.com/celo-org/celo-blockchain/common"
 	"github.com/urfave/cli/v2"
 )
 
