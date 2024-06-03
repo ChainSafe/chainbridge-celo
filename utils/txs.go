@@ -13,10 +13,9 @@ import (
 	"github.com/ChainSafe/chainbridge-celo/bindings/ERC721MinterBurnerPauser"
 	"github.com/ChainSafe/chainbridge-celo/bindings/GenericHandler"
 	"github.com/ChainSafe/chainbridge-celo/chain/client"
-	"github.com/ChainSafe/chainbridge-utils/keystore"
-	"github.com/ChainSafe/chainbridge-utils/msg"
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/core/types"
+	"github.com/ChainSafe/chainbridge-celo/keystore"
+	"github.com/celo-org/celo-blockchain/common"
+	"github.com/celo-org/celo-blockchain/core/types"
 	"github.com/pkg/errors"
 	"github.com/rs/zerolog/log"
 )
@@ -153,7 +152,7 @@ func RegisterResource(client *client.Client, bridge, handler common.Address, rId
 	return nil
 }
 
-func RegisterGenericResource(client *client.Client, bridge, handler common.Address, rId msg.ResourceId, addr common.Address, depositSig, executeSig [4]byte) error {
+func RegisterGenericResource(client *client.Client, bridge, handler common.Address, rId [32]byte, addr common.Address, depositSig, executeSig [4]byte) error {
 	instance, err := Bridge.NewBridge(bridge, client.Client)
 	if err != nil {
 		return err

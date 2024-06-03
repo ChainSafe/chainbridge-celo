@@ -5,13 +5,16 @@ import (
 	"fmt"
 	gomath "math"
 	"math/big"
+	"reflect"
 	"strings"
 
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/common/math"
-	"github.com/ethereum/go-ethereum/core/types"
-	"github.com/ethereum/go-ethereum/crypto"
-	"github.com/ethereum/go-ethereum/rlp"
+	"github.com/ChainSafe/chainbridge-celo/celo-bls/bls"
+	"github.com/celo-org/celo-blockchain/common"
+	"github.com/celo-org/celo-blockchain/common/math"
+	"github.com/celo-org/celo-blockchain/consensus/istanbul"
+	"github.com/celo-org/celo-blockchain/core/types"
+	"github.com/celo-org/celo-blockchain/crypto"
+	"github.com/celo-org/celo-blockchain/rlp"
 	"github.com/pkg/errors"
 )
 
@@ -101,6 +104,35 @@ func ConstructGenericDepositData(metadata []byte) []byte {
 	return data
 }
 
+// TODO:
+// move all below to new package
+// borrowed from Celo
+// https://github.com/ChainSafe/chainbridge-celo/celo-bls/blob/kobigurk/arkworks/examples/utils/utils.go#L8-L13
+func ReverseAnyAndPad(s []byte) []byte {
+	s = ReverseAny(s)
+	padding := make([]byte, FIELD_SIZE_IN_CONTRACT-(len(s)%FIELD_SIZE_IN_CONTRACT))
+	z := append(padding, s...)
+	return z
+}
+
+// borrowed from Celo
+// https://github.com/ChainSafe/chainbridge-celo/celo-bls/blob/kobigurk/arkworks/examples/utils/utils.go#L15-L24
+func ReverseAny(s []byte) []byte {
+	z := make([]byte, len(s))
+	copy(z, s)
+	n := reflect.ValueOf(z).Len()
+	swap := reflect.Swapper(z)
+	for i, j := 0, n-1; i < j; i, j = i+1, j-1 {
+		swap(i, j)
+	}
+	return z
+}
+
+// borrowed from Celo
+// https://github.com/ChainSafe/chainbridge-celo/celo-bls/blob/kobigurk/arkworks/examples/utils/utils.go#L15-L24
+const FIELD_SIZE = 48
+const FIELD_SIZE_IN_CONTRACT = 32
+
 // RlpEncodeHeader is method to RLP encode data stored in a block header
 func RlpEncodeHeader(header *types.Header) ([]byte, error) {
 	// deep copy of header
@@ -114,4 +146,196 @@ func RlpEncodeHeader(header *types.Header) ([]byte, error) {
 	}
 
 	return rlpEncodedHeader, nil
+}
+
+// PrepareAPKForContract properly encodes APK for use within a contract
+// NOTE: uses new functionality from celo-bls PR #23
+// https://github.com/ChainSafe/chainbridge-celo/celo-bls/examples/utils
+func PrepareAPKForContract(apk []byte) ([]byte, error) {
+	// registration required for celo-bls package
+	bls.InitBLSCrypto()
+
+	// init new byte slice to hold newly encoded APK
+	encodedAPK := make([]byte, 0)
+
+	// deserialize public key
+	key, err := bls.DeserializePublicKey(apk)
+	if err != nil {
+		return encodedAPK, fmt.Errorf("could not deserialize public key: %w", err)
+	}
+
+	// serialize uncompressed data
+	// new functionality from celo-bls PR #23
+	// https://github.com/ChainSafe/chainbridge-celo/celo-bls/pull/23
+	encodedData, err := key.SerializeUncompressed()
+	if err != nil {
+		return encodedAPK, fmt.Errorf("could not serialize data: %w", err)
+	}
+
+	// new functionality from celo-bls PR #23
+	// https://github.com/ChainSafe/chainbridge-celo/celo-bls/examples/utils
+	// https://github.com/ChainSafe/chainbridge-celo/celo-bls/examples/prepare_for_contract/prepare_for_contract.go#L23-L35
+	encodedDataPart1 := encodedData[0:FIELD_SIZE]
+	encodedDataPart1 = ReverseAnyAndPad(encodedDataPart1)
+	encodedDataPart2 := encodedData[FIELD_SIZE : 2*FIELD_SIZE]
+	encodedDataPart2 = ReverseAnyAndPad(encodedDataPart2)
+	encodedDataPart3 := encodedData[2*FIELD_SIZE : 3*FIELD_SIZE]
+	encodedDataPart3 = ReverseAnyAndPad(encodedDataPart3)
+	encodedDataPart4 := encodedData[3*FIELD_SIZE : 4*FIELD_SIZE]
+	encodedDataPart4 = ReverseAnyAndPad(encodedDataPart4)
+
+	// append encoded data to APK byte slice
+	encodedAPK = append(encodedAPK, encodedDataPart1...)
+	encodedAPK = append(encodedAPK, encodedDataPart2...)
+	encodedAPK = append(encodedAPK, encodedDataPart3...)
+	encodedAPK = append(encodedAPK, encodedDataPart4...)
+
+	return encodedAPK, nil
+}
+
+// PrepareSignatureForContract properly encodes Signature field within
+// the SignatureVerification struct to be used within a contract
+// NOTE: uses new functionality from celo-bls PR #23
+// https://github.com/ChainSafe/chainbridge-celo/celo-bls/examples/utils
+func PrepareSignatureForContract(signature []byte) ([]byte, error) {
+	// registration required for celo-bls package
+	bls.InitBLSCrypto()
+
+	// init new byte slice to hold newly encoded signature
+	encodedSignature := make([]byte, 0)
+
+	// deserialize signature
+	key, err := bls.DeserializeSignature(signature)
+	if err != nil {
+		return encodedSignature, fmt.Errorf("could not deserialize public key: %w", err)
+	}
+
+	// serialize uncompressed data
+	// new functionality from celo-bls PR #23
+	// https://github.com/ChainSafe/chainbridge-celo/celo-bls/pull/23
+	encodedData, err := key.SerializeUncompressed()
+	if err != nil {
+		return encodedSignature, fmt.Errorf("could not serialize data: %w", err)
+	}
+
+	// new functionality from celo-bls PR #23
+	// https://github.com/ChainSafe/chainbridge-celo/celo-bls/examples/utils
+	// https://github.com/ChainSafe/chainbridge-celo/celo-bls/examples/prepare_for_contract/prepare_for_contract.go#L23-L3
+	encodedDataPart1 := encodedData[0:FIELD_SIZE]
+	encodedDataPart1 = reverseAnyAndPad(encodedDataPart1)
+	encodedDataPart2 := encodedData[FIELD_SIZE : 2*FIELD_SIZE]
+	encodedDataPart2 = reverseAnyAndPad(encodedDataPart2)
+
+	// append encoded data to encoded signature byte slice
+	encodedSignature = append(encodedSignature, encodedDataPart1...)
+	encodedSignature = append(encodedSignature, encodedDataPart2...)
+
+	return encodedSignature, nil
+}
+
+// CommitedSealSuffix creates the Commited Seal Suffix
+// NOTE: uses new functionality from celo-bls PR #23
+// https://github.com/ChainSafe/chainbridge-celo/celo-bls/examples/utils
+func CommitedSealSuffix(istAggSealRound *big.Int) []byte {
+	// declare new buffer
+	var buf bytes.Buffer
+	// write the round
+	buf.Write(istAggSealRound.Bytes())
+	// write the msg commit
+	buf.Write([]byte{byte(istanbul.MsgCommit)})
+
+	return buf.Bytes()
+}
+
+// CommitedSealPrefix creates the Commited Seal Prefix
+// NOTE: uses new functionality from celo-bls PR #23
+// https://github.com/ChainSafe/chainbridge-celo/celo-bls/examples/utils
+func CommitedSealPrefix(blockHashAndSuffix []byte) ([1]byte, error) {
+	// registration required for celo-bls package
+	bls.InitBLSCrypto()
+
+	// obtain prefix
+	_, prefix, err := bls.HashDirectWithAttempt(blockHashAndSuffix, false)
+	if err != nil {
+		return [1]byte{}, fmt.Errorf("could not hash data: %w", err)
+	}
+
+	return [1]byte{byte(prefix)}, nil
+}
+
+// CommitedSealHints creates the Commited Seal Hints
+// NOTE: uses new functionality from celo-bls PR #23
+// https://github.com/ChainSafe/chainbridge-celo/celo-bls/examples/utils
+func CommitedSealHints(blockHashAndSuffix []byte) ([]byte, error) {
+	// registration required for celo-bls package
+	bls.InitBLSCrypto()
+
+	// https://github.com/ChainSafe/chainbridge-celo/celo-bls/examples/prepare_for_contract/prepare_for_contract.go#L53-L70
+	_, prefix, err := bls.HashDirectWithAttempt(blockHashAndSuffix, false)
+	if err != nil {
+		return []byte{}, fmt.Errorf("could not hash blockHashAndSuffix: %w", err)
+	}
+	hash, err := bls.HashDirectFirstStep(append([]byte{byte(prefix)}, blockHashAndSuffix...), 64)
+	if err != nil {
+		return []byte{}, fmt.Errorf("could not hash prefix: %w", err)
+	}
+	hash = hash[0:48]
+	hash = reverseAny(hash)
+	hash[0] &= 1
+	x := big.NewInt(0).SetBytes(hash)
+	n, _ := big.NewInt(0).SetString("258664426012969094010652733694893533536393512754914660539884262666720468348340822774968888139573360124440321458177", 10)
+	x = x.Exp(x, big.NewInt(3), n)
+	x = x.Add(x, big.NewInt(1))
+	y := big.NewInt(0).ModSqrt(x, n)
+	yNeg := big.NewInt(0).Sub(n, y)
+	yBytes := reverseAnyAndPad(reverseAny(y.Bytes()))
+	yNegBytes := reverseAnyAndPad(reverseAny(yNeg.Bytes()))
+
+	// init new slice to hold hints
+	hintsByteSlice := make([]byte, 0)
+
+	// append first hint to byte slice
+	hintsByteSlice = append(hintsByteSlice, yBytes...)
+
+	// append second hint to byte slice
+	hintsByteSlice = append(hintsByteSlice, yNegBytes...)
+
+	return hintsByteSlice, nil
+}
+
+// ConcatBlockHashAndCommitedSealSuffix concatenates the block hash with
+// the CommitedSealSuffix to be used within CommitedSeal Prefix/Hints operations
+func ConcatBlockHashAndCommitedSealSuffix(blockHash common.Hash, commitedSealSuffix []byte) []byte {
+	// init new byte slice to hold resulting Commited Seal Hints
+	blockHashAndSuffix := make([]byte, 0)
+
+	// append block hash bytes to commited seal hints
+	blockHashAndSuffix = append(blockHashAndSuffix, blockHash.Bytes()...)
+
+	// append commited seal suffix to commited seal hints
+	blockHashAndSuffix = append(blockHashAndSuffix, commitedSealSuffix...)
+
+	return blockHashAndSuffix
+}
+
+// borrowed from Celo
+// https://github.com/ChainSafe/chainbridge-celo/celo-bls/blob/kobigurk/arkworks/examples/utils/utils.go#L8-L13
+func reverseAnyAndPad(s []byte) []byte {
+	s = reverseAny(s)
+	padding := make([]byte, FIELD_SIZE_IN_CONTRACT-(len(s)%FIELD_SIZE_IN_CONTRACT))
+	z := append(padding, s...)
+	return z
+}
+
+// borrowed from Celo
+// https://github.com/ChainSafe/chainbridge-celo/celo-bls/blob/kobigurk/arkworks/examples/utils/utils.go#L15-L24
+func reverseAny(s []byte) []byte {
+	z := make([]byte, len(s))
+	copy(z, s)
+	n := reflect.ValueOf(z).Len()
+	swap := reflect.Swapper(z)
+	for i, j := 0, n-1; i < j; i, j = i+1, j-1 {
+		swap(i, j)
+	}
+	return z
 }

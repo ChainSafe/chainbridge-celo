@@ -10,8 +10,8 @@ import (
 	"github.com/ChainSafe/chainbridge-celo/bindings/ERC721MinterBurnerPauser"
 	handlerHelper "github.com/ChainSafe/chainbridge-celo/bindings/HandlerHelpers"
 	"github.com/ChainSafe/chainbridge-celo/chain/client"
-	"github.com/ethereum/go-ethereum"
-	"github.com/ethereum/go-ethereum/common"
+	"github.com/celo-org/celo-blockchain"
+	"github.com/celo-org/celo-blockchain/common"
 	"github.com/rs/zerolog/log"
 )
 
@@ -125,7 +125,7 @@ func Simulate(client *client.Client, block *big.Int, txHash common.Hash, from co
 	if err != nil {
 		return nil, err
 	}
-	msg := ethereum.CallMsg{
+	msg := celo.CallMsg{
 		From:                from,
 		To:                  tx.To(),
 		Gas:                 tx.Gas(),
@@ -148,8 +148,8 @@ func Simulate(client *client.Client, block *big.Int, txHash common.Hash, from co
 	return bs, nil
 }
 
-func BuildQuery(contract common.Address, sig EventSig, startBlock *big.Int, endBlock *big.Int) ethereum.FilterQuery {
-	query := ethereum.FilterQuery{
+func BuildQuery(contract common.Address, sig EventSig, startBlock *big.Int, endBlock *big.Int) celo.FilterQuery {
+	query := celo.FilterQuery{
 		FromBlock: startBlock,
 		ToBlock:   endBlock,
 		Addresses: []common.Address{contract},

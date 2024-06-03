@@ -15,14 +15,14 @@ import (
 	mock_listener "github.com/ChainSafe/chainbridge-celo/chain/listener/mock"
 	"github.com/ChainSafe/chainbridge-celo/txtrie"
 	"github.com/ChainSafe/chainbridge-celo/utils"
-	eth "github.com/ethereum/go-ethereum"
-	"github.com/ethereum/go-ethereum/accounts/abi/bind"
-	"github.com/ethereum/go-ethereum/common"
-	ethcommon "github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/common/hexutil"
-	"github.com/ethereum/go-ethereum/core/types"
-	"github.com/ethereum/go-ethereum/crypto"
-	"github.com/ethereum/go-ethereum/rlp"
+	eth "github.com/celo-org/celo-blockchain"
+	"github.com/celo-org/celo-blockchain/accounts/abi/bind"
+	"github.com/celo-org/celo-blockchain/common"
+	ethcommon "github.com/celo-org/celo-blockchain/common"
+	"github.com/celo-org/celo-blockchain/common/hexutil"
+	"github.com/celo-org/celo-blockchain/core/types"
+	"github.com/celo-org/celo-blockchain/crypto"
+	"github.com/celo-org/celo-blockchain/rlp"
 	"github.com/golang/mock/gomock"
 	"github.com/pkg/errors"
 	"github.com/stretchr/testify/suite"
@@ -317,10 +317,14 @@ func (s *ListenerTestSuite) TestGetDepositEventsAndProofsForBlockerERC20() {
 
 	destID := utils.ChainId(logs[0].Topics[1].Big().Uint64())
 	pk := []byte{0x1f}
-	s.validatorsAggregatorMock.EXPECT().GetAPKForBlock(gomock.Any(), gomock.Any(), gomock.Any()).Return([]byte{0x1f}, nil)
 
 	// replace block with customized block to hold IstanbulExtra data
 	block := dummyBlockWithIstanbulExtra(123)
+
+	extra, err := types.ExtractIstanbulExtra(block.Header())
+	s.Nil(err)
+
+	s.validatorsAggregatorMock.EXPECT().GetAPKForBlock(gomock.Any(), gomock.Any(), gomock.Any(), extra).Return([]byte{0x1f}, nil)
 
 	s.clientMock.EXPECT().BlockByNumber(gomock.Any(), gomock.Any()).Return(block, nil)
 
@@ -334,10 +338,30 @@ func (s *ListenerTestSuite) TestGetDepositEventsAndProofsForBlockerERC20() {
 	proof, key, err := txtrie.RetrieveProof(trie, keyRlp)
 	s.Nil(err)
 
-	extra, err := types.ExtractIstanbulExtra(block.Header())
+	rlpHeader, err := utils.RlpEncodeHeader(block.Header())
 	s.Nil(err)
 
-	rlpHeader, err := utils.RlpEncodeHeader(block.Header())
+	// CommitedSeal construction
+	// construct commited seal suffix
+	commitedSealSuffix := utils.CommitedSealSuffix(extra.AggregatedSeal.Round)
+
+	// construct concatenation of blockHash + commitedSealSuffix
+	blockHashAndSuffix := utils.ConcatBlockHashAndCommitedSealSuffix(block.Hash(), commitedSealSuffix)
+
+	// construct commited seal prefix
+	commitedSealPrefix, err := utils.CommitedSealPrefix(blockHashAndSuffix)
+	s.Nil(err)
+
+	// construct commited seal hints
+	commitedSealHints, err := utils.CommitedSealHints(blockHashAndSuffix)
+	s.Nil(err)
+
+	// prepare APK for contract
+	preparedApk, err := utils.PrepareAPKForContract(pk)
+	s.Nil(err)
+
+	// prepare signature for contract
+	preparedSignature, err := utils.PrepareSignatureForContract(extra.AggregatedSeal.Signature)
 	s.Nil(err)
 
 	_ = utils.NewFungibleTransfer(
@@ -351,10 +375,15 @@ func (s *ListenerTestSuite) TestGetDepositEventsAndProofsForBlockerERC20() {
 			Key:        key,
 		},
 		&utils.SignatureVerification{
-			AggregatePublicKey: pk,
+			AggregatePublicKey: preparedApk,
 			BlockHash:          block.Header().Hash(),
-			Signature:          extra.AggregatedSeal.Signature,
+			Signature:          preparedSignature,
 			RLPHeader:          rlpHeader,
+			CommitedSeal: &utils.CommitedSeal{
+				CommitedSealSuffix: commitedSealSuffix,
+				CommitedSealPrefix: commitedSealPrefix,
+				CommitedSealHints:  commitedSealHints,
+			},
 		},
 		prop.Amount,
 		prop.DestinationRecipientAddress,
@@ -437,18 +466,43 @@ func (s *ListenerTestSuite) TestGetDepositEventsAndProofsForBlockerERC721() {
 
 	destID := utils.ChainId(logs[0].Topics[1].Big().Uint64())
 	pk := []byte{0x1f}
-	s.validatorsAggregatorMock.EXPECT().GetAPKForBlock(gomock.Any(), gomock.Any(), gomock.Any()).Return(pk, nil)
 
 	// replace block with customized block to hold IstanbulExtra data
 	block := dummyBlockWithIstanbulExtra(123)
 
-	s.clientMock.EXPECT().BlockByNumber(gomock.Any(), gomock.Any()).Return(block, nil)
-
 	extra, err := types.ExtractIstanbulExtra(block.Header())
 	s.Nil(err)
 
+	s.validatorsAggregatorMock.EXPECT().GetAPKForBlock(gomock.Any(), gomock.Any(), gomock.Any(), extra).Return(pk, nil)
+
+	s.clientMock.EXPECT().BlockByNumber(gomock.Any(), gomock.Any()).Return(block, nil)
+
 	rlpHeader, err := utils.RlpEncodeHeader(block.Header())
 	s.Nil(err)
+
+	// prepare APK for contract
+	preparedApk, err := utils.PrepareAPKForContract(pk)
+	s.Nil(err)
+
+	// prepare signature for contract
+	preparedSignature, err := utils.PrepareSignatureForContract(extra.AggregatedSeal.Signature)
+	s.Nil(err)
+
+	// CommitedSeal construction
+	// construct commited seal suffix
+	commitedSealSuffix := utils.CommitedSealSuffix(extra.AggregatedSeal.Round)
+
+	// construct concatenation of blockHash + commitedSealSuffix
+	blockHashAndSuffix := utils.ConcatBlockHashAndCommitedSealSuffix(block.Hash(), commitedSealSuffix)
+
+	// construct commited seal prefix
+	commitedSealPrefix, err := utils.CommitedSealPrefix(blockHashAndSuffix)
+	s.Nil(err)
+
+	// construct commited seal hints
+	commitedSealHints, err := utils.CommitedSealHints(blockHashAndSuffix)
+	s.Nil(err)
+
 	_ = utils.NewNonFungibleTransfer(
 		listener.cfg.ID,
 		destID,
@@ -458,10 +512,15 @@ func (s *ListenerTestSuite) TestGetDepositEventsAndProofsForBlockerERC721() {
 			TxRootHash: block.TxHash(),
 		},
 		&utils.SignatureVerification{
-			AggregatePublicKey: pk,
+			AggregatePublicKey: preparedApk,
 			BlockHash:          block.Header().Hash(),
-			Signature:          extra.AggregatedSeal.Signature,
+			Signature:          preparedSignature,
 			RLPHeader:          rlpHeader,
+			CommitedSeal: &utils.CommitedSeal{
+				CommitedSealSuffix: commitedSealSuffix,
+				CommitedSealPrefix: commitedSealPrefix,
+				CommitedSealHints:  commitedSealHints,
+			},
 		},
 		prop.TokenID,
 		prop.DestinationRecipientAddress,
@@ -532,17 +591,40 @@ func (s *ListenerTestSuite) TestGetDepositEventsAndProofsForBlockerGeneric() {
 
 	destID := utils.ChainId(logs[0].Topics[1].Big().Uint64())
 	pk := []byte{0x1f}
-	s.validatorsAggregatorMock.EXPECT().GetAPKForBlock(gomock.Any(), gomock.Any(), gomock.Any()).Return(pk, nil)
 
 	// replace block with customized block to hold IstanbulExtra data
 	block := dummyBlockWithIstanbulExtra(123)
 
-	s.clientMock.EXPECT().BlockByNumber(gomock.Any(), gomock.Any()).Return(block, nil)
-
 	extra, err := types.ExtractIstanbulExtra(block.Header())
 	s.Nil(err)
 
+	s.validatorsAggregatorMock.EXPECT().GetAPKForBlock(gomock.Any(), gomock.Any(), gomock.Any(), extra).Return(pk, nil)
+
+	s.clientMock.EXPECT().BlockByNumber(gomock.Any(), gomock.Any()).Return(block, nil)
+
 	rlpHeader, err := utils.RlpEncodeHeader(block.Header())
+	s.Nil(err)
+
+	// prepare APK for contract
+	preparedApk, err := utils.PrepareAPKForContract(pk)
+	s.Nil(err)
+
+	// prepare signature for contract
+	preparedSignature, err := utils.PrepareSignatureForContract(extra.AggregatedSeal.Signature)
+	s.Nil(err)
+	// CommitedSeal construction
+	// construct commited seal suffix
+	commitedSealSuffix := utils.CommitedSealSuffix(extra.AggregatedSeal.Round)
+
+	// construct concatenation of blockHash + commitedSealSuffix
+	blockHashAndSuffix := utils.ConcatBlockHashAndCommitedSealSuffix(block.Hash(), commitedSealSuffix)
+
+	// construct commited seal prefix
+	commitedSealPrefix, err := utils.CommitedSealPrefix(blockHashAndSuffix)
+	s.Nil(err)
+
+	// construct commited seal hints
+	commitedSealHints, err := utils.CommitedSealHints(blockHashAndSuffix)
 	s.Nil(err)
 
 	_ = utils.NewGenericTransfer(
@@ -554,10 +636,15 @@ func (s *ListenerTestSuite) TestGetDepositEventsAndProofsForBlockerGeneric() {
 			TxRootHash: block.TxHash(),
 		},
 		&utils.SignatureVerification{
-			AggregatePublicKey: pk,
+			AggregatePublicKey: preparedApk,
 			BlockHash:          block.Header().Hash(),
-			Signature:          extra.AggregatedSeal.Signature,
+			Signature:          preparedSignature,
 			RLPHeader:          rlpHeader,
+			CommitedSeal: &utils.CommitedSeal{
+				CommitedSealSuffix: commitedSealSuffix,
+				CommitedSealPrefix: commitedSealPrefix,
+				CommitedSealHints:  commitedSealHints,
+			},
 		},
 		prop.MetaData,
 	)

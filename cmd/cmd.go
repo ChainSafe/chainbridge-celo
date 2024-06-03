@@ -20,8 +20,8 @@ import (
 	"github.com/pkg/errors"
 	"github.com/syndtr/goleveldb/leveldb"
 
-	"github.com/ChainSafe/chainbridge-utils/crypto/secp256k1"
-	"github.com/ChainSafe/chainbridge-utils/keystore"
+	"github.com/ChainSafe/chainbridge-celo/crypto/secp256k1"
+	"github.com/ChainSafe/chainbridge-celo/keystore"
 	"github.com/rs/zerolog/log"
 	"github.com/urfave/cli/v2"
 )

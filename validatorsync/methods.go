@@ -5,10 +5,10 @@ package validatorsync
 import (
 	"math/big"
 
-	"github.com/celo-org/celo-bls-go/bls"
-	"github.com/ethereum/go-ethereum/consensus/istanbul"
-	"github.com/ethereum/go-ethereum/core/types"
-	"github.com/ethereum/go-ethereum/crypto/bls"
+	"github.com/ChainSafe/chainbridge-celo/celo-bls/bls"
+	"github.com/celo-org/celo-blockchain/consensus/istanbul"
+	"github.com/celo-org/celo-blockchain/core/types"
+	blscrypto "github.com/celo-org/celo-blockchain/crypto/bls"
 	"github.com/pkg/errors"
 )
 
@@ -52,9 +52,11 @@ func aggregatePublicKeys(validators []*istanbul.ValidatorData) (*bls.PublicKey, 
 		if err != nil {
 			return nil, err
 		}
+
 		publicKeyObjs[i] = publicKeyObj
 		publicKeyObj.Destroy()
 	}
+
 	apk, err := bls.AggregatePublicKeys(publicKeyObjs)
 	if err != nil {
 		return nil, err
@@ -68,4 +70,22 @@ func computeLastBlockOfEpochForProvidedBlock(block *big.Int, epochSize uint64) *
 	epochNumber := istanbul.GetEpochNumber(block.Uint64(), epochSize)
 	lastBlock := istanbul.GetEpochLastBlockNumber(epochNumber, epochSize)
 	return big.NewInt(0).SetUint64(lastBlock)
+}
+
+// filterValidatorsWithBitmap is a private function that returns a slice of
+// validators who signed the current block by applying the current
+// block's bitmap on a slice of validators chosen for the current epoch
+func filterValidatorsWithBitmap(validators []*istanbul.ValidatorData, bitmap *big.Int) []*istanbul.ValidatorData {
+	// init new slice to hold validators who signed block
+	newValidators := make([]*istanbul.ValidatorData, 0)
+
+	// iterate over validators in slice to determine which ones signed the block
+	for index, validator := range validators {
+		// if validator found within bitmap, append to new validators slice
+		if bitmap.Bit(index) == 1 {
+			newValidators = append(newValidators, &istanbul.ValidatorData{Address: validator.Address, BLSPublicKey: validator.BLSPublicKey})
+		}
+	}
+
+	return newValidators
 }

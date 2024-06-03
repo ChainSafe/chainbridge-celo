@@ -6,8 +6,8 @@ import (
 	"math/big"
 	"testing"
 
-	"github.com/ChainSafe/chainbridge-utils/crypto/secp256k1"
-	"github.com/ethereum/go-ethereum/accounts/abi/bind"
+	"github.com/ChainSafe/chainbridge-celo/crypto/secp256k1"
+	"github.com/celo-org/celo-blockchain/accounts/abi/bind"
 )
 
 func Test_ClientOpts(t *testing.T) {

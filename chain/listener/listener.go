@@ -14,11 +14,11 @@ import (
 	"github.com/ChainSafe/chainbridge-celo/chain/config"
 	"github.com/ChainSafe/chainbridge-celo/txtrie"
 	"github.com/ChainSafe/chainbridge-celo/utils"
-	eth "github.com/ethereum/go-ethereum"
-	"github.com/ethereum/go-ethereum/accounts/abi/bind"
-	ethcommon "github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/core/types"
-	"github.com/ethereum/go-ethereum/rlp"
+	eth "github.com/celo-org/celo-blockchain"
+	"github.com/celo-org/celo-blockchain/accounts/abi/bind"
+	ethcommon "github.com/celo-org/celo-blockchain/common"
+	"github.com/celo-org/celo-blockchain/core/types"
+	"github.com/celo-org/celo-blockchain/rlp"
 	"github.com/rs/zerolog/log"
 )
 
@@ -52,7 +52,7 @@ type Blockstorer interface {
 }
 
 type ValidatorsAggregator interface {
-	GetAPKForBlock(block *big.Int, chainID uint8, epochSize uint64) ([]byte, error)
+	GetAPKForBlock(block *big.Int, chainID uint8, epochSize uint64, extra *types.IstanbulExtra) ([]byte, error)
 }
 
 func NewListener(cfg *config.CeloChainConfig, client client.LogFilterWithLatestBlock, bs Blockstorer, stop <-chan struct{}, sysErr chan<- error, router IRouter, valsAggr ValidatorsAggregator) *listener {
@@ -202,7 +202,14 @@ func (l *listener) getDepositEventsAndProofsForBlock(latestBlock *big.Int) error
 		if err != nil {
 			return err
 		}
-		apk, err := l.valsAggr.GetAPKForBlock(latestBlock, uint8(l.cfg.ID), l.cfg.EpochSize)
+		// fetch IstanbulExtra data by parsing block header
+		// https://github.com/celo-org/celo-blockchain/blob/master/core/types/istanbul.go#L128-L142
+		extra, err := types.ExtractIstanbulExtra(blockData.Header())
+		if err != nil {
+			return err
+		}
+
+		apk, err := l.valsAggr.GetAPKForBlock(latestBlock, uint8(l.cfg.ID), l.cfg.EpochSize, extra)
 		if err != nil {
 			return err
 
@@ -215,21 +222,44 @@ func (l *listener) getDepositEventsAndProofsForBlock(latestBlock *big.Int) error
 		if err != nil {
 			return err
 		}
-
-		// fetch IstanbulExtra data by parsing block header
-		// https://github.com/celo-org/celo-blockchain/blob/master/core/types/istanbul.go#L128-L142
-		extra, err := types.ExtractIstanbulExtra(blockData.Header())
-		if err != nil {
-			return err
-		}
-
 		// RLP encode data in block header
 		rlpEncodedHeader, err := utils.RlpEncodeHeader(blockData.Header())
 		if err != nil {
 			return err
 		}
 
-		m.SVParams = &utils.SignatureVerification{AggregatePublicKey: apk, BlockHash: blockData.Header().Hash(), Signature: extra.AggregatedSeal.Signature, RLPHeader: rlpEncodedHeader}
+		// prepare APK for contract
+		preparedApk, err := utils.PrepareAPKForContract(apk)
+		if err != nil {
+			return err
+		}
+
+		// prepare signature for contract
+		preparedSignature, err := utils.PrepareSignatureForContract(extra.AggregatedSeal.Signature)
+		if err != nil {
+			return err
+		}
+
+		// CommitedSeal construction
+		// construct commited seal suffix
+		commitedSealSuffix := utils.CommitedSealSuffix(extra.AggregatedSeal.Round)
+
+		// construct concatenation of blockHash + commitedSealSuffix
+		blockHashAndSuffix := utils.ConcatBlockHashAndCommitedSealSuffix(blockData.Hash(), commitedSealSuffix)
+
+		// construct commited seal prefix
+		commitedSealPrefix, err := utils.CommitedSealPrefix(blockHashAndSuffix)
+		if err != nil {
+			return err
+		}
+
+		// construct commited seal hints
+		commitedSealHints, err := utils.CommitedSealHints(blockHashAndSuffix)
+		if err != nil {
+			return err
+		}
+
+		m.SVParams = &utils.SignatureVerification{AggregatePublicKey: preparedApk, BlockHash: blockData.Header().Hash(), Signature: preparedSignature, RLPHeader: rlpEncodedHeader, CommitedSeal: &utils.CommitedSeal{CommitedSealSuffix: commitedSealSuffix, CommitedSealPrefix: commitedSealPrefix, CommitedSealHints: commitedSealHints}}
 		m.MPParams = &utils.MerkleProof{TxRootHash: utils.SliceTo32Bytes(blockData.TxHash().Bytes()), Nodes: proof, Key: key}
 		err = l.router.Send(m)
 

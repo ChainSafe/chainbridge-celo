@@ -7,8 +7,8 @@ import (
 	"testing"
 
 	"github.com/ChainSafe/chainbridge-celo/utils"
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/crypto"
+	"github.com/celo-org/celo-blockchain/common"
+	"github.com/celo-org/celo-blockchain/crypto"
 )
 
 func TestCreateProposalDataHash(t *testing.T) {

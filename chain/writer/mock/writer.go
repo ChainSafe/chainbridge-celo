@@ -7,10 +7,10 @@ package mock_writer
 import (
 	context "context"
 	Bridge "github.com/ChainSafe/chainbridge-celo/bindings/Bridge"
-	ethereum "github.com/ethereum/go-ethereum"
-	bind "github.com/ethereum/go-ethereum/accounts/abi/bind"
-	common "github.com/ethereum/go-ethereum/common"
-	types "github.com/ethereum/go-ethereum/core/types"
+	celo "github.com/celo-org/celo-blockchain"
+	bind "github.com/celo-org/celo-blockchain/accounts/abi/bind"
+	common "github.com/celo-org/celo-blockchain/common"
+	types "github.com/celo-org/celo-blockchain/core/types"
 	gomock "github.com/golang/mock/gomock"
 	big "math/big"
 	reflect "reflect"
@@ -85,18 +85,18 @@ func (mr *MockBridgerMockRecorder) VoteProposal(opts, chainID, depositNonce, res
 }
 
 // ExecuteProposal mocks base method
-func (m *MockBridger) ExecuteProposal(opts *bind.TransactOpts, chainID uint8, depositNonce uint64, data []byte, resourceID [32]byte, signatureHeader, aggregatePublicKey []byte, hashedMessage, rootHash [32]byte, key, nodes []byte) (*types.Transaction, error) {
+func (m *MockBridger) ExecuteProposal(opts *bind.TransactOpts, chainID uint8, depositNonce uint64, data []byte, resourceID [32]byte, blockHeaderRLP []byte, blockHashPrefix [1]byte, blockHashSuffix, blockHashBLSHints, blockHashSignature, aggregatePublicKey, transactionMerkleKey, transactionMerkleNodes []byte) (*types.Transaction, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "ExecuteProposal", opts, chainID, depositNonce, data, resourceID, signatureHeader, aggregatePublicKey, hashedMessage, rootHash, key, nodes)
+	ret := m.ctrl.Call(m, "ExecuteProposal", opts, chainID, depositNonce, data, resourceID, blockHeaderRLP, blockHashPrefix, blockHashSuffix, blockHashBLSHints, blockHashSignature, aggregatePublicKey, transactionMerkleKey, transactionMerkleNodes)
 	ret0, _ := ret[0].(*types.Transaction)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // ExecuteProposal indicates an expected call of ExecuteProposal
-func (mr *MockBridgerMockRecorder) ExecuteProposal(opts, chainID, depositNonce, data, resourceID, signatureHeader, aggregatePublicKey, hashedMessage, rootHash, key, nodes interface{}) *gomock.Call {
+func (mr *MockBridgerMockRecorder) ExecuteProposal(opts, chainID, depositNonce, data, resourceID, blockHeaderRLP, blockHashPrefix, blockHashSuffix, blockHashBLSHints, blockHashSignature, aggregatePublicKey, transactionMerkleKey, transactionMerkleNodes interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ExecuteProposal", reflect.TypeOf((*MockBridger)(nil).ExecuteProposal), opts, chainID, depositNonce, data, resourceID, signatureHeader, aggregatePublicKey, hashedMessage, rootHash, key, nodes)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ExecuteProposal", reflect.TypeOf((*MockBridger)(nil).ExecuteProposal), opts, chainID, depositNonce, data, resourceID, blockHeaderRLP, blockHashPrefix, blockHashSuffix, blockHashBLSHints, blockHashSignature, aggregatePublicKey, transactionMerkleKey, transactionMerkleNodes)
 }
 
 // MockContractCaller is a mock of ContractCaller interface
@@ -123,7 +123,7 @@ func (m *MockContractCaller) EXPECT() *MockContractCallerMockRecorder {
 }
 
 // FilterLogs mocks base method
-func (m *MockContractCaller) FilterLogs(ctx context.Context, q ethereum.FilterQuery) ([]types.Log, error) {
+func (m *MockContractCaller) FilterLogs(ctx context.Context, q celo.FilterQuery) ([]types.Log, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "FilterLogs", ctx, q)
 	ret0, _ := ret[0].([]types.Log)

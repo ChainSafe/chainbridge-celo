@@ -6,8 +6,8 @@ import (
 	erc20 "github.com/ChainSafe/chainbridge-celo/bindings/ERC20Handler"
 	erc721 "github.com/ChainSafe/chainbridge-celo/bindings/ERC721Handler"
 	genericHandler "github.com/ChainSafe/chainbridge-celo/bindings/GenericHandler"
-	"github.com/ethereum/go-ethereum/accounts/abi/bind"
-	"github.com/ethereum/go-ethereum/common"
+	"github.com/celo-org/celo-blockchain/accounts/abi/bind"
+	"github.com/celo-org/celo-blockchain/common"
 )
 
 type IBridge interface {
